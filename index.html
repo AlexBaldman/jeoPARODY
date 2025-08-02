@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- viewport settings for better mobile responsiveness -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+    
+    <!-- Preload fonts for better performance -->
+    <link rel="preload" href="fonts/Korinna.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="fonts/KorinnaBold.woff2" as="font" type="font/woff2" crossorigin>
+
+    <!-- SEO related -->
+    <meta name="description" content="Jeopardish! A unique comedic trivia adventure.">
+    <meta property="og:title" content="Jeopardish!">
+    <meta property="og:description" content="A unique comedic trivia adventure.">
+    <meta property="og:image" content="screenshots/jeopardish-screenshot-noQuestion.png">
+    
+    <!-- title -->
+    <title>Jeopardish!</title>
+    
+    <!-- favicons -->
+    <link rel="icon" href="/favicon.webp" type="image/webp">
+    <!-- <link rel="icon" href="images/favicon2.webp" type="image/webp"> -->
+    <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
+
+    <!-- font stylesheet -->
+    <link rel="stylesheet" href="fonts/stylesheet.css">
+    
+    <!-- Complete consolidated stylesheet -->
+    <link rel="stylesheet" href="css/styles-complete.css?v=3.0">
+    
+    <!-- Old stylesheets - removed, all styles now in styles-complete.css -->
+    
+    <!-- external JS -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <!-- Firebase scripts (must be first) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <!-- Your config (must be after Firebase scripts) -->
+    <script src="dist/js/firebase-config.js"></script>
+
+    <!-- Load the main module with Vite -->
+    <script type="module" src="/src/main.js"></script>
+    
+    <!-- Compatibility bridge -->
+    <script type="module" src="/src/compatibility-bridge.js"></script>
+    
+    <!-- Debug script -->
+    <script src="debug-app.js"></script>
+    
+    <!-- Frontend fixes -->
+    <script src="frontend-fixes.js" type="module" defer></script>
+    
+    <!-- external CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <!-- fonts, icons, other CDN assets -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    
+    
+</head>
+<body lang="en">
+
+    <!-- React-like app container for new component architecture -->
+    <div id="app"></div>
+
+    <!-- game container -->
+    <div class="game-container">
+        <!-- User Profile Section (now a child of game-container) -->
+        <div class="user-profile">
+            <img src="images/profile-placeholder.png" alt="Profile" class="profile-pic">
+            <h3>Alex Becker</h3>
+            <p>Score: $0</p>
+            <p>Streak: 0</p>
+        </div>
+        <!-- Game header -->
+        <header class="game-header">
+            <div class="header-content">
+                <!-- Left Controls: Language Toggle -->
+                <div class="header-controls-left">
+                    <button id="lang-btn" class="header-icon-btn" data-lang="en" title="Switch Language">
+                        <i class="fas fa-language"></i>
+                    </button>
+                </div>
+
+                <!-- Center: Logo -->
+                <div class="logo-container">
+                    <img src="images/title/title-Jeopardish!.png" alt="Jeopardish!" class="logo-image">
+                    <!-- Peeking scoreboard -->
+                    <div id="scoreboard" class="scoreboard">
+                        <h2>SCOREBOARD</h2>
+                        <p>SCORE: <span id="score" class="score-value">0</span></p>
+                        <p>STREAK: <span id="streak" class="score-value">0</span></p>
+                        <p>TOP SCORE: <span id="top-score" class="score-value">0</span></p>
+                        <p>MAX STREAK: <span id="max-streak" class="score-value">0</span></p>
+                    </div>
+                </div>
+
+                <!-- Right Controls: Theme Switch & Hamburger -->
+                <div class="header-controls-right">
+                    <div class="theme-switch-container">
+                        <label for="theme-switch" class="theme-switch">
+                            <input type="checkbox" id="theme-switch">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <button id="hamburger-menu" class="hamburger-button" aria-label="Open menu">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Side navigation menu -->
+        <nav id="side-menu" class="side-menu">
+            <ul class="menu-items">
+                <li>
+                    <button id="lang-btn" data-lang="en" title="Switch Language">
+                        <i class="fas fa-language"></i>
+                    </button>
+                </li>
+                <li>
+                    <button id="settings-button" aria-label="Game settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </button>
+                </li>
+                <li>
+                    <button id="stats-button" aria-label="View statistics">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Statistics</span>
+                    </button>
+                </li>
+                <li>
+                    <button id="achievements-button" aria-label="View achievements">
+                        <i class="fas fa-trophy"></i>
+                        <span>Achievements</span>
+                    </button>
+                </li>
+            </ul>
+            
+            <!-- Auth buttons container -->
+            <div class="auth-buttons-div">
+                <button id="login-button" aria-label="Sign in to save scores">
+                    <i class="fas fa-sign-in-alt"></i> sign in
+                </button>
+                <button id="leaderboard-button" aria-label="View leaderboard">
+                    <i class="fas fa-crown"></i> leaderboard
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main content area -->
+        <div class="main-content-wrapper">
+            <main class="main-content">
+            <!-- Speech bubble with category, value, question & answer display areas -->
+            <div id="speechBubble" class="speechBubble" title="Click on left or right edge to change speech bubble style">
+                <div id="categoryBox"></div>
+                <div id="valueBox"></div>
+                <div id="questionBox"></div>
+                <div id="answerBox"></div>
+            </div>
+            
+            <!-- Button container with icon buttons -->
+            <div class="button-div">
+                <button id="questionButton" aria-label="Get a new question">
+                    <i class="fas fa-sync-alt"></i>
+                    <span class="button-tooltip">New Question</span>
+                </button>
+                <button id="answerButton" aria-label="Show the answer">
+                    <i class="fas fa-eye"></i>
+                    <span class="button-tooltip">Show Answer</span>
+                </button>
+            </div>
+            
+            </main>
+        </div>
+
+        <!-- Sticky Footer with host and input -->
+        <footer class="sticky-footer">
+            <!-- Host container -->
+            <div class="host-container">
+                <img id="trebekImage" class="host-image" alt="AI Trebek" src="images/trebek/trebek-good-04.png" title="Click left/right side to cycle hosts">
+            </div>
+            
+            <!-- User input section -->
+            <div class="input-section">
+                <div class="input-div">
+                    <div class="input-wrapper">
+                        <input type="text" id="inputBox" placeholder="enter answer here...">
+                        <div class="custom-cursor"></div>
+                    </div>
+                </div>
+                <button id="checkButton" aria-label="Check your answer">
+                    <i class="fas fa-check"></i>
+                    <span class="button-tooltip">Check Answer</span>
+                </button>
+            </div>
+        </footer>
+
+        <!-- event ticker -->
+        <div class="event-ticker">
+            <div class="ticker-unit">
+                <div class="ticker-plane">
+                    <div class="wing"></div>
+                    <div class="tail"></div>
+                    <div class="stabilizer"></div>
+                    <div class="propeller"></div>
+                    <div class="propeller-hub"></div>
+                    <div class="cockpit"></div>
+                    <div class="pontoon"></div>
+                    <div class="pontoon"></div>
+                    <div class="ticker-banner">
+                        <div class="ticker-content">Breaking News: Jeopardish UI now 100% bug-free... This is a scrolling ticker... More news at 11...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User profile section (hidden by default) -->
+        <div id="user-profile" class="user-profile" style="display: none;">
+            <img id="user-avatar" class="user-avatar">
+            <span id="user-name"></span>
+            <button id="profile-button">edit profile</button>
+            <button id="logout-button">sign out</button>
+        </div>
+
+    </div>
+
+        <!-- Palm tree decorations -->
+        <div class="palm-tree left">
+            <div class="palm-trunk"></div>
+            <div class="palm-leaves">
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+            </div>
+        </div>
+        <div class="palm-tree right">
+            <div class="palm-trunk"></div>
+            <div class="palm-leaves">
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="sounds.js" type="module"></script>
+    <script src="host-animations.js" type="module"></script>
+    <script src="host-image-cycler.js" type="module"></script>
+    <script src="comedy-ticker.js" type="module"></script>
+    <script src="ticker-integration.js" type="module"></script>
+    <script src="gemini-trebek-browser.js" type="module"></script>
+    <script src="gemini-game-integration.js" type="module"></script>
+    <script src="test-gemini-integration.js" type="module"></script>
+    
+    <!-- Comedy Ticker Container -->
+    <div id="comedy-ticker-container" class="comedy-ticker"></div>
+    
+    <!-- Host Animation Container -->
+    <div id="host-container" class="host-container"></div>
+
+</body>
+</html>
