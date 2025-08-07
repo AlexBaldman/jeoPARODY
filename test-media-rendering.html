@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Rendering Test - JeoPARODY</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="src/styles/media-rendering.css">
+    <style>
+        body {
+            font-family: 'Korinna', Georgia, serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        .test-section h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .demo-text {
+            line-height: 1.6;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Media Rendering System Test</h1>
+        
+        <div class="test-section">
+            <h2>1. Audio Player</h2>
+            <div class="demo-text">
+                This question contains an audio clip: 
+                <div class="media-player audio-player" id="audio-test">
+                    <button class="play-button" title="Play audio clip">
+                        <i class="fas fa-play"></i>
+                        <span class="media-label">🎵 Sample Audio</span>
+                    </button>
+                    <div class="audio-controls" style="display: none;">
+                        <button class="pause-button">
+                            <i class="fas fa-pause"></i>
+                        </button>
+                        <div class="progress-bar">
+                            <div class="progress"></div>
+                        </div>
+                        <span class="time-display">0:00 / 0:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. Image Thumbnail</h2>
+            <div class="demo-text">
+                Here's an image related to the question:
+                <div class="media-thumbnail image-thumbnail" id="image-test">
+                    <div class="thumbnail-container" title="Click to view full image">
+                        <img src="https://via.placeholder.com/180x120/4CAF50/FFFFFF?text=Sample+Image" alt="Sample image" loading="lazy" />
+                        <div class="thumbnail-overlay">
+                            <i class="fas fa-expand"></i>
+                            <span class="media-label">📷 View Image</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>3. Video Thumbnail</h2>
+            <div class="demo-text">
+                This question includes a video clip:
+                <div class="media-thumbnail video-thumbnail" id="video-test">
+                    <div class="thumbnail-container" title="Click to play video">
+                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #FF6B6B, #4ECDC4); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                            Sample Video
+                        </div>
+                        <div class="thumbnail-overlay">
+                            <i class="fas fa-play-circle"></i>
+                            <span class="media-label">🎬 Play Video</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>4. External Links</h2>
+            <div class="demo-text">
+                For more information, you can visit this 
+                <span class="external-link" title="External link: https://example.com">helpful resource</span>
+                or check out this 
+                <span class="external-link" title="External link: https://wikipedia.org">reference page</span>.
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>5. Loading & Error States</h2>
+            <div class="demo-text">
+                <div class="media-loading" style="height: 60px; background: #f0f0f0; border-radius: 5px; margin: 10px 0; position: relative;">
+                    Loading content...
+                </div>
+                <div class="media-spinner"></div>
+                <div class="media-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div class="media-error-message">Failed to load media content</div>
+                    <button class="media-retry-button">Retry</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Demo Modal (will be created by JavaScript) -->
+    
+    <script>
+        // Simple demo functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Audio player demo
+            const audioPlayer = document.getElementById('audio-test');
+            const playButton = audioPlayer.querySelector('.play-button');
+            const audioControls = audioPlayer.querySelector('.audio-controls');
+            
+            playButton.addEventListener('click', function() {
+                alert('Audio player clicked! In the real app, this would play audio.');
+                playButton.style.display = 'none';
+                audioControls.style.display = 'flex';
+                
+                // Simulate progress
+                const progressBar = audioControls.querySelector('.progress');
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 2;
+                    progressBar.style.width = progress + '%';
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        playButton.style.display = 'block';
+                        audioControls.style.display = 'none';
+                        progressBar.style.width = '0%';
+                    }
+                }, 100);
+            });
+
+            // Image modal demo
+            document.getElementById('image-test').addEventListener('click', function() {
+                showModal('image', 'https://via.placeholder.com/800x600/4CAF50/FFFFFF?text=Full+Size+Image', 'Sample Image');
+            });
+
+            // Video modal demo
+            document.getElementById('video-test').addEventListener('click', function() {
+                showModal('video', '', 'Sample Video');
+            });
+
+            // External link demo
+            document.querySelectorAll('.external-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    alert('External link clicked: ' + this.getAttribute('title'));
+                });
+            });
+
+            // Retry button demo
+            document.querySelector('.media-retry-button').addEventListener('click', function() {
+                alert('Retry clicked! In the real app, this would attempt to reload the media.');
+            });
+        });
+
+        function showModal(type, src, alt) {
+            // Create modal
+            const modal = document.createElement('div');
+            modal.className = `media-modal ${type}-modal show`;
+            
+            let content = '';
+            if (type === 'image') {
+                content = `<img src="${src}" alt="${alt}" />`;
+            } else if (type === 'video') {
+                content = `<div style="width: 600px; height: 400px; background: linear-gradient(135deg, #FF6B6B, #4ECDC4); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold;">Demo Video Player</div>`;
+            }
+            
+            modal.innerHTML = `
+                <div class="modal-backdrop"></div>
+                <div class="modal-content">
+                    <button class="modal-close" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="modal-body">
+                        ${content}
+                        <p class="modal-caption">${alt}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close handlers
+            function closeModal() {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    if (modal.parentNode) {
+                        modal.parentNode.removeChild(modal);
+                    }
+                }, 300);
+            }
+            
+            modal.querySelector('.modal-close').addEventListener('click', closeModal);
+            modal.querySelector('.modal-backdrop').addEventListener('click', closeModal);
+            
+            // Escape key
+            const escapeHandler = (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                    document.removeEventListener('keydown', escapeHandler);
+                }
+            };
+            document.addEventListener('keydown', escapeHandler);
+        }
+    </script>
+</body>
+</html>

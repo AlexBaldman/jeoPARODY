@@ -10,14 +10,15 @@ import {
   getCurrentQuestion,
   getGameStatus,
   isLoading
-} from '../../state/selectors.js';
-import { GAME_STATES } from '../../utils/constants.js';
+  } from '../state/selectors.js';
+import { GAME_STATES } from '../utils/constants.js';
+import MediaModal from './MediaModal.js';
 
 /**
  * QuestionDisplay component
  * Shows category, value, question, and answer
  */
-export class QuestionDisplay extends ConnectedComponent {
+class QuestionDisplay extends ConnectedComponent {
   init() {
     this.state = {
       showAnswer: false,
@@ -25,7 +26,7 @@ export class QuestionDisplay extends ConnectedComponent {
     };
     
     // Speech bubble styles
-    this.bubbleStyles = ['default', 'comic', 'thought', 'retro'];
+    this.bubbleStyles = ['default', 'comic', 'thought', 'retro', 'jeopardy'];
     this.currentStyleIndex = 0;
   }
 
@@ -70,7 +71,7 @@ export class QuestionDisplay extends ConnectedComponent {
             </div>
             
             <div class="question-box" data-ref="questionBox">
-              ${question.question || ''}
+              ${this.renderMediaContent(question)}
             </div>
             
             <div class="answer-box ${isAnswerRevealed ? 'visible' : ''}" 
@@ -148,6 +149,18 @@ export class QuestionDisplay extends ConnectedComponent {
   }
 
   /**
+   * Render media content
+   */
+  renderMediaContent(question) {
+    if (question.media) {
+      const { type, src, alt } = question.media;
+      return MediaModal.createThumbnail({ type, src, alt }, this.eventBus);
+    } else {
+      return question.question || '';
+    }
+  }
+
+  /**
    * Handle answer revealed
    */
   handleAnswerRevealed() {
@@ -203,7 +216,8 @@ export class QuestionDisplay extends ConnectedComponent {
       default: 'speech-bubble-default',
       comic: 'speech-bubble-comic',
       thought: 'speech-bubble-thought',
-      retro: 'speech-bubble-retro'
+      retro: 'speech-bubble-retro',
+      jeopardy: 'speech-bubble-jeopardy'
     };
     
     return styleClasses[this.state.speechBubbleStyle] || 'speech-bubble-default';
@@ -218,3 +232,6 @@ export function createQuestionDisplay(containerId) {
   display.mount(containerId);
   return display;
 }
+
+// Default export
+export default QuestionDisplay;

@@ -5,7 +5,7 @@
 
 import { store } from '../state/store.js';
 import { GAME_STATES } from '../utils/constants.js';
-import eventBus from '../utils/events.js';
+import { eventBus } from '../utils/events.js';
 
 class HostAnimationIntegration {
     constructor() {

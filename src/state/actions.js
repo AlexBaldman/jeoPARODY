@@ -1,60 +1,90 @@
 /**
- * State Actions
+ * Action System - Carmack Style
  * 
- * Carmack's principle: "Actions should be descriptive and atomic.
- * Each action does one thing. Compose complex behaviors from simple actions."
+ * Principles:
+ * - Actions are data, not functions with side effects
+ * - Every action is immutable and serializable
+ * - Type safety through constants prevents bugs
+ * - Atomic operations compose into complex behaviors
+ * - Zero magic, maximum clarity
+ * 
+ * @module state/actions
  */
 
-// Action Types
+// Action type registry - single source of truth
 export const ACTION_TYPES = {
-  // Game Flow
+  // Game lifecycle
+  GAME_INITIALIZE: 'GAME_INITIALIZE',
   GAME_START: 'GAME_START',
-  GAME_END: 'GAME_END',
   GAME_PAUSE: 'GAME_PAUSE',
   GAME_RESUME: 'GAME_RESUME',
+  GAME_END: 'GAME_END',
   GAME_RESET: 'GAME_RESET',
   
-  // Question Management
-  QUESTION_LOAD: 'QUESTION_LOAD',
-  QUESTION_DISPLAY: 'QUESTION_DISPLAY',
-  QUESTION_ANSWER_REVEAL: 'QUESTION_ANSWER_REVEAL',
-  QUESTION_COMPLETE: 'QUESTION_COMPLETE',
+  // Question flow
+  QUESTION_FETCH_START: 'QUESTION_FETCH_START',
+  QUESTION_FETCH_SUCCESS: 'QUESTION_FETCH_SUCCESS',
+  QUESTION_FETCH_ERROR: 'QUESTION_FETCH_ERROR',
+  QUESTION_SHOW_ANSWER: 'QUESTION_SHOW_ANSWER',
+  QUESTION_NEXT: 'QUESTION_NEXT',
   
-  // Answer Handling
+  // Answer processing
   ANSWER_SUBMIT: 'ANSWER_SUBMIT',
-  ANSWER_CHECK: 'ANSWER_CHECK',
-  ANSWER_RESULT: 'ANSWER_RESULT',
+  ANSWER_EVALUATE: 'ANSWER_EVALUATE',
+  ANSWER_CORRECT: 'ANSWER_CORRECT',
+  ANSWER_INCORRECT: 'ANSWER_INCORRECT',
   
-  // Scoring
-  SCORE_UPDATE: 'SCORE_UPDATE',
-  STREAK_UPDATE: 'STREAK_UPDATE',
-  HIGH_SCORE_UPDATE: 'HIGH_SCORE_UPDATE',
+  // Score management
+  SCORE_ADD: 'SCORE_ADD',
+  SCORE_SUBTRACT: 'SCORE_SUBTRACT',
+  SCORE_RESET: 'SCORE_RESET',
+  STREAK_INCREMENT: 'STREAK_INCREMENT',
+  STREAK_RESET: 'STREAK_RESET',
   
-  // User Actions
-  USER_LOGIN: 'USER_LOGIN',
-  USER_LOGOUT: 'USER_LOGOUT',
-  USER_UPDATE_PROFILE: 'USER_UPDATE_PROFILE',
+  // Host system
+  HOST_CHANGE_IMAGE: 'HOST_CHANGE_IMAGE',
+  HOST_SET_PERSONALITY: 'HOST_SET_PERSONALITY',
+  HOST_SET_MOOD: 'HOST_SET_MOOD',
+  HOST_ANIMATE: 'HOST_ANIMATE',
   
-  // UI State
-  UI_MODAL_OPEN: 'UI_MODAL_OPEN',
-  UI_MODAL_CLOSE: 'UI_MODAL_CLOSE',
-  UI_THEME_CHANGE: 'UI_THEME_CHANGE',
-  UI_LANGUAGE_CHANGE: 'UI_LANGUAGE_CHANGE',
-  UI_LOADING_START: 'UI_LOADING_START',
-  UI_LOADING_END: 'UI_LOADING_END',
+  // UI state
+  UI_SET_THEME: 'UI_SET_THEME',
+  UI_SET_LANGUAGE: 'UI_SET_LANGUAGE',
+  UI_TOGGLE_SOUND: 'UI_TOGGLE_SOUND',
+  UI_SET_LOADING: 'UI_SET_LOADING',
   
-  // Settings
-  SETTINGS_UPDATE: 'SETTINGS_UPDATE',
-  SETTINGS_RESET: 'SETTINGS_RESET',
+  // Modal system
+  MODAL_OPEN: 'MODAL_OPEN',
+  MODAL_CLOSE: 'MODAL_CLOSE',
+  MODAL_CLOSE_ALL: 'MODAL_CLOSE_ALL',
   
-  // Errors
-  ERROR_SET: 'ERROR_SET',
-  ERROR_CLEAR: 'ERROR_CLEAR',
+  // Achievement system
+  ACHIEVEMENT_UNLOCK: 'ACHIEVEMENT_UNLOCK',
+  ACHIEVEMENT_UPDATE_PROGRESS: 'ACHIEVEMENT_UPDATE_PROGRESS',
   
   // Statistics
-  STATS_UPDATE: 'STATS_UPDATE',
-  STATS_ACHIEVEMENT_UNLOCK: 'STATS_ACHIEVEMENT_UNLOCK'
+  STATS_INCREMENT: 'STATS_INCREMENT',
+  STATS_SET: 'STATS_SET',
+  STATS_RESET: 'STATS_RESET',
+  
+  // User management
+  USER_LOGIN: 'USER_LOGIN',
+  USER_LOGOUT: 'USER_LOGOUT',
+  USER_UPDATE: 'USER_UPDATE',
+  
+  // Error handling
+  ERROR_ADD: 'ERROR_ADD',
+  ERROR_CLEAR: 'ERROR_CLEAR',
+  ERROR_CLEAR_ALL: 'ERROR_CLEAR_ALL'
 };
+
+/**
+ * Action metadata - consistent across all actions
+ */
+const createMeta = () => ({
+  timestamp: performance.now(),
+  id: Math.random().toString(36).substr(2, 9)
+});
 
 /**
  * Action Creators

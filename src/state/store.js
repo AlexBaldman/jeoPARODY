@@ -362,3 +362,24 @@ export class Store {
 export function createStore(initialState = {}) {
   return new Store(initialState);
 }
+
+// Create and export a default store instance
+const defaultInitialState = {
+  game: {
+    phase: 'initial',
+    score: 0,
+    streak: 0,
+    currentQuestion: null,
+    showingAnswer: false
+  },
+  ui: {
+    loading: false,
+    modal: null
+  },
+  user: {
+    name: null,
+    preferences: {}
+  }
+};
+
+export const store = createStore(defaultInitialState);

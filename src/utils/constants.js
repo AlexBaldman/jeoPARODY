@@ -16,6 +16,16 @@ export const GAME_STATES = {
   ROUND_END: 'round_end'
 };
 
+// Game Phases (alias for GAME_STATES for backward compatibility)
+export const GAME_PHASES = {
+  INITIAL: 'initial',
+  READY: 'ready',
+  PLAYING: 'playing',
+  PAUSED: 'paused',
+  ENDED: 'ended',
+  ...GAME_STATES
+};
+
 // Scoring
 export const SCORING = {
   CORRECT_MULTIPLIER: 1,

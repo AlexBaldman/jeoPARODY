@@ -2,7 +2,7 @@
  * Host Animation Manager Service
  * Manages host animations triggered by game events
  */
-import eventBus from '../utils/events.js';
+import { eventBus } from '../utils/events.js';
 
 class HostAnimationManager {
     constructor() {

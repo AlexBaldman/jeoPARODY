@@ -1,8 +1,9 @@
 import ConnectedComponent from '../base/ConnectedComponent.js';
 import { ScoreBoard, QuestionDisplay, GameControls, ModalManager } from './index.js';
-import { eventBus } from '../../utils/events.js';
-import { GAME_PHASES } from '../../utils/constants.js';
-import soundManager from '../../services/audio/SoundManager.js';
+import AchievementsModal from './AchievementsModal.js';
+import { eventBus } from '../utils/events.js';
+import { GAME_PHASES } from '../utils/constants.js';
+import { soundManager } from '../services/soundManager.js';
 
 /**
  * Main application component that orchestrates all UI components.
@@ -182,6 +183,10 @@ class App extends ConnectedComponent {
     // Initialize and add modal manager
     this.children.modalManager = new ModalManager();
     this.appendChild(this.children.modalManager);
+    
+    // Initialize achievements modal
+    this.children.achievementsModal = new AchievementsModal(this.store, this.eventBus);
+    this.appendChild(this.children.achievementsModal.element);
     
     // Setup event handlers
     this.setupHeaderEvents();

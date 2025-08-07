@@ -11,10 +11,10 @@
  */
 
 import ConnectedComponent from '../base/ConnectedComponent.js';
-import { createElement } from '../../utils/helpers.js';
-import { selectors } from '../../state/selectors.js';
+import { createElement } from '../utils/helpers.js';
+import { selectors } from '../state/selectors.js';
 
-export class GameControls extends ConnectedComponent {
+class GameControls extends ConnectedComponent {
     constructor(container) {
         super(container, {
             className: 'game-controls',
@@ -36,6 +36,9 @@ export class GameControls extends ConnectedComponent {
         
         // Track input state
         this.userAnswer = '';
+        this.lastEnterPress = 0;
+        this.enterPressCount = 0;
+        this.noAnswerWarningShown = false;
         
         // Subscribe to state changes
         this.subscribedPaths = [
@@ -195,9 +198,77 @@ export class GameControls extends ConnectedComponent {
     }
     
     handleKeyDown(event) {
-        if (event.key === 'Enter' && this.buttonStates.submitAnswer.enabled) {
-            this.handleSubmitAnswer();
+        if (event.key === 'Enter') {
+            this.handleSmartEnter();
         }
+    }
+    
+    handleSmartEnter() {
+        const now = Date.now();
+        const timeSinceLastEnter = now - this.lastEnterPress;
+        
+        // Reset count if more than 1 second has passed
+        if (timeSinceLastEnter > 1000) {
+            this.enterPressCount = 0;
+            this.noAnswerWarningShown = false;
+        }
+        
+        this.enterPressCount++;
+        this.lastEnterPress = now;
+        
+        // If we have an answer typed, submit it
+        if (this.userAnswer.trim().length > 0 && this.buttonStates.submitAnswer.enabled) {
+            this.handleSubmitAnswer();
+            return;
+        }
+        
+        // If no answer and first press, show warning
+        if (this.enterPressCount === 1 && !this.noAnswerWarningShown) {
+            this.showNoAnswerWarning();
+            this.noAnswerWarningShown = true;
+            return;
+        }
+        
+        // If no answer and second press (or double press within 500ms), get new question
+        if (this.enterPressCount >= 2 || (timeSinceLastEnter < 500 && this.enterPressCount === 1)) {
+            if (this.buttonStates.newQuestion.enabled) {
+                this.handleNewQuestion();
+                this.enterPressCount = 0;
+                this.noAnswerWarningShown = false;
+            }
+        }
+    }
+    
+    showNoAnswerWarning() {
+        // Create and show a temporary warning message
+        const warningElement = createElement('div', {
+            className: 'no-answer-warning',
+            style: `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(255, 193, 7, 0.95);
+                color: #000;
+                padding: 1rem 2rem;
+                border-radius: 10px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                z-index: 1000;
+                font-weight: bold;
+                text-align: center;
+                animation: fadeInOut 2s ease-in-out;
+            `,
+            textContent: 'No answer entered! Press Enter again to get a new question.'
+        });
+        
+        document.body.appendChild(warningElement);
+        
+        // Remove warning after 2 seconds
+        setTimeout(() => {
+            if (warningElement.parentNode) {
+                warningElement.parentNode.removeChild(warningElement);
+            }
+        }, 2000);
     }
     
     updateSubmitButton() {
@@ -258,8 +329,8 @@ export class GameControls extends ConnectedComponent {
         console.log('[GameControls] Starting chat with host');
         
         // Import DialogManager and start conversation
-        import('../../services/DialogManager.js').then(({ DialogManager }) => {
-            const dialogManager = DialogManager.getInstance();
+        import('../services/DialogManager.js').then((module) => {
+            const dialogManager = module.default; // DialogManager is exported as default singleton
             if (dialogManager) {
                 dialogManager.startConversation();
             }
@@ -299,3 +370,6 @@ export function createGameControls(container) {
     controls.mount();
     return controls;
 }
+
+// Default export
+export default GameControls;

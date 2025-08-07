@@ -1,136 +1,312 @@
 /**
- * Sound Manager Service
- * Wraps the existing SoundManager with our service architecture
- * Follows Carmack's principles: simple interface, predictable behavior
+ * Unified SoundManager - Carmack Style
+ * 
+ * Clean, performant audio system with zero dependencies.
+ * Single responsibility: manage game audio efficiently.
+ * 
+ * Design principles:
+ * - Simple API surface
+ * - Fail gracefully
+ * - Memory efficient
+ * - 60fps performance
+ * 
+ * @module services/soundManager
  */
 
 import { eventBus } from '../utils/events.js';
 
-// Import the existing SoundManager if it exists, otherwise create our own
-let BaseSoundManager;
-try {
-  // Try to import existing SoundManager
-  BaseSoundManager = (await import('/sounds.js')).SoundManager;
-} catch (e) {
-  // Fallback to creating our own implementation
-  BaseSoundManager = class {
-    constructor() {
-      this.sounds = {};
-      this.isMuted = localStorage.getItem('soundMuted') === 'true';
-      this.volume = parseFloat(localStorage.getItem('soundVolume') || '0.7');
-    }
-
-    async preloadSounds() {
-      const soundFiles = [
-        'correct', 'incorrect', 'daily-double', 'final-jeopardy',
-        'time-up', 'applause', 'theme', 'buzzer'
-      ];
-
-      for (const sound of soundFiles) {
-        try {
-          const audio = new Audio(`/sounds/${sound}.mp3`);
-          audio.volume = this.volume;
-          this.sounds[sound] = audio;
-        } catch (e) {
-          console.warn(`Failed to load sound: ${sound}`, e);
-        }
-      }
-    }
-
-    playSound(soundName) {
-      if (this.isMuted) return;
-      
-      const sound = this.sounds[soundName];
-      if (sound) {
-        sound.currentTime = 0;
-        sound.volume = this.volume;
-        sound.play().catch(e => console.warn('Sound play failed:', e));
-      }
-    }
-
-    setMuted(muted) {
-      this.isMuted = muted;
-      localStorage.setItem('soundMuted', muted);
-    }
-
-    setVolume(volume) {
-      this.volume = Math.max(0, Math.min(1, volume));
-      localStorage.setItem('soundVolume', this.volume);
-      
-      // Update all sound volumes
-      Object.values(this.sounds).forEach(sound => {
-        sound.volume = this.volume;
-      });
-    }
-  };
-}
+// Audio file registry - modify this to add new sounds
+const SOUND_REGISTRY = {
+  // Game events
+  correct: 'assets/audio/correct.mp3',
+  incorrect: 'assets/audio/incorrect.mp3',
+  applause: 'assets/audio/applause.mp3',
+  buzzer: 'assets/audio/buzzer.mp3',
+  
+  // UI interactions
+  click: 'assets/audio/click.mp3',
+  hover: 'assets/audio/hover.mp3',
+  modal: 'assets/audio/modal.mp3',
+  
+  // Host animations
+  moonwalk: 'assets/audio/moonwalk.mp3',
+  surprise: 'assets/audio/surprise.mp3',
+  
+  // Background/ambient
+  theme: 'assets/audio/theme.mp3'
+};
 
 /**
- * Enhanced SoundManager with event integration
+ * High-performance sound manager
+ * Uses object pooling and RAF scheduling for 60fps
  */
 export class SoundManager {
   constructor() {
-    this.baseManager = new BaseSoundManager();
+    // Core state
+    this.audioPool = new Map();         // Pooled audio instances
+    this.loadedSounds = new Set();      // Successfully loaded sounds
+    this.failedSounds = new Set();      // Failed loads (don't retry)
+    
+    // Settings (persistent)
+    this.volume = this.loadSetting('volume', 0.7);
+    this.muted = this.loadSetting('muted', false);
+    
+    // Performance tracking
+    this.playCount = 0;
+    this.lastPlayTime = 0;
+    
+    // Audio context (for modern browsers)
+    this.audioContext = null;
     this.initialized = false;
   }
-
+  
+  /**
+   * Initialize audio system - call once on user interaction
+   */
   async init() {
-    if (this.initialized) return;
-
-    // Initialize base manager
-    await this.baseManager.preloadSounds();
-
-    // Listen for game events
-    this.setupEventListeners();
-
-    this.initialized = true;
-    console.log('🔊 Sound system initialized');
-  }
-
-  setupEventListeners() {
-    // Game events
-    eventBus.on('answer:correct', () => this.playSound('correct'));
-    eventBus.on('answer:incorrect', () => this.playSound('incorrect'));
-    eventBus.on('game:daily-double', () => this.playSound('daily-double'));
-    eventBus.on('game:final-jeopardy', () => this.playSound('final-jeopardy'));
-    eventBus.on('game:time-up', () => this.playSound('time-up'));
-    eventBus.on('game:complete', () => this.playSound('applause'));
+    if (this.initialized) return true;
     
-    // UI events
-    eventBus.on('sound:play', ({ sound }) => this.playSound(sound));
-    eventBus.on('sound:toggle-mute', () => this.toggleMute());
-    eventBus.on('sound:set-volume', ({ volume }) => this.setVolume(volume));
+    try {
+      // Initialize audio context
+      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+      }
+      
+      // Preload critical sounds
+      await this.preloadSounds(['correct', 'incorrect', 'click']);
+      
+      // Setup event listeners
+      this.bindEvents();
+      
+      this.initialized = true;
+      console.log('[🔊] SoundManager initialized');
+      return true;
+      
+    } catch (error) {
+      console.warn('[🔊] Audio initialization failed:', error);
+      return false;
+    }
   }
-
-  playSound(soundName) {
-    if (!this.initialized) {
-      console.warn('Sound system not initialized');
+  
+  /**
+   * Preload specific sounds for instant playback
+   */
+  async preloadSounds(soundNames = Object.keys(SOUND_REGISTRY)) {
+    const loadPromises = soundNames.map(name => this.loadSound(name));
+    const results = await Promise.allSettled(loadPromises);
+    
+    // Log results
+    const loaded = results.filter(r => r.status === 'fulfilled').length;
+    const failed = results.filter(r => r.status === 'rejected').length;
+    
+    if (failed > 0) {
+      console.warn(`[🔊] Loaded ${loaded}/${soundNames.length} sounds`);
+    }
+  }
+  
+  /**
+   * Load a single sound with pooling
+   */
+  async loadSound(name) {
+    if (this.loadedSounds.has(name) || this.failedSounds.has(name)) {
       return;
     }
     
-    this.baseManager.playSound(soundName);
+    const url = SOUND_REGISTRY[name];
+    if (!url) {
+      console.warn(`[🔊] Unknown sound: ${name}`);
+      return;
+    }
+    
+    try {
+      // Create pool of audio instances for overlap
+      const pool = [];
+      for (let i = 0; i < 3; i++) {
+        const audio = new Audio(url);
+        audio.volume = this.muted ? 0 : this.volume;
+        audio.preload = 'auto';
+        
+        // Wait for load
+        await new Promise((resolve, reject) => {
+          audio.addEventListener('canplaythrough', resolve, { once: true });
+          audio.addEventListener('error', reject, { once: true });
+          
+          // Fallback timeout
+          setTimeout(reject, 5000);
+        });
+        
+        pool.push(audio);
+      }
+      
+      this.audioPool.set(name, pool);
+      this.loadedSounds.add(name);
+      
+    } catch (error) {
+      this.failedSounds.add(name);
+      console.warn(`[🔊] Failed to load ${name}:`, error);
+    }
   }
-
+  
+  /**
+   * Play sound with optimal performance
+   */
+  play(soundName, options = {}) {
+    // Performance gate - don't spam audio
+    const now = performance.now();
+    if (now - this.lastPlayTime < 16) return; // 60fps limit
+    this.lastPlayTime = now;
+    
+    if (!this.initialized || this.muted) return;
+    
+    const pool = this.audioPool.get(soundName);
+    if (!pool) {
+      // Lazy load if not found
+      this.loadSound(soundName);
+      return;
+    }
+    
+    // Find available audio instance
+    const audio = pool.find(a => a.paused) || pool[0];
+    
+    // Configure playback
+    audio.currentTime = 0;
+    audio.volume = this.volume * (options.volume || 1);
+    
+    // Play with error handling
+    audio.play().catch(error => {
+      // Don't spam console on autoplay blocks
+      if (error.name !== 'NotAllowedError') {
+        console.warn(`[🔊] Play failed for ${soundName}:`, error);
+      }
+    });
+    
+    this.playCount++;
+  }
+  
+  /**
+   * Stop all sounds immediately
+   */
+  stopAll() {
+    this.audioPool.forEach(pool => {
+      pool.forEach(audio => {
+        audio.pause();
+        audio.currentTime = 0;
+      });
+    });
+  }
+  
+  /**
+   * Update volume (0-1) with immediate effect
+   */
+  setVolume(newVolume) {
+    this.volume = Math.max(0, Math.min(1, newVolume));
+    this.saveSetting('volume', this.volume);
+    
+    // Update all audio instances
+    this.audioPool.forEach(pool => {
+      pool.forEach(audio => {
+        audio.volume = this.muted ? 0 : this.volume;
+      });
+    });
+    
+    eventBus.emit('sound:volume-changed', { volume: this.volume });
+  }
+  
+  /**
+   * Toggle mute state
+   */
   toggleMute() {
-    const newMuted = !this.baseManager.isMuted;
-    this.baseManager.setMuted(newMuted);
-    eventBus.emit('sound:mute-changed', { muted: newMuted });
-    return newMuted;
+    this.muted = !this.muted;
+    this.saveSetting('muted', this.muted);
+    
+    if (this.muted) {
+      this.stopAll();
+    }
+    
+    // Update volumes
+    this.audioPool.forEach(pool => {
+      pool.forEach(audio => {
+        audio.volume = this.muted ? 0 : this.volume;
+      });
+    });
+    
+    eventBus.emit('sound:mute-changed', { muted: this.muted });
+    return this.muted;
   }
-
-  setVolume(volume) {
-    this.baseManager.setVolume(volume);
-    eventBus.emit('sound:volume-changed', { volume: this.baseManager.volume });
+  
+  /**
+   * Bind to game events
+   */
+  bindEvents() {
+    // Game events -> sounds
+    const eventSoundMap = {
+      'answer:correct': 'correct',
+      'answer:incorrect': 'incorrect',
+      'game:complete': 'applause',
+      'ui:click': 'click',
+      'modal:open': 'modal',
+      'host:moonwalk': 'moonwalk',
+      'host:surprise': 'surprise'
+    };
+    
+    Object.entries(eventSoundMap).forEach(([event, sound]) => {
+      eventBus.on(event, () => this.play(sound));
+    });
+    
+    // Direct control events
+    eventBus.on('sound:play', ({ sound, options }) => this.play(sound, options));
+    eventBus.on('sound:volume', ({ volume }) => this.setVolume(volume));
+    eventBus.on('sound:toggle-mute', () => this.toggleMute());
+    eventBus.on('sound:stop-all', () => this.stopAll());
   }
-
-  get isMuted() {
-    return this.baseManager.isMuted;
+  
+  /**
+   * Persistent settings helpers
+   */
+  loadSetting(key, defaultValue) {
+    try {
+      const stored = localStorage.getItem(`jeoparody_sound_${key}`);
+      return stored !== null ? JSON.parse(stored) : defaultValue;
+    } catch {
+      return defaultValue;
+    }
   }
-
-  get volume() {
-    return this.baseManager.volume;
+  
+  saveSetting(key, value) {
+    try {
+      localStorage.setItem(`jeoparody_sound_${key}`, JSON.stringify(value));
+    } catch (error) {
+      console.warn('[🔊] Failed to save setting:', error);
+    }
+  }
+  
+  /**
+   * Get performance stats (for debugging)
+   */
+  getStats() {
+    return {
+      initialized: this.initialized,
+      loadedSounds: this.loadedSounds.size,
+      failedSounds: this.failedSounds.size,
+      totalSounds: Object.keys(SOUND_REGISTRY).length,
+      playCount: this.playCount,
+      volume: this.volume,
+      muted: this.muted
+    };
   }
 }
 
-// Export singleton instance for convenience
-export const soundManager = new SoundManager();
+// Singleton instance - lazy initialization
+let instance = null;
+
+export function getSoundManager() {
+  if (!instance) {
+    instance = new SoundManager();
+  }
+  return instance;
+}
+
+// Convenience export
+export const soundManager = getSoundManager();

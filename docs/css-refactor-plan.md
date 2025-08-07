@@ -1,0 +1,114 @@
+# jeoPARODY Enhanced UI CSS Overhaul Plan
+
+## Notes
+- User provided a detailed, prioritized list for a full CSS/UI audit and refactor.
+- Focus is on maintainability, accessibility, performance, and modern best practices.
+- Media embedding, z-index, dollar sign duplication, and responsive design are key pain points.
+- User is working in `/src/styles/enhanced-ui.css` and related files.
+- Full audit and priority matrix completed. **P-1** fixes underway.
+- Additional legacy requirements from previous plan incorporated (scoreboard redesign, ticker animation, host image, etc.)
+
+## Task List
+- [x] **Audit and document current CSS/UI issues**
+  - [x] Document double dollar sign display issues
+  - [x] List z-index conflicts and values
+  - [x] Identify broken media embedding HTML
+  - [x] Catalog responsive design breakpoints needing adjustment
+  - [x] Create a priority matrix for fixes
+- [x] **Resolve dollar sign duplication**
+  - [x] Remove redundant CSS/JS adding extra $ to values
+  - [ ] Audit all monetary value displays
+  - [ ] Test for consistent single $ display
+- [ ] **Fix media embedding display** (coordinate with `MediaHandler.js`)
+  - [x] Add/adjust CSS for media player, thumbnails, overlays
+  - [x] Style audio player controls and progress bars
+  - [x] Implement modal styles for full-size media
+  - [x] Style external links and hover states
+  - [x] Add loading/error handling styles
+- [ ] **Establish proper z-index hierarchy**
+  - [x] Define z-index levels as CSS variables
+  - [x] Fix header, scoreboard, modals, and host image stacking
+  - [ ] Document the new hierarchy
+- [ ] **Implement responsive typography and layout**
+  - [ ] Use `clamp()` for fluid typography
+  - [ ] Set breakpoints: 480 px, 768 px, 1024 px, 1440 px
+  - [ ] Increase touch target sizes for mobile
+  - [ ] Use CSS Grid and container queries
+  - [ ] Add spacing with `rem`/`em` units
+  - [ ] Test on various devices
+- [ ] **Fix component positioning and animations**
+  - [ ] Position host image bottom-left, fixed
+  - [ ] Add profile edge-peek and ticker animations
+  - [ ] Add scoreboard animation and smooth transitions
+  - [ ] Add loading animations, respect `prefers-reduced-motion`
+- [ ] **Consolidate and optimize CSS architecture**
+  - [ ] Merge redundant styles, use BEM naming
+  - [ ] Create utility classes and logical sections
+  - [ ] Minify and remove unused selectors
+  - [ ] Implement CSS custom properties and source maps
+- [ ] **Enhance accessibility and performance**
+  - [ ] Add focus indicators, color contrast, ARIA labels
+  - [ ] Ensure keyboard navigation
+  - [ ] Optimize critical CSS delivery and lazy load non-critical styles
+  - [ ] Add print styles, test with screen readers
+- [ ] **Cross-browser testing and documentation**
+  - [ ] Test in major browsers/devices
+  - [ ] Document architecture, style guide, migration guide
+  - [ ] Add comments, update README, set up visual regression testing
+- [ ] **Fix z-index layering and sticky elements**
+  - [ ] Set sticky header to `z-index: 1000`
+  - [ ] Move scoreboard behind header (`z-index: 900`)
+  - [ ] Ensure ticker plane flies behind other elements (`z-index: 1`)
+  - [ ] Fix modal and overlay z-indices (`z-index: 2000+`)
+  - [ ] Implement proper stacking contexts for all positioned elements
+- [ ] **Redesign scoreboard component**
+  - [ ] Use Jeopardy blue background (`#060ce9`)
+  - [ ] Gold borders and text (`#ffcc00`)
+  - [ ] Proper spacing and padding
+  - [ ] Clear player name and score display
+  - [ ] Subtle animations for score changes
+  - [ ] Fix positioning below sticky header
+- [ ] **Reposition and style host image**
+  - [ ] Move to bottom-left (fixed)
+  - [ ] Scale to `max-width: 150px`
+  - [ ] Add drop shadow
+  - [ ] Ensure stacking above footer, below game content
+  - [ ] Add hover animation
+- [ ] **Create ticker tape animation system**
+  - [ ] Scrolling banner background/gradient
+  - [ ] Style plane as pontoon aircraft
+  - [ ] Plane faces forward (`scaleX(1)`)
+  - [ ] Randomize flight heights
+  - [ ] Banner trailing messages
+  - [ ] Smooth keyframe animations
+  - [ ] Ticker runs behind main content
+- [ ] **Style profile component with edge-peek behavior**
+  - [ ] Fixed right edge, `translateX` transitions
+  - [ ] Visual indicator tab
+  - [ ] Game-appropriate colors
+- [ ] **Enhance animations and transitions**
+  - [ ] Card flip for question reveals
+  - [ ] Smooth hover effects
+  - [ ] Pulse animations for active elements
+  - [ ] Score change number counting
+  - [ ] Jeopardy theme loading spinners
+  - [ ] Page transition effects
+  - [ ] Use GPU-accelerated properties
+- [ ] **Optimize responsive layout and space usage**
+  - [ ] CSS Grid for game board
+  - [ ] Flexible containers, max-widths
+  - [ ] Remove unnecessary margins/padding
+  - [ ] Implement proper breakpoints
+  - [ ] Full viewport usage, no overflow
+  - [ ] Container queries for components
+- [ ] **Apply final polish and testing**
+  - [ ] CSS custom properties for theming
+  - [ ] Dark mode support
+  - [ ] Accessibility improvements (focus, contrast)
+  - [ ] Test on various screen sizes
+  - [ ] Optimize performance (repaints/reflows)
+  - [ ] Fallbacks for older browsers
+  - [ ] Minify CSS for production
+
+---
+**Current Goal:** Implement baseline media embedding CSS fixes

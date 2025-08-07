@@ -7,8 +7,9 @@
     <meta charset="UTF-8">
     
     <!-- Preload fonts for better performance -->
-    <link rel="preload" href="fonts/Korinna.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="fonts/KorinnaBold.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/fonts/KorinnaNormal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/fonts/KorinnaBold.woff" as="font" type="font/woff" crossorigin>
+    <link rel="preload" href="assets/fonts/KorinnaItalic.woff2" as="font" type="font/woff2" crossorigin>
 
     <!-- SEO related -->
     <meta name="description" content="Jeopardish! A unique comedic trivia adventure.">
@@ -20,15 +21,24 @@
     <title>Jeopardish!</title>
     
     <!-- favicons -->
-    <link rel="icon" href="/favicon.webp" type="image/webp">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <!-- <link rel="icon" href="images/favicon2.webp" type="image/webp"> -->
     <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
 
     <!-- font stylesheet -->
-    <link rel="stylesheet" href="fonts/stylesheet.css">
+    <link rel="stylesheet" href="assets/fonts/stylesheet.css">
     
     <!-- Complete consolidated stylesheet -->
-    <link rel="stylesheet" href="css/styles-complete.css?v=3.0">
+    <link rel="stylesheet" href="assets/css/styles-complete.css?v=3.0">
+    
+    <!-- App fixes stylesheet -->
+    <link rel="stylesheet" href="src/styles/app-fixes.css">
+    
+    <!-- Enhanced UI stylesheet -->
+    <link rel="stylesheet" href="src/styles/enhanced-ui.css">
+    
+    <!-- Media rendering stylesheet -->
+    <link rel="stylesheet" href="src/styles/media-rendering.css">
     
     <!-- Old stylesheets - removed, all styles now in styles-complete.css -->
     
@@ -50,10 +60,7 @@
     <script type="module" src="/src/compatibility-bridge.js"></script>
     
     <!-- Debug script -->
-    <script src="debug-app.js"></script>
-    
-    <!-- Frontend fixes -->
-    <script src="frontend-fixes.js" type="module" defer></script>
+    <script src="assets/scripts/debug.js"></script>
     
     <!-- external CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -78,26 +85,32 @@
 
     <!-- game container -->
     <div class="game-container">
-        <!-- User Profile Section (now a child of game-container) -->
+        
+        <!-- User Profile Section  -->
         <div class="user-profile">
             <img src="images/profile-placeholder.png" alt="Profile" class="profile-pic">
-            <h3>Alex Becker</h3>
+            <h3>Alex</h3>
             <p>Score: $0</p>
             <p>Streak: 0</p>
         </div>
+
         <!-- Game header -->
         <header class="game-header">
             <div class="header-content">
                 <!-- Left Controls: Language Toggle -->
                 <div class="header-controls-left">
-                    <button id="lang-btn" class="header-icon-btn" data-lang="en" title="Switch Language">
-                        <i class="fas fa-language"></i>
-                    </button>
+                    <div class="toggle-container">
+                        <button id="lang-btn" class="header-icon-btn" data-lang="en" title="Switch Language">
+                            <i class="fas fa-language"></i>
+                            <span class="flag-emoji">🇺🇸</span>
+                        </button>
+                        <div class="toggle-label">TRANSLATE</div>
+                    </div>
                 </div>
 
                 <!-- Center: Logo -->
                 <div class="logo-container">
-                    <img src="images/title/title-Jeopardish!.png" alt="Jeopardish!" class="logo-image">
+                    <img src="assets/images/title/title-Jeopardish!.png" alt="jeoPARODY!" class="logo-image">
                     <!-- Peeking scoreboard -->
                     <div id="scoreboard" class="scoreboard">
                         <h2>SCOREBOARD</h2>
@@ -110,11 +123,12 @@
 
                 <!-- Right Controls: Theme Switch & Hamburger -->
                 <div class="header-controls-right">
-                    <div class="theme-switch-container">
+                    <div class="toggle-container">
                         <label for="theme-switch" class="theme-switch">
                             <input type="checkbox" id="theme-switch">
                             <span class="slider"></span>
                         </label>
+                        <div class="toggle-label">DARK MODE</div>
                     </div>
                     <button id="hamburger-menu" class="hamburger-button" aria-label="Open menu">
                         <span class="hamburger-line"></span>
@@ -167,6 +181,7 @@
         <!-- Main content area -->
         <div class="main-content-wrapper">
             <main class="main-content">
+
             <!-- Speech bubble with category, value, question & answer display areas -->
             <div id="speechBubble" class="speechBubble" title="Click on left or right edge to change speech bubble style">
                 <div id="categoryBox"></div>
@@ -192,9 +207,10 @@
 
         <!-- Sticky Footer with host and input -->
         <footer class="sticky-footer">
+
             <!-- Host container -->
             <div class="host-container">
-                <img id="trebekImage" class="host-image" alt="AI Trebek" src="images/trebek/trebek-good-04.png" title="Click left/right side to cycle hosts">
+                <img id="trebekImage" class="host-image" alt="AI Trebek" src="assets/images/trebek/trebek-good-01.png" title="Click left/right side to cycle hosts">
             </div>
             
             <!-- User input section -->
@@ -267,20 +283,11 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="sounds.js" type="module"></script>
-    <script src="host-animations.js" type="module"></script>
-    <script src="host-image-cycler.js" type="module"></script>
-    <script src="comedy-ticker.js" type="module"></script>
-    <script src="ticker-integration.js" type="module"></script>
-    <script src="gemini-trebek-browser.js" type="module"></script>
-    <script src="gemini-game-integration.js" type="module"></script>
-    <script src="test-gemini-integration.js" type="module"></script>
+    <!-- All services now integrated into modular architecture -->
+    <!-- Scripts loaded via src/main.js -->
     
     <!-- Comedy Ticker Container -->
     <div id="comedy-ticker-container" class="comedy-ticker"></div>
-    
-    <!-- Host Animation Container -->
-    <div id="host-container" class="host-container"></div>
 
 </body>
 </html>

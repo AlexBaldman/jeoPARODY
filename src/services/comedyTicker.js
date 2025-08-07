@@ -2,7 +2,7 @@
  * Comedy Ticker Service
  * Displays humorous scrolling messages based on game events
  */
-import eventBus from '../utils/events.js';
+import { eventBus } from '../utils/events.js';
 
 class ComedyTicker {
     constructor() {

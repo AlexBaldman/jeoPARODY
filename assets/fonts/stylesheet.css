@@ -1,0 +1,38 @@
+@font-face {
+    font-family: 'Korinna';
+    src: url('KorinnaBold-Italic.woff2') format('woff2'),
+         url('KorinnaBoldItalic.woff') format('woff'),
+         url('KorinnaBoldItalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Korinna';
+    src: url('KorinnaItalic.woff2') format('woff2'),
+         url('KorinnaItalic.woff') format('woff'),
+         url('KorinnaItalic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Korinna';
+    src: url('KorinnaBold.woff') format('woff'),
+         url('KorinnaBold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Korinna';
+    src: url('KorinnaNormal.woff2') format('woff2'),
+         url('Korinna.woff') format('woff'),
+         url('Korinna.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+} 

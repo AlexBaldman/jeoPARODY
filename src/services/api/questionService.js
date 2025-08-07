@@ -222,6 +222,9 @@ async function loadLocalQuestions() {
   }
   
   const questionPaths = [
+    '/assets/questions/questions.json',
+    '/assets/questions/combined_season1-40.tsv',
+    '/assets/questions/questions.csv',
     '/questions/questions.json',
     '/src/questions/questions.json',
     '/public/questions/questions.json',
@@ -239,7 +242,20 @@ async function loadLocalQuestions() {
       console.log(`📡 Response status for ${path}: ${response.status} ${response.statusText}`);
       
       if (response.ok) {
-        data = await response.json();
+        // Determine file type and parse accordingly
+        if (path.endsWith('.json')) {
+          data = await response.json();
+        } else if (path.endsWith('.tsv')) {
+          const text = await response.text();
+          data = parseTSV(text);
+        } else if (path.endsWith('.csv')) {
+          const text = await response.text();
+          data = parseCSV(text);
+        } else {
+          // Try JSON as default
+          data = await response.json();
+        }
+        
         successPath = path;
         console.log(`✅ Successfully loaded from ${path}`);
         break;
@@ -345,6 +361,23 @@ export function parseCSV(text) {
   const headers = lines[0].split(',');
   return lines.slice(1).map(line => {
     const values = line.split(',');
+    return headers.reduce((obj, header, index) => {
+      obj[header.trim()] = values[index]?.trim() || '';
+      return obj;
+    }, {});
+  });
+}
+
+/**
+ * Parse TSV format questions
+ * @param {string} text - TSV text content
+ * @returns {Array} Parsed questions
+ */
+export function parseTSV(text) {
+  const lines = text.split('\n');
+  const headers = lines[0].split('\t');
+  return lines.slice(1).map(line => {
+    const values = line.split('\t');
     return headers.reduce((obj, header, index) => {
       obj[header.trim()] = values[index]?.trim() || '';
       return obj;

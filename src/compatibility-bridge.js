@@ -128,7 +128,7 @@ function displayQuestion(question) {
   const answerBox = document.getElementById('answerBox');
   
   if (categoryBox) categoryBox.textContent = question.category;
-  if (valueBox) valueBox.textContent = `$${question.value}`;
+  if (valueBox) valueBox.textContent = `${question.value}`;
   if (questionBox) questionBox.textContent = question.question;
   if (answerBox) {
     answerBox.textContent = question.answer;
@@ -229,7 +229,7 @@ function updateScore(isCorrect) {
   }
   
   // Update display
-  scoreEl.textContent = `$${score}`;
+  scoreEl.textContent = score.toString().startsWith('$') ? score : `$${score}`;
   streakEl.textContent = streak;
   
   console.log(`📊 Score: $${score}, Streak: ${streak}`);

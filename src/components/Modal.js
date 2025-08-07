@@ -1,11 +1,11 @@
 import ConnectedComponent from '../base/ConnectedComponent.js';
-import { createElement } from '../../utils/helpers.js';
+import { createElement } from '../utils/helpers.js';
 
 /**
  * Base Modal component
  * Provides common modal functionality and structure
  */
-export class Modal extends ConnectedComponent {
+class Modal extends ConnectedComponent {
     constructor(store, eventBus, options = {}) {
         super(store, eventBus);
         this.modalId = options.modalId || 'modal';
@@ -135,3 +135,6 @@ export class Modal extends ConnectedComponent {
         super.destroy();
     }
 }
+
+// Default export
+export default Modal;
