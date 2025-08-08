@@ -57,6 +57,9 @@ async function initializeApp() {
     // 4. Load preferences
     loadUserPreferences();
     
+    // 5. Persist preference changes
+    saveUserPreferences();
+    
     // Mark as initialized
     JeopardyApp.initialized = true;
     JeopardyApp.performance.initTime = performance.now() - startTime;
@@ -103,11 +106,11 @@ function setupGlobalEventListeners() {
     themeSwitch.addEventListener('change', toggleTheme);
   }
   
-  // Language toggle
+  // Language toggles (header and side menu)
   const langBtn = document.getElementById('lang-btn');
-  if (langBtn) {
-    langBtn.addEventListener('click', toggleLanguage);
-  }
+  const langBtnMenu = document.getElementById('lang-btn-menu');
+  if (langBtn) langBtn.addEventListener('click', toggleLanguage);
+  if (langBtnMenu) langBtnMenu.addEventListener('click', toggleLanguage);
   
   // Hamburger menu
   const hamburgerMenu = document.getElementById('hamburger-menu');
@@ -217,8 +220,24 @@ function setupEventDrivenModals() {
  */
 function toggleTheme(e) {
   const isDark = e.target.checked;
-  document.body.classList.toggle('dark-theme', isDark);
+  applyTheme(isDark);
+}
+
+function applyTheme(isDark) {
+  const htmlEl = document.documentElement;
+  const bodyEl = document.body;
+  
+  // Apply both class systems for compatibility
+  htmlEl.classList.toggle('dark-theme', isDark);
+  htmlEl.classList.toggle('dark-mode', isDark);
+  bodyEl.classList.toggle('dark-theme', isDark);
+  bodyEl.classList.toggle('dark-mode', isDark);
+
   localStorage.setItem('jeopardish_theme', isDark ? 'dark' : 'light');
+  
+  // Sync checkbox UI if present
+  const themeSwitchInput = document.getElementById('theme-switch');
+  if (themeSwitchInput) themeSwitchInput.checked = isDark;
   
   // Update game container background
   const gameContainer = document.querySelector('.game-container');
@@ -237,23 +256,35 @@ function toggleTheme(e) {
  * Toggle language
  */
 function toggleLanguage() {
-  const langBtn = document.getElementById('lang-btn');
-  if (!langBtn) return;
+  const langBtnHeader = document.getElementById('lang-btn');
+  const langBtnMenu = document.getElementById('lang-btn-menu');
   
-  const currentLang = langBtn.getAttribute('data-lang') || 'en';
+  // Determine current language from either button
+  const currentLang = (langBtnHeader?.getAttribute('data-lang') || langBtnMenu?.getAttribute('data-lang') || 'en');
   const newLang = currentLang === 'en' ? 'pt-BR' : 'en';
   
-  langBtn.setAttribute('data-lang', newLang);
+  setLanguageUI(newLang);
   
-  // Update button content with flag emoji
-  const flag = newLang === 'en' ? '🇺🇸' : '🇧🇷';
-  langBtn.innerHTML = `<i class="fas fa-language"></i><span class="flag-emoji">${flag}</span>`;
-  
-  // Emit language change event
+  // Emit language change event and persist
   eventBus.emit('language:changed', { lang: newLang });
+  localStorage.setItem('jeopardish_language', newLang);
   
-  // TODO: Implement actual translation loading
   console.log(`🌐 Language switched to: ${newLang}`);
+}
+
+function setLanguageUI(lang) {
+  const langBtnHeader = document.getElementById('lang-btn');
+  const langBtnMenu = document.getElementById('lang-btn-menu');
+  const flag = lang === 'en' ? '🇺🇸' : '🇧🇷';
+  
+  if (langBtnHeader) {
+    langBtnHeader.setAttribute('data-lang', lang);
+    langBtnHeader.innerHTML = `<i class="fas fa-language"></i><span class="flag-emoji">${flag}</span>`;
+  }
+  if (langBtnMenu) {
+    langBtnMenu.setAttribute('data-lang', lang);
+    langBtnMenu.innerHTML = `<i class="fas fa-language"></i>`;
+  }
 }
 
 /**
@@ -334,11 +365,11 @@ function setupMenuInteractions() {
     themeSwitch.addEventListener('change', toggleTheme);
   }
   
-  // Language toggle
+  // Language toggles (header and side menu)
   const langBtn = document.getElementById('lang-btn');
-  if (langBtn) {
-    langBtn.addEventListener('click', toggleLanguage);
-  }
+  const langBtnMenu = document.getElementById('lang-btn-menu');
+  if (langBtn) langBtn.addEventListener('click', toggleLanguage);
+  if (langBtnMenu) langBtnMenu.addEventListener('click', toggleLanguage);
   
   // Hamburger menu
   const hamburgerMenu = document.getElementById('hamburger-menu');
@@ -388,17 +419,19 @@ function setupKeyboardShortcuts() {
 function loadUserPreferences() {
   // Load theme preference
   const savedTheme = localStorage.getItem('jeopardish_theme');
-  if (savedTheme === 'dark') {
-    document.body.classList.add('dark-theme');
+  const isDark = savedTheme === 'dark';
+  if (savedTheme) {
+    applyTheme(isDark);
     const themeSwitch = document.getElementById('theme-switch');
     if (themeSwitch) {
-      themeSwitch.checked = true;
+      themeSwitch.checked = isDark;
     }
   }
   
   // Load language preference
   const savedLang = localStorage.getItem('jeopardish_language');
   if (savedLang) {
+    setLanguageUI(savedLang);
     eventBus.emit('language:changed', { lang: savedLang });
   }
 }
@@ -409,11 +442,14 @@ function loadUserPreferences() {
 function saveUserPreferences() {
   // This will be called when preferences change
   eventBus.on('theme:changed', ({ theme }) => {
+    // Persist and ensure UI reflects current theme
     localStorage.setItem('jeopardish_theme', theme);
+    applyTheme(theme === 'dark');
   });
   
   eventBus.on('language:changed', ({ lang }) => {
     localStorage.setItem('jeopardish_language', lang);
+    setLanguageUI(lang);
   });
 }
 
