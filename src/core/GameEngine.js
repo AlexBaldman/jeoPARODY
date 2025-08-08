@@ -626,6 +626,3 @@ export function getGameEngine() {
   }
   return gameEngineInstance;
 }
-
-// Export for testing
-export { GameEngine };

@@ -366,9 +366,9 @@ body.dark-mode::after {
 }
 
 /* Ensure answer is visible when revealed */
-.speechBubble .answer-box {
+.speechBubble .answer-box.visible {
     opacity: 1;
-    border: none;
+    transform: translateY(0);
 }   
 
 

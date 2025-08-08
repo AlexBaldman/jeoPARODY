@@ -625,6 +625,3 @@ export function getHostSystem() {
   }
   return hostSystemInstance;
 }
-
-// Export for testing
-export { HostSystem };
