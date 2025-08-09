@@ -197,18 +197,22 @@ class App extends ConnectedComponent {
     const themeToggle = this.querySelector('.theme-toggle');
     if (themeToggle) {
       themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-theme');
+        const isDark = !document.body.classList.contains('dark-theme');
+        document.documentElement.classList.toggle('dark-theme', isDark);
+        document.documentElement.classList.toggle('dark-mode', isDark);
+        document.body.classList.toggle('dark-theme', isDark);
+        document.body.classList.toggle('dark-mode', isDark);
         const icon = themeToggle.querySelector('.theme-icon');
-        icon.textContent = document.body.classList.contains('dark-theme') ? '🌚' : '🌞';
-        localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+        icon.textContent = isDark ? '🌚' : '🌞';
+        localStorage.setItem('jeopardish_theme', isDark ? 'dark' : 'light');
       });
     }
     
     // Language toggle - handled by main.js
     const langButton = this.querySelector('.lang-button');
     if (langButton) {
-      langButton.id = 'lang-btn'; // Set ID for main.js to find it
-      // Remove this listener as main.js handles it
+      langButton.id = 'lang-btn';
+      // Additional menu button is #lang-btn-menu
     }
     
     // Hamburger menu
@@ -240,9 +244,12 @@ class App extends ConnectedComponent {
     });
     
     // Apply saved theme
-    const savedTheme = localStorage.getItem('theme');
+    const savedTheme = localStorage.getItem('jeopardish_theme');
     if (savedTheme === 'dark') {
-      document.body.classList.add('dark-theme');
+      document.documentElement.classList.add('dark-theme', true);
+      document.documentElement.classList.add('dark-mode', true);
+      document.body.classList.add('dark-theme', true);
+      document.body.classList.add('dark-mode', true);
       const icon = themeToggle?.querySelector('.theme-icon');
       if (icon) icon.textContent = '🌚';
     }
