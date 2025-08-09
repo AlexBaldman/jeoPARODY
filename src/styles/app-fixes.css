@@ -818,8 +818,6 @@ input:focus {
 #answerBox {
     font-size: 18px;
     color: #27ae60;
-    font-weight: bold;
-    margin-top: 15px;
     padding-top: 15px;
     border-top: 2px solid #ffd700;
     opacity: 0;
@@ -830,6 +828,7 @@ input:focus {
 #answerBox.visible {
     opacity: 1;
     transform: translateY(0);
+    border-top-color: #ffd700;
 }
 
 /* Adjust main content for sticky header */

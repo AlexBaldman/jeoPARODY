@@ -93,7 +93,10 @@ async function handleNewQuestion() {
     if (inputBox) inputBox.value = '';
     
     const answerBox = document.getElementById('answerBox');
-    if (answerBox) answerBox.style.display = 'none';
+    if (answerBox) {
+      answerBox.style.display = 'none';
+      answerBox.classList.remove('visible');
+    }
     
     // Get new question
     const question = await questionService.getQuestion();
@@ -108,8 +111,9 @@ async function handleNewQuestion() {
     // Display question
     displayQuestion(question);
     
-    // Emit event
+    // Emit events (new + component-aligned)
     eventBus.emit('question:new', question);
+    eventBus.emit('game:question:loaded', { question });
     
     // Update ticker
     eventBus.emit('ticker:update', { event: 'idle' });
@@ -133,21 +137,29 @@ function displayQuestion(question) {
   if (answerBox) {
     answerBox.textContent = question.answer;
     answerBox.style.display = 'none';
+    answerBox.classList.remove('visible');
   }
   
   // Play sound
   playSound('stairs');
+  
+  // Component-aligned event for display
+  eventBus.emit('game:question:displayed', { question });
 }
 
 function handleShowAnswer() {
   console.log('👁️ Showing answer...');
   const answerBox = document.getElementById('answerBox');
   if (answerBox) {
-    const isHidden = answerBox.style.display === 'none';
-    answerBox.style.display = isHidden ? 'block' : 'none';
-    
+    const isHidden = answerBox.style.display === 'none' && !answerBox.classList.contains('visible');
     if (isHidden) {
+      answerBox.style.display = 'block';
+      answerBox.classList.add('visible');
       eventBus.emit('answer:revealed', currentQuestion);
+      eventBus.emit('game:answer:revealed', { question: currentQuestion });
+    } else {
+      answerBox.style.display = 'none';
+      answerBox.classList.remove('visible');
     }
   }
 }
@@ -177,7 +189,10 @@ function handleCheckAnswer() {
   
   // Update UI
   const answerBox = document.getElementById('answerBox');
-  if (answerBox) answerBox.style.display = 'block';
+  if (answerBox) {
+    answerBox.classList.add('visible');
+    answerBox.style.display = 'block';
+  }
   
   // Update score
   updateScore(isCorrect);
@@ -205,7 +220,7 @@ function handleCheckAnswer() {
   eventBus.emit('ticker:update', { event: isCorrect ? 'correct' : 'incorrect' });
   
   // Play sound
-  playSound(isCorrect ? 'correct' : 'incorrect');
+  eventBus.emit('sound:play', { sound: isCorrect ? 'correct' : 'incorrect' });
   
   // Clear input
   if (inputBox) inputBox.value = '';
@@ -218,19 +233,18 @@ function updateScore(isCorrect) {
   if (!scoreEl || !streakEl) return;
   
   // Get current values
-  let score = parseInt(scoreEl.textContent.replace(/[^0-9]/g, '')) || 0;
-  let streak = parseInt(streakEl.textContent) || 0;
+  const score = parseInt(scoreEl.textContent || '0', 10);
+  const streak = parseInt(streakEl.textContent || '0', 10);
   
-  if (isCorrect) {
-    score += currentQuestion.value || 200;
-    streak += 1;
-  } else {
-    streak = 0;
-  }
+  const delta = isCorrect ? 200 : 0;
+  const newScore = score + delta;
+  const newStreak = isCorrect ? streak + 1 : 0;
   
-  // Update display
-  scoreEl.textContent = score.toString().startsWith('$') ? score : `$${score}`;
-  streakEl.textContent = streak;
+  scoreEl.textContent = newScore;
+  streakEl.textContent = newStreak;
+  
+  // Emit event for scoreboard animation (component-aligned)
+  eventBus.emit('game:score:updated', { score: newScore, streak: newStreak });
   
   console.log(`📊 Score: $${score}, Streak: ${streak}`);
 }
@@ -238,7 +252,7 @@ function updateScore(isCorrect) {
 function playSound(soundName) {
   console.log(`🔊 Playing sound: ${soundName}`);
   // Sound playing will be handled by the sound manager when it's ready
-  eventBus.emit('sound:play', soundName);
+  eventBus.emit('sound:play', { sound: soundName });
 }
 
 function setupConsoleLogs() {
