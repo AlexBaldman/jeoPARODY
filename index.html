@@ -39,6 +39,9 @@
     
     <!-- Media rendering stylesheet -->
     <link rel="stylesheet" href="src/styles/media-rendering.css">
+
+    <!-- UX Pack: themes, components, animations -->
+    <link rel="stylesheet" href="src/styles/ux-pack.css">
     
     <!-- Old stylesheets - removed, all styles now in styles-complete.css -->
     
@@ -82,6 +85,110 @@
 
     <!-- React-like app container for new component architecture -->
     <div id="app"></div>
+
+    <!-- Splash / Start Screen Overlay -->
+    <div id="splash-screen" class="active">
+      <div class="splash-card">
+        <div class="splash-title">Jeopardish!</div>
+        <div class="splash-subtitle">Pick a mode to begin</div>
+        <div class="splash-grid">
+          <button class="btn btn-gradient" data-start-mode="classic">▶ Start Classic</button>
+          <button class="btn btn-neon" data-start-mode="fullboard">📺 Full Jeopardy Board</button>
+          <button class="btn btn-arcade" data-start-mode="run-category">🎯 Run the Category</button>
+          <button class="btn btn-gradient" data-start-mode="practice">🧠 Practice</button>
+          <button class="btn btn-neon" data-start-mode="daily-double">💥 Daily Double</button>
+          <button class="btn btn-arcade" data-action="open-settings">⚙️ Settings</button>
+        </div>
+        <div class="splash-footer">
+          <div class="theme-chooser">
+            <span>Theme:</span>
+            <div class="theme-dot" data-theme="jeopardy" title="Jeopardy"></div>
+            <div class="theme-dot" data-theme="retro" title="Retro"></div>
+            <div class="theme-dot" data-theme="comic" title="Comic"></div>
+          </div>
+          <div class="lives" title="Retro lives"><span class="pixel-heart"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Jeopardy Board Screen -->
+    <div id="jeopardy-board-screen" class="hidden">
+      <div class="board">
+        <div class="board-controls">
+          <button class="board-close" data-close-board>⟵ Back</button>
+          <div>Full Jeopardy Board</div>
+        </div>
+        <div class="board-grid" id="board-grid">
+          <!-- categories -->
+          <div class="category">HISTORY</div>
+          <div class="category">SCIENCE</div>
+          <div class="category">LITERATURE</div>
+          <div class="category">WORLD</div>
+          <div class="category">MOVIES</div>
+          <div class="category">RANDOM</div>
+          <!-- values -->
+          <div class="clue" data-value="200">$200</div>
+          <div class="clue" data-value="200">$200</div>
+          <div class="clue" data-value="200">$200</div>
+          <div class="clue" data-value="200">$200</div>
+          <div class="clue" data-value="200">$200</div>
+          <div class="clue" data-value="200">$200</div>
+
+          <div class="clue" data-value="400">$400</div>
+          <div class="clue" data-value="400">$400</div>
+          <div class="clue" data-value="400">$400</div>
+          <div class="clue" data-value="400">$400</div>
+          <div class="clue" data-value="400">$400</div>
+          <div class="clue" data-value="400">$400</div>
+
+          <div class="clue" data-value="600">$600</div>
+          <div class="clue" data-value="600">$600</div>
+          <div class="clue" data-value="600">$600</div>
+          <div class="clue" data-value="600">$600</div>
+          <div class="clue" data-value="600">$600</div>
+          <div class="clue" data-value="600">$600</div>
+
+          <div class="clue" data-value="800">$800</div>
+          <div class="clue" data-value="800">$800</div>
+          <div class="clue" data-value="800">$800</div>
+          <div class="clue" data-value="800">$800</div>
+          <div class="clue" data-value="800">$800</div>
+          <div class="clue" data-value="800">$800</div>
+
+          <div class="clue" data-value="1000">$1000</div>
+          <div class="clue" data-value="1000">$1000</div>
+          <div class="clue" data-value="1000">$1000</div>
+          <div class="clue" data-value="1000">$1000</div>
+          <div class="clue" data-value="1000">$1000</div>
+          <div class="clue" data-value="1000">$1000</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clue Zoom Modal -->
+    <div class="clue-modal" id="clue-modal">
+      <div class="clue-card">
+        <div class="clue-text" id="clue-text">This is where the clue appears. What is awesome UI?</div>
+      </div>
+    </div>
+
+    <!-- Run the Category Screen -->
+    <div id="run-category-screen" class="hidden">
+      <div class="run-wrap">
+        <div class="run-header">
+          <button class="board-close" data-close-run>⟵ Back</button>
+          <div class="run-category-title">Category: Demo</div>
+          <div style="width: 180px" class="run-progress"><span id="run-progress-bar" style="width:0%"></span></div>
+        </div>
+        <div class="run-list" id="run-list">
+          <div class="run-item"><div class="value">$200</div><div class="text">Placeholder question will go here.</div></div>
+          <div class="run-item"><div class="value">$400</div><div class="text">Placeholder question will go here.</div></div>
+          <div class="run-item"><div class="value">$600</div><div class="text">Placeholder question will go here.</div></div>
+          <div class="run-item"><div class="value">$800</div><div class="text">Placeholder question will go here.</div></div>
+          <div class="run-item"><div class="value">$1000</div><div class="text">Placeholder question will go here.</div></div>
+        </div>
+      </div>
+    </div>
 
     <!-- game container -->
     <div class="game-container">
