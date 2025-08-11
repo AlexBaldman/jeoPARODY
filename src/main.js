@@ -453,6 +453,137 @@ function saveUserPreferences() {
   });
 }
 
+/**
+ * Splash, Board, Run-Category UI wiring
+ */
+function setupNewUIModes() {
+  const splash = document.getElementById('splash-screen');
+  const board = document.getElementById('jeopardy-board-screen');
+  const run = document.getElementById('run-category-screen');
+  const clueModal = document.getElementById('clue-modal');
+  const clueText = document.getElementById('clue-text');
+
+  if (splash) {
+    // Theme chooser
+    splash.querySelectorAll('.theme-dot').forEach(dot => {
+      dot.addEventListener('click', () => {
+        const theme = dot.getAttribute('data-theme');
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('jeopardish_theme_variant', theme);
+      });
+    });
+
+    // Start mode buttons
+    splash.querySelectorAll('[data-start-mode]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const mode = btn.getAttribute('data-start-mode');
+        // Hide splash
+        splash.classList.remove('active');
+        // Emit game start
+        eventBus.emit('game:start', { mode, difficulty: 'normal' });
+        // Show special screens if selected
+        if (mode === 'fullboard') {
+          board?.classList.remove('hidden');
+          board?.classList.add('active');
+        } else if (mode === 'run-category') {
+          run?.classList.remove('hidden');
+          run?.classList.add('active');
+        }
+      });
+    });
+
+    const settingsBtn = splash.querySelector('[data-action="open-settings"]');
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', () => {
+        eventBus.emit('modal:open', { type: 'settings' });
+      });
+    }
+  }
+
+  // Jeopardy board interactions
+  if (board) {
+    const closeBoard = board.querySelector('[data-close-board]');
+    closeBoard?.addEventListener('click', () => {
+      board.classList.remove('active');
+      board.classList.add('hidden');
+      // Return to splash
+      document.getElementById('splash-screen')?.classList.add('active');
+    });
+
+    // Open clue modal on cell click
+    board.querySelectorAll('.clue').forEach(cell => {
+      cell.addEventListener('click', () => {
+        const value = cell.getAttribute('data-value');
+        // Placeholder text; integrate with question system later
+        if (clueText) clueText.textContent = `Clue for $${value} — (placeholder)`;
+        clueModal?.classList.add('active');
+      });
+    });
+  }
+
+  // Close clue modal on outside click
+  if (clueModal) {
+    clueModal.addEventListener('click', (e) => {
+      if (e.target === clueModal) clueModal.classList.remove('active');
+    });
+  }
+
+  // Run the category interactions
+  if (run) {
+    const closeRun = run.querySelector('[data-close-run]');
+    closeRun?.addEventListener('click', () => {
+      run.classList.remove('active');
+      run.classList.add('hidden');
+      document.getElementById('splash-screen')?.classList.add('active');
+    });
+
+    // Simple demo progress
+    const progress = run.querySelector('#run-progress-bar');
+    let pct = 0;
+    run.addEventListener('click', (e) => {
+      const item = e.target.closest('.run-item');
+      if (!item) return;
+      pct = Math.min(100, pct + 20);
+      if (progress) progress.style.width = pct + '%';
+      item.style.opacity = '0.6';
+    });
+  }
+
+  // Speech bubble style cycling (comic/thought variants)
+  const speech = document.getElementById('speechBubble');
+  if (speech) {
+    const styles = ['', 'speech-bubble--thought', 'speech-bubble--comic'];
+    let idx = 0;
+    speech.addEventListener('click', (ev) => {
+      const rect = speech.getBoundingClientRect();
+      const leftSide = (ev.clientX - rect.left) < rect.width / 2;
+      // Remove all variants
+      styles.forEach(cls => cls && speech.classList.remove(cls));
+      idx = (idx + (leftSide ? -1 : 1) + styles.length) % styles.length;
+      const cls = styles[idx];
+      if (cls) speech.classList.add(cls);
+    });
+  }
+
+  // Apply saved theme variant
+  const savedVariant = localStorage.getItem('jeopardish_theme_variant');
+  if (savedVariant) {
+    document.documentElement.setAttribute('data-theme', savedVariant);
+  } else {
+    // Default theme
+    document.documentElement.setAttribute('data-theme', 'jeopardy');
+  }
+}
+
+// Hook into existing initialization flow
+(function attachUxPackInit(){
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupNewUIModes);
+  } else {
+    setupNewUIModes();
+  }
+})();
+
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initializeApp);
