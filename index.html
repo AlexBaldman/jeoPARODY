@@ -59,7 +59,8 @@
     <!-- Load the main module with Vite -->
     <script type="module" src="/src/main.js"></script>
     
-    <!-- Compatibility bridge -->
+    <!-- Compatibility bridge (deprecated; can be disabled via window.JEOPARODY_DISABLE_COMPAT_BRIDGE=true) -->
+    <script>window.JEOPARODY_DISABLE_COMPAT_BRIDGE = true;</script>
     <script type="module" src="/src/compatibility-bridge.js"></script>
     
     <!-- Debug script -->
