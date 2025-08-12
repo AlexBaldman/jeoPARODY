@@ -450,6 +450,16 @@ export class HostSystem {
    * @param {string} animationType - Type of animation
    */
   async triggerAnimation(animationType) {
+    // Delegate to HostAnimationManager if available
+    if (window.hostAnimationManager && typeof window.hostAnimationManager.playAnimation === 'function') {
+      try {
+        window.hostAnimationManager.playAnimation(animationType);
+        return;
+      } catch (e) {
+        console.warn('[HostSystem] HostAnimationManager delegation failed; falling back.', e);
+      }
+    }
+    // Fallback to internal simple animations
     switch (animationType) {
       case 'celebrate':
         await this.celebrationAnimation();

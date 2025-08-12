@@ -7,79 +7,36 @@
 import questionService from './services/api/questionService.js';
 import { eventBus } from './utils/events.js';
 import dialogManager from './services/DialogManager.js';
+import { logger as console } from './utils/logger.js';
 
-console.log('🌉 Loading compatibility bridge...');
+console.info('🌉 Loading compatibility bridge...');
 
 // Initialize when DOM is ready
 function initBridge() {
-  console.log('🌉 Initializing compatibility bridge...');
+  if (window.JEOPARODY_DISABLE_COMPAT_BRIDGE) {
+    console.warn('🌉 Compatibility bridge disabled by flag');
+    return;
+  }
+  console.info('🌉 Initializing compatibility bridge...');
   
   // Initialize question service
   questionService.initialize().then(() => {
-    console.log('✅ Question service initialized');
+    console.info('✅ Question service initialized');
   }).catch(err => {
     console.error('❌ Failed to initialize question service:', err);
   });
   
-  // Hook up old DOM elements to new system
-  setupOldDOMBindings();
+  // Legacy DOM bindings are deprecated; rely on main.js/component wiring
+  // Keep minimal forwarding only if legacy HTML requires it
+  // setupOldDOMBindings();
   
-  // Set up console logging
+  // Set up startup logs (dev only)
   setupConsoleLogs();
 }
 
 function setupOldDOMBindings() {
-  console.log('🔗 Setting up DOM bindings...');
-  
-  // Question button
-  const questionButton = document.getElementById('questionButton');
-  if (questionButton) {
-    console.log('✅ Found question button');
-    questionButton.addEventListener('click', async () => {
-      console.log('🎯 Question button clicked');
-      await handleNewQuestion();
-    });
-  } else {
-    console.log('❌ Question button not found');
-  }
-  
-  // Answer button
-  const answerButton = document.getElementById('answerButton');
-  if (answerButton) {
-    console.log('✅ Found answer button');
-    answerButton.addEventListener('click', () => {
-      console.log('👁️ Answer button clicked');
-      handleShowAnswer();
-    });
-  } else {
-    console.log('❌ Answer button not found');
-  }
-  
-  // Check button
-  const checkButton = document.getElementById('checkButton');
-  if (checkButton) {
-    console.log('✅ Found check button');
-    checkButton.addEventListener('click', () => {
-      console.log('✅ Check button clicked');
-      handleCheckAnswer();
-    });
-  } else {
-    console.log('❌ Check button not found');
-  }
-  
-  // Input box enter key - Smart handling
-  const inputBox = document.getElementById('inputBox');
-  if (inputBox) {
-    console.log('✅ Found input box');
-    inputBox.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        console.log('⏎ Enter key pressed');
-        handleEnterKey();
-      }
-    });
-  } else {
-    console.log('❌ Input box not found');
-  }
+  // Deprecated: UI is now wired via main.js/components
+  // Left intentionally empty to avoid duplicate bindings
 }
 
 let currentQuestion = null;
@@ -256,13 +213,13 @@ function playSound(soundName) {
 }
 
 function setupConsoleLogs() {
-  console.log('🎮 Welcome to Jeopardish!!!');
-  console.log('❓ Click the "new question" button to get a random Jeopardy-style question & test your knowledge.');
-  console.log('🔥 Multiple correct answers in a row will start a streak...');
-  console.log('💔 ...but get one wrong & the streak will reset.');
-  console.log('🏆 Let\'s see how many correct answers you can string together!');
-  console.log('📊 Streak is currently at 0');
-  console.log('✨ HAVE FUN YA MANIAC!');
+  console.info('🎮 Welcome to Jeopardish!!!');
+  console.info('❓ Click the "new question" button to get a random Jeopardy-style question & test your knowledge.');
+  console.info('🔥 Multiple correct answers in a row will start a streak...');
+  console.info('💔 ...but get one wrong & the streak will reset.');
+  console.info('🏆 Let\'s see how many correct answers you can string together!');
+  console.info('📊 Streak is currently at 0');
+  console.info('✨ HAVE FUN YA MANIAC!');
 }
 
 function handleEnterKey() {
@@ -270,28 +227,28 @@ function handleEnterKey() {
   const hasInput = inputBox?.value?.trim();
   const state = getGameState();
   
-  console.log('⏎ Smart Enter key handler:', { hasInput, showingMessage: state.showingMessage });
+  console.debug('⏎ Smart Enter key handler:', { hasInput, showingMessage: state.showingMessage });
   
   // If showing a message (correct/incorrect), go to next question
   if (state.showingMessage) {
-    console.log('📝 Message showing, getting new question');
+    console.info('📝 Message showing, getting new question');
     handleNewQuestion();
     return;
   }
   
   // If no current question, get a new one
   if (!currentQuestion) {
-    console.log('❓ No current question, getting new one');
+    console.info('❓ No current question, getting new one');
     handleNewQuestion();
     return;
   }
   
   // If user typed something, check the answer
   if (hasInput) {
-    console.log('✅ User input detected, checking answer');
+    console.info('✅ User input detected, checking answer');
     handleCheckAnswer();
   } else {
-    console.log('💡 No input, prompting for answer');
+    console.info('💡 No input, prompting for answer');
     // Maybe show a hint or prompt
     dialogManager.queueMessage('TAUNT', 'Type your answer and press Enter, or press Enter again for a new question!');
   }
@@ -329,4 +286,4 @@ window.compatibilityBridge = {
   handleCheckAnswer
 };
 
-console.log('🌉 Compatibility bridge loaded');
+console.info('🌉 Compatibility bridge loaded (deprecated; use main.js wiring).');

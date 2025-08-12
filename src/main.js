@@ -17,6 +17,7 @@ import { getGameEngine } from './core/GameEngine.js';
 import { soundManager } from './services/soundManager.js';
 import { getHostSystem } from './services/HostSystem.js';
 import { eventBus } from './utils/events.js';
+import { logger as console } from './utils/logger.js';
 
 // Application instance - single point of truth
 const JeopardyApp = {
@@ -42,7 +43,7 @@ const JeopardyApp = {
  */
 async function initializeApp() {
   const startTime = performance.now();
-  console.log('[🎮] Initializing JeoPARODY...');
+  console.info('[🎮] Initializing JeoPARODY...');
   
   try {
     // 1. Initialize core systems
@@ -64,7 +65,7 @@ async function initializeApp() {
     JeopardyApp.initialized = true;
     JeopardyApp.performance.initTime = performance.now() - startTime;
     
-    console.log(`[✅] JeoPARODY initialized in ${JeopardyApp.performance.initTime.toFixed(2)}ms`);
+    console.info(`[✅] JeoPARODY initialized in ${JeopardyApp.performance.initTime.toFixed(2)}ms`);
     
     // Auto-start game for testing (remove in production)
     if (process.env.NODE_ENV === 'development') {
@@ -127,21 +128,21 @@ function setupGlobalEventListeners() {
  * Initialize core services
  */
 async function initializeCoreServices() {
-  console.log('[⚡] Initializing core services...');
+  console.info('[⚡] Initializing core services...');
   
   // Initialize game engine (must be first)
   JeopardyApp.gameEngine = getGameEngine();
-  console.log('[🎮] Game engine ready');
+  console.info('[🎮] Game engine ready');
   
   // Initialize sound system
   JeopardyApp.soundManager = soundManager;
   await JeopardyApp.soundManager.init();
-  console.log('[🔊] Audio system ready');
+  console.info('[🔊] Audio system ready');
   
   // Initialize host system
   JeopardyApp.hostSystem = getHostSystem();
   await JeopardyApp.hostSystem.init();
-  console.log('[👤] Host system ready');
+  console.info('[👤] Host system ready');
   
   // Set up inter-service communication
   setupServiceIntegration();

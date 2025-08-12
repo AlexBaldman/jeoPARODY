@@ -8,6 +8,7 @@
 import { deepClone } from '../utils/helpers.js';
 import { eventBus } from '../utils/events.js';
 import { DEBUG } from '../utils/constants.js';
+import { persistence, createPersistenceMiddleware } from './persistence.js';
 
 /**
  * Store class - Central state management
@@ -360,7 +361,13 @@ export class Store {
  * @returns {Store} Store instance
  */
 export function createStore(initialState = {}) {
-  return new Store(initialState);
+  const store = new Store(initialState);
+  // Wire persistence middleware with sane defaults
+  store.use(createPersistenceMiddleware(persistence, {
+    throttle: 1000,
+    blacklist: ['errors', 'ui.loading', 'ui.notifications']
+  }));
+  return store;
 }
 
 // Create and export a default store instance
@@ -370,16 +377,35 @@ const defaultInitialState = {
     score: 0,
     streak: 0,
     currentQuestion: null,
-    showingAnswer: false
+    showingAnswer: false,
+    session: null,
   },
   ui: {
     loading: false,
-    modal: null
+    modal: null,
+    notifications: [],
   },
   user: {
     name: null,
     preferences: {}
-  }
+  },
+  settings: {
+    soundEnabled: true,
+    difficulty: 'medium',
+    autoAdvance: true,
+    animationsEnabled: true
+  },
+  statistics: {
+    totalGames: 0,
+    totalQuestions: 0,
+    correctAnswers: 0,
+    totalPlayTime: 0,
+    achievements: [],
+    categoryStats: {}
+  },
 };
 
-export const store = createStore(defaultInitialState);
+// Load persisted slices into initial state
+const preloaded = persistence.loadState(defaultInitialState);
+
+export const store = createStore(preloaded);
