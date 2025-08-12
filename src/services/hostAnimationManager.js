@@ -62,7 +62,7 @@ class HostAnimationManager {
     
     init() {
         // Find host element
-        this.hostElement = document.querySelector('.host');
+        this.hostElement = document.querySelector('#trebekImage, .host-image, .host');
         if (!this.hostElement) {
             console.error('Host element not found');
             return;
