@@ -45,26 +45,29 @@
     
     <!-- Old stylesheets - removed, all styles now in styles-complete.css -->
     
-    <!-- external JS -->
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- external JS (none needed) -->
 
-    <!-- Firebase scripts (must be first) -->
+    <!-- Firebase optional: uncomment when integrating auth/cloud sync -->
+    <!--
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-
-    <!-- Your config (must be after Firebase scripts) -->
-    <script src="dist/js/firebase-config.js"></script>
+    <script src="/public/dist/js/firebase-config.js"></script>
+    -->
 
     <!-- Load the main module with Vite -->
     <script type="module" src="/src/main.js"></script>
     
-    <!-- Compatibility bridge (deprecated; can be disabled via window.JEOPARODY_DISABLE_COMPAT_BRIDGE=true) -->
-    <script>window.JEOPARODY_DISABLE_COMPAT_BRIDGE = true;</script>
-    <script type="module" src="/src/compatibility-bridge.js"></script>
+    <!-- Compatibility bridge disabled by default; remove script include to fully drop legacy path -->
     
-    <!-- Debug script -->
-    <script src="assets/scripts/debug.js"></script>
+    <!-- Debug script (dev only) -->
+    <script>
+      if (import.meta.env && import.meta.env.DEV) {
+        const s = document.createElement('script');
+        s.src = 'assets/scripts/debug.js';
+        document.head.appendChild(s);
+      }
+    </script>
     
     <!-- external CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
