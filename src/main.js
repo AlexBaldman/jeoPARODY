@@ -461,6 +461,7 @@ function setupNewUIModes() {
   const splash = document.getElementById('splash-screen');
   const board = document.getElementById('jeopardy-board-screen');
   const run = document.getElementById('run-category-screen');
+  const paoContainer = document.getElementById('pao-screen-container');
   const clueModal = document.getElementById('clue-modal');
   const clueText = document.getElementById('clue-text');
 
@@ -489,6 +490,17 @@ function setupNewUIModes() {
         } else if (mode === 'run-category') {
           run?.classList.remove('hidden');
           run?.classList.add('active');
+        } else if (mode === 'pao') {
+          import('./components/pao/PAOView.js').then(({ default: PAOView }) => {
+            if (paoContainer) {
+              paoContainer.classList.remove('hidden');
+              const pao = new PAOView();
+              pao.init(paoContainer);
+              setTimeout(() => pao.show(), 0);
+              // Store instance on container for later cleanup
+              paoContainer._pao = pao;
+            }
+          });
         }
       });
     });
@@ -520,6 +532,18 @@ function setupNewUIModes() {
         clueModal?.classList.add('active');
       });
     });
+  }
+
+  // PAO close by Escape or Back in header handled inside PAOView
+  // Provide an external cleanup if container is hidden later
+  if (paoContainer) {
+    const observer = new MutationObserver(() => {
+      if (paoContainer.classList.contains('hidden') && paoContainer._pao) {
+        paoContainer._pao.destroy();
+        paoContainer._pao = null;
+      }
+    });
+    observer.observe(paoContainer, { attributes: true, attributeFilter: ['class'] });
   }
 
   // Close clue modal on outside click

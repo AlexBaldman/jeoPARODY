@@ -39,6 +39,9 @@
     
     <!-- Media rendering stylesheet -->
     <link rel="stylesheet" href="src/styles/media-rendering.css">
+    
+    <!-- PAO styles -->
+    <link rel="stylesheet" href="src/styles/pao.css">
 
     <!-- UX Pack: themes, components, animations -->
     <link rel="stylesheet" href="src/styles/ux-pack.css">
@@ -98,6 +101,7 @@
           <button class="btn btn-arcade" data-start-mode="run-category">🎯 Run the Category</button>
           <button class="btn btn-gradient" data-start-mode="practice">🧠 Practice</button>
           <button class="btn btn-neon" data-start-mode="daily-double">💥 Daily Double</button>
+          <button class="btn btn-gradient" data-start-mode="pao">🧩 PAO Trainer</button>
           <button class="btn btn-arcade" data-action="open-settings">⚙️ Settings</button>
         </div>
         <div class="splash-footer">
@@ -175,6 +179,9 @@
 
     <!-- Run the Category Screen -->
     <div id="run-category-screen" class="hidden">
+
+    <!-- PAO Screen Container -->
+    <div id="pao-screen-container" class="hidden"></div>
       <div class="run-wrap">
         <div class="run-header">
           <button class="board-close" data-close-run>⟵ Back</button>
