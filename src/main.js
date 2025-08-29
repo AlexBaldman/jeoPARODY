@@ -155,6 +155,26 @@ function setupServiceIntegration() {
   // Host system responds to game events
   eventBus.on('answer:evaluated', (data) => {
     JeopardyApp.hostSystem.updateMood(JeopardyApp.gameEngine.state.stats);
+
+    // Update scoreboard UI
+    const scoreElement = document.getElementById('score');
+    if (scoreElement) {
+      scoreElement.textContent = JeopardyApp.gameEngine.state.score.current;
+      scoreElement.classList.add('highlight');
+      setTimeout(() => scoreElement.classList.remove('highlight'), 600);
+    }
+
+    // Trigger scoreboard animation
+    const scoreboardElement = document.getElementById('scoreboard');
+    if (scoreboardElement) {
+      scoreboardElement.classList.add('active');
+      setTimeout(() => scoreboardElement.classList.remove('active'), 4000);
+    }
+
+    // Trigger ticker flight
+    if (data.isCorrect) {
+        triggerTickerFlight();
+    }
   });
   
   // Sound system handles game audio
@@ -228,11 +248,9 @@ function applyTheme(isDark) {
   const htmlEl = document.documentElement;
   const bodyEl = document.body;
   
-  // Apply both class systems for compatibility
+  // Apply the consolidated theme class
   htmlEl.classList.toggle('dark-theme', isDark);
-  htmlEl.classList.toggle('dark-mode', isDark);
   bodyEl.classList.toggle('dark-theme', isDark);
-  bodyEl.classList.toggle('dark-mode', isDark);
 
   localStorage.setItem('jeopardish_theme', isDark ? 'dark' : 'light');
   
@@ -324,6 +342,14 @@ function setupGameControls() {
     });
   }
   
+  // Show answer listener
+  eventBus.on('question:show-answer', () => {
+    const answerBox = document.getElementById('answerBox');
+    if (answerBox) {
+      answerBox.classList.add('visible');
+    }
+  });
+
   // Answer input
   const inputBox = document.getElementById('inputBox');
   const checkButton = document.getElementById('checkButton');
@@ -601,13 +627,14 @@ function setupNewUIModes() {
 }
 
 // Hook into existing initialization flow
-(function attachUxPackInit(){
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupNewUIModes);
-  } else {
-    setupNewUIModes();
-  }
+(function attachUxPackInit() {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupNewUIModes);
+    } else {
+        setupNewUIModes();
+    }
 })();
+
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
@@ -619,6 +646,22 @@ if (document.readyState === 'loading') {
 // Export for debugging
 window.JeopardyApp = JeopardyApp;
 window.eventBus = eventBus;
+
+/**
+ * Triggers the ticker plane animation
+ */
+function triggerTickerFlight() {
+  const tickerUnit = document.querySelector('.ticker-unit');
+  if (!tickerUnit) return;
+
+  // Clone and replace the node to restart the animation
+  const newTickerUnit = tickerUnit.cloneNode(true);
+  tickerUnit.parentNode.replaceChild(newTickerUnit, tickerUnit);
+
+  // Set random flight height
+  const randomTop = Math.floor(Math.random() * 61) + 20; // 20% to 80%
+  newTickerUnit.style.top = `${randomTop}%`;
+}
 
 // Performance monitoring
 if (process.env.NODE_ENV === 'development') {

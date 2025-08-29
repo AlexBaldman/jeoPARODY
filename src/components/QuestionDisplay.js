@@ -67,7 +67,7 @@ class QuestionDisplay extends ConnectedComponent {
             </div>
             
             <div class="value-box" data-ref="valueBox">
-              ${question.value ? `for ${question.value}` : ''}
+              ${this.formatValue(question.value)}
             </div>
             
             <div class="question-box" data-ref="questionBox">
@@ -76,7 +76,7 @@ class QuestionDisplay extends ConnectedComponent {
             
             <div class="answer-box ${isAnswerRevealed ? 'visible' : ''}" 
                  data-ref="answerBox">
-              ${question.answer || ''}
+              ${this.sanitize(question.answer || '')}
             </div>
           </div>
         ` : this.renderEmpty()}
@@ -151,12 +151,23 @@ class QuestionDisplay extends ConnectedComponent {
   /**
    * Render media content
    */
+  formatValue(value) {
+    if (!value) return '';
+    const cleanedValue = String(value).replace(/\$/g, '');
+    return `for $${cleanedValue}`;
+  }
+
+  sanitize(str) {
+    if (typeof str !== 'string') return str;
+    return str.replace(/\\/g, '');
+  }
+
   renderMediaContent(question) {
     if (question.media) {
       const { type, src, alt } = question.media;
       return MediaModal.createThumbnail({ type, src, alt }, this.eventBus);
     } else {
-      return question.question || '';
+      return this.sanitize(question.question || '');
     }
   }
 

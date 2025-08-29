@@ -18,6 +18,7 @@
 
 import { eventBus } from '../utils/events.js';
 import { ACTION_TYPES } from '../state/actions.js';
+import { getQuestion, initialize as initializeQuestionService } from '../services/api/questionService.js';
 
 // Game constants
 export const GAME_CONFIG = {
@@ -123,6 +124,9 @@ export class GameEngine {
     // Game loop
     this.isRunning = false;
     
+    // Initialize services
+    initializeQuestionService();
+
     // Event handlers
     this.setupEventHandlers();
   }
@@ -577,6 +581,18 @@ export class GameEngine {
   /**
    * Setup event handlers
    */
+  async requestNewQuestion() {
+    this.transitionPhase(GAME_PHASES.LOADING);
+    const question = await getQuestion();
+    if (question) {
+      this.loadQuestion(question);
+    } else {
+      // Handle error case - maybe show a message to the user
+      console.error("Failed to retrieve a new question.");
+      this.transitionPhase(GAME_PHASES.MENU); // Or some error state
+    }
+  }
+
   setupEventHandlers() {
     // Game control events
     this.eventBus.on('game:start', (options) => this.startGame(options));
@@ -585,6 +601,7 @@ export class GameEngine {
     this.eventBus.on('game:reset', () => this.resetGame());
     
     // Question events
+    this.eventBus.on('question:request-new', () => this.requestNewQuestion());
     this.eventBus.on('question:load', (data) => this.loadQuestion(data.question));
     this.eventBus.on('answer:submit', (data) => this.submitAnswer(data.answer));
   }
