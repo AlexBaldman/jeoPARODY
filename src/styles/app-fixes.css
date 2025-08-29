@@ -6,9 +6,9 @@
 /* Korinna Font Imports */
 @font-face {
     font-family: 'Korinna';
-    src: url('/fonts/Korinna.woff2') format('woff2'),
-         url('/fonts/Korinna.woff') format('woff'),
-         url('/fonts/Korinna.ttf') format('truetype');
+    src: url('/assets/fonts/KorinnaNormal.woff2') format('woff2'),
+         url('/assets/fonts/Korinna.woff') format('woff'),
+         url('/assets/fonts/Korinna.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -16,8 +16,7 @@
 
 @font-face {
     font-family: 'Korinna';
-    src: url('/fonts/KorinnaBold.woff2') format('woff2'),
-         url('/fonts/KorinnaBold.woff') format('woff');
+    src: url('/assets/fonts/KorinnaBold.woff') format('woff');
     font-weight: bold;
     font-style: normal;
     font-display: swap;
@@ -25,8 +24,8 @@
 
 @font-face {
     font-family: 'Korinna';
-    src: url('/fonts/KorinnaItalic.woff2') format('woff2'),
-         url('/fonts/KorinnaItalic.woff') format('woff');
+    src: url('/assets/fonts/KorinnaItalic.woff2') format('woff2'),
+         url('/assets/fonts/KorinnaItalic.woff') format('woff');
     font-weight: normal;
     font-style: italic;
     font-display: swap;
@@ -751,7 +750,7 @@ input:focus {
     font-family: 'Korinna', serif !important;
     text-align: center !important;
     line-height: 1.6;
-    font-size: 18px;
+    /* font-size is inherited, questionBox sets its own */
     margin: 100px auto 20px; /* Account for sticky header */
     background: rgba(255, 255, 255, 0.98);
     border: 3px solid #ffd700;
@@ -763,32 +762,29 @@ input:focus {
     max-width: 800px;
 }
 
-.speechBubble::before,
-.speech-bubble::before {
+/* New arrow style as per TODO */
+.speechBubble::before {
     content: '';
     position: absolute;
-    bottom: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 15px solid transparent;
-    border-right: 15px solid transparent;
-    border-top: 15px solid #ffd700;
+    bottom: -2px;
+    left: 22%; /* Positioned from the left */
+    width: 20px;
+    height: 15px;
+    border-bottom: 3px solid #ffd700; /* Border color */
+    border-left: 3px solid #ffd700;
+    transform: skewX(45deg);
+    background: transparent; /* No fill for the border part */
 }
 
-.speechBubble::after,
-.speech-bubble::after {
+.speechBubble::after {
     content: '';
     position: absolute;
-    bottom: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-top: 12px solid rgba(255, 255, 255, 0.98);
+    bottom: 0px;
+    left: 22%; /* Positioned from the left */
+    width: 20px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.98); /* Fill color to match bubble */
+    transform: skewX(45deg);
 }
 
 #categoryBox {
@@ -809,7 +805,7 @@ input:focus {
 }
 
 #questionBox {
-    font-size: 20px;
+    font-size: var(--fs-question);
     color: #333;
     margin-bottom: 15px;
     line-height: 1.5;

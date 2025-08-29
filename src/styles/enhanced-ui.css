@@ -271,77 +271,11 @@
 }
 
 /* ===== Beach Background Styles ===== */
+/* These styles have been moved to assets/css/styles-complete.css for consolidation */
 body {
     font-size: var(--fs-base);
-
     position: relative;
     overflow-x: hidden;
-}   
-
-/* Day mode beach background */
-body:not(.dark-mode) {
-    background: linear-gradient(to bottom, 
-        #87CEEB 0%,     /* Sky blue */
-        #FFE4B5 40%,    /* Sandy horizon */
-        #F4A460 60%,    /* Beach sand */
-        #DEB887 100%    /* Darker sand */
-    );
-}   
-
-body:not(.dark-mode)::before {
-    content: '';
-    position: fixed;
-    top: 50px;
-    right: 100px;
-    width: 100px;
-    height: 100px;
-    background: radial-gradient(circle, #FFD700 0%, #FFA500 40%, transparent 70%);
-    border-radius: 50%;
-    box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
-    z-index: -1;
-}
-
-/* Night mode beach background */
-body.dark-mode {
-    background: linear-gradient(to bottom,
-        #0a1929 0%,     /* Night sky */
-        #1e3c72 30%,    /* Horizon */
-        #2a5298 50%,    /* Ocean */
-        #1a1a2e 100%    /* Dark sand */
-    );  
-}
-
-body.dark-mode::before {
-    content: '';
-    position: fixed;
-    top: 50px;
-    right: 100px;
-    width: 80px;
-    height: 80px;
-    background: radial-gradient(circle, #F8F8FF 0%, #E6E6FA 40%, transparent 70%);
-    border-radius: 50%;
-    box-shadow: 0 0 30px rgba(248, 248, 255, 0.6);
-    z-index: -1;
-}
-
-/* Stars for night mode */
-body.dark-mode::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    background-image: 
-        radial-gradient(2px 2px at 20px 30px, white, transparent),
-        radial-gradient(2px 2px at 40px 70px, white, transparent),
-        radial-gradient(1px 1px at 50px 50px, white, transparent),
-        radial-gradient(1px 1px at 80px 10px, white, transparent),
-        radial-gradient(2px 2px at 130px 80px, white, transparent),
-        radial-gradient(1px 1px at 110px 120px, white, transparent);
-    background-repeat: repeat;
-    background-size: 200px 200px;
-    z-index: -2;
 }
 
 /* ===== Speech Bubble Centering ===== */
