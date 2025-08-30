@@ -155,26 +155,13 @@ function setupServiceIntegration() {
   // Host system responds to game events
   eventBus.on('answer:evaluated', (data) => {
     JeopardyApp.hostSystem.updateMood(JeopardyApp.gameEngine.state.stats);
-
-    // Update scoreboard UI
-    const scoreElement = document.getElementById('score');
-    if (scoreElement) {
-      scoreElement.textContent = JeopardyApp.gameEngine.state.score.current;
-      scoreElement.classList.add('highlight');
-      setTimeout(() => scoreElement.classList.remove('highlight'), 600);
-    }
-
-    // Trigger scoreboard animation
-    const scoreboardElement = document.getElementById('scoreboard');
-    if (scoreboardElement) {
-      scoreboardElement.classList.add('active');
-      setTimeout(() => scoreboardElement.classList.remove('active'), 4000);
-    }
-
-    // Trigger ticker flight
-    if (data.isCorrect) {
-        triggerTickerFlight();
-    }
+    // Update scoreboard
+    const { current, streak, high, maxStreak } = JeopardyApp.gameEngine.state.score;
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = String(val); };
+    set('score', current);
+    set('streak', streak);
+    set('top-score', high);
+    set('max-streak', maxStreak);
   });
   
   // Sound system handles game audio
@@ -191,7 +178,7 @@ function setupEventDrivenModals() {
   const settingsButton = document.getElementById('settings-button');
   if (settingsButton) {
     settingsButton.addEventListener('click', () => {
-      app.eventBus.emit('modal:open', { type: 'settings' });
+      eventBus.emit('modal:open', { type: 'settings' });
     });
   }
   
@@ -199,7 +186,7 @@ function setupEventDrivenModals() {
   const statsButton = document.getElementById('stats-button');
   if (statsButton) {
     statsButton.addEventListener('click', () => {
-      app.eventBus.emit('modal:open', { type: 'stats' });
+      eventBus.emit('modal:open', { type: 'stats' });
     });
   }
   
@@ -207,7 +194,7 @@ function setupEventDrivenModals() {
   const achievementsButton = document.getElementById('achievements-button');
   if (achievementsButton) {
     achievementsButton.addEventListener('click', () => {
-      app.eventBus.emit('modal:open', { type: 'achievements' });
+      eventBus.emit('modal:open', { type: 'achievements' });
     });
   }
   
@@ -215,7 +202,7 @@ function setupEventDrivenModals() {
   const helpButton = document.getElementById('help-button');
   if (helpButton) {
     helpButton.addEventListener('click', () => {
-      app.eventBus.emit('modal:open', { type: 'help' });
+      eventBus.emit('modal:open', { type: 'help' });
     });
   }
   
@@ -223,7 +210,7 @@ function setupEventDrivenModals() {
   const leaderboardButton = document.getElementById('leaderboard-button');
   if (leaderboardButton) {
     leaderboardButton.addEventListener('click', () => {
-      app.eventBus.emit('modal:open', { type: 'leaderboard' });
+      eventBus.emit('modal:open', { type: 'leaderboard' });
     });
   }
   
@@ -231,7 +218,7 @@ function setupEventDrivenModals() {
   const profileButton = document.getElementById('profile-button');
   if (profileButton) {
     profileButton.addEventListener('click', () => {
-      app.eventBus.emit('modal:open', { type: 'profile' });
+      eventBus.emit('modal:open', { type: 'profile' });
     });
   }
 }
@@ -242,15 +229,18 @@ function setupEventDrivenModals() {
 function toggleTheme(e) {
   const isDark = e.target.checked;
   applyTheme(isDark);
+  eventBus.emit('theme:changed', { theme: isDark ? 'dark' : 'light' });
 }
 
 function applyTheme(isDark) {
   const htmlEl = document.documentElement;
   const bodyEl = document.body;
   
-  // Apply the consolidated theme class
+  // Apply both class systems for compatibility
   htmlEl.classList.toggle('dark-theme', isDark);
+  htmlEl.classList.toggle('dark-mode', isDark);
   bodyEl.classList.toggle('dark-theme', isDark);
+  bodyEl.classList.toggle('dark-mode', isDark);
 
   localStorage.setItem('jeopardish_theme', isDark ? 'dark' : 'light');
   
@@ -318,6 +308,10 @@ function setupUIBindings() {
   
   // Keyboard shortcuts
   setupKeyboardShortcuts();
+
+  // Global UI listeners and modals
+  setupGlobalEventListeners();
+  setupEventDrivenModals();
 }
 
 /**
@@ -342,14 +336,6 @@ function setupGameControls() {
     });
   }
   
-  // Show answer listener
-  eventBus.on('question:show-answer', () => {
-    const answerBox = document.getElementById('answerBox');
-    if (answerBox) {
-      answerBox.classList.add('visible');
-    }
-  });
-
   // Answer input
   const inputBox = document.getElementById('inputBox');
   const checkButton = document.getElementById('checkButton');
@@ -627,14 +613,13 @@ function setupNewUIModes() {
 }
 
 // Hook into existing initialization flow
-(function attachUxPackInit() {
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', setupNewUIModes);
-    } else {
-        setupNewUIModes();
-    }
+(function attachUxPackInit(){
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupNewUIModes);
+  } else {
+    setupNewUIModes();
+  }
 })();
-
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
@@ -646,22 +631,6 @@ if (document.readyState === 'loading') {
 // Export for debugging
 window.JeopardyApp = JeopardyApp;
 window.eventBus = eventBus;
-
-/**
- * Triggers the ticker plane animation
- */
-function triggerTickerFlight() {
-  const tickerUnit = document.querySelector('.ticker-unit');
-  if (!tickerUnit) return;
-
-  // Clone and replace the node to restart the animation
-  const newTickerUnit = tickerUnit.cloneNode(true);
-  tickerUnit.parentNode.replaceChild(newTickerUnit, tickerUnit);
-
-  // Set random flight height
-  const randomTop = Math.floor(Math.random() * 61) + 20; // 20% to 80%
-  newTickerUnit.style.top = `${randomTop}%`;
-}
 
 // Performance monitoring
 if (process.env.NODE_ENV === 'development') {

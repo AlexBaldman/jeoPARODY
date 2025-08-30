@@ -25,25 +25,8 @@
     <!-- <link rel="icon" href="images/favicon2.webp" type="image/webp"> -->
     <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
 
-    <!-- Font definitions are in app-fixes.css -->
-    
-    <!-- Complete consolidated stylesheet -->
-    <link rel="stylesheet" href="assets/css/styles-complete.css?v=3.0">
-    
-    <!-- Enhanced UI stylesheet -->
-    <link rel="stylesheet" href="src/styles/enhanced-ui.css">
-    
-    <!-- Media rendering stylesheet -->
-    <link rel="stylesheet" href="src/styles/media-rendering.css">
-    
-    <!-- PAO styles -->
-    <link rel="stylesheet" href="src/styles/pao.css">
-
-    <!-- UX Pack: themes, components, animations -->
-    <link rel="stylesheet" href="src/styles/ux-pack.css">
-
-    <!-- App fixes stylesheet (should be loaded last to override) -->
-    <link rel="stylesheet" href="src/styles/app-fixes.css">
+    <!-- Single source of truth for all styles -->
+    <link rel="stylesheet" href="/src/styles/main.css">
     
     <!-- Old stylesheets - removed, all styles now in styles-complete.css -->
     
@@ -227,15 +210,11 @@
 
                 <!-- Center: Logo -->
                 <div class="logo-container">
-                    <img src="assets/images/title/title-jeopardish!-pixelart.png" alt="jeoPARODY!" class="logo-image">
+                    <img src="assets/images/title/title-Jeopardish!.png" alt="jeoPARODY!" class="logo-image">
                     <!-- Peeking scoreboard -->
-                    <div id="scoreboard" class="basketball-scoreboard">
-                        <div class="scoreboard-peek">PEEK</div>
-                        <div class="scoreboard-content">
-                            <div class="score-display">
-                                <span class="score-label">SCORE</span>
-                                <span id="score" class="score-number">0</span>
-                            </div>
+                    <div id="scoreboard" class="scoreboard">
+                        <h2>SCOREBOARD</h2>
+                        <p>SCORE: <span id="score" class="score-value">0</span></p>
                         <p>STREAK: <span id="streak" class="score-value">0</span></p>
                         <p>TOP SCORE: <span id="top-score" class="score-value">0</span></p>
                         <p>MAX STREAK: <span id="max-streak" class="score-value">0</span></p>

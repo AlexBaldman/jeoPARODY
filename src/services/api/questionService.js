@@ -25,9 +25,8 @@ let isInitialized = false;
 let lastLoadTime = null;
 
 /**
- * Initialize the question service
- * Pre-loads local questions if configured
- * @returns {Promise<boolean>} Success status
+ * Initializes the question service by pre-loading local questions.
+ * @returns {Promise<boolean>} A promise that resolves to true if initialization is successful, false otherwise.
  */
 export async function initialize() {
   if (isInitialized) {
@@ -51,8 +50,8 @@ export async function initialize() {
 }
 
 /**
- * Get available categories from loaded questions
- * @returns {Array<string>} List of unique categories
+ * Gets a list of unique category names from the loaded questions.
+ * @returns {string[]} A sorted array of available category names.
  */
 export function getAvailableCategories() {
   if (!allQuestions.length) {
@@ -69,9 +68,9 @@ export function getAvailableCategories() {
 }
 
 /**
- * Get all questions from a specific category
- * @param {string} category - Category name
- * @returns {Array<Object>} Questions from the category
+ * Gets all questions belonging to a specific category.
+ * @param {string} category - The name of the category to retrieve questions for.
+ * @returns {object[]} An array of normalized question objects.
  */
 export function getQuestionsByCategory(category) {
   if (!allQuestions.length) {
@@ -87,24 +86,21 @@ export function getQuestionsByCategory(category) {
 }
 
 /**
- * Get a random category with at least minQuestions
- * @param {number} minQuestions - Minimum number of questions required
- * @returns {Object|null} Category info with name and question count
+ * Gets a random category that has at least a minimum number of questions.
+ * @param {number} [minQuestions=5] - The minimum number of questions a category must have to be eligible.
+ * @returns {{name: string, questionCount: number}|null} An object containing the category name and question count, or null if no eligible category is found.
  */
 export function getRandomCategory(minQuestions = 5) {
-  const categories = getAvailableCategories();
-  const eligibleCategories = [];
-  
-  for (const category of categories) {
-    const questions = getQuestionsByCategory(category);
-    if (questions.length >= minQuestions) {
-      eligibleCategories.push({
-        name: category,
-        questionCount: questions.length
-      });
-    }
+  if (!allQuestions.length) return null;
+  const counts = new Map();
+  for (const q of allQuestions) {
+    const cat = q.category?.title || q.category || 'General Knowledge';
+    counts.set(cat, (counts.get(cat) || 0) + 1);
   }
-  
+  const eligibleCategories = Array.from(counts.entries())
+    .filter(([, count]) => count >= minQuestions)
+    .map(([name, count]) => ({ name, questionCount: count }));
+
   if (eligibleCategories.length === 0) {
     return null;
   }
@@ -113,15 +109,17 @@ export function getRandomCategory(minQuestions = 5) {
 }
 
 /**
- * Get a question (prioritizes local, optionally tries API)
- * @returns {Promise<Object|null>} Question data or null if failed
+ * Retrieves a single question.
+ * It prioritizes pulling from a shuffled local buffer. If the buffer is empty, it reloads from the main local question list.
+ * As a last resort, it can fetch from a remote API (if enabled). If all sources fail, it returns a placeholder joke question.
+ * @returns {Promise<object|null>} A promise that resolves to a normalized question object, or a joke question if all sources fail.
  */
 export async function getQuestion() {
-  console.log('🎯 getQuestion() called');
+  if (process.env.NODE_ENV === 'development') console.log('🎯 getQuestion() called');
   
   // Ensure we're initialized
   if (!isInitialized) {
-    console.log('⚠️ Service not initialized, initializing now...');
+    if (process.env.NODE_ENV === 'development') console.log('⚠️ Service not initialized, initializing now...');
     const initSuccess = await initialize();
     if (!initSuccess) {
       console.error('❌ Failed to initialize question service');
@@ -129,40 +127,40 @@ export async function getQuestion() {
     }
   }
 
-  console.log(`📊 Current state: ${questions.length} questions in buffer, ${allQuestions.length} total questions`);
+  if (process.env.NODE_ENV === 'development') console.log(`📊 Current state: ${questions.length} questions in buffer, ${allQuestions.length} total questions`);
 
   // Try local questions first
   const localQuestion = getNextLocalQuestion();
   if (localQuestion) {
-    console.log('✅ Returning question from buffer:', localQuestion.category);
+    if (process.env.NODE_ENV === 'development') console.log('✅ Returning question from buffer:', localQuestion.category);
     return localQuestion;
   }
 
   // Reload local questions if we've run out
-  console.log('🔄 Local questions exhausted, reloading...');
+  if (process.env.NODE_ENV === 'development') console.log('🔄 Local questions exhausted, reloading...');
   const reloaded = await loadLocalQuestions();
   if (reloaded) {
     const question = getNextLocalQuestion();
     if (question) {
-      console.log('✅ Returning question after reload:', question.category);
+      if (process.env.NODE_ENV === 'development') console.log('✅ Returning question after reload:', question.category);
       return question;
     }
   }
 
   // Optionally try API as last resort
   if (CONFIG.USE_API) {
-    console.log('🌐 Trying API as fallback...');
+    if (process.env.NODE_ENV === 'development') console.log('🌐 Trying API as fallback...');
     const apiQuestion = await fetchQuestionFromAPI();
     if (apiQuestion) {
-      console.log('✅ Returning question from API:', apiQuestion.category);
+      if (process.env.NODE_ENV === 'development') console.log('✅ Returning question from API:', apiQuestion.category);
       return apiQuestion;
     }
   }
 
   // If all else fails, return an error joke
-  console.log('😅 All question sources failed, returning error joke');
+  if (process.env.NODE_ENV === 'development') console.log('😅 All question sources failed, returning error joke');
   const errorJoke = getErrorJoke();
-  console.log('🎭 Error joke:', errorJoke);
+  if (process.env.NODE_ENV === 'development') console.log('🎭 Error joke:', errorJoke);
   return errorJoke;
 }
 
@@ -391,11 +389,15 @@ export function parseTSV(text) {
  * @returns {Object} Normalized question
  */
 export function normalizeQuestionData(question) {
+  const rawVal = question.value ?? 200;
+  const numericValue = typeof rawVal === 'number'
+    ? rawVal
+    : Number(String(rawVal).replace(/[^0-9.-]/g, '')) || 0;
   return {
     category: question.category?.title || question.category || 'General Knowledge',
     question: question.question || question.clue || '',
     answer: question.answer || '',
-    value: question.value || 200,
+    value: numericValue,
     airdate: question.airdate || new Date().toISOString(),
     difficulty: question.difficulty || 'Medium',
     times_used: question.times_used || 1,
@@ -426,25 +428,25 @@ function getErrorJoke() {
       category: "TECHNICAL DIFFICULTIES",
       question: "This term describes what happens when your app can't load the local question database.",
       answer: "What is 'a file reading error'?",
-      value: "$0"
+      value: 0
     },
     {
       category: "OOOPS!",
       question: "This famous line was uttered by every programmer ever when their code didn't work as expected.",
       answer: "What is 'It works on my machine'?",
-      value: "$0"
+      value: 0
     },
     {
       category: "MYSTERY OF CODING",
       question: "It's the spooky thing that happens when your API call goes into the void and never returns.",
       answer: "What is 'the ghost in the machine'?",
-      value: "$0"
+      value: 0
     },
     {
       category: "SOFTWARE SNAFUS",
       question: "This phrase is often said when an application stops working right as you show it to someone.",
       answer: "What is 'demo demon'?",
-      value: "$0"
+      value: 0
     }
   ];
   

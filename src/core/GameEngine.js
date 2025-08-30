@@ -132,7 +132,7 @@ export class GameEngine {
   }
   
   /**
-   * Start the game engine
+   * Starts the main game loop.
    */
   start() {
     if (this.isRunning) return;
@@ -146,7 +146,7 @@ export class GameEngine {
   }
   
   /**
-   * Stop the game engine
+   * Stops the main game loop.
    */
   stop() {
     this.isRunning = false;
@@ -160,7 +160,8 @@ export class GameEngine {
   }
   
   /**
-   * Main game loop - runs at 60fps
+   * The main game loop, running at 60fps.
+   * @private
    */
   gameLoop = () => {
     if (!this.isRunning) return;
@@ -179,8 +180,9 @@ export class GameEngine {
   }
   
   /**
-   * Update game state based on current phase
-   * @param {number} deltaTime - Time since last update
+   * Updates the game state based on the current phase.
+   * @param {number} deltaTime - The time in milliseconds since the last update.
+   * @private
    */
   update(deltaTime) {
     switch (this.state.session.phase) {
@@ -214,7 +216,6 @@ export class GameEngine {
    * Handle time limit reached
    */
   handleTimeUp() {
-    this.transitionPhase(GAME_PHASES.RESULT);
     this.evaluateAnswer('', true); // Empty answer, timed out
     this.eventBus.emit('game:time-up');
   }
@@ -225,6 +226,7 @@ export class GameEngine {
    */
   transitionPhase(newPhase) {
     const oldPhase = this.state.session.phase;
+    if (oldPhase === newPhase) return;
     this.state.session.phase = newPhase;
     
     this.eventBus.emit('game:phase-changed', {
@@ -235,8 +237,10 @@ export class GameEngine {
   }
   
   /**
-   * Start a new game session
-   * @param {Object} options - Game options
+   * Starts a new game session.
+   * @param {object} [options={}] - Game options.
+   * @param {string} [options.difficulty='normal'] - The game difficulty.
+   * @param {string} [options.mode='classic'] - The game mode.
    */
   startGame(options = {}) {
     this.state.session = {
@@ -264,8 +268,8 @@ export class GameEngine {
   }
   
   /**
-   * Load a new question
-   * @param {Object} questionData - Question data
+   * Loads a new question into the game state.
+   * @param {object} questionData - The question data to load.
    */
   loadQuestion(questionData) {
     this.state.question = {
@@ -285,8 +289,8 @@ export class GameEngine {
   }
   
   /**
-   * Submit an answer
-   * @param {string} userAnswer - User's answer
+   * Submits a user's answer for the current question.
+   * @param {string} userAnswer - The answer provided by the user.
    */
   submitAnswer(userAnswer) {
     if (this.state.session.phase !== GAME_PHASES.QUESTION) {
@@ -347,11 +351,11 @@ export class GameEngine {
     if (!userAnswer || !correctAnswer) return false;
     
     // Normalize both answers
-    const normalize = (str) => 
+    const normalize = (str) =>
       str.toLowerCase()
          .trim()
-         .replace(/[^a-z0-9\\s]/g, '')
-         .replace(/\\s+/g, ' ');
+         .replace(/[^a-z0-9\s]/g, '')
+         .replace(/\s+/g, ' ');
     
     const normalizedUser = normalize(userAnswer);
     const normalizedCorrect = normalize(correctAnswer);
@@ -508,7 +512,9 @@ export class GameEngine {
     }
     
     // Speed demon (last answer was fast)
-    if (this.state.question.timeElapsed <= achievements.SPEED_DEMON.maxTime && !stats.achievements.has(achievements.SPEED_DEMON.id)) {
+    if (this.state.question.timeElapsed <= achievements.SPEED_DEMON.maxTime
+     && this.state.score.history.at(-1)?.correct
+     && !stats.achievements.has(achievements.SPEED_DEMON.id)) {
       this.unlockAchievement(achievements.SPEED_DEMON.id);
     }
     
@@ -542,11 +548,14 @@ export class GameEngine {
    */
   updatePerformanceStats(deltaTime) {
     this.state.performance.frameCount++;
-    
+    this._accumulatedDelta = (this._accumulatedDelta || 0) + deltaTime;
+
     // Calculate FPS every 60 frames
     if (this.state.performance.frameCount % 60 === 0) {
-      const fps = 1000 / deltaTime;
+      const avgDelta = this._accumulatedDelta / 60;
+      const fps = 1000 / avgDelta;
       this.state.performance.averageFPS = (this.state.performance.averageFPS + fps) / 2;
+      this._accumulatedDelta = 0;
       
       // Warn if performance is poor
       if (this.state.performance.averageFPS < 30) {
