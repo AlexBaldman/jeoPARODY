@@ -181,6 +181,11 @@ export async function getAIHostReply(context) {
             case 'streak_milestone':
                 userPrompt = `The contestant has achieved a streak of ${context.gameState.currentStreak} correct answers. Congratulate them.`;
                 break;
+            case 'request-explanation':
+                userPrompt = `The contestant has asked for an explanation for the question: "${context.question}" The correct answer is "${context.answer}". Please provide a brief, interesting, and educational explanation about why this is the correct answer.`;
+                const explanation = await aiService.generate(userPrompt);
+                eventBus.emit('ai:explanation-received', { explanation });
+                return; // End early since we don't need a host reply
             default:
                 userPrompt = `The current question is "${context.question}". The correct answer is "${context.answer}". Make a witty comment about this.`;
         }
