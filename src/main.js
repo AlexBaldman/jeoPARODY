@@ -18,6 +18,7 @@ import { soundManager } from './services/soundManager.js';
 import { getHostSystem } from './services/HostSystem.js';
 import { eventBus } from './utils/events.js';
 import { logger as console } from './utils/logger.js';
+import { hostSelectionModal } from './components/modals/HostSelectionModal.js';
 
 // Application instance - single point of truth
 const JeopardyApp = {
@@ -391,6 +392,15 @@ function setupMenuInteractions() {
     hamburgerMenu.addEventListener('click', () => {
       sideMenu.classList.toggle('active');
       hamburgerMenu.classList.toggle('active');
+      eventBus.emit('ui:button-click');
+    });
+  }
+
+  // Change host button
+  const changeHostButton = document.getElementById('change-host-button');
+  if (changeHostButton) {
+    changeHostButton.addEventListener('click', () => {
+      hostSelectionModal.show();
       eventBus.emit('ui:button-click');
     });
   }
