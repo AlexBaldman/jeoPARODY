@@ -132,7 +132,7 @@ export class GameEngine {
   }
   
   /**
-   * Start the game engine
+   * Starts the main game loop.
    */
   start() {
     if (this.isRunning) return;
@@ -146,7 +146,7 @@ export class GameEngine {
   }
   
   /**
-   * Stop the game engine
+   * Stops the main game loop.
    */
   stop() {
     this.isRunning = false;
@@ -160,7 +160,8 @@ export class GameEngine {
   }
   
   /**
-   * Main game loop - runs at 60fps
+   * The main game loop, running at 60fps.
+   * @private
    */
   gameLoop = () => {
     if (!this.isRunning) return;
@@ -179,8 +180,9 @@ export class GameEngine {
   }
   
   /**
-   * Update game state based on current phase
-   * @param {number} deltaTime - Time since last update
+   * Updates the game state based on the current phase.
+   * @param {number} deltaTime - The time in milliseconds since the last update.
+   * @private
    */
   update(deltaTime) {
     switch (this.state.session.phase) {
@@ -235,8 +237,10 @@ export class GameEngine {
   }
   
   /**
-   * Start a new game session
-   * @param {Object} options - Game options
+   * Starts a new game session.
+   * @param {object} [options={}] - Game options.
+   * @param {string} [options.difficulty='normal'] - The game difficulty.
+   * @param {string} [options.mode='classic'] - The game mode.
    */
   startGame(options = {}) {
     this.state.session = {
@@ -264,8 +268,8 @@ export class GameEngine {
   }
   
   /**
-   * Load a new question
-   * @param {Object} questionData - Question data
+   * Loads a new question into the game state.
+   * @param {object} questionData - The question data to load.
    */
   loadQuestion(questionData) {
     this.state.question = {
@@ -285,8 +289,8 @@ export class GameEngine {
   }
   
   /**
-   * Submit an answer
-   * @param {string} userAnswer - User's answer
+   * Submits a user's answer for the current question.
+   * @param {string} userAnswer - The answer provided by the user.
    */
   submitAnswer(userAnswer) {
     if (this.state.session.phase !== GAME_PHASES.QUESTION) {
