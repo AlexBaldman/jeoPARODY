@@ -4,13 +4,7 @@
  * Combines genkit and browser-compatible approaches
  */
 
-// System prompt for Trebek's personality
-const SYSTEM_PROMPT = `You are Alex Trebek hosting Jeopardy. 
-You have a witty, slightly sarcastic but always professional personality.
-Keep responses brief (1-2 sentences) unless asked for an explanation.
-Reference contestants by name when possible. 
-Occasionally make subtle jokes or puns related to the question or answer.
-Your responses should be varied and entertaining.`;
+import { hostManager } from './HostManager.js';
 
 // Fallback responses in case the AI service is unavailable
 const FALLBACK_RESPONSES = [
@@ -30,14 +24,12 @@ const FALLBACK_RESPONSES = [
   "I appreciate your curiosity! That's what makes this game so engaging."
 ];
 
-class TrebekAI {
+class AIService {
     constructor() {
         // Configuration
         this.config = {
             useProxy: true, // Prefer proxy for security
             proxyURL: 'http://localhost:3002/api/gemini',
-            directAPIKey: null, // Only for development/testing
-            personality: SYSTEM_PROMPT
         };
         
         // State
@@ -81,38 +73,30 @@ class TrebekAI {
         }
     }
     
-    /**
-     * Generate AI response
-     */
     async generate(prompt, options = {}) {
-        // Check cache first
         const cacheKey = `${prompt}_${JSON.stringify(options)}`;
         const cached = this.getCached(cacheKey);
         if (cached) return cached;
         
-        // Rate limiting
         await this.enforceRateLimit();
         
         try {
             let response;
+            const activeHost = hostManager.getActiveHost();
             
             if (this.genkitChat) {
-                // Use genkit
                 const messages = [
-                    { role: 'system', content: this.config.personality },
+                    { role: 'system', content: activeHost.systemPrompt },
                     { role: 'user', content: prompt }
                 ];
                 const result = await this.genkitChat({ messages });
                 response = result.content.trim();
             } else if (this.config.useProxy) {
-                // Use Gemini proxy
                 response = await this.callGeminiProxy(prompt, options);
             } else {
-                // Use fallback
                 response = this.getFallbackResponse(prompt);
             }
             
-            // Cache the response
             this.cache(cacheKey, response);
             return response;
             
@@ -122,19 +106,15 @@ class TrebekAI {
         }
     }
     
-    /**
-     * Call Gemini proxy server
-     */
     async callGeminiProxy(prompt, options) {
+        const activeHost = hostManager.getActiveHost();
         const response = await fetch('http://localhost:3002/api/gemini/generate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                prompt: `${this.config.personality}
-
-${prompt}`,
+                prompt: `${activeHost.systemPrompt}\n\n${prompt}`,
                 temperature: options.temperature || 0.8,
                 maxTokens: options.maxTokens || 200
             })
@@ -148,9 +128,6 @@ ${prompt}`,
         return data.text;
     }
     
-    /**
-     * Cache management
-     */
     getCached(key) {
         const cached = this.responseCache.get(key);
         if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
@@ -166,9 +143,6 @@ ${prompt}`,
         });
     }
     
-    /**
-     * Rate limiting
-     */
     async enforceRateLimit() {
         const now = Date.now();
         const timeSince = now - this.lastRequestTime;
@@ -180,30 +154,15 @@ ${prompt}`,
         this.lastRequestTime = Date.now();
     }
     
-    /**
-     * Fallback responses when AI is unavailable
-     */
     getFallbackResponse(prompt) {
         return FALLBACK_RESPONSES[Math.floor(Math.random() * FALLBACK_RESPONSES.length)];
     }
 }
 
-// Create singleton instance
-const trebekAI = new TrebekAI();
+const aiService = new AIService();
 
-/**
- * Generate a response from AI Trebek based on the game context
- * @param {Object} context - Game context including prompt and game state
- * @param {string} context.prompt - Event type (e.g., 'correct_answer', 'wrong_answer')
- * @param {Object} context.gameState - Current game state
- * @param {string} context.question - Current question text
- * @param {string} context.answer - Correct answer text
- * @param {string} context.userAnswer - User's provided answer (if applicable)
- * @returns {Promise<string>} - Trebek's response
- */
-export async function trebekReply(context) {
+export async function getAIHostReply(context) {
     try {
-        // Build prompt based on context
         let userPrompt = '';
         
         switch(context.prompt) {
@@ -222,22 +181,23 @@ export async function trebekReply(context) {
             case 'streak_milestone':
                 userPrompt = `The contestant has achieved a streak of ${context.gameState.currentStreak} correct answers. Congratulate them.`;
                 break;
+            case 'request-explanation':
+                userPrompt = `The contestant has asked for an explanation for the question: "${context.question}" The correct answer is "${context.answer}". Please provide a brief, interesting, and educational explanation about why this is the correct answer.`;
+                const explanation = await aiService.generate(userPrompt);
+                eventBus.emit('ai:explanation-received', { explanation });
+                return; // End early since we don't need a host reply
             default:
                 userPrompt = `The current question is "${context.question}". The correct answer is "${context.answer}". Make a witty comment about this.`;
         }
         
-        // Add game state info to help with context
         const gameStateInfo = `Current score: $${context.gameState.currentScore}, Current streak: ${context.gameState.currentStreak}, Best streak: ${context.gameState.bestStreak}`;
         
-        return await trebekAI.generate(userPrompt + '
-
-' + gameStateInfo);
+        return await aiService.generate(userPrompt + '\n\n' + gameStateInfo);
         
     } catch (error) {
-        console.error('Error generating Trebek response:', error);
+        console.error('Error generating AI host response:', error);
         return FALLBACK_RESPONSES[Math.floor(Math.random() * FALLBACK_RESPONSES.length)];
     }
 }
 
-// Export the AI instance for direct use
-export { trebekAI };
+export { aiService };
