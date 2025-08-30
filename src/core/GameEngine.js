@@ -216,7 +216,6 @@ export class GameEngine {
    * Handle time limit reached
    */
   handleTimeUp() {
-    this.transitionPhase(GAME_PHASES.RESULT);
     this.evaluateAnswer('', true); // Empty answer, timed out
     this.eventBus.emit('game:time-up');
   }
@@ -227,6 +226,7 @@ export class GameEngine {
    */
   transitionPhase(newPhase) {
     const oldPhase = this.state.session.phase;
+    if (oldPhase === newPhase) return;
     this.state.session.phase = newPhase;
     
     this.eventBus.emit('game:phase-changed', {
@@ -351,11 +351,11 @@ export class GameEngine {
     if (!userAnswer || !correctAnswer) return false;
     
     // Normalize both answers
-    const normalize = (str) => 
+    const normalize = (str) =>
       str.toLowerCase()
          .trim()
-         .replace(/[^a-z0-9\\s]/g, '')
-         .replace(/\\s+/g, ' ');
+         .replace(/[^a-z0-9\s]/g, '')
+         .replace(/\s+/g, ' ');
     
     const normalizedUser = normalize(userAnswer);
     const normalizedCorrect = normalize(correctAnswer);
@@ -512,7 +512,9 @@ export class GameEngine {
     }
     
     // Speed demon (last answer was fast)
-    if (this.state.question.timeElapsed <= achievements.SPEED_DEMON.maxTime && !stats.achievements.has(achievements.SPEED_DEMON.id)) {
+    if (this.state.question.timeElapsed <= achievements.SPEED_DEMON.maxTime
+     && this.state.score.history.at(-1)?.correct
+     && !stats.achievements.has(achievements.SPEED_DEMON.id)) {
       this.unlockAchievement(achievements.SPEED_DEMON.id);
     }
     
@@ -546,11 +548,14 @@ export class GameEngine {
    */
   updatePerformanceStats(deltaTime) {
     this.state.performance.frameCount++;
-    
+    this._accumulatedDelta = (this._accumulatedDelta || 0) + deltaTime;
+
     // Calculate FPS every 60 frames
     if (this.state.performance.frameCount % 60 === 0) {
-      const fps = 1000 / deltaTime;
+      const avgDelta = this._accumulatedDelta / 60;
+      const fps = 1000 / avgDelta;
       this.state.performance.averageFPS = (this.state.performance.averageFPS + fps) / 2;
+      this._accumulatedDelta = 0;
       
       // Warn if performance is poor
       if (this.state.performance.averageFPS < 30) {

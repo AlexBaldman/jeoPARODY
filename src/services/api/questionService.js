@@ -91,19 +91,16 @@ export function getQuestionsByCategory(category) {
  * @returns {{name: string, questionCount: number}|null} An object containing the category name and question count, or null if no eligible category is found.
  */
 export function getRandomCategory(minQuestions = 5) {
-  const categories = getAvailableCategories();
-  const eligibleCategories = [];
-  
-  for (const category of categories) {
-    const questions = getQuestionsByCategory(category);
-    if (questions.length >= minQuestions) {
-      eligibleCategories.push({
-        name: category,
-        questionCount: questions.length
-      });
-    }
+  if (!allQuestions.length) return null;
+  const counts = new Map();
+  for (const q of allQuestions) {
+    const cat = q.category?.title || q.category || 'General Knowledge';
+    counts.set(cat, (counts.get(cat) || 0) + 1);
   }
-  
+  const eligibleCategories = Array.from(counts.entries())
+    .filter(([, count]) => count >= minQuestions)
+    .map(([name, count]) => ({ name, questionCount: count }));
+
   if (eligibleCategories.length === 0) {
     return null;
   }
@@ -118,11 +115,11 @@ export function getRandomCategory(minQuestions = 5) {
  * @returns {Promise<object|null>} A promise that resolves to a normalized question object, or a joke question if all sources fail.
  */
 export async function getQuestion() {
-  console.log('🎯 getQuestion() called');
+  if (process.env.NODE_ENV === 'development') console.log('🎯 getQuestion() called');
   
   // Ensure we're initialized
   if (!isInitialized) {
-    console.log('⚠️ Service not initialized, initializing now...');
+    if (process.env.NODE_ENV === 'development') console.log('⚠️ Service not initialized, initializing now...');
     const initSuccess = await initialize();
     if (!initSuccess) {
       console.error('❌ Failed to initialize question service');
@@ -130,40 +127,40 @@ export async function getQuestion() {
     }
   }
 
-  console.log(`📊 Current state: ${questions.length} questions in buffer, ${allQuestions.length} total questions`);
+  if (process.env.NODE_ENV === 'development') console.log(`📊 Current state: ${questions.length} questions in buffer, ${allQuestions.length} total questions`);
 
   // Try local questions first
   const localQuestion = getNextLocalQuestion();
   if (localQuestion) {
-    console.log('✅ Returning question from buffer:', localQuestion.category);
+    if (process.env.NODE_ENV === 'development') console.log('✅ Returning question from buffer:', localQuestion.category);
     return localQuestion;
   }
 
   // Reload local questions if we've run out
-  console.log('🔄 Local questions exhausted, reloading...');
+  if (process.env.NODE_ENV === 'development') console.log('🔄 Local questions exhausted, reloading...');
   const reloaded = await loadLocalQuestions();
   if (reloaded) {
     const question = getNextLocalQuestion();
     if (question) {
-      console.log('✅ Returning question after reload:', question.category);
+      if (process.env.NODE_ENV === 'development') console.log('✅ Returning question after reload:', question.category);
       return question;
     }
   }
 
   // Optionally try API as last resort
   if (CONFIG.USE_API) {
-    console.log('🌐 Trying API as fallback...');
+    if (process.env.NODE_ENV === 'development') console.log('🌐 Trying API as fallback...');
     const apiQuestion = await fetchQuestionFromAPI();
     if (apiQuestion) {
-      console.log('✅ Returning question from API:', apiQuestion.category);
+      if (process.env.NODE_ENV === 'development') console.log('✅ Returning question from API:', apiQuestion.category);
       return apiQuestion;
     }
   }
 
   // If all else fails, return an error joke
-  console.log('😅 All question sources failed, returning error joke');
+  if (process.env.NODE_ENV === 'development') console.log('😅 All question sources failed, returning error joke');
   const errorJoke = getErrorJoke();
-  console.log('🎭 Error joke:', errorJoke);
+  if (process.env.NODE_ENV === 'development') console.log('🎭 Error joke:', errorJoke);
   return errorJoke;
 }
 
@@ -392,11 +389,15 @@ export function parseTSV(text) {
  * @returns {Object} Normalized question
  */
 export function normalizeQuestionData(question) {
+  const rawVal = question.value ?? 200;
+  const numericValue = typeof rawVal === 'number'
+    ? rawVal
+    : Number(String(rawVal).replace(/[^0-9.-]/g, '')) || 0;
   return {
     category: question.category?.title || question.category || 'General Knowledge',
     question: question.question || question.clue || '',
     answer: question.answer || '',
-    value: question.value || 200,
+    value: numericValue,
     airdate: question.airdate || new Date().toISOString(),
     difficulty: question.difficulty || 'Medium',
     times_used: question.times_used || 1,
@@ -427,25 +428,25 @@ function getErrorJoke() {
       category: "TECHNICAL DIFFICULTIES",
       question: "This term describes what happens when your app can't load the local question database.",
       answer: "What is 'a file reading error'?",
-      value: "$0"
+      value: 0
     },
     {
       category: "OOOPS!",
       question: "This famous line was uttered by every programmer ever when their code didn't work as expected.",
       answer: "What is 'It works on my machine'?",
-      value: "$0"
+      value: 0
     },
     {
       category: "MYSTERY OF CODING",
       question: "It's the spooky thing that happens when your API call goes into the void and never returns.",
       answer: "What is 'the ghost in the machine'?",
-      value: "$0"
+      value: 0
     },
     {
       category: "SOFTWARE SNAFUS",
       question: "This phrase is often said when an application stops working right as you show it to someone.",
       answer: "What is 'demo demon'?",
-      value: "$0"
+      value: 0
     }
   ];
   

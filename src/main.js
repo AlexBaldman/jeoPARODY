@@ -155,6 +155,13 @@ function setupServiceIntegration() {
   // Host system responds to game events
   eventBus.on('answer:evaluated', (data) => {
     JeopardyApp.hostSystem.updateMood(JeopardyApp.gameEngine.state.stats);
+    // Update scoreboard
+    const { current, streak, high, maxStreak } = JeopardyApp.gameEngine.state.score;
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = String(val); };
+    set('score', current);
+    set('streak', streak);
+    set('top-score', high);
+    set('max-streak', maxStreak);
   });
   
   // Sound system handles game audio
@@ -171,7 +178,7 @@ function setupEventDrivenModals() {
   const settingsButton = document.getElementById('settings-button');
   if (settingsButton) {
     settingsButton.addEventListener('click', () => {
-      app.eventBus.emit('modal:open', { type: 'settings' });
+      eventBus.emit('modal:open', { type: 'settings' });
     });
   }
   
@@ -179,7 +186,7 @@ function setupEventDrivenModals() {
   const statsButton = document.getElementById('stats-button');
   if (statsButton) {
     statsButton.addEventListener('click', () => {
-      app.eventBus.emit('modal:open', { type: 'stats' });
+      eventBus.emit('modal:open', { type: 'stats' });
     });
   }
   
@@ -187,7 +194,7 @@ function setupEventDrivenModals() {
   const achievementsButton = document.getElementById('achievements-button');
   if (achievementsButton) {
     achievementsButton.addEventListener('click', () => {
-      app.eventBus.emit('modal:open', { type: 'achievements' });
+      eventBus.emit('modal:open', { type: 'achievements' });
     });
   }
   
@@ -195,7 +202,7 @@ function setupEventDrivenModals() {
   const helpButton = document.getElementById('help-button');
   if (helpButton) {
     helpButton.addEventListener('click', () => {
-      app.eventBus.emit('modal:open', { type: 'help' });
+      eventBus.emit('modal:open', { type: 'help' });
     });
   }
   
@@ -203,7 +210,7 @@ function setupEventDrivenModals() {
   const leaderboardButton = document.getElementById('leaderboard-button');
   if (leaderboardButton) {
     leaderboardButton.addEventListener('click', () => {
-      app.eventBus.emit('modal:open', { type: 'leaderboard' });
+      eventBus.emit('modal:open', { type: 'leaderboard' });
     });
   }
   
@@ -211,7 +218,7 @@ function setupEventDrivenModals() {
   const profileButton = document.getElementById('profile-button');
   if (profileButton) {
     profileButton.addEventListener('click', () => {
-      app.eventBus.emit('modal:open', { type: 'profile' });
+      eventBus.emit('modal:open', { type: 'profile' });
     });
   }
 }
@@ -222,6 +229,7 @@ function setupEventDrivenModals() {
 function toggleTheme(e) {
   const isDark = e.target.checked;
   applyTheme(isDark);
+  eventBus.emit('theme:changed', { theme: isDark ? 'dark' : 'light' });
 }
 
 function applyTheme(isDark) {
@@ -300,6 +308,10 @@ function setupUIBindings() {
   
   // Keyboard shortcuts
   setupKeyboardShortcuts();
+
+  // Global UI listeners and modals
+  setupGlobalEventListeners();
+  setupEventDrivenModals();
 }
 
 /**
