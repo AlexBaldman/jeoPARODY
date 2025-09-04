@@ -25,8 +25,9 @@ let isInitialized = false;
 let lastLoadTime = null;
 
 /**
- * Initializes the question service by pre-loading local questions.
- * @returns {Promise<boolean>} A promise that resolves to true if initialization is successful, false otherwise.
+ * Initialize the question service
+ * Pre-loads local questions if configured
+ * @returns {Promise<boolean>} Success status
  */
 export async function initialize() {
   if (isInitialized) {
@@ -50,8 +51,8 @@ export async function initialize() {
 }
 
 /**
- * Gets a list of unique category names from the loaded questions.
- * @returns {string[]} A sorted array of available category names.
+ * Get available categories from loaded questions
+ * @returns {Array<string>} List of unique categories
  */
 export function getAvailableCategories() {
   if (!allQuestions.length) {
@@ -68,9 +69,9 @@ export function getAvailableCategories() {
 }
 
 /**
- * Gets all questions belonging to a specific category.
- * @param {string} category - The name of the category to retrieve questions for.
- * @returns {object[]} An array of normalized question objects.
+ * Get all questions from a specific category
+ * @param {string} category - Category name
+ * @returns {Array<Object>} Questions from the category
  */
 export function getQuestionsByCategory(category) {
   if (!allQuestions.length) {
@@ -86,9 +87,9 @@ export function getQuestionsByCategory(category) {
 }
 
 /**
- * Gets a random category that has at least a minimum number of questions.
- * @param {number} [minQuestions=5] - The minimum number of questions a category must have to be eligible.
- * @returns {{name: string, questionCount: number}|null} An object containing the category name and question count, or null if no eligible category is found.
+ * Get a random category with at least minQuestions
+ * @param {number} minQuestions - Minimum number of questions required
+ * @returns {Object|null} Category info with name and question count
  */
 export function getRandomCategory(minQuestions = 5) {
   if (!allQuestions.length) return null;
@@ -109,10 +110,8 @@ export function getRandomCategory(minQuestions = 5) {
 }
 
 /**
- * Retrieves a single question.
- * It prioritizes pulling from a shuffled local buffer. If the buffer is empty, it reloads from the main local question list.
- * As a last resort, it can fetch from a remote API (if enabled). If all sources fail, it returns a placeholder joke question.
- * @returns {Promise<object|null>} A promise that resolves to a normalized question object, or a joke question if all sources fail.
+ * Get a question (prioritizes local, optionally tries API)
+ * @returns {Promise<Object|null>} Question data or null if failed
  */
 export async function getQuestion() {
   if (process.env.NODE_ENV === 'development') console.log('🎯 getQuestion() called');

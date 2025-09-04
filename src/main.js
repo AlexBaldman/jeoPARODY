@@ -18,8 +18,6 @@ import { soundManager } from './services/soundManager.js';
 import { getHostSystem } from './services/HostSystem.js';
 import { eventBus } from './utils/events.js';
 import { logger as console } from './utils/logger.js';
-import { hostSelectionModal } from './components/modals/HostSelectionModal.js';
-import { explanationModal } from './components/modals/ExplanationModal.js';
 
 // Application instance - single point of truth
 const JeopardyApp = {
@@ -337,38 +335,6 @@ function setupGameControls() {
       eventBus.emit('ui:button-click');
     });
   }
-
-  // Show answer listener
-  eventBus.on('question:show-answer', () => {
-    const answerBox = document.getElementById('answerBox');
-    const explainButton = document.getElementById('explain-button');
-    if (answerBox) {
-      answerBox.classList.add('visible');
-    }
-    if (explainButton) {
-      explainButton.style.display = 'inline-flex';
-    }
-  });
-
-  // New question loaded listener
-  eventBus.on('question:loaded', () => {
-    const explainButton = document.getElementById('explain-button');
-    if (explainButton) {
-      explainButton.style.display = 'none';
-    }
-  });
-
-  // Explain button listener
-  const explainButton = document.getElementById('explain-button');
-  if (explainButton) {
-    explainButton.addEventListener('click', () => {
-      const { data: question } = JeopardyApp.gameEngine.state.question;
-      if (question) {
-        eventBus.emit('ai:request-explanation', { question: question.question, answer: question.answer });
-      }
-      eventBus.emit('ui:button-click');
-    });
-  }
   
   // Answer input
   const inputBox = document.getElementById('inputBox');
@@ -425,15 +391,6 @@ function setupMenuInteractions() {
     hamburgerMenu.addEventListener('click', () => {
       sideMenu.classList.toggle('active');
       hamburgerMenu.classList.toggle('active');
-      eventBus.emit('ui:button-click');
-    });
-  }
-
-  // Change host button
-  const changeHostButton = document.getElementById('change-host-button');
-  if (changeHostButton) {
-    changeHostButton.addEventListener('click', () => {
-      hostSelectionModal.show();
       eventBus.emit('ui:button-click');
     });
   }
