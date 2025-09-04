@@ -25,8 +25,26 @@
     <!-- <link rel="icon" href="images/favicon2.webp" type="image/webp"> -->
     <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
 
-    <!-- Single source of truth for all styles -->
-    <link rel="stylesheet" href="/src/styles/main.css">
+    <!-- font stylesheet -->
+    <link rel="stylesheet" href="assets/fonts/stylesheet.css">
+
+    <!-- Complete consolidated stylesheet -->
+    <link rel="stylesheet" href="assets/css/styles-complete.css?v=3.0">
+
+    <!-- App fixes stylesheet -->
+    <link rel="stylesheet" href="src/styles/app-fixes.css">
+
+    <!-- Enhanced UI stylesheet -->
+    <link rel="stylesheet" href="src/styles/enhanced-ui.css">
+
+    <!-- Media rendering stylesheet -->
+    <link rel="stylesheet" href="src/styles/media-rendering.css">
+
+    <!-- PAO styles -->
+    <link rel="stylesheet" href="src/styles/pao.css">
+
+    <!-- UX Pack: themes, components, animations -->
+    <link rel="stylesheet" href="src/styles/ux-pack.css">
     
     <!-- Old stylesheets - removed, all styles now in styles-complete.css -->
     
@@ -265,12 +283,6 @@
                         <span>Achievements</span>
                     </button>
                 </li>
-                <li>
-                    <button id="change-host-button" aria-label="Change host">
-                        <i class="fas fa-user-astronaut"></i>
-                        <span>Change Host</span>
-                    </button>
-                </li>
             </ul>
             
             <!-- Auth buttons container -->
@@ -305,10 +317,6 @@
                 <button id="answerButton" aria-label="Show the answer">
                     <i class="fas fa-eye"></i>
                     <span class="button-tooltip">Show Answer</span>
-                </button>
-                <button id="explain-button" aria-label="Explain the answer" style="display: none;">
-                    <i class="fas fa-brain"></i>
-                    <span class="button-tooltip">Explain</span>
                 </button>
             </div>
             

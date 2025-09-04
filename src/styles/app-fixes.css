@@ -1,0 +1,843 @@
+/**
+ * JeoPARODY App Fixes CSS
+ * Enhanced with media handling, sticky header, basketball scoreboard, and Korinna fonts
+ */
+
+/* Korinna Font Imports */
+@font-face {
+    font-family: 'Korinna';
+    src: url('/fonts/Korinna.woff2') format('woff2'),
+         url('/fonts/Korinna.woff') format('woff'),
+         url('/fonts/Korinna.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Korinna';
+    src: url('/fonts/KorinnaBold.woff2') format('woff2'),
+         url('/fonts/KorinnaBold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Korinna';
+    src: url('/fonts/KorinnaItalic.woff2') format('woff2'),
+         url('/fonts/KorinnaItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* Host Image Styling - optimized size, no frame */
+.host-container {
+    position: fixed !important;
+    bottom: 80px; /* Just above the sticky footer */
+    left: 20px;
+    z-index: 100;
+    width: 140px !important;
+    height: 186px !important; /* maintain aspect ratio */
+    pointer-events: auto;
+    overflow: hidden;
+    border: none !important; /* Remove any frame */
+    box-shadow: none !important; /* Remove drop shadow frame */
+    transition: transform 0.3s ease;
+}
+
+.host-container:hover {
+    transform: translateY(-5px) scale(1.05);
+}
+
+.host-image {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center top;
+    display: block;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+/* Host image click zones */
+.host-click-zone {
+    border: 2px solid transparent;
+    transition: all 0.2s ease !important;
+    position: relative; /* for arrow positioning */
+}
+
+/* Arrow icons */
+.host-click-left::before,
+.host-click-right::before {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    font-family: sans-serif;
+    color: rgba(255, 255, 255, 0.8);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+.host-click-left::before { content: '◀'; left: 8px; }
+.host-click-right::before { content: '▶'; right: 8px; }
+
+/* Show arrows on hover of host container */
+.host-container:hover .host-click-left::before,
+.host-container:hover .host-click-right::before {
+    opacity: 1;
+}
+
+.host-click-zone:hover {
+    border-color: rgba(255, 215, 0, 0.6) !important;
+    background-color: rgba(255, 215, 0, 0.1) !important;
+}
+
+/* Button Tooltips - Enhanced styling */
+.button-tooltip {
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1000;
+}
+
+.button-tooltip::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid rgba(0, 0, 0, 0.9);
+}
+
+/* Show tooltips on hover */
+button:hover .button-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-5px);
+}
+
+/* Enhanced button styling for better tooltip positioning */
+#questionButton,
+#answerButton,
+#checkButton {
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+#questionButton:hover,
+#answerButton:hover,
+#checkButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Sticky footer adjustments */
+.sticky-footer {
+    position: fixed !important;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-top: 2px solid #ffd700;
+    z-index: 99;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 0 20px;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Input section styling */
+.input-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 1;
+    max-width: 600px;
+}
+
+.input-div {
+    flex: 1;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+#inputBox {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 2px solid #ffd700;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+#inputBox:focus {
+    border-color: #ffed4e;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+    background: rgba(255, 255, 255, 1);
+}
+
+#inputBox::placeholder {
+    color: #666;
+    font-style: italic;
+}
+
+#checkButton {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+#checkButton:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+}
+
+#checkButton:active {
+    transform: translateY(0) scale(0.95);
+}
+
+/* Main content adjustments to account for fixed elements */
+.main-content-wrapper {
+    padding-bottom: 100px; /* Account for sticky footer */
+    padding-left: 160px; /* Account for host image */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .host-container {
+        width: 80px !important;
+        height: 110px !important;
+        bottom: 90px;
+        left: 10px;
+    }
+
+    .main-content-wrapper {
+        padding-left: 100px;
+        padding-bottom: 110px;
+    }
+
+    .sticky-footer {
+        height: 90px;
+        padding: 0 10px;
+    }
+
+    #inputBox {
+        font-size: 14px;
+        padding: 10px 14px;
+    }
+
+    #checkButton {
+        width: 45px;
+        height: 45px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .host-container {
+        width: 60px !important;
+        height: 80px !important;
+        bottom: 95px;
+        left: 5px;
+    }
+
+    .main-content-wrapper {
+        padding-left: 70px;
+        padding-bottom: 115px;
+    }
+
+    .sticky-footer {
+        height: 95px;
+        padding: 0 5px;
+        gap: 10px;
+    }
+}
+
+/* Speech bubble adjustments for better visibility */
+.speechBubble {
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #ffd700;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+/* Button container styling */
+.button-div {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.button-div button {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    border: none;
+    border-radius: 50px;
+    padding: 12px 24px;
+    color: #333;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+}
+
+.button-div button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    background: linear-gradient(135deg, #ffed4e 0%, #ffd700 100%);
+}
+
+.button-div button:active {
+    transform: translateY(0);
+}
+
+.button-div button i {
+    font-size: 16px;
+}
+
+/* Enhanced scoreboard styling */
+.scoreboard {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #ffd700;
+    border-radius: 15px;
+    padding: 15px;
+    margin: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+.score-value {
+    color: #ffd700;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Animation for host image cycling */
+@keyframes hostImageChange {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0; transform: scale(1.1); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.host-image.changing {
+    animation: hostImageChange 0.6s ease-in-out;
+}
+
+/* Enhanced loading states */
+.loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: loading-shimmer 1.5s infinite;
+}
+
+@keyframes loading-shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Accessibility improvements */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus indicators */
+button:focus,
+input:focus {
+    outline: 3px solid rgba(255, 215, 0, 0.6);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .host-container {
+        border: 3px solid #ffd700;
+    }
+
+    .button-tooltip {
+        background: #000;
+        border: 1px solid #ffd700;
+    }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .host-container,
+    .host-image,
+    .button-tooltip,
+    button {
+        transition: none;
+    }
+
+    .loading::after {
+        animation: none;
+    }
+}
+
+/* ==============================================
+   STICKY HEADER WITH TITLE AND TOGGLES
+   ============================================== */
+
+.game-header {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-bottom: 3px solid #ffd700;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo-image {
+    height: 50px;
+    width: auto;
+    filter: drop-shadow(0 2px 8px rgba(255, 215, 0, 0.3));
+}
+
+/* Language Toggle with Flag Emojis */
+.language-toggle {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    padding: 8px;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.language-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 215, 0, 0.6);
+}
+
+.language-switch {
+    position: relative;
+    width: 80px;
+    height: 36px;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.language-switch.portuguese {
+    background: linear-gradient(135deg, #27ae60, #219a52);
+}
+
+.language-switch-slider {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 30px;
+    height: 30px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.language-switch.portuguese .language-switch-slider {
+    transform: translateX(44px);
+}
+
+.language-switch-slider::before {
+    content: '🇺🇸';
+}
+
+.language-switch.portuguese .language-switch-slider::before {
+    content: '🇧🇷';
+}
+
+/* Theme Toggle Switch */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    padding: 8px;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 215, 0, 0.6);
+}
+
+.theme-switch {
+    position: relative;
+    width: 60px;
+    height: 30px;
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.theme-switch.dark {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+}
+
+.theme-switch-slider {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 24px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.theme-switch.dark .theme-switch-slider {
+    transform: translateX(30px);
+}
+
+.theme-switch-slider::before {
+    content: '☀️';
+}
+
+.theme-switch.dark .theme-switch-slider::before {
+    content: '🌙';
+}
+
+/* ==============================================
+   BASKETBALL SCOREBOARD THAT PEEKS AND SLIDES
+   ============================================== */
+
+.basketball-scoreboard {
+    position: fixed;
+    top: 80px; /* Below header */
+    right: -280px; /* Hidden by default, showing just a peek */
+    width: 320px;
+    height: 180px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 3px solid #ffd700;
+    border-right: none;
+    border-radius: 15px 0 0 15px;
+    z-index: 900;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: -4px 4px 20px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.basketball-scoreboard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #333;
+}
+
+.basketball-scoreboard::after {
+    content: 'SCOREBOARD';
+    position: absolute;
+    top: 5px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: 'Korinna', serif;
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.basketball-scoreboard.active {
+    right: 0;
+}
+
+.basketball-scoreboard:hover {
+    right: 0;
+}
+
+/* Peek indicator */
+.scoreboard-peek {
+    position: absolute;
+    left: -40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 80px;
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    border-radius: 15px 0 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-family: 'Korinna', serif;
+    font-weight: bold;
+    font-size: 12px;
+    color: #333;
+    cursor: pointer;
+    box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.scoreboard-content {
+    padding: 40px 20px 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.score-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 8px 0;
+    font-family: 'Korinna', serif;
+}
+
+.score-label {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.score-number {
+    color: #fff;
+    font-weight: bold;
+    font-size: 18px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    min-width: 80px;
+    text-align: right;
+}
+
+.score-number.highlight {
+    animation: scoreChange 0.6s ease-in-out;
+}
+
+@keyframes scoreChange {
+    0% { transform: scale(1); color: #fff; }
+    50% { transform: scale(1.2); color: #ffd700; text-shadow: 0 0 15px rgba(255, 215, 0, 0.8); }
+    100% { transform: scale(1); color: #fff; }
+}
+
+/* ==============================================
+   MEDIA HANDLING STYLES - MOVED TO media-rendering.css
+   ============================================== */
+
+/* Media styles have been moved to src/styles/media-rendering.css
+   for better organization and enhanced functionality */
+
+/* ==============================================
+   SPEECH BUBBLE WITH KORINNA FONT AND CENTERING
+   ============================================== */
+
+/* Jeopardy style bubble */
+.speech-bubble-jeopardy {
+    background: #0033a0; /* Jeopardy blue */
+    border: 3px solid #002d84;
+    color: #ffffff;
+}
+.speech-bubble-jeopardy .category-box {
+    color: #FFD700; /* yellow */
+    font-weight: bold;
+}
+.speech-bubble-jeopardy .value-box {
+    color: #00b050; /* green amount */
+    font-weight: bold;
+}
+
+.speech-bubble-jeopardy::before {
+    border-top-color: #002d84; /* arrow border */
+    left: 80px;
+}
+.speech-bubble-jeopardy::after {
+    border-top-color: #0033a0;
+    left: 80px;
+}
+
+/* Override generic speech bubble arrow position bottom-left */
+.speechBubble::before,
+.speechBubble::after,
+.speech-bubble::before,
+.speech-bubble::after {
+    left: 80px;
+    transform: none;
+}
+
+.speechBubble {
+    font-family: 'Korinna', serif !important;
+    text-align: center !important;
+    line-height: 1.6;
+    font-size: 18px;
+    margin: 100px auto 20px; /* Account for sticky header */
+    background: rgba(255, 255, 255, 0.98);
+    border: 3px solid #ffd700;
+    border-radius: 25px;
+    padding: 30px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(8px);
+    position: relative;
+    max-width: 800px;
+}
+
+.speechBubble::before,
+.speech-bubble::before {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 15px solid #ffd700;
+}
+
+.speechBubble::after,
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 12px solid rgba(255, 255, 255, 0.98);
+}
+
+#categoryBox {
+    font-size: 14px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+#valueBox {
+    font-size: 24px;
+    color: #ffd700;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+#questionBox {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+#answerBox {
+    font-size: 18px;
+    color: #27ae60;
+    padding-top: 15px;
+    border-top: 2px solid #ffd700;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.4s ease;
+}
+
+#answerBox.visible {
+    opacity: 1;
+    transform: translateY(0);
+    border-top-color: #ffd700;
+}
+
+/* Adjust main content for sticky header */
+body {
+    padding-top: 80px;
+}
+
+.main-content-wrapper {
+    padding-top: 20px;
+    padding-bottom: 100px;
+    padding-left: 160px;
+}
