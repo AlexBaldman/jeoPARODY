@@ -38,12 +38,12 @@
     bottom: 80px; /* Just above the sticky footer */
     left: 20px;
     z-index: 100;
-    width: 140px !important;
-    height: 186px !important; /* maintain aspect ratio */
+    width: 140px;
+    height: 186px; /* maintain aspect ratio */
     pointer-events: auto;
     overflow: hidden;
-    border: none !important; /* Remove any frame */
-    box-shadow: none !important; /* Remove drop shadow frame */
+    border: none; /* Remove any frame */
+    box-shadow: none; /* Remove drop shadow frame */
     transition: transform 0.3s ease;
 }
 
@@ -768,8 +768,7 @@ input:focus {
     content: '';
     position: absolute;
     bottom: -15px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 22%;
     width: 0;
     height: 0;
     border-left: 15px solid transparent;
@@ -782,8 +781,8 @@ input:focus {
     content: '';
     position: absolute;
     bottom: -12px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 22%;
+    margin-left: 3px; /* Centers the fill over the border */
     width: 0;
     height: 0;
     border-left: 12px solid transparent;
@@ -809,7 +808,7 @@ input:focus {
 }
 
 #questionBox {
-    font-size: 20px;
+    font-size: var(--fs-question, 22px);
     color: #333;
     margin-bottom: 15px;
     line-height: 1.5;
