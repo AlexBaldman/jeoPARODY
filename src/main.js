@@ -42,6 +42,7 @@ const JeopardyApp = {
  * Initialize the application with Carmack's "fail fast" approach
  */
 async function initializeApp() {
+  console.log('[Debug] initializeApp() called');
   const startTime = performance.now();
   console.info('[🎮] Initializing JeoPARODY...');
   
@@ -300,6 +301,7 @@ function setLanguageUI(lang) {
  * Set up UI bindings
  */
 function setupUIBindings() {
+  console.log('[Debug] setupUIBindings() called');
   // Game controls
   setupGameControls();
   
@@ -479,6 +481,7 @@ function saveUserPreferences() {
  * Splash, Board, Run-Category UI wiring
  */
 function setupNewUIModes() {
+  console.log('[Debug] setupNewUIModes() called');
   const splash = document.getElementById('splash-screen');
   const board = document.getElementById('jeopardy-board-screen');
   const run = document.getElementById('run-category-screen');
@@ -500,6 +503,7 @@ function setupNewUIModes() {
     splash.querySelectorAll('[data-start-mode]').forEach(btn => {
       btn.addEventListener('click', () => {
         const mode = btn.getAttribute('data-start-mode');
+        console.log(`[Debug] Splash screen button clicked. Mode: ${mode}`);
         // Hide splash
         splash.classList.remove('active');
         splash.style.display = 'none';
