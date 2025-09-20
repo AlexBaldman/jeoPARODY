@@ -48,7 +48,7 @@
     
     <!-- Old stylesheets - removed, all styles now in styles-complete.css -->
     
-    <!-- external JS (none needed) -->
+    <!-- external JS (axios removed; modules should import their deps) -->
 
     <!-- Firebase optional: uncomment when integrating auth/cloud sync -->
     <!--
@@ -65,9 +65,9 @@
     <script>window.JEOPARODY_DISABLE_COMPAT_BRIDGE = true;</script>
     <!-- <script type="module" src="/src/compatibility-bridge.js"></script> -->
     
-    <!-- Debug script (dev only) -->
-    <script type="module">
-      if (import.meta.env && import.meta.env.DEV) {
+    <!-- Debug script: load only in dev -->
+    <script>
+      if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) {
         const s = document.createElement('script');
         s.src = 'assets/scripts/debug.js';
         document.head.appendChild(s);

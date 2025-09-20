@@ -10,6 +10,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
+      '@components': resolve(__dirname, 'src/components'),
+      '@services': resolve(__dirname, 'src/services'),
+      '@state': resolve(__dirname, 'src/state'),
+      '@utils': resolve(__dirname, 'src/utils')
     },
   },
   server: {
