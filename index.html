@@ -46,7 +46,7 @@
     <!-- Compatibility bridge disabled by default; remove script include to fully drop legacy path -->
     
     <!-- Debug script (dev only) -->
-    <script>
+    <script type="module">
       if (import.meta.env && import.meta.env.DEV) {
         const s = document.createElement('script');
         s.src = 'assets/scripts/debug.js';
@@ -78,7 +78,7 @@
     <!-- Splash / Start Screen Overlay -->
     <div id="splash-screen" class="active">
       <div class="splash-card">
-        <div class="splash-title">Jeopardish!</div>
+        <div class="splash-title">jeoPARODY!</div>
         <div class="splash-subtitle">Pick a mode to begin</div>
         <div class="splash-grid">
           <button class="btn btn-gradient" data-start-mode="classic">▶ Start Classic</button>
@@ -188,7 +188,7 @@
         
         <!-- User Profile Section  -->
         <div class="user-profile">
-            <img src="images/profile-placeholder.png" alt="Profile" class="profile-pic">
+            <img src="assets/images/trebek/trebek-good-01.png" alt="Profile" class="profile-pic">
             <h3>Alex</h3>
             <p>Score: $0</p>
             <p>Streak: 0</p>
@@ -210,7 +210,7 @@
 
                 <!-- Center: Logo -->
                 <div class="logo-container">
-                    <img src="assets/images/title/title-Jeopardish!.png" alt="jeoPARODY!" class="logo-image">
+                    <img src="assets/images/title/title-jeopardish!-pixelart.png" alt="jeoPARODY!" class="logo-image">
                     <!-- Peeking scoreboard -->
                     <div id="scoreboard" class="scoreboard">
                         <h2>SCOREBOARD</h2>

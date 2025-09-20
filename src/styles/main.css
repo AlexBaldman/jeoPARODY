@@ -1,41 +1,4 @@
-@font-face {
-    font-family: 'Korinna';
-    src: url('KorinnaBold-Italic.woff2') format('woff2'),
-         url('KorinnaBoldItalic.woff') format('woff'),
-         url('KorinnaBoldItalic.ttf') format('truetype');
-    font-weight: bold;
-    font-style: italic;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Korinna';
-    src: url('KorinnaItalic.woff2') format('woff2'),
-         url('KorinnaItalic.woff') format('woff'),
-         url('KorinnaItalic.ttf') format('truetype');
-    font-weight: normal;
-    font-style: italic;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Korinna';
-    src: url('KorinnaBold.woff') format('woff'),
-         url('KorinnaBold.ttf') format('truetype');
-    font-weight: bold;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Korinna';
-    src: url('KorinnaNormal.woff2') format('woff2'),
-         url('Korinna.woff') format('woff'),
-         url('Korinna.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-} /* =====================================
+/* =====================================
    JEOPARDISH COMPLETE CONSOLIDATED STYLES
    Version: 3.0
    Created: 2025-01-15
@@ -1944,9 +1907,9 @@ button:hover .button-tooltip {
 /* Korinna Font Imports */
 @font-face {
     font-family: 'Korinna';
-    src: url('/fonts/Korinna.woff2') format('woff2'),
-         url('/fonts/Korinna.woff') format('woff'),
-         url('/fonts/Korinna.ttf') format('truetype');
+    src: url('../../assets/fonts/KorinnaNormal.woff2') format('woff2'),
+         url('../../assets/fonts/Korinna.woff') format('woff'),
+         url('../../assets/fonts/Korinna.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -1954,8 +1917,8 @@ button:hover .button-tooltip {
 
 @font-face {
     font-family: 'Korinna';
-    src: url('/fonts/KorinnaBold.woff2') format('woff2'),
-         url('/fonts/KorinnaBold.woff') format('woff');
+    src: url('../../assets/fonts/KorinnaBold.woff') format('woff'),
+         url('../../assets/fonts/KorinnaBold.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
     font-display: swap;
@@ -1963,9 +1926,20 @@ button:hover .button-tooltip {
 
 @font-face {
     font-family: 'Korinna';
-    src: url('/fonts/KorinnaItalic.woff2') format('woff2'),
-         url('/fonts/KorinnaItalic.woff') format('woff');
+    src: url('../../assets/fonts/KorinnaItalic.woff2') format('woff2'),
+         url('../../assets/fonts/KorinnaItalic.woff') format('woff'),
+         url('../../assets/fonts/KorinnaItalic.ttf') format('truetype');
     font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Korinna';
+    src: url('../../assets/fonts/KorinnaBold-Italic.woff2') format('woff2'),
+         url('../../assets/fonts/KorinnaBoldItalic.woff') format('woff'),
+         url('../../assets/fonts/KorinnaBoldItalic.ttf') format('truetype');
+    font-weight: bold;
     font-style: italic;
     font-display: swap;
 }
@@ -4325,3 +4299,112 @@ html[data-theme="retro"] body::after {
 
 /* Utility */
 .hidden { display: none !important; }
+
+/* ==============================================
+   SNES/Genesis Style Splash Screen
+   ============================================== */
+#splash-screen {
+    background: linear-gradient(160deg, #1D2B53 0%, #7E2553 100%);
+    font-family: 'Press Start 2P', monospace;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #fff;
+}
+
+.splash-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 4px solid #29366f;
+    border-radius: 16px;
+    padding: 2rem 3rem;
+    box-shadow: 0 8px 0 #111a39, 0 16px 32px rgba(0,0,0,0.5);
+    width: 90%;
+    max-width: 800px;
+}
+
+.splash-title {
+    font-size: 3.5rem;
+    color: #FFEC27;
+    text-shadow:
+        -3px -3px 0 #AB5236,
+        3px -3px 0 #AB5236,
+        -3px 3px 0 #AB5236,
+        3px 3px 0 #AB5236,
+        6px 6px 0 #000;
+    margin-bottom: 0.5rem;
+}
+
+.splash-subtitle {
+    font-size: 1rem;
+    color: #C2C3C7;
+    margin-bottom: 2rem;
+    letter-spacing: 1px;
+}
+
+.splash-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+#splash-screen .btn {
+    background-color: #29366f;
+    color: #fff;
+    border: 2px solid #fff;
+    padding: 1rem;
+    font-size: 1.2rem;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    box-shadow: inset 0 -4px 0 #111a39;
+}
+
+#splash-screen .btn:hover {
+    background-color: #FF004D;
+    border-color: #FFEC27;
+    color: #FFEC27;
+    transform: translateY(-2px);
+    box-shadow: inset 0 -2px 0 #111a39;
+}
+
+#splash-screen .btn:active {
+    transform: translateY(2px);
+    box-shadow: inset 0 0 0 #111a39;
+}
+
+.splash-footer {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .splash-card {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        border: none;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .splash-title {
+        font-size: 2.5rem;
+    }
+
+    .splash-subtitle {
+        font-size: 0.9rem;
+    }
+
+    #splash-screen .btn {
+        font-size: 1rem;
+        padding: 0.8rem;
+    }
+}

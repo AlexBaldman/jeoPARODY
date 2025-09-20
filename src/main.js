@@ -16,7 +16,7 @@
 import { getGameEngine } from './core/GameEngine.js';
 import { soundManager } from './services/soundManager.js';
 import { getHostSystem } from './services/HostSystem.js';
-import { eventBus } from './utils/events.js';
+import { eventBus, GAME_EVENTS } from './utils/events.js';
 import { logger as console } from './utils/logger.js';
 
 // Application instance - single point of truth
@@ -68,11 +68,11 @@ async function initializeApp() {
     console.info(`[✅] JeoPARODY initialized in ${JeopardyApp.performance.initTime.toFixed(2)}ms`);
     
     // Auto-start game for testing (remove in production)
-    if (process.env.NODE_ENV === 'development') {
-      setTimeout(() => {
-        eventBus.emit('game:start', { difficulty: 'normal' });
-      }, 1000);
-    }
+    // if (process.env.NODE_ENV === 'development') {
+    //   setTimeout(() => {
+    //     eventBus.emit('game:start', { difficulty: 'normal' });
+    //   }, 1000);
+    // }
     
   } catch (error) {
     console.error('[❌] Failed to initialize JeoPARODY:', error);
@@ -167,6 +167,16 @@ function setupServiceIntegration() {
   // Sound system handles game audio
   eventBus.on('ui:button-click', () => {
     JeopardyApp.soundManager.play('click');
+  });
+
+  // UI update for showing the answer
+  eventBus.on('question:show-answer', () => {
+    const answerBox = document.getElementById('answerBox');
+    const { question } = JeopardyApp.gameEngine.state;
+    if (answerBox && question.data) {
+      answerBox.innerHTML = question.data.answer;
+      answerBox.classList.add('visible');
+    }
   });
 }
 
@@ -362,7 +372,7 @@ function submitAnswer() {
   
   const answer = inputBox.value.trim();
   if (answer) {
-    eventBus.emit('answer:submit', { answer });
+    eventBus.emit(GAME_EVENTS.ANSWER_SUBMITTED, { answer });
     inputBox.value = '';
     eventBus.emit('ui:button-click');
   }
@@ -490,11 +500,17 @@ function setupNewUIModes() {
     // Start mode buttons
     splash.querySelectorAll('[data-start-mode]').forEach(btn => {
       btn.addEventListener('click', () => {
+        console.log('Splash screen button clicked!');
         const mode = btn.getAttribute('data-start-mode');
+
         // Hide splash
-        splash.classList.remove('active');
+        if(splash) {
+          splash.classList.remove('active');
+        }
+
         // Emit game start
         eventBus.emit('game:start', { mode, difficulty: 'normal' });
+
         // Show special screens if selected
         if (mode === 'fullboard') {
           board?.classList.remove('hidden');
