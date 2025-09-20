@@ -18,6 +18,8 @@
 
 import { eventBus } from '../utils/events.js';
 import { ACTION_TYPES } from '../state/actions.js';
+import { getQuestion } from '../services/api/questionService.js';
+import { store } from '../state/store.js';
 
 // Game constants
 export const GAME_CONFIG = {
@@ -465,6 +467,12 @@ export class GameEngine {
     if (this.state.score.history.length > 100) {
       this.state.score.history = this.state.score.history.slice(-100);
     }
+
+    // Dispatch state update to the central store for persistence
+    store.dispatch('UPDATE', {
+      score: this.state.score,
+      statistics: this.state.stats
+    });
   }
   
   /**
@@ -582,6 +590,20 @@ export class GameEngine {
   /**
    * Setup event handlers
    */
+  /**
+   * Request a new question from the question service
+   */
+  async handleNewQuestionRequest() {
+    console.log('[GameEngine] Requesting new question...');
+    const question = await getQuestion();
+    if (question) {
+      this.eventBus.emit('question:load', { question });
+    } else {
+      console.error('[GameEngine] Failed to get a new question from the service.');
+      this.eventBus.emit('game:error', { message: 'Could not load a new question.' });
+    }
+  }
+
   setupEventHandlers() {
     // Game control events
     this.eventBus.on('game:start', (options) => this.startGame(options));
@@ -590,6 +612,7 @@ export class GameEngine {
     this.eventBus.on('game:reset', () => this.resetGame());
     
     // Question events
+    this.eventBus.on('question:request-new', () => this.handleNewQuestionRequest());
     this.eventBus.on('question:load', (data) => this.loadQuestion(data.question));
     this.eventBus.on('answer:submit', (data) => this.submitAnswer(data.answer));
   }
@@ -627,7 +650,9 @@ let gameEngineInstance = null;
 
 export function getGameEngine() {
   if (!gameEngineInstance) {
-    gameEngineInstance = new GameEngine();
+    const initialState = store.getState();
+    console.log('[GameEngine] Initializing with preloaded state:', initialState);
+    gameEngineInstance = new GameEngine(initialState);
   }
   return gameEngineInstance;
 }

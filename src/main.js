@@ -141,7 +141,7 @@ async function initializeCoreServices() {
   
   // Initialize host system
   JeopardyApp.hostSystem = getHostSystem();
-  await JeopardyApp.hostSystem.init();
+  // await JeopardyApp.hostSystem.init(); // This is called in the constructor, so this is a redundant and harmful call
   console.info('[👤] Host system ready');
   
   // Set up inter-service communication
