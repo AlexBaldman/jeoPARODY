@@ -69,11 +69,11 @@ async function initializeApp() {
     console.info(`[✅] JeoPARODY initialized in ${JeopardyApp.performance.initTime.toFixed(2)}ms`);
     
     // Auto-start game for testing (remove in production)
-    if (process.env.NODE_ENV === 'development') {
-      setTimeout(() => {
-        eventBus.emit('game:start', { difficulty: 'normal' });
-      }, 1000);
-    }
+    // if (process.env.NODE_ENV === 'development') {
+    //   setTimeout(() => {
+    //     eventBus.emit('game:start', { difficulty: 'normal' });
+    //   }, 1000);
+    // }
     
   } catch (error) {
     console.error('[❌] Failed to initialize JeoPARODY:', error);
@@ -168,6 +168,24 @@ function setupServiceIntegration() {
   // Sound system handles game audio
   eventBus.on('ui:button-click', () => {
     JeopardyApp.soundManager.play('click');
+  });
+
+  // UI update for showing the answer
+  eventBus.on('question:show-answer', () => {
+    const answerBox = document.getElementById('answerBox');
+    const { question } = JeopardyApp.gameEngine.state;
+    if (answerBox && question.data) {
+      answerBox.innerHTML = question.data.answer;
+      answerBox.classList.add('visible');
+    }
+  });
+
+  // Hide splash screen when game starts
+  eventBus.on('game:started', () => {
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
+      splash.classList.remove('active');
+    }
   });
 }
 
@@ -512,8 +530,10 @@ function setupNewUIModes() {
         // Hide splash
         splash.classList.remove('active');
         splash.style.display = 'none';
+
         // Emit game start
         eventBus.emit('game:start', { mode, difficulty: 'normal' });
+
         // Show special screens if selected
         if (mode === 'fullboard') {
           board?.classList.remove('hidden');
