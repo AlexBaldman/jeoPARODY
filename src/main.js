@@ -178,6 +178,14 @@ function setupServiceIntegration() {
       answerBox.classList.add('visible');
     }
   });
+
+  // Hide splash screen when game starts
+  eventBus.on('game:started', () => {
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
+      splash.classList.remove('active');
+    }
+  });
 }
 
 /**
@@ -500,13 +508,7 @@ function setupNewUIModes() {
     // Start mode buttons
     splash.querySelectorAll('[data-start-mode]').forEach(btn => {
       btn.addEventListener('click', () => {
-        console.log('Splash screen button clicked!');
         const mode = btn.getAttribute('data-start-mode');
-
-        // Hide splash
-        if(splash) {
-          splash.classList.remove('active');
-        }
 
         // Emit game start
         eventBus.emit('game:start', { mode, difficulty: 'normal' });
