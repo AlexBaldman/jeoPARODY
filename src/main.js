@@ -68,7 +68,7 @@ async function initializeApp() {
     console.info(`[✅] JeoPARODY initialized in ${JeopardyApp.performance.initTime.toFixed(2)}ms`);
     
     // Auto-start game for testing (remove in production)
-    // if (process.env.NODE_ENV === 'development') {
+    // if (import.meta.env?.DEV) {
     //   setTimeout(() => {
     //     eventBus.emit('game:start', { difficulty: 'normal' });
     //   }, 1000);
