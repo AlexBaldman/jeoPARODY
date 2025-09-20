@@ -312,6 +312,7 @@ function setupUIBindings() {
   // Global UI listeners and modals
   setupGlobalEventListeners();
   setupEventDrivenModals();
+  setupNewUIModes();
 }
 
 /**
@@ -619,15 +620,6 @@ function setupNewUIModes() {
     document.documentElement.setAttribute('data-theme', 'jeopardy');
   }
 }
-
-// Hook into existing initialization flow
-(function attachUxPackInit(){
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupNewUIModes);
-  } else {
-    setupNewUIModes();
-  }
-})();
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
