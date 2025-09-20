@@ -61,7 +61,9 @@
     <!-- Load the main module with Vite -->
     <script type="module" src="src/main.js"></script>
     
-    <!-- Compatibility bridge disabled by default; remove script include to fully drop legacy path -->
+    <!-- Compatibility bridge (disabled by default) -->
+    <script>window.JEOPARODY_DISABLE_COMPAT_BRIDGE = true;</script>
+    <!-- <script type="module" src="/src/compatibility-bridge.js"></script> -->
     
     <!-- Debug script (dev only) -->
     <script type="module">
