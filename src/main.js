@@ -685,9 +685,15 @@ window.JeopardyApp = JeopardyApp;
 window.eventBus = eventBus;
 
 // Performance monitoring
-// Dev-only performance stats (guard for unbundled environments)
+// Dev-only performance stats (browser environment safe)
 try {
-  if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'development') {
+  // Check for development environment using location or other browser-safe methods
+  const isDev = window.location.hostname === 'localhost' || 
+                window.location.hostname === '127.0.0.1' ||
+                window.location.port === '5173' || // Vite dev server
+                window.location.search.includes('debug=true');
+  
+  if (isDev) {
     setInterval(() => {
       if (JeopardyApp.gameEngine) {
         const stats = JeopardyApp.gameEngine.getPerformanceStats();

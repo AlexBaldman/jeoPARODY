@@ -67,11 +67,15 @@
     
     <!-- Debug script: load only in dev -->
     <script type="module">
-      // Only load debug helper in module-enabled dev builds (Vite)
-      if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) {
-        const s = document.createElement('script');
-        s.src = 'assets/scripts/debug.js';
-        document.head.appendChild(s);
+      // Only load debug helper in development
+      try {
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          const s = document.createElement('script');
+          s.src = 'assets/scripts/debug.js';
+          document.head.appendChild(s);
+        }
+      } catch (e) {
+        // Ignore debug loading errors in production
       }
     </script>
     

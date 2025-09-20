@@ -8,16 +8,27 @@ function formatPrefix(level) {
   return `[${ts}] ${level}`;
 }
 
+// Store reference to original console before it gets overridden
+const originalConsole = typeof window !== 'undefined' && window.console ? window.console : 
+                      typeof globalThis !== 'undefined' && globalThis.console ? globalThis.console :
+                      typeof global !== 'undefined' && global.console ? global.console : null;
+
 function safeConsole(method, ...args) {
   try {
-    // eslint-disable-next-line no-console
-    console[method](...args);
+    if (originalConsole && originalConsole[method]) {
+      originalConsole[method](...args);
+    }
   } catch (_) {
     // no-op in environments without console
   }
 }
 
-const isDev = typeof process !== 'undefined' && process.env && process.env.NODE_ENV !== 'production';
+// Browser-safe development check
+const isDev = typeof window !== 'undefined' && 
+  (window.location.hostname === 'localhost' || 
+   window.location.hostname === '127.0.0.1' ||
+   window.location.port === '5173' || // Vite dev server
+   window.location.search.includes('debug=true'));
 
 export const logger = {
   // Provide console.log compatibility
@@ -31,17 +42,15 @@ export const logger = {
     }
   },
   group: (...args) => {
-    if (typeof console !== 'undefined' && console.group) {
-      // eslint-disable-next-line no-console
-      console.group(...args);
+    if (originalConsole && originalConsole.group) {
+      originalConsole.group(...args);
     } else {
       safeConsole('log', ...args);
     }
   },
   groupEnd: () => {
-    if (typeof console !== 'undefined' && console.groupEnd) {
-      // eslint-disable-next-line no-console
-      console.groupEnd();
+    if (originalConsole && originalConsole.groupEnd) {
+      originalConsole.groupEnd();
     }
   },
 };
