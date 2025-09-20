@@ -16,7 +16,7 @@
 import { getGameEngine } from './core/GameEngine.js';
 import { soundManager } from './services/soundManager.js';
 import { getHostSystem } from './services/HostSystem.js';
-import { eventBus } from './utils/events.js';
+import { eventBus, GAME_EVENTS } from './utils/events.js';
 import { logger as console } from './utils/logger.js';
 
 // Application instance - single point of truth
@@ -358,8 +358,13 @@ function setupGameControls() {
   // Handle showing the answer
   eventBus.on('question:show-answer', () => {
     const answerBox = document.getElementById('answerBox');
-    if (answerBox) {
-      answerBox.classList.toggle('visible');
+    const { question } = JeopardyApp.gameEngine.state;
+    if (answerBox && question.data) {
+      answerBox.innerHTML = question.data.answer;
+      answerBox.classList.add('visible');
+      console.log(`[AnswerBox] Showing answer: ${question.data.answer}`);
+    } else {
+      console.warn('[AnswerBox] Could not show answer - missing element or data');
     }
   });
 }
@@ -373,7 +378,7 @@ function submitAnswer() {
   
   const answer = inputBox.value.trim();
   if (answer) {
-    eventBus.emit('answer:submit', { answer });
+    eventBus.emit(GAME_EVENTS.ANSWER_SUBMITTED, { answer });
     inputBox.value = '';
     eventBus.emit('ui:button-click');
   }
@@ -503,7 +508,7 @@ function setupNewUIModes() {
     splash.querySelectorAll('[data-start-mode]').forEach(btn => {
       btn.addEventListener('click', () => {
         const mode = btn.getAttribute('data-start-mode');
-        console.log(`[Debug] Splash screen button clicked. Mode: ${mode}`);
+        console.log(`[Splash] Start button clicked - Mode: ${mode}`);
         // Hide splash
         splash.classList.remove('active');
         splash.style.display = 'none';
