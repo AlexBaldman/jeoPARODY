@@ -550,9 +550,8 @@ function setupNewUIModes() {
       btn.addEventListener('click', () => {
         const mode = btn.getAttribute('data-start-mode');
         console.log(`[Splash] Start button clicked - Mode: ${mode}`);
-        // Hide splash
+        // Hide splash (use class only; avoid inline display overrides)
         splash.classList.remove('active');
-        splash.style.display = 'none';
 
         // Emit game start
         eventBus.emit('game:start', { mode, difficulty: 'normal' });
@@ -686,15 +685,17 @@ window.JeopardyApp = JeopardyApp;
 window.eventBus = eventBus;
 
 // Performance monitoring
-if (process.env.NODE_ENV === 'development') {
-  // Add performance stats to window for debugging
-  setInterval(() => {
-    if (JeopardyApp.gameEngine) {
-      const stats = JeopardyApp.gameEngine.getPerformanceStats();
-      console.debug('[Perf]', stats);
-    }
-  }, 10000); // Every 10 seconds
-}
+// Dev-only performance stats (guard for unbundled environments)
+try {
+  if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'development') {
+    setInterval(() => {
+      if (JeopardyApp.gameEngine) {
+        const stats = JeopardyApp.gameEngine.getPerformanceStats();
+        console.debug('[Perf]', stats);
+      }
+    }, 10000);
+  }
+} catch (_) { /* no-op */ }
 
 function setupQuestionEventOrchestrator() {
   // UI requests a new question

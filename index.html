@@ -66,7 +66,8 @@
     <!-- <script type="module" src="/src/compatibility-bridge.js"></script> -->
     
     <!-- Debug script: load only in dev -->
-    <script>
+    <script type="module">
+      // Only load debug helper in module-enabled dev builds (Vite)
       if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) {
         const s = document.createElement('script');
         s.src = 'assets/scripts/debug.js';
@@ -184,9 +185,6 @@
 
     <!-- Run the Category Screen -->
     <div id="run-category-screen" class="hidden">
-
-    <!-- PAO Screen Container -->
-    <div id="pao-screen-container" class="hidden"></div>
       <div class="run-wrap">
         <div class="run-header">
           <button class="board-close" data-close-run>⟵ Back</button>
@@ -202,6 +200,9 @@
         </div>
       </div>
     </div>
+
+    <!-- PAO Screen Container (overlay sibling, not nested) -->
+    <div id="pao-screen-container" class="hidden"></div>
 
     <!-- game container -->
     <div class="game-container">

@@ -20,6 +20,8 @@ function safeConsole(method, ...args) {
 const isDev = typeof process !== 'undefined' && process.env && process.env.NODE_ENV !== 'production';
 
 export const logger = {
+  // Provide console.log compatibility
+  log: (...args) => safeConsole('log', ...args),
   info: (...args) => safeConsole('log', formatPrefix('INFO'), ...args),
   warn: (...args) => safeConsole('warn', formatPrefix('WARN'), ...args),
   error: (...args) => safeConsole('error', formatPrefix('ERROR'), ...args),

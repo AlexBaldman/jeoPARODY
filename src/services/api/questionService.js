@@ -8,6 +8,9 @@
 
 import { eventBus } from '../../utils/events.js';
 
+// Safe dev flag for unbundled environments (e.g., GitHub Pages)
+const IS_DEV = (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'development');
+
 // Configuration
 const CONFIG = {
   API_URL: 'https://cluebase.lukelav.in/clues/random',
@@ -114,11 +117,11 @@ export function getRandomCategory(minQuestions = 5) {
  * @returns {Promise<Object|null>} Question data or null if failed
  */
 export async function getQuestion() {
-  if (process.env.NODE_ENV === 'development') console.log('🎯 getQuestion() called');
+  if (IS_DEV) console.log('🎯 getQuestion() called');
   
   // Ensure we're initialized
   if (!isInitialized) {
-    if (process.env.NODE_ENV === 'development') console.log('⚠️ Service not initialized, initializing now...');
+    if (IS_DEV) console.log('⚠️ Service not initialized, initializing now...');
     const initSuccess = await initialize();
     if (!initSuccess) {
       console.error('❌ Failed to initialize question service');
@@ -126,40 +129,40 @@ export async function getQuestion() {
     }
   }
 
-  if (process.env.NODE_ENV === 'development') console.log(`📊 Current state: ${questions.length} questions in buffer, ${allQuestions.length} total questions`);
+  if (IS_DEV) console.log(`📊 Current state: ${questions.length} questions in buffer, ${allQuestions.length} total questions`);
 
   // Try local questions first
   const localQuestion = getNextLocalQuestion();
   if (localQuestion) {
-    if (process.env.NODE_ENV === 'development') console.log('✅ Returning question from buffer:', localQuestion.category);
+    if (IS_DEV) console.log('✅ Returning question from buffer:', localQuestion.category);
     return localQuestion;
   }
 
   // Reload local questions if we've run out
-  if (process.env.NODE_ENV === 'development') console.log('🔄 Local questions exhausted, reloading...');
+  if (IS_DEV) console.log('🔄 Local questions exhausted, reloading...');
   const reloaded = await loadLocalQuestions();
   if (reloaded) {
     const question = getNextLocalQuestion();
     if (question) {
-      if (process.env.NODE_ENV === 'development') console.log('✅ Returning question after reload:', question.category);
+      if (IS_DEV) console.log('✅ Returning question after reload:', question.category);
       return question;
     }
   }
 
   // Optionally try API as last resort
   if (CONFIG.USE_API) {
-    if (process.env.NODE_ENV === 'development') console.log('🌐 Trying API as fallback...');
+    if (IS_DEV) console.log('🌐 Trying API as fallback...');
     const apiQuestion = await fetchQuestionFromAPI();
     if (apiQuestion) {
-      if (process.env.NODE_ENV === 'development') console.log('✅ Returning question from API:', apiQuestion.category);
+      if (IS_DEV) console.log('✅ Returning question from API:', apiQuestion.category);
       return apiQuestion;
     }
   }
 
   // If all else fails, return an error joke
-  if (process.env.NODE_ENV === 'development') console.log('😅 All question sources failed, returning error joke');
+  if (IS_DEV) console.log('😅 All question sources failed, returning error joke');
   const errorJoke = getErrorJoke();
-  if (process.env.NODE_ENV === 'development') console.log('🎭 Error joke:', errorJoke);
+  if (IS_DEV) console.log('🎭 Error joke:', errorJoke);
   return errorJoke;
 }
 
@@ -219,12 +222,12 @@ async function loadLocalQuestions() {
   }
   
   const questionPaths = [
-    '/assets/questions/questions.json',
-    '/assets/questions/combined_season1-40.tsv',
-    '/assets/questions/questions.csv',
-    '/questions/questions.json',
-    '/src/questions/questions.json',
-    '/public/questions/questions.json',
+    'assets/questions/questions.json',
+    'assets/questions/combined_season1-40.tsv',
+    'assets/questions/questions.csv',
+    'questions/questions.json',
+    'src/questions/questions.json',
+    'public/questions/questions.json',
     './questions/questions.json'
   ];
   

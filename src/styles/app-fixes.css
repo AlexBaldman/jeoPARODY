@@ -6,9 +6,10 @@
 /* Korinna Font Imports */
 @font-face {
     font-family: 'Korinna';
-    src: url('/assets/fonts/Korinna.woff2') format('woff2'),
-         url('/assets/fonts/Korinna.woff') format('woff'),
-         url('/assets/fonts/Korinna.ttf') format('truetype');
+    /* Use existing normal weight files from assets/fonts */
+    src: url('assets/fonts/KorinnaNormal.woff2') format('woff2'),
+         url('assets/fonts/Korinna.woff') format('woff'),
+         url('assets/fonts/Korinna.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -16,8 +17,9 @@
 
 @font-face {
     font-family: 'Korinna';
-    src: url('/assets/fonts/KorinnaBold.woff2') format('woff2'),
-         url('/assets/fonts/KorinnaBold.woff') format('woff');
+    /* No KorinnaBold.woff2 in repo; fall back to woff/ttf */
+    src: url('assets/fonts/KorinnaBold.woff') format('woff'),
+         url('assets/fonts/KorinnaBold.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
     font-display: swap;
@@ -25,8 +27,10 @@
 
 @font-face {
     font-family: 'Korinna';
-    src: url('/assets/fonts/KorinnaItalic.woff2') format('woff2'),
-         url('/assets/fonts/KorinnaItalic.woff') format('woff');
+    /* Use existing italic files */
+    src: url('assets/fonts/KorinnaItalic.woff2') format('woff2'),
+         url('assets/fonts/KorinnaItalic.woff') format('woff'),
+         url('assets/fonts/KorinnaItalic.ttf') format('truetype');
     font-weight: normal;
     font-style: italic;
     font-display: swap;
