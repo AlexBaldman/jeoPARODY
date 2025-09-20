@@ -502,6 +502,7 @@ function setupNewUIModes() {
         const mode = btn.getAttribute('data-start-mode');
         // Hide splash
         splash.classList.remove('active');
+        splash.style.display = 'none';
         // Emit game start
         eventBus.emit('game:start', { mode, difficulty: 'normal' });
         // Show special screens if selected
