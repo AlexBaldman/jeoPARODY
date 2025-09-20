@@ -188,7 +188,7 @@ button:hover .button-tooltip {
     border: 2px solid #ffd700;
     border-radius: 25px;
     background: rgba(255, 255, 255, 0.95);
-    color: #333;
+    /* color: #333; */ /* This was causing the invisible text bug in dark mode */
     outline: none;
     transition: all 0.3s ease;
 }
