@@ -49,6 +49,7 @@ class QuestionDisplay extends ConnectedComponent {
     const { showAnswer, speechBubbleStyle } = this.state;
     
     const isAnswerRevealed = gameStatus === GAME_STATES.ANSWER_REVEALED || showAnswer;
+    const valueText = question && question.value ? `for $${String(question.value).replace(/\$/g, '')}` : '';
 
     return `
       <div class="speech-bubble ${speechBubbleStyle}" 
@@ -67,7 +68,7 @@ class QuestionDisplay extends ConnectedComponent {
             </div>
             
             <div class="value-box" data-ref="valueBox">
-              ${question.value ? `for ${question.value}` : ''}
+              ${valueText}
             </div>
             
             <div class="question-box" data-ref="questionBox">
@@ -156,7 +157,8 @@ class QuestionDisplay extends ConnectedComponent {
       const { type, src, alt } = question.media;
       return MediaModal.createThumbnail({ type, src, alt }, this.eventBus);
     } else {
-      return question.question || '';
+      // Sanitize text to remove unwanted escape characters
+      return (question.question || '').replace(/\\/g, '');
     }
   }
 

@@ -312,6 +312,7 @@ function setupUIBindings() {
   // Global UI listeners and modals
   setupGlobalEventListeners();
   setupEventDrivenModals();
+  setupNewUIModes();
 }
 
 /**
@@ -351,6 +352,14 @@ function setupGameControls() {
     // Handle submit button
     checkButton.addEventListener('click', submitAnswer);
   }
+
+  // Handle showing the answer
+  eventBus.on('question:show-answer', () => {
+    const answerBox = document.getElementById('answerBox');
+    if (answerBox) {
+      answerBox.classList.toggle('visible');
+    }
+  });
 }
 
 /**
@@ -493,6 +502,7 @@ function setupNewUIModes() {
         const mode = btn.getAttribute('data-start-mode');
         // Hide splash
         splash.classList.remove('active');
+        splash.style.display = 'none';
         // Emit game start
         eventBus.emit('game:start', { mode, difficulty: 'normal' });
         // Show special screens if selected
@@ -611,15 +621,6 @@ function setupNewUIModes() {
     document.documentElement.setAttribute('data-theme', 'jeopardy');
   }
 }
-
-// Hook into existing initialization flow
-(function attachUxPackInit(){
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupNewUIModes);
-  } else {
-    setupNewUIModes();
-  }
-})();
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
