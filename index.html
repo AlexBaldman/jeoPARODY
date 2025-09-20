@@ -21,16 +21,34 @@
     <title>Jeopardish!</title>
     
     <!-- favicons -->
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <!-- <link rel="icon" href="images/favicon2.webp" type="image/webp"> -->
     <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
 
-    <!-- Single source of truth for all styles -->
-    <link rel="stylesheet" href="/src/styles/main.css">
+    <!-- font stylesheet -->
+    <link rel="stylesheet" href="assets/fonts/stylesheet.css">
+
+    <!-- Complete consolidated stylesheet -->
+    <link rel="stylesheet" href="assets/css/styles-complete.css?v=3.0">
+
+    <!-- App fixes stylesheet -->
+    <link rel="stylesheet" href="src/styles/app-fixes.css">
+
+    <!-- Enhanced UI stylesheet -->
+    <link rel="stylesheet" href="src/styles/enhanced-ui.css">
+
+    <!-- Media rendering stylesheet -->
+    <link rel="stylesheet" href="src/styles/media-rendering.css">
+
+    <!-- PAO styles -->
+    <link rel="stylesheet" href="src/styles/pao.css">
+
+    <!-- UX Pack: themes, components, animations -->
+    <link rel="stylesheet" href="src/styles/ux-pack.css">
     
     <!-- Old stylesheets - removed, all styles now in styles-complete.css -->
     
-    <!-- external JS (none needed) -->
+    <!-- external JS (axios removed; modules should import their deps) -->
 
     <!-- Firebase optional: uncomment when integrating auth/cloud sync -->
     <!--
@@ -41,13 +59,15 @@
     -->
 
     <!-- Load the main module with Vite -->
-    <script type="module" src="/src/main.js"></script>
+    <script type="module" src="src/main.js"></script>
     
-    <!-- Compatibility bridge disabled by default; remove script include to fully drop legacy path -->
+    <!-- Compatibility bridge (disabled by default) -->
+    <script>window.JEOPARODY_DISABLE_COMPAT_BRIDGE = true;</script>
+    <!-- <script type="module" src="/src/compatibility-bridge.js"></script> -->
     
-    <!-- Debug script (dev only) -->
-    <script type="module">
-      if (import.meta.env && import.meta.env.DEV) {
+    <!-- Debug script: load only in dev -->
+    <script>
+      if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) {
         const s = document.createElement('script');
         s.src = 'assets/scripts/debug.js';
         document.head.appendChild(s);
@@ -81,13 +101,13 @@
         <div class="splash-title">jeoPARODY!</div>
         <div class="splash-subtitle">Pick a mode to begin</div>
         <div class="splash-grid">
-          <button class="btn btn-gradient" data-start-mode="classic">▶ Start Classic</button>
-          <button class="btn btn-neon" data-start-mode="fullboard">📺 Full Jeopardy Board</button>
-          <button class="btn btn-arcade" data-start-mode="run-category">🎯 Run the Category</button>
-          <button class="btn btn-gradient" data-start-mode="practice">🧠 Practice</button>
-          <button class="btn btn-neon" data-start-mode="daily-double">💥 Daily Double</button>
-          <button class="btn btn-gradient" data-start-mode="pao">🧩 PAO Trainer</button>
-          <button class="btn btn-arcade" data-action="open-settings">⚙️ Settings</button>
+          <button class="btn btn-gradient" data-start-mode="classic" aria-label="Start game in classic mode">▶ Start Classic</button>
+          <button class="btn btn-neon" data-start-mode="fullboard" aria-label="Start game with a full Jeopardy board">📺 Full Jeopardy Board</button>
+          <button class="btn btn-arcade" data-start-mode="run-category" aria-label="Start game in run the category mode">🎯 Run the Category</button>
+          <button class="btn btn-gradient" data-start-mode="practice" aria-label="Start a practice session">🧠 Practice</button>
+          <button class="btn btn-neon" data-start-mode="daily-double" aria-label="Play a daily double round">💥 Daily Double</button>
+          <button class="btn btn-gradient" data-start-mode="pao" aria-label="Start the PAO trainer">🧩 PAO Trainer</button>
+          <button class="btn btn-arcade" data-action="open-settings" aria-label="Open game settings">⚙️ Settings</button>
         </div>
         <div class="splash-footer">
           <div class="theme-chooser">
@@ -310,7 +330,9 @@
 
             <!-- Host container -->
             <div class="host-container">
+                <div class="host-click-zone host-click-left" data-action="host:previous"></div>
                 <img id="trebekImage" class="host-image" alt="AI Trebek" src="assets/images/trebek/trebek-good-01.png" title="Click left/right side to cycle hosts">
+                <div class="host-click-zone host-click-right" data-action="host:next"></div>
             </div>
             
             <!-- User input section -->

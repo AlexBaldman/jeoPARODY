@@ -169,36 +169,16 @@ export class HostSystem {
    */
   setupImageCycling() {
     if (!this.hostContainer) return;
-    
-    // Create invisible click zones
-    const leftZone = document.createElement('div');
-    const rightZone = document.createElement('div');
-    
-    leftZone.className = 'host-click-zone host-click-left';
-    rightZone.className = 'host-click-zone host-click-right';
-    
-    // Style the zones
-    const zoneStyle = {
-      position: 'absolute',
-      top: '0',
-      width: '50%',
-      height: '100%',
-      cursor: 'pointer',
-      zIndex: '10',
-      // Debug: backgroundColor: 'rgba(255,0,0,0.1)'
-    };
-    
-    Object.assign(leftZone.style, zoneStyle, { left: '0' });
-    Object.assign(rightZone.style, zoneStyle, { right: '0' });
-    
-    // Add event listeners
-    leftZone.addEventListener('click', () => this.previousImage());
-    rightZone.addEventListener('click', () => this.nextImage());
-    
-    // Add to container
-    this.hostContainer.style.position = 'relative';
-    this.hostContainer.appendChild(leftZone);
-    this.hostContainer.appendChild(rightZone);
+
+    const leftZone = this.hostContainer.querySelector('.host-click-left');
+    const rightZone = this.hostContainer.querySelector('.host-click-right');
+
+    if (leftZone) {
+      leftZone.addEventListener('click', () => this.previousImage());
+    }
+    if (rightZone) {
+      rightZone.addEventListener('click', () => this.nextImage());
+    }
   }
   
   /**

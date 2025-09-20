@@ -18,6 +18,7 @@ import { soundManager } from './services/soundManager.js';
 import { getHostSystem } from './services/HostSystem.js';
 import { eventBus, GAME_EVENTS } from './utils/events.js';
 import { logger as console } from './utils/logger.js';
+import questionService from './services/api/questionService.js';
 
 // Application instance - single point of truth
 const JeopardyApp = {
@@ -42,6 +43,7 @@ const JeopardyApp = {
  * Initialize the application with Carmack's "fail fast" approach
  */
 async function initializeApp() {
+  console.log('[Debug] initializeApp() called');
   const startTime = performance.now();
   console.info('[🎮] Initializing JeoPARODY...');
   
@@ -134,6 +136,14 @@ async function initializeCoreServices() {
   JeopardyApp.gameEngine = getGameEngine();
   console.info('[🎮] Game engine ready');
   
+  // Initialize question service (primary source of questions)
+  try {
+    await questionService.initialize();
+    console.info('[❓] Question service ready');
+  } catch (e) {
+    console.error('[❌] Question service failed to initialize', e);
+  }
+  
   // Initialize sound system
   JeopardyApp.soundManager = soundManager;
   await JeopardyApp.soundManager.init();
@@ -141,11 +151,14 @@ async function initializeCoreServices() {
   
   // Initialize host system
   JeopardyApp.hostSystem = getHostSystem();
-  await JeopardyApp.hostSystem.init();
+  // HostSystem init() is called in constructor, so no need to await it here
   console.info('[👤] Host system ready');
   
   // Set up inter-service communication
   setupServiceIntegration();
+  
+  // Set up event orchestration between UI and engine
+  setupQuestionEventOrchestrator();
 }
 
 /**
@@ -318,6 +331,7 @@ function setLanguageUI(lang) {
  * Set up UI bindings
  */
 function setupUIBindings() {
+  console.log('[Debug] setupUIBindings() called');
   // Game controls
   setupGameControls();
   
@@ -330,6 +344,7 @@ function setupUIBindings() {
   // Global UI listeners and modals
   setupGlobalEventListeners();
   setupEventDrivenModals();
+  setupNewUIModes();
 }
 
 /**
@@ -359,16 +374,40 @@ function setupGameControls() {
   const checkButton = document.getElementById('checkButton');
   
   if (inputBox && checkButton) {
-    // Handle enter key
+    // Handle enter key with smart behavior
     inputBox.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        submitAnswer();
+        const value = inputBox.value.trim();
+        const answerBox = document.getElementById('answerBox');
+        const answerVisible = !!(answerBox && (answerBox.classList.contains('visible') || answerBox.style.display === 'block'));
+        if (value) {
+          submitAnswer();
+        } else if (answerVisible) {
+          // Advance to next question when answer is already revealed
+          eventBus.emit('question:request-new');
+        } else {
+          // Gentle nudge if empty
+          eventBus.emit('dialog:prompt', { text: 'Type your answer and press Enter. Press Enter again to get a new question.' });
+        }
       }
     });
     
     // Handle submit button
     checkButton.addEventListener('click', submitAnswer);
   }
+
+  // Handle showing the answer
+  eventBus.on('question:show-answer', () => {
+    const answerBox = document.getElementById('answerBox');
+    const { question } = JeopardyApp.gameEngine.state;
+    if (answerBox && question.data) {
+      answerBox.innerHTML = question.data.answer;
+      answerBox.classList.add('visible');
+      console.log(`[AnswerBox] Showing answer: ${question.data.answer}`);
+    } else {
+      console.warn('[AnswerBox] Could not show answer - missing element or data');
+    }
+  });
 }
 
 /**
@@ -488,6 +527,7 @@ function saveUserPreferences() {
  * Splash, Board, Run-Category UI wiring
  */
 function setupNewUIModes() {
+  console.log('[Debug] setupNewUIModes() called');
   const splash = document.getElementById('splash-screen');
   const board = document.getElementById('jeopardy-board-screen');
   const run = document.getElementById('run-category-screen');
@@ -509,6 +549,10 @@ function setupNewUIModes() {
     splash.querySelectorAll('[data-start-mode]').forEach(btn => {
       btn.addEventListener('click', () => {
         const mode = btn.getAttribute('data-start-mode');
+        console.log(`[Splash] Start button clicked - Mode: ${mode}`);
+        // Hide splash
+        splash.classList.remove('active');
+        splash.style.display = 'none';
 
         // Emit game start
         eventBus.emit('game:start', { mode, difficulty: 'normal' });
@@ -630,15 +674,6 @@ function setupNewUIModes() {
   }
 }
 
-// Hook into existing initialization flow
-(function attachUxPackInit(){
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupNewUIModes);
-  } else {
-    setupNewUIModes();
-  }
-})();
-
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initializeApp);
@@ -659,4 +694,64 @@ if (process.env.NODE_ENV === 'development') {
       console.debug('[Perf]', stats);
     }
   }, 10000); // Every 10 seconds
+}
+
+function setupQuestionEventOrchestrator() {
+  // UI requests a new question
+  eventBus.on('question:request-new', async () => {
+    try {
+      // Clear input and hide answer
+      const inputBox = document.getElementById('inputBox');
+      if (inputBox) inputBox.value = '';
+      setLegacyAnswerVisible(false);
+      
+      const q = await questionService.getQuestion();
+      if (!q) return;
+      // Notify engine and UI
+      eventBus.emit('question:load', { question: q });
+      eventBus.emit('game:question:loaded', { question: q });
+      // Render legacy bubble
+      renderLegacySpeechBubble(q);
+    } catch (e) {
+      console.error('Failed to load new question', e);
+    }
+  });
+  
+  // UI requests to show the answer
+  eventBus.on('question:show-answer', () => {
+    setLegacyAnswerVisible(true);
+    eventBus.emit('game:answer:revealed');
+  });
+  
+  // When a question is loaded from anywhere, keep legacy DOM in sync
+  eventBus.on('game:question:loaded', ({ question }) => {
+    renderLegacySpeechBubble(question);
+  });
+}
+
+function renderLegacySpeechBubble(question) {
+  const categoryBox = document.getElementById('categoryBox');
+  const valueBox = document.getElementById('valueBox');
+  const questionBox = document.getElementById('questionBox');
+  const answerBox = document.getElementById('answerBox');
+  if (categoryBox) categoryBox.textContent = question.category || '';
+  if (valueBox) valueBox.textContent = question.value ? `${question.value}` : '';
+  if (questionBox) questionBox.textContent = question.question || '';
+  if (answerBox) {
+    answerBox.textContent = question.answer || '';
+    answerBox.classList.remove('visible');
+    answerBox.style.display = 'none';
+  }
+}
+
+function setLegacyAnswerVisible(visible) {
+  const answerBox = document.getElementById('answerBox');
+  if (!answerBox) return;
+  if (visible) {
+    answerBox.style.display = 'block';
+    answerBox.classList.add('visible');
+  } else {
+    answerBox.style.display = 'none';
+    answerBox.classList.remove('visible');
+  }
 }

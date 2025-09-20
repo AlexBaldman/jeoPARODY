@@ -1,0 +1,287 @@
+/* UX Pack: Themes, Components, Animations */
+
+:root {
+  --uxp-primary: #4f46e5;
+  --uxp-secondary: #22c55e;
+  --uxp-accent: #f59e0b;
+  --uxp-comic-red: #ff2257;
+  --uxp-comic-yellow: #ffe14d;
+  --uxp-gold: #ffd700;
+  --uxp-jeopardy-blue: #0033a0;
+  --uxp-bg-dark: #0b1020;
+  --uxp-bg-light: #f4f6fb;
+  --uxp-glass: rgba(255, 255, 255, 0.08);
+  --uxp-shadow-xl: 0 25px 80px rgba(0,0,0,0.45);
+  --uxp-radius-lg: 18px;
+  --uxp-radius-xl: 28px;
+  --uxp-duration: 300ms;
+}
+
+/* Themes */
+html[data-theme="jeopardy"] body {
+  background: radial-gradient(1200px 600px at 80% -10%, rgba(255,255,255,0.12), transparent 40%),
+              radial-gradient(800px 400px at 10% -20%, rgba(255,255,255,0.08), transparent 40%),
+              linear-gradient(180deg, #0b1b60 0%, #081242 40%, #030a2a 100%);
+}
+html[data-theme="retro"] body {
+  background: linear-gradient(180deg, #0d0f1a 0%, #0f1324 100%);
+}
+html[data-theme="comic"] body {
+  background:
+    radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.05) 0 20%, transparent 21%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.06) 0 18%, transparent 19%),
+    linear-gradient(180deg, #fff7f1 0%, #ffeede 100%);
+}
+
+/* CRT Scanlines for retro theme */
+html[data-theme="retro"] body::after {
+  content: "";
+  position: fixed; inset: 0; pointer-events: none; z-index: 2;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.05), rgba(255,255,255,0.05) 2px,
+    rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px
+  );
+  mix-blend-mode: overlay;
+  animation: crtFlicker 2.5s infinite;
+}
+@keyframes crtFlicker {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.25; }
+}
+
+/* Gorgeous Buttons */
+.btn {
+  --bshadow: 0 8px 24px rgba(0,0,0,0.25);
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 14px 22px; border-radius: 14px; border: 0; cursor: pointer;
+  font-weight: 800; letter-spacing: .3px; color: #0b0b0b;
+  transition: transform var(--uxp-duration), box-shadow var(--uxp-duration), filter var(--uxp-duration);
+}
+.btn-gradient {
+  background: linear-gradient(135deg, var(--uxp-gold) 0%, #ffe680 100%);
+  box-shadow: 0 6px 0 #b38f00, var(--bshadow);
+}
+.btn-gradient:hover { transform: translateY(-2px); filter: brightness(1.05) saturate(1.1); }
+.btn-gradient:active { transform: translateY(0); box-shadow: 0 2px 0 #b38f00, 0 4px 12px rgba(0,0,0,0.2); }
+
+.btn-neon {
+  background: linear-gradient(135deg, #20c997, #2dd4bf);
+  color: white; text-shadow: 0 0 8px rgba(255,255,255,0.4);
+  box-shadow: 0 0 0 0 rgba(45,212,191,0.6), var(--bshadow);
+  position: relative; isolation: isolate;
+}
+.btn-neon::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  box-shadow: 0 0 20px 6px rgba(45,212,191,0.5);
+  opacity: 0; transition: opacity var(--uxp-duration);
+}
+.btn-neon:hover::after { opacity: 1; }
+
+.btn-arcade {
+  background: #111; color: #0ff; border: 2px solid #0ff;
+  font-family: 'Press Start 2P', monospace; text-transform: uppercase;
+  box-shadow: 0 0 12px rgba(0,255,255,0.5), inset 0 0 8px rgba(0,255,255,0.25);
+}
+.btn-arcade:hover { color: #f0f; border-color: #f0f; box-shadow: 0 0 16px rgba(255,0,255,0.6), inset 0 0 10px rgba(255,0,255,0.35); }
+
+/* Speech Bubble Variations */
+.speech-bubble { position: relative; }
+.speech-bubble--thought {
+  background: #fff; border: 4px solid #222; border-radius: 32px; position: relative;
+  box-shadow: var(--uxp-shadow-xl);
+}
+.speech-bubble--thought::before,
+.speech-bubble--thought::after {
+  content: ""; position: absolute; background: #fff; border: 4px solid #222; border-radius: 50%;
+}
+.speech-bubble--thought::before { width: 22px; height: 22px; bottom: -16px; left: 40px; }
+.speech-bubble--thought::after { width: 12px; height: 12px; bottom: -28px; left: 25px; }
+
+.speech-bubble--comic {
+  background:
+    radial-gradient(circle at 10px 10px, rgba(0,0,0,0.04) 2px, transparent 2px) 0 0 / 12px 12px,
+    #fffbe6;
+  border: 5px solid #111; border-radius: 18px; position: relative;
+  box-shadow: 6px 6px 0 #111, var(--uxp-shadow-xl);
+}
+.speech-bubble--comic .title { font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; color: #111; }
+.speech-bubble--comic::after {
+  content: ""; position: absolute; bottom: -18px; left: 80px;
+  width: 0; height: 0; border-left: 18px solid transparent; border-right: 18px solid transparent; border-top: 18px solid #fffbe6;
+  filter: drop-shadow(0 4px 0 #111);
+}
+
+/* Comic elements */
+.comic-caption {
+  display: inline-block; background: var(--uxp-comic-yellow); border: 4px solid #111;
+  box-shadow: 4px 4px 0 #111; padding: 6px 12px; font-weight: 900; text-transform: uppercase;
+}
+.comic-sfx {
+  display: inline-block; color: #fff; background: var(--uxp-comic-red); padding: 8px 14px; border: 4px solid #111;
+  clip-path: polygon(6% 0, 100% 0, 94% 28%, 100% 56%, 94% 100%, 6% 100%, 0 72%, 6% 44%);
+  box-shadow: 4px 4px 0 #111; font-weight: 900; letter-spacing: 1px;
+}
+
+/* Splash Screen */
+#splash-screen {
+  position: fixed; inset: 0; z-index: 5000; display: none; place-items: center;
+  background: radial-gradient(80% 60% at 50% 10%, rgba(255,255,255,0.08), transparent 60%), rgba(3,6,20,0.9);
+  backdrop-filter: blur(6px);
+}
+#splash-screen.active { display: grid; }
+.splash-card {
+  width: min(920px, 92vw); border-radius: var(--uxp-radius-xl); padding: 36px; position: relative;
+  background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.08));
+  border: 1px solid rgba(255,255,255,0.18); box-shadow: var(--uxp-shadow-xl);
+}
+.splash-title {
+  font-family: 'Korinna', serif; font-size: clamp(28px, 5vw, 54px); color: #fff; text-align: center; margin: 6px 0 20px;
+  text-shadow: 0 6px 18px rgba(0,0,0,0.45), 0 0 30px rgba(80,130,255,0.6);
+}
+.splash-subtitle { color: #cbd5e1; text-align: center; margin-bottom: 20px; }
+.splash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.splash-card .btn { width: 100%; padding: 16px 18px; }
+.splash-footer { display: flex; gap: 12px; justify-content: space-between; align-items: center; margin-top: 20px; flex-wrap: wrap; }
+.theme-chooser { display: flex; gap: 8px; align-items: center; color: #e5e7eb; }
+.theme-dot { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.6); box-shadow: 0 0 0 2px rgba(0,0,0,0.25) inset; }
+.theme-dot[data-theme="jeopardy"] { background: var(--uxp-jeopardy-blue); }
+.theme-dot[data-theme="retro"] { background: linear-gradient(135deg, #0ff, #f0f); }
+.theme-dot[data-theme="comic"] { background: var(--uxp-comic-yellow); }
+
+/* Jeopardy Board Screen */
+#jeopardy-board-screen { position: fixed; inset: 0; z-index: 4000; display: none; padding: 6vh 4vw; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); }
+#jeopardy-board-screen.active { display: block; }
+.board { max-width: 1400px; margin: 0 auto; }
+.board-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.board .category { background: linear-gradient(180deg, #0735a8, #041f6f); border: 3px solid #0b1b60; color: var(--uxp-gold); font-family: 'Korinna', serif; text-transform: uppercase; letter-spacing: 1px; padding: 12px; text-align: center; border-radius: 8px; box-shadow: 0 6px 16px rgba(0,0,0,0.5); }
+.board .clue { background: radial-gradient(80% 100% at 50% -10%, rgba(255,255,255,0.12), transparent 40%), #0a1d66; border: 3px solid #0b1b60; color: var(--uxp-gold); font-weight: 900; font-size: clamp(18px, 3vw, 36px); display: grid; place-items: center; height: clamp(80px, 12vh, 140px); border-radius: 8px; cursor: pointer; box-shadow: inset 0 -8px 0 rgba(0,0,0,0.35), 0 6px 16px rgba(0,0,0,0.6); transition: transform var(--uxp-duration), filter var(--uxp-duration); }
+.board .clue:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.board-controls { display: flex; justify-content: space-between; align-items: center; margin: 14px 0 18px; color: #e5e7eb; }
+.board-close { background: none; border: 0; color: #fff; font-size: 20px; cursor: pointer; opacity: 0.8; }
+
+/* Clue Zoom Modal */
+.clue-modal { position: fixed; inset: 0; display: none; z-index: 4500; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); }
+.clue-modal.active { display: flex; }
+.clue-card { width: min(900px, 92vw); border: 4px solid #0b1b60; border-radius: 12px; padding: 28px; background: linear-gradient(180deg, #092c8a, #041f6f); color: var(--uxp-gold); box-shadow: var(--uxp-shadow-xl); transform: scale(0.8); opacity: 0; animation: zoomIn 260ms ease forwards; }
+.clue-text { font-family: 'Korinna', serif; font-size: clamp(22px, 3.2vw, 38px); text-align: center; line-height: 1.35; color: #ffef9a; text-shadow: 0 2px 0 rgba(0,0,0,0.35); }
+@keyframes zoomIn { to { transform: scale(1); opacity: 1; } }
+
+/* Run the Category */
+#run-category-screen { position: fixed; inset: 0; z-index: 4000; display: none; padding: 6vh 4vw; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); color: #e5e7eb; }
+#run-category-screen.active { display: block; }
+.run-wrap { max-width: 1100px; margin: 0 auto; }
+.run-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.run-category-title { font-family: 'Korinna', serif; color: var(--uxp-gold); font-size: clamp(22px,4vw,36px); }
+.run-progress { height: 10px; background: rgba(255,255,255,0.15); border-radius: 999px; overflow: hidden; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.08); }
+.run-progress > span { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, #ffd700, #ff8f00); transition: width 300ms ease; }
+.run-list { display: grid; gap: 12px; }
+.run-item { background: #0f1b3f; border: 2px solid #203070; border-radius: 12px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+.run-item .value { color: var(--uxp-gold); font-weight: 900; font-size: 18px; }
+.run-item .text { margin-top: 6px; font-size: 16px; color: #e6f0ff; }
+
+/* Retro bits */
+.pixel-heart { width: 16px; height: 16px; image-rendering: pixelated; background: #f00; box-shadow: 8px 0 #f00, 16px 0 #f00, 0 8px #f00, 8px 8px #f00, 16px 8px #f00, 24px 8px #f00, 0 16px #f00, 8px 16px #f00, 16px 16px #f00, 24px 16px #f00, 8px 24px #f00, 16px 24px #f00; }
+
+/* Utility */
+.hidden { display: none !important; }
+
+/* ===================================
+   SNES/GENESIS RETRO SPLASH SCREEN
+   =================================== */
+
+html[data-theme="retro"] #splash-screen {
+  background: linear-gradient(170deg, #0d0221 0%, #1a0a38 30%, #241b5e 70%, #0d0221 100%);
+  overflow: hidden;
+}
+
+html[data-theme="retro"] #splash-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255, 0, 255, 0.4) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 0, 255, 0.4) 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.1;
+  animation: grid-scroll 10s linear infinite;
+}
+
+@keyframes grid-scroll {
+  from { background-position: 0 0; }
+  to { background-position: 50px 50px; }
+}
+
+html[data-theme="retro"] .splash-card {
+  background: rgba(10, 0, 30, 0.6);
+  border: 2px solid #f0f;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 0 20px #f0f, 0 0 40px #0ff, inset 0 0 15px rgba(255,0,255,0.5);
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+html[data-theme="retro"] .splash-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(32px, 6vw, 64px);
+  color: #fff;
+  text-shadow:
+    0 0 5px #fff,
+    0 0 10px #fff,
+    0 0 20px #f0f,
+    0 0 30px #f0f,
+    0 0 40px #f0f,
+    0 0 55px #f0f,
+    0 0 75px #f0f;
+}
+
+html[data-theme="retro"] .splash-subtitle {
+  font-family: 'Press Start 2P', monospace;
+  color: #0ff;
+  font-size: 1rem;
+  text-shadow: 0 0 5px #0ff;
+}
+
+html[data-theme="retro"] .splash-card .btn {
+  font-family: 'Press Start 2P', monospace;
+  text-transform: uppercase;
+  border-radius: 8px;
+  border: 2px solid;
+  transition: all 0.2s ease-in-out;
+}
+
+html[data-theme="retro"] .splash-card .btn-gradient {
+  background: linear-gradient(135deg, #f0f, #ff6ec7);
+  color: #fff;
+  border-color: #ffc1f9;
+  box-shadow: 0 4px 0 #a0f, 0 6px 10px rgba(0,0,0,0.4);
+}
+html[data-theme="retro"] .splash-card .btn-gradient:hover {
+  transform: translateY(-2px) scale(1.02);
+  filter: brightness(1.1);
+  box-shadow: 0 6px 0 #a0f, 0 8px 15px rgba(0,0,0,0.3);
+}
+html[data-theme="retro"] .splash-card .btn-gradient:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 0 #a0f, 0 4px 8px rgba(0,0,0,0.4);
+}
+
+html[data-theme="retro"] .splash-card .btn-neon {
+  background: linear-gradient(135deg, #0ff, #00b8d4);
+  color: #000;
+  border-color: #7fffff;
+  box-shadow: 0 4px 0 #088, 0 6px 10px rgba(0,0,0,0.4);
+}
+html[data-theme="retro"] .splash-card .btn-neon:hover {
+  transform: translateY(-2px) scale(1.02);
+  filter: brightness(1.1);
+  box-shadow: 0 6px 0 #088, 0 8px 15px rgba(0,0,0,0.3);
+}
+html[data-theme="retro"] .splash-card .btn-neon:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 0 #088, 0 4px 8px rgba(0,0,0,0.4);
+}

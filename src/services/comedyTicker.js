@@ -58,24 +58,26 @@ class ComedyTicker {
     }
     
     setupEventListeners() {
-        // Listen for game events
-        eventBus.on('correctAnswer', () => {
-            this.showRandomMessage('positive');
-        });
-        
-        eventBus.on('incorrectAnswer', () => {
-            this.showRandomMessage('negative');
+        // Listen for modern game events
+        eventBus.on('answer:evaluated', ({ isCorrect }) => {
+            if (isCorrect) {
+                this.showRandomMessage('positive');
+            } else {
+                this.showRandomMessage('negative');
+            }
         });
 
-        eventBus.on('streakMilestone', (e) => {
-            if (e.detail && e.detail.streak >= 3) {
+        eventBus.on('game:streak-milestone', ({ streak }) => {
+            if (streak >= 3) {
                 this.showRandomMessage('streak');
             }
         });
 
-        eventBus.on('tickerMessage', (e) => {
-            if (e.detail && e.detail.category) {
-                this.showRandomMessage(e.detail.category);
+        eventBus.on('ticker:show', ({ category, message }) => {
+            if (message) {
+                this.displayMessage(message);
+            } else if (category) {
+                this.showRandomMessage(category);
             }
         });
     }
@@ -105,11 +107,18 @@ class ComedyTicker {
         this.currentMessage = message;
         this.tickerElement.textContent = message;
         
-        // Reset animation by removing and re-adding the element
-        const parent = this.tickerElement.parentNode;
-        const newTicker = this.tickerElement.cloneNode(true);
-        parent.replaceChild(newTicker, this.tickerElement);
-        this.tickerElement = newTicker;
+        // Reset animation and set random height
+        const tickerUnit = this.tickerElement.closest('.ticker-unit');
+        if (tickerUnit) {
+            // Random flight height (20-80% of viewport height)
+            const randomTop = 20 + Math.random() * 60;
+            tickerUnit.style.top = `${randomTop}%`;
+
+            const parent = this.tickerElement.parentNode;
+            const newTicker = this.tickerElement.cloneNode(true);
+            parent.replaceChild(newTicker, this.tickerElement);
+            this.tickerElement = newTicker;
+        }
         
         // Mark as animating
         this.isAnimating = true;

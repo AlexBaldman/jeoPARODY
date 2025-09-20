@@ -18,7 +18,8 @@
 
 import { eventBus } from '../utils/events.js';
 import { ACTION_TYPES } from '../state/actions.js';
-import { getQuestion, initialize as initializeQuestionService } from '../services/api/questionService.js';
+import { getQuestion } from '../services/api/questionService.js';
+import { store } from '../state/store.js';
 
 // Game constants
 export const GAME_CONFIG = {
@@ -124,15 +125,12 @@ export class GameEngine {
     // Game loop
     this.isRunning = false;
     
-    // Initialize services
-    initializeQuestionService();
-
     // Event handlers
     this.setupEventHandlers();
   }
   
   /**
-   * Starts the main game loop.
+   * Start the game engine
    */
   start() {
     if (this.isRunning) return;
@@ -146,7 +144,7 @@ export class GameEngine {
   }
   
   /**
-   * Stops the main game loop.
+   * Stop the game engine
    */
   stop() {
     this.isRunning = false;
@@ -160,8 +158,7 @@ export class GameEngine {
   }
   
   /**
-   * The main game loop, running at 60fps.
-   * @private
+   * Main game loop - runs at 60fps
    */
   gameLoop = () => {
     if (!this.isRunning) return;
@@ -180,9 +177,8 @@ export class GameEngine {
   }
   
   /**
-   * Updates the game state based on the current phase.
-   * @param {number} deltaTime - The time in milliseconds since the last update.
-   * @private
+   * Update game state based on current phase
+   * @param {number} deltaTime - Time since last update
    */
   update(deltaTime) {
     switch (this.state.session.phase) {
@@ -237,10 +233,8 @@ export class GameEngine {
   }
   
   /**
-   * Starts a new game session.
-   * @param {object} [options={}] - Game options.
-   * @param {string} [options.difficulty='normal'] - The game difficulty.
-   * @param {string} [options.mode='classic'] - The game mode.
+   * Start a new game session
+   * @param {Object} options - Game options
    */
   startGame(options = {}) {
     this.state.session = {
@@ -268,8 +262,8 @@ export class GameEngine {
   }
   
   /**
-   * Loads a new question into the game state.
-   * @param {object} questionData - The question data to load.
+   * Load a new question
+   * @param {Object} questionData - Question data
    */
   loadQuestion(questionData) {
     this.state.question = {
@@ -289,8 +283,8 @@ export class GameEngine {
   }
   
   /**
-   * Submits a user's answer for the current question.
-   * @param {string} userAnswer - The answer provided by the user.
+   * Submit an answer
+   * @param {string} userAnswer - User's answer
    */
   submitAnswer(userAnswer) {
     if (this.state.session.phase !== GAME_PHASES.QUESTION) {
@@ -473,6 +467,12 @@ export class GameEngine {
     if (this.state.score.history.length > 100) {
       this.state.score.history = this.state.score.history.slice(-100);
     }
+
+    // Dispatch state update to the central store for persistence
+    store.dispatch('UPDATE', {
+      score: this.state.score,
+      statistics: this.state.stats
+    });
   }
   
   /**
@@ -590,15 +590,17 @@ export class GameEngine {
   /**
    * Setup event handlers
    */
-  async requestNewQuestion() {
-    this.transitionPhase(GAME_PHASES.LOADING);
+  /**
+   * Request a new question from the question service
+   */
+  async handleNewQuestionRequest() {
+    console.log('[GameEngine] Requesting new question...');
     const question = await getQuestion();
     if (question) {
-      this.loadQuestion(question);
+      this.eventBus.emit('question:load', { question });
     } else {
-      // Handle error case - maybe show a message to the user
-      console.error("Failed to retrieve a new question.");
-      this.transitionPhase(GAME_PHASES.MENU); // Or some error state
+      console.error('[GameEngine] Failed to get a new question from the service.');
+      this.eventBus.emit('game:error', { message: 'Could not load a new question.' });
     }
   }
 
@@ -610,7 +612,7 @@ export class GameEngine {
     this.eventBus.on('game:reset', () => this.resetGame());
     
     // Question events
-    this.eventBus.on('question:request-new', () => this.requestNewQuestion());
+    this.eventBus.on('question:request-new', () => this.handleNewQuestionRequest());
     this.eventBus.on('question:load', (data) => this.loadQuestion(data.question));
     this.eventBus.on('answer:submit', (data) => this.submitAnswer(data.answer));
   }
@@ -648,7 +650,9 @@ let gameEngineInstance = null;
 
 export function getGameEngine() {
   if (!gameEngineInstance) {
-    gameEngineInstance = new GameEngine();
+    const initialState = store.getState();
+    console.log('[GameEngine] Initializing with preloaded state:', initialState);
+    gameEngineInstance = new GameEngine(initialState);
   }
   return gameEngineInstance;
 }

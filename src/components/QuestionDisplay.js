@@ -49,6 +49,7 @@ class QuestionDisplay extends ConnectedComponent {
     const { showAnswer, speechBubbleStyle } = this.state;
     
     const isAnswerRevealed = gameStatus === GAME_STATES.ANSWER_REVEALED || showAnswer;
+    const valueText = question && question.value ? `for $${String(question.value).replace(/\$/g, '')}` : '';
 
     return `
       <div class="speech-bubble ${speechBubbleStyle}" 
@@ -67,7 +68,7 @@ class QuestionDisplay extends ConnectedComponent {
             </div>
             
             <div class="value-box" data-ref="valueBox">
-              ${this.formatValue(question.value)}
+              ${valueText}
             </div>
             
             <div class="question-box" data-ref="questionBox">
@@ -76,7 +77,7 @@ class QuestionDisplay extends ConnectedComponent {
             
             <div class="answer-box ${isAnswerRevealed ? 'visible' : ''}" 
                  data-ref="answerBox">
-              ${this.sanitize(question.answer || '')}
+              ${question.answer || ''}
             </div>
           </div>
         ` : this.renderEmpty()}
@@ -151,23 +152,13 @@ class QuestionDisplay extends ConnectedComponent {
   /**
    * Render media content
    */
-  formatValue(value) {
-    if (!value) return '';
-    const cleanedValue = String(value).replace(/\$/g, '');
-    return `for $${cleanedValue}`;
-  }
-
-  sanitize(str) {
-    if (typeof str !== 'string') return str;
-    return str.replace(/\\/g, '');
-  }
-
   renderMediaContent(question) {
     if (question.media) {
       const { type, src, alt } = question.media;
       return MediaModal.createThumbnail({ type, src, alt }, this.eventBus);
     } else {
-      return this.sanitize(question.question || '');
+      // Sanitize text to remove unwanted escape characters
+      return (question.question || '').replace(/\\/g, '');
     }
   }
 
