@@ -185,3 +185,103 @@ html[data-theme="retro"] body::after {
 
 /* Utility */
 .hidden { display: none !important; }
+
+/* ===================================
+   SNES/GENESIS RETRO SPLASH SCREEN
+   =================================== */
+
+html[data-theme="retro"] #splash-screen {
+  background: linear-gradient(170deg, #0d0221 0%, #1a0a38 30%, #241b5e 70%, #0d0221 100%);
+  overflow: hidden;
+}
+
+html[data-theme="retro"] #splash-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255, 0, 255, 0.4) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 0, 255, 0.4) 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.1;
+  animation: grid-scroll 10s linear infinite;
+}
+
+@keyframes grid-scroll {
+  from { background-position: 0 0; }
+  to { background-position: 50px 50px; }
+}
+
+html[data-theme="retro"] .splash-card {
+  background: rgba(10, 0, 30, 0.6);
+  border: 2px solid #f0f;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 0 20px #f0f, 0 0 40px #0ff, inset 0 0 15px rgba(255,0,255,0.5);
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+html[data-theme="retro"] .splash-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(32px, 6vw, 64px);
+  color: #fff;
+  text-shadow:
+    0 0 5px #fff,
+    0 0 10px #fff,
+    0 0 20px #f0f,
+    0 0 30px #f0f,
+    0 0 40px #f0f,
+    0 0 55px #f0f,
+    0 0 75px #f0f;
+}
+
+html[data-theme="retro"] .splash-subtitle {
+  font-family: 'Press Start 2P', monospace;
+  color: #0ff;
+  font-size: 1rem;
+  text-shadow: 0 0 5px #0ff;
+}
+
+html[data-theme="retro"] .splash-card .btn {
+  font-family: 'Press Start 2P', monospace;
+  text-transform: uppercase;
+  border-radius: 8px;
+  border: 2px solid;
+  transition: all 0.2s ease-in-out;
+}
+
+html[data-theme="retro"] .splash-card .btn-gradient {
+  background: linear-gradient(135deg, #f0f, #ff6ec7);
+  color: #fff;
+  border-color: #ffc1f9;
+  box-shadow: 0 4px 0 #a0f, 0 6px 10px rgba(0,0,0,0.4);
+}
+html[data-theme="retro"] .splash-card .btn-gradient:hover {
+  transform: translateY(-2px) scale(1.02);
+  filter: brightness(1.1);
+  box-shadow: 0 6px 0 #a0f, 0 8px 15px rgba(0,0,0,0.3);
+}
+html[data-theme="retro"] .splash-card .btn-gradient:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 0 #a0f, 0 4px 8px rgba(0,0,0,0.4);
+}
+
+html[data-theme="retro"] .splash-card .btn-neon {
+  background: linear-gradient(135deg, #0ff, #00b8d4);
+  color: #000;
+  border-color: #7fffff;
+  box-shadow: 0 4px 0 #088, 0 6px 10px rgba(0,0,0,0.4);
+}
+html[data-theme="retro"] .splash-card .btn-neon:hover {
+  transform: translateY(-2px) scale(1.02);
+  filter: brightness(1.1);
+  box-shadow: 0 6px 0 #088, 0 8px 15px rgba(0,0,0,0.3);
+}
+html[data-theme="retro"] .splash-card .btn-neon:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 0 #088, 0 4px 8px rgba(0,0,0,0.4);
+}
