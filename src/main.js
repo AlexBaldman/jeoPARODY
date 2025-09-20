@@ -351,6 +351,14 @@ function setupGameControls() {
     // Handle submit button
     checkButton.addEventListener('click', submitAnswer);
   }
+
+  // Handle showing the answer
+  eventBus.on('question:show-answer', () => {
+    const answerBox = document.getElementById('answerBox');
+    if (answerBox) {
+      answerBox.classList.toggle('visible');
+    }
+  });
 }
 
 /**
