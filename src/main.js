@@ -173,8 +173,8 @@ function setupServiceIntegration() {
   eventBus.on('question:show-answer', () => {
     const answerBox = document.getElementById('answerBox');
     const { question } = JeopardyApp.gameEngine.state;
-    if (answerBox && question?.data?.answer != null) {
-      answerBox.textContent = String(question.data.answer);
+    if (answerBox && question.data) {
+      answerBox.innerHTML = question.data.answer;
       answerBox.classList.add('visible');
     }
   });
