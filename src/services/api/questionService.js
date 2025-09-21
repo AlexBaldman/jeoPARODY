@@ -567,5 +567,6 @@ export default {
   parseCSV,
   getAvailableCategories,
   getQuestionsByCategory,
-  getRandomCategory
+  getRandomCategory,
+  getRandomBoard
 };
