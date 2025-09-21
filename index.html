@@ -256,7 +256,7 @@
                         <div class="toggle-label">DARK MODE</div>
                     </div>
                     <button id="host-anim-trigger" class="header-icon-btn" title="Host animation" aria-label="Trigger host animation">💃</button>
-                    <button id="hamburger-menu" class="hamburger-button" aria-label="Open menu">
+                    <button id="hamburger-menu" class="hamburger-button" aria-label="Open menu" aria-controls="side-menu" aria-expanded="false">
                         <span class="hamburger-line"></span>
                         <span class="hamburger-line"></span>
                         <span class="hamburger-line"></span>
@@ -267,26 +267,26 @@
 
         <!-- Side navigation menu -->
         <nav id="side-menu" class="side-menu" role="menu" aria-hidden="true" aria-labelledby="hamburger-menu">
-            <ul class="menu-items">
+            <ul class="menu-items" role="none">
                 <li>
-                    <button id="lang-btn-menu" data-lang="en" title="Switch Language">
+                    <button id="lang-btn-menu" data-lang="en" title="Switch Language" role="menuitem" tabindex="-1">
                         <i class="fas fa-language"></i>
                     </button>
                 </li>
                 <li>
-                    <button id="settings-button" aria-label="Game settings">
+                    <button id="settings-button" aria-label="Game settings" role="menuitem" tabindex="-1">
                         <i class="fas fa-cog"></i>
                         <span>Settings</span>
                     </button>
                 </li>
                 <li>
-                    <button id="stats-button" aria-label="View statistics">
+                    <button id="stats-button" aria-label="View statistics" role="menuitem" tabindex="-1">
                         <i class="fas fa-chart-bar"></i>
                         <span>Statistics</span>
                     </button>
                 </li>
                 <li>
-                    <button id="achievements-button" aria-label="View achievements">
+                    <button id="achievements-button" aria-label="View achievements" role="menuitem" tabindex="-1">
                         <i class="fas fa-trophy"></i>
                         <span>Achievements</span>
                     </button>
@@ -295,10 +295,10 @@
             
             <!-- Auth buttons container -->
             <div class="auth-buttons-div">
-                <button id="login-button" aria-label="Sign in to save scores">
+                <button id="login-button" aria-label="Sign in to save scores" role="menuitem" tabindex="-1">
                     <i class="fas fa-sign-in-alt"></i> sign in
                 </button>
-                <button id="leaderboard-button" aria-label="View leaderboard">
+                <button id="leaderboard-button" aria-label="View leaderboard" role="menuitem" tabindex="-1">
                     <i class="fas fa-crown"></i> leaderboard
                 </button>
             </div>

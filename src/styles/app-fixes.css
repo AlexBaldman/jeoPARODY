@@ -238,6 +238,28 @@ body:not(.dark-theme):not(.dark-mode) .user-profile::after {
     z-index: 130;
 }
 
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    #scoreboard,
+    #scoreboard .score-value.highlight,
+    .side-menu,
+    #menu-backdrop,
+    .ticker-unit,
+    .ticker-content {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* Mobile-first adjustments */
+@media (max-width: 640px) {
+    .side-menu { width: 90vw; max-height: 75vh; }
+    #scoreboard { width: 78vw; }
+    .user-profile { width: 78vw; right: -78vw; }
+    .user-profile.open,
+    .user-profile:hover { transform: translateX(-78vw); }
+}
+
 .button-tooltip::before {
     content: '';
     position: absolute;
