@@ -181,8 +181,9 @@
     </div>
 
     <!-- Clue Zoom Modal -->
-    <div class="clue-modal" id="clue-modal">
-      <div class="clue-card">
+    <div class="clue-modal" id="clue-modal" role="dialog" aria-modal="true" aria-labelledby="clue-title" aria-hidden="true">
+      <div class="clue-card" tabindex="-1">
+        <h2 id="clue-title" style="position:absolute; left:-9999px;">Clue</h2>
         <div class="clue-text" id="clue-text">This is where the clue appears. What is awesome UI?</div>
       </div>
     </div>

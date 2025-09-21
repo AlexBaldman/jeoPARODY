@@ -345,6 +345,14 @@ function setupUIBindings() {
   setupGlobalEventListeners();
   setupEventDrivenModals();
   setupNewUIModes();
+
+  // Scoreboard hover/touch peek-to-open
+  const scoreboard = document.getElementById('scoreboard');
+  if (scoreboard) {
+    scoreboard.addEventListener('mouseenter', () => scoreboard.classList.add('open'));
+    scoreboard.addEventListener('mouseleave', () => scoreboard.classList.remove('open'));
+    scoreboard.addEventListener('click', () => scoreboard.classList.toggle('open'));
+  }
 }
 
 /**
@@ -694,7 +702,7 @@ function setupNewUIModes() {
       const q = cell._question;
       const value = cell.getAttribute('data-value');
       if (clueText) clueText.textContent = q?.question || `Clue for ${value}`;
-      clueModal?.classList.add('active');
+      openClueModal();
     });
   }
 
@@ -713,7 +721,12 @@ function setupNewUIModes() {
   // Close clue modal on outside click
   if (clueModal) {
     clueModal.addEventListener('click', (e) => {
-      if (e.target === clueModal) clueModal.classList.remove('active');
+      if (e.target === clueModal) closeClueModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && clueModal.classList.contains('active')) {
+        closeClueModal();
+      }
     });
   }
 
@@ -935,4 +948,22 @@ function attachBoardControls() {
     const game = questionService.getRandomBoard({ date, year, month });
     renderJeopardyBoard(game);
   });
+}
+
+// ===== Clue modal helpers with focus management =====
+function openClueModal() {
+  const modal = document.getElementById('clue-modal');
+  const card = modal?.querySelector('.clue-card');
+  if (!modal || !card) return;
+  modal.classList.add('active');
+  modal.setAttribute('aria-hidden', 'false');
+  // trap focus on card
+  card.focus();
+}
+
+function closeClueModal() {
+  const modal = document.getElementById('clue-modal');
+  if (!modal) return;
+  modal.classList.remove('active');
+  modal.setAttribute('aria-hidden', 'true');
 }
