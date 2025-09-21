@@ -117,6 +117,127 @@
     z-index: 1000;
 }
 
+/* Scoreboard: improved contrast + slide from header */
+#scoreboard {
+    position: absolute;
+    right: 0;
+    top: -200px; /* sit behind sticky header */
+    background: linear-gradient(180deg, #0b2aa0, #051b6f);
+    color: #ffef9a;
+    border: 2px solid #ffd700;
+    border-radius: 10px 0 10px 10px;
+    padding: 12px 16px;
+    width: 240px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transform: translateY(0);
+    transition: transform 300ms ease, filter 300ms ease;
+    z-index: 120; /* above ticker, below header */
+}
+
+#scoreboard.open {
+    transform: translateY(215px); /* slide into view */
+}
+
+#scoreboard .score-value.highlight {
+    animation: scorePulse 900ms ease;
+}
+
+@keyframes scorePulse {
+    0% { filter: drop-shadow(0 0 0 rgba(255,20,147,0)); color: #ffef9a; }
+    25% { filter: drop-shadow(0 0 10px rgba(255,20,147,0.9)); color: #ff4fd0; }
+    100% { filter: drop-shadow(0 0 0 rgba(255,20,147,0)); color: #ffef9a; }
+}
+
+/* Peek tab always visible */
+#scoreboard::before {
+    content: '\25B6'; /* triangle play icon */
+    position: absolute;
+    right: 0;
+    top: 100%;
+    transform: translateY(-8px);
+    background: #ff1fc3;
+    color: #111;
+    border: 2px solid #ffd700;
+    border-top: none;
+    border-bottom-left-radius: 8px;
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+}
+
+/* Light/Dark variants */
+body:not(.dark-theme):not(.dark-mode) #scoreboard {
+    background: linear-gradient(180deg, #fefefe, #e9ecff);
+    color: #0b143a;
+}
+body:not(.dark-theme):not(.dark-mode) #scoreboard .score-value { color: #0b2aa0; }
+.dark-theme #scoreboard, .dark-mode #scoreboard { background: linear-gradient(180deg, #0b2aa0, #051b6f); }
+
+/* Click/hover to open */
+#scoreboard:hover { filter: brightness(1.06); }
+
+/* User profile: peek + slide out from right bottom */
+.user-profile {
+    position: fixed !important;
+    right: -260px; /* hidden off screen */
+    bottom: 120px;
+    width: 240px;
+    background: rgba(26, 26, 26, 0.95);
+    color: #fff;
+    border: 2px solid #ffd700;
+    border-right: none;
+    border-radius: 12px 0 0 12px;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.4);
+    transition: transform 300ms ease;
+    transform: translateX(0);
+    z-index: 110;
+}
+
+.user-profile::after { /* peek tab */
+    content: '\2630'; /* hamburger icon */
+    position: absolute;
+    left: -28px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+    background: #ff1fc3;
+    color: #111;
+    border-radius: 8px 0 0 8px;
+    box-shadow: -4px 0 8px rgba(0,0,0,0.3);
+}
+
+.user-profile.open,
+.user-profile:hover {
+    transform: translateX(-260px); /* slide into view */
+}
+
+/* Light variant */
+body:not(.dark-theme):not(.dark-mode) .user-profile {
+    background: #ffffff;
+    color: #0b143a;
+    border-color: #0b2aa0;
+}
+body:not(.dark-theme):not(.dark-mode) .user-profile::after {
+    border: 1px solid #0b2aa0;
+}
+
+/* Ticker plane/banner fixes and layering */
+.event-ticker { z-index: 1; pointer-events: none; }
+.ticker-plane { transform: none !important; }
+.speechBubble { position: relative; z-index: 5; }
+
+/* Host placement fix */
+.host-container {
+    bottom: 100px; /* ensure above footer */
+    left: 20px;
+    z-index: 130;
+}
+
 .button-tooltip::before {
     content: '';
     position: absolute;

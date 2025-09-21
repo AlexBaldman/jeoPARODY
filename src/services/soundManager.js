@@ -17,23 +17,24 @@ import { eventBus } from '../utils/events.js';
 
 // Audio file registry - modify this to add new sounds
 const SOUND_REGISTRY = {
+  // Map to existing Trebek audio assets (no generic SFX available in repo)
   // Game events
-  correct: 'assets/audio/correct.mp3',
-  incorrect: 'assets/audio/incorrect.mp3',
-  applause: 'assets/audio/applause.mp3',
-  buzzer: 'assets/audio/buzzer.mp3',
+  correct: 'assets/audio/trebek/3018362-alx-correct-response.mp3',
+  incorrect: 'assets/audio/trebek/3018725-alx-player-incorrect.mp3',
+  applause: 'assets/audio/trebek/3019131-alx-final-winner.mp3',
+  buzzer: 'assets/audio/trebek/3018382-alx-player-ring.mp3',
   
   // UI interactions
-  click: 'assets/audio/click.mp3',
-  hover: 'assets/audio/hover.mp3',
-  modal: 'assets/audio/modal.mp3',
+  click: 'assets/audio/trebek/3018391-alx-player-select.mp3',
+  hover: 'assets/audio/trebek/3018391-alx-player-select.mp3',
+  modal: 'assets/audio/trebek/3019050-alx-player-correct-7.mp3',
   
   // Host animations
-  moonwalk: 'assets/audio/moonwalk.mp3',
-  surprise: 'assets/audio/surprise.mp3',
+  moonwalk: 'assets/audio/trebek/3018299-alx-intro.mp3',
+  surprise: 'assets/audio/trebek/3019054-alx-dailyd-cor-now-first.mp3',
   
   // Background/ambient
-  theme: 'assets/audio/theme.mp3'
+  theme: 'assets/audio/trebek/3018299-alx-intro.mp3'
 };
 
 /**

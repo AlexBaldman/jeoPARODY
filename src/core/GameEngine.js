@@ -650,8 +650,10 @@ let gameEngineInstance = null;
 
 export function getGameEngine() {
   if (!gameEngineInstance) {
-    const initialState = store.getState();
-    console.log('[GameEngine] Initializing with preloaded state:', initialState);
+    // The GameEngine maintains its own internal state shape.
+    // Do not pass the app store state directly, as structures differ.
+    const initialState = createGameState();
+    console.log('[GameEngine] Initializing with engine state:', initialState);
     gameEngineInstance = new GameEngine(initialState);
   }
   return gameEngineInstance;

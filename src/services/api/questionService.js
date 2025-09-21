@@ -167,6 +167,61 @@ export async function getQuestion() {
 }
 
 /**
+ * Build a random Jeopardy-style board (6 categories x 5 clues)
+ * Optional date filters: exact date (YYYY-MM-DD), year (YYYY), month (MM)
+ */
+export function getRandomBoard(filters = {}) {
+  const { date, year, month } = filters;
+
+  const withinRange = (airdate) => {
+    if (!airdate) return true;
+    const d = String(airdate);
+    if (date && !d.startsWith(date)) return false;
+    if (year && !d.startsWith(String(year))) return false;
+    if (month && year) {
+      const mm = String(month).padStart(2, '0');
+      if (!d.startsWith(`${year}-${mm}`)) return false;
+    }
+    return true;
+  };
+
+  const pool = allQuestions.filter(q => withinRange(q.airdate));
+  const byCat = new Map();
+  for (const q of pool) {
+    const cat = q.category?.title || q.category || 'General Knowledge';
+    if (!byCat.has(cat)) byCat.set(cat, []);
+    byCat.get(cat).push(normalizeQuestionData(q));
+  }
+
+  const eligible = Array.from(byCat.entries()).filter(([, list]) => list.length >= 5);
+  if (eligible.length < 6) {
+    // Fallback: use whatever we have
+  }
+
+  shuffleArray(eligible);
+  const selected = eligible.slice(0, 6);
+
+  const values = [200, 400, 600, 800, 1000];
+  const board = selected.map(([name, list]) => {
+    // Prefer closest matching values; otherwise random 5
+    const byValue = new Map();
+    list.forEach(q => {
+      const v = Number(q.value) || 0;
+      const closest = values.reduce((a, b) => Math.abs(b - v) < Math.abs(a - v) ? b : a, values[0]);
+      if (!byValue.has(closest)) byValue.set(closest, []);
+      byValue.get(closest).push(q);
+    });
+    const clues = values.map(v => {
+      const bucket = byValue.get(v) || [];
+      return bucket.length ? bucket[Math.floor(Math.random() * bucket.length)] : list[Math.floor(Math.random() * list.length)];
+    });
+    return { name, clues };
+  });
+
+  return { categories: board };
+}
+
+/**
  * Fetch a question from the external API (with timeout)
  * @returns {Promise<Object|null>} Question data or null if failed
  */

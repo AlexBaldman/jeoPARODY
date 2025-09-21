@@ -26,9 +26,9 @@ export const HOST_PERSONALITIES = {
     imageCount: 9, // trebek-good-01 through trebek-good-05, trebek-dope-01 through trebek-dope-04, trebek-coy-angel
     moods: {
       encouraging: ['trebek-good-01.png', 'trebek-good-02.png', 'trebek-good-03.png'],
-      neutral: ['trebek-good-04.png', 'trebek-good-05.png'],
-      playful: ['trebek-dope-01.png', 'trebek-dope-02.png', 'trebek-dope-03.png', 'trebek-dope-04.png'],
-      mischievous: ['trebek-coy-angel.png']
+      neutral: ['trebek-good-05.png'],
+      playful: ['trebek-dope-01.png', 'trebek-dope-02.png', 'trebek-dope-03.png', 'trebek-dope-05.png'],
+      mischievous: ['trebek-coy-angel.png', 'trebek-smarmy-mafioso.png']
     },
     personality: {
       voice: 'warm and authoritative',

@@ -418,7 +418,18 @@ function submitAnswer() {
   if (!inputBox) return;
   
   const answer = inputBox.value.trim();
+  // Ensure a question is loaded
+  const hasQuestion = !!(JeopardyApp.gameEngine && JeopardyApp.gameEngine.state?.question?.data);
+  if (!hasQuestion) {
+    console.warn('[Submit] No question loaded; requesting a new one');
+    eventBus.emit('question:request-new');
+    return;
+  }
+
   if (answer) {
+    console.log(`[Submit] Answer submitted: ${answer}`);
+    // Emit both the legacy engine event and the namespaced game event
+    eventBus.emit('answer:submit', { answer });
     eventBus.emit(GAME_EVENTS.ANSWER_SUBMITTED, { answer });
     inputBox.value = '';
     eventBus.emit('ui:button-click');
@@ -448,6 +459,17 @@ function setupMenuInteractions() {
     hamburgerMenu.addEventListener('click', () => {
       sideMenu.classList.toggle('active');
       hamburgerMenu.classList.toggle('active');
+      eventBus.emit('ui:button-click');
+    });
+  }
+
+  // Host animation trigger
+  const hostAnimBtn = document.getElementById('host-anim-trigger');
+  if (hostAnimBtn) {
+    hostAnimBtn.addEventListener('click', () => {
+      const animations = ['celebrate', 'surprise', 'think'];
+      const pick = animations[Math.floor(Math.random() * animations.length)];
+      eventBus.emit('host:animate', { animation: pick });
       eventBus.emit('ui:button-click');
     });
   }
@@ -560,6 +582,13 @@ function setupNewUIModes() {
         if (mode === 'fullboard') {
           board?.classList.remove('hidden');
           board?.classList.add('active');
+          try {
+            const game = questionService.getRandomBoard();
+            renderJeopardyBoard(game);
+            attachBoardControls();
+          } catch (e) {
+            console.error('Failed to render fullboard', e);
+          }
         } else if (mode === 'run-category') {
           run?.classList.remove('hidden');
           run?.classList.add('active');
@@ -597,13 +626,13 @@ function setupNewUIModes() {
     });
 
     // Open clue modal on cell click
-    board.querySelectorAll('.clue').forEach(cell => {
-      cell.addEventListener('click', () => {
-        const value = cell.getAttribute('data-value');
-        // Placeholder text; integrate with question system later
-        if (clueText) clueText.textContent = `Clue for $${value} — (placeholder)`;
-        clueModal?.classList.add('active');
-      });
+    board.addEventListener('click', (ev) => {
+      const cell = ev.target.closest('.clue');
+      if (!cell) return;
+      const q = cell._question;
+      const value = cell.getAttribute('data-value');
+      if (clueText) clueText.textContent = q?.question || `Clue for ${value}`;
+      clueModal?.classList.add('active');
     });
   }
 
@@ -761,4 +790,87 @@ function setLegacyAnswerVisible(visible) {
     answerBox.style.display = 'none';
     answerBox.classList.remove('visible');
   }
+}
+
+// ===== Helpers: Scoreboard UX =====
+function flashScoreboard() {
+  const sb = document.getElementById('scoreboard');
+  if (!sb) return;
+  sb.classList.add('open');
+  clearTimeout(sb._hideTimer);
+  sb._hideTimer = setTimeout(() => sb.classList.remove('open'), 2500);
+}
+
+function highlightValue(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('highlight');
+  // force reflow
+  void el.offsetWidth;
+  el.classList.add('highlight');
+}
+
+eventBus.on('answer:evaluated', () => {
+  flashScoreboard();
+  highlightValue('score');
+  highlightValue('streak');
+});
+
+// ===== Helpers: Full Board Rendering =====
+function renderJeopardyBoard(game) {
+  const grid = document.getElementById('board-grid');
+  if (!grid || !game) return;
+  const cats = game.categories || [];
+  const values = ['$200', '$400', '$600', '$800', '$1000'];
+  let html = '';
+  // categories row
+  cats.forEach(cat => { html += `<div class="category">${cat.name}</div>`; });
+  // 5 rows of clues
+  for (let r = 0; r < 5; r++) {
+    for (let c = 0; c < cats.length; c++) {
+      const q = cats[c].clues[r];
+      html += `<div class="clue" data-value="${values[r]}">${values[r]}</div>`;
+    }
+  }
+  grid.innerHTML = html;
+  // attach question objects
+  const cells = grid.querySelectorAll('.clue');
+  let i = 0;
+  for (let r = 0; r < 5; r++) {
+    for (let c = 0; c < cats.length; c++) {
+      const cell = cells[i++];
+      cell._question = cats[c].clues[r];
+    }
+  }
+}
+
+function attachBoardControls() {
+  const controls = document.querySelector('#jeopardy-board-screen .board-controls');
+  if (!controls || controls._attached) return;
+  controls._attached = true;
+  const wrap = document.createElement('div');
+  wrap.style.display = 'flex';
+  wrap.style.gap = '8px';
+  wrap.style.alignItems = 'center';
+  wrap.style.marginLeft = 'auto';
+  wrap.innerHTML = `
+    <input type="date" id="board-date" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid #ffd700;border-radius:6px;padding:4px 8px;" />
+    <select id="board-year" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid #ffd700;border-radius:6px;padding:4px 8px;">
+      <option value="">Year</option>
+      ${Array.from({length: 40}, (_,i)=>2025-i).map(y=>`<option value="${y}">${y}</option>`).join('')}
+    </select>
+    <select id="board-month" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid #ffd700;border-radius:6px;padding:4px 8px;">
+      <option value="">Month</option>
+      ${Array.from({length:12},(_,i)=>`<option value="${String(i+1).padStart(2,'0')}">${String(i+1).padStart(2,'0')}</option>`).join('')}
+    </select>
+    <button id="board-apply" class="board-close" style="border:1px solid #ffd700;">Apply</button>
+  `;
+  controls.appendChild(wrap);
+  wrap.querySelector('#board-apply').addEventListener('click', () => {
+    const date = wrap.querySelector('#board-date').value || undefined;
+    const year = wrap.querySelector('#board-year').value || undefined;
+    const month = wrap.querySelector('#board-month').value || undefined;
+    const game = questionService.getRandomBoard({ date, year, month });
+    renderJeopardyBoard(game);
+  });
 }

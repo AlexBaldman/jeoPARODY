@@ -125,15 +125,16 @@
 /* ===== Basketball Scoreboard Styles ===== */
 .scoreboard.basketball-style {
     position: fixed;
-    top: 60px;
+    top: 70px; /* Below the sticky header */
     left: 50%;
     transform: translateX(-50%) translateY(-100%);
-    background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+    background: linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(45, 45, 45, 0.95));
+    backdrop-filter: blur(10px);
     border: 3px solid #FFD700;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.3);
     min-width: 300px;
-    transition: transform 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     z-index: var(--z-scoreboard);
 }
 
@@ -153,25 +154,38 @@
 
 .scoreboard-peek {
     position: absolute;
-    bottom: -30px;
+    bottom: -35px;
     left: 50%;
     transform: translateX(-50%);
     background: linear-gradient(145deg, #FFD700, #FFA500);
-    padding: 5px 20px;
-    border-radius: 0 0 10px 10px;
+    padding: 8px 25px;
+    border-radius: 0 0 15px 15px;
     cursor: pointer;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #1a1a1a;
 }
 
 .scoreboard-peek:hover {
-    bottom: -25px;
+    bottom: -30px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    transform: translateX(-50%) scale(1.05);
 }
 
 .scoreboard-peek i {
     color: #1a1a1a;
-    font-size: 18px;
+    font-size: 16px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
 
@@ -447,21 +461,90 @@ body.dark-mode::after {
     position: fixed;
     top: 70px;
     right: 0;
-    transform: translateX(100%);
+    width: 320px;
+    max-height: 70vh;
+    transform: translateY(-120%);
     transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-    width: 300px;
     background: linear-gradient(145deg, rgba(26, 26, 26, 0.98), rgba(45, 45, 45, 0.98));
     backdrop-filter: blur(10px);
-    border-left: 2px solid #FFD700;
-    transition: right 0.3s ease;
+    border-top: 2px solid #FFD700;
+    border-left: 2px solid rgba(255,215,0,0.2);
     z-index: 150;
-    height: calc(100vh - 70px);
     overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    border-bottom-left-radius: 12px;
 }
 
 .side-menu.active {
-    transform: translateX(0);
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+    transform: translateY(0);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+}
+
+.side-menu .menu-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.side-menu .menu-items li {
+    border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.side-menu .menu-items button {
+    width: 100%;
+    background: none;
+    border: none;
+    color: white;
+    padding: 15px 20px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.side-menu .menu-items button:hover {
+    background: rgba(255, 215, 0, 0.1);
+    color: #FFD700;
+    transform: translateX(5px);
+}
+
+.side-menu .menu-items button i {
+    width: 20px;
+    text-align: center;
+    color: #FFD700;
+}
+
+.auth-buttons-div {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+}
+
+.auth-buttons-div button {
+    width: 100%;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    border: none;
+    color: #1a1a1a;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.auth-buttons-div button:hover {
+    background: linear-gradient(135deg, #FFA500, #FFD700);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
 }
 
 /* ===== Language Toggle ===== */
@@ -568,6 +651,184 @@ input:checked + .slider:before {
     20% { opacity: 1; transform: scale(1); }
     80% { opacity: 1; transform: scale(1); }
     100% { opacity: 0; transform: scale(0.8); }
+}
+
+/* ===== Profile Info Component ===== */
+.user-profile {
+    position: fixed;
+    bottom: 100px;
+    right: -280px; /* Hidden by default, showing just a peek */
+    width: 320px;
+    height: 200px;
+    background: linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(45, 45, 45, 0.95));
+    backdrop-filter: blur(10px);
+    border: 3px solid #FFD700;
+    border-right: none;
+    border-radius: 15px 0 0 15px;
+    z-index: 850;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: -4px 4px 20px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 215, 0, 0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+.user-profile.active {
+    right: 0;
+}
+
+.user-profile:hover {
+    right: 0;
+}
+
+/* Profile peek indicator */
+.profile-peek {
+    position: absolute;
+    left: -40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 80px;
+    background: linear-gradient(145deg, #FFD700, #FFA500);
+    border-radius: 15px 0 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-family: 'Korinna', serif;
+    font-weight: bold;
+    font-size: 12px;
+    color: #1a1a1a;
+    cursor: pointer;
+    box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.user-profile .profile-pic {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid #FFD700;
+    margin-bottom: 15px;
+    object-fit: cover;
+}
+
+.user-profile h3 {
+    color: #FFD700;
+    margin: 0 0 10px 0;
+    font-family: 'Korinna', serif;
+    font-size: 18px;
+}
+
+.user-profile p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* ===== Plane and Ticker Fixes ===== */
+.event-ticker {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    z-index: var(--z-plane);
+    top: 0;
+    left: 0;
+}
+
+.ticker-unit {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    width: auto;
+    height: 6vmin;
+    border-radius: 4px;
+    padding: 0.5vmin 2vmin;
+    animation: flyAcross 15s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    transform: translateX(-100%);
+    top: 25%; /* Adjusted position */
+}
+
+.ticker-plane {
+    position: relative;
+    width: 12vmin;
+    height: 6vmin;
+    transform-style: preserve-3d;
+    z-index: 2;
+    /* Removed the scaleX(-1) that was making text backward */
+}
+
+.ticker-banner {
+    position: absolute;
+    left: 12vmin;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 4vmin;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 165, 0, 0.9));
+    color: #1a1a1a;
+    padding: 0 1.5vmin;
+    border-radius: 8px;
+    border: 2px solid #FFD700;
+    font-weight: bold;
+    text-shadow: none; /* Remove text shadow that made it hard to read */
+    animation: flutter 2s ease-in-out infinite;
+    transform-origin: left center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(2px);
+}
+
+.ticker-content {
+    color: #1a1a1a;
+    font-size: 2.2vmin;
+    font-weight: bold;
+    letter-spacing: 0.1vmin;
+    white-space: nowrap;
+    font-family: 'Korinna', serif;
+    text-shadow: none;
+}
+
+/* Ensure plane flies behind other elements */
+@keyframes flyAcross {
+    0% {
+        transform: translateX(-100%) translateY(0);
+        opacity: 0.8;
+    }
+    15% {
+        opacity: 1;
+    }
+    25% {
+        transform: translateX(25vw) translateY(-2vmin);
+    }
+    50% {
+        transform: translateX(50vw) translateY(2vmin);
+    }
+    75% {
+        transform: translateX(75vw) translateY(-1vmin);
+        opacity: 1;
+    }
+    85% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateX(calc(100vw + 20vmin)) translateY(0);
+        opacity: 0;
+    }
+}
+
+@keyframes flutter {
+    0%, 100% { transform: translateY(-50%) rotateZ(0deg); }
+    25% { transform: translateY(-52%) rotateZ(1deg); }
+    50% { transform: translateY(-50%) rotateZ(0deg); }
+    75% { transform: translateY(-48%) rotateZ(-1deg); }
 }
 
 /* ===== Responsive adjustments ===== */
