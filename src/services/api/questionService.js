@@ -525,6 +525,14 @@ export function getStats() {
 }
 
 /**
+ * Get all loaded questions (normalized)
+ * @returns {Array<Object>} All questions currently loaded
+ */
+export function getAllQuestions() {
+  return allQuestions.map(q => normalizeQuestionData(q));
+}
+
+/**
  * Update configuration
  * @param {Object} newConfig - Configuration updates
  */
@@ -545,5 +553,7 @@ export default {
   parseCSV,
   getAvailableCategories,
   getQuestionsByCategory,
-  getRandomCategory
+  getRandomCategory,
+  getRandomBoard,
+  getAllQuestions
 };
