@@ -42,14 +42,14 @@ What it grows into:
 ## Current Capabilities (MVP)
 - Jeopardy-style Q/A loop with clean scoring and validation
 - Modular architecture: `components`, `core`, `state`, `services`, `utils`, `styles`
-- AI host scaffolding with Gemini integration (proxy-based) and graceful fallback lines
+- AI host scaffolding with Gemini integration via proxy and graceful fallback lines
 - Media system with image/video/audio modal support
 - Achievements framework and animated scoreboard
 - Keyboard-friendly input with “smart Enter” behavior
 - Organized assets (images, fonts, questions, audio) under `assets/`
 - Vite-based dev/build pipeline
 
-See `docs/ARCHITECTURE_REVIEW_SUMMARY.md` and `docs/PROJECT_PLANNING.md` for the deeper audit and planning details.
+See `docs/MASTER_PLAN.md` for the deeper architecture and planning details.
 
 
 ## Architecture Overview
@@ -72,17 +72,31 @@ jeoPARODY/
 │   ├── utils/               # events, constants, helpers
 │   └── styles/              # app-fixes.css, enhanced-ui.css, media-rendering.css
 ├── assets/                  # images, fonts, questions, audio, css, scripts, data
-├── docs/                    # architecture & plans (see CORE_REFACTOR_PLAN.md)
+├── docs/                    # architecture & plans (see MASTER_PLAN.md)
 ├── tests/                   # integration and future unit tests
-└── config/                  # build/test configs (vite, jest, etc.)
+├── vite.config.js           # build config
+└── jest.config.js           # test config
 ```
 
 Representative state shape:
 ```js
 {
-  game: { score, currentQuestion, streak, questionsAnswered },
-  ui: { modal, scoreboard, media },
-  host: { currentImage, personality, animations }
+  game: {
+    phase, score, streak, currentQuestion, showingAnswer, session
+  },
+  ui: {
+    loading, modal, notifications
+  },
+  user: {
+    name, preferences
+  },
+  settings: {
+    soundEnabled, difficulty, autoAdvance, animationsEnabled
+  },
+  statistics: {
+    totalGames, totalQuestions, correctAnswers, totalPlayTime,
+    achievements, categoryStats
+  }
 }
 ```
 
@@ -113,22 +127,18 @@ Note: The AI host and Firebase integrations are optional. The game runs without 
 ## AI Host Configuration (Gemini)
 The AI host uses a Gemini proxy by default for browser safety with fallbacks if unavailable.
 
-- Primary service: `src/services/ai.js` (proxy-first, fallback responses)
-- Optional service: `src/services/ai/GeminiTrebek.js` (localStorage-managed API key)
+- Primary service: `src/services/ai.js` (unified interface + caching)
+- Providers: `src/services/ai-providers.js` (Gemini via proxy, Claude placeholder, fallback)
 
 Options:
 1) Use the proxy (recommended for development)
 - Expected endpoints (default):
   - `http://localhost:3002/api/gemini/health`
   - `http://localhost:3002/api/gemini/generate`
-- The app will auto-detect the proxy and enable AI replies.
+- The app will auto-detect the proxy and enable AI replies when healthy.
 
-2) Set a direct API key for `GeminiTrebek` (no proxy)
-- In the browser console during development, you can set:
-```js
-localStorage.setItem('gemini_api_key', 'YOUR_GOOGLE_GENAI_KEY');
-```
-- Then ensure `GeminiTrebek` is initialized via the host system or directly in your dev hooks.
+2) Direct API key (NOT YET IMPLEMENTED IN-CODE)
+- The provider detects `localStorage.getItem('gemini_api_key')`, but direct API calls are not implemented in the current code path. Use the proxy.
 
 If neither is available, the host will use witty canned lines so the game remains fully playable.
 
@@ -155,11 +165,11 @@ npm test
 npm run test:watch
 npm run test:coverage
 ```
-- E2E (planned): Cypress skeleton to be added; see `docs/CORE_REFACTOR_PLAN.md`
+- E2E (planned): Cypress/Playwright to be added; see `docs/MASTER_PLAN.md`
 
 
 ## Roadmap
-Short version; see `docs/PROJECT_PLANNING.md` and `docs/ARCHITECTURE_REVIEW_SUMMARY.md` for full context.
+Short version; see `docs/MASTER_PLAN.md` for full context.
 
 - Phase 1: Host Personality System
   - Multi-host architecture, gallery UI, distinct prompts, personality fx
@@ -169,7 +179,7 @@ Short version; see `docs/PROJECT_PLANNING.md` and `docs/ARCHITECTURE_REVIEW_SUMM
   - Real-time 1v1, friend system, leaderboards, mobile polish
 - Continuous: Performance, accessibility, testing, bundle hygiene
 
-Open technical items are tracked in `docs/CORE_REFACTOR_PLAN.md` and `docs/URGENT_TODO_2025-08-06.md`.
+Open technical items are tracked in `docs/MASTER_PLAN.md`.
 
 
 ## Contributing
@@ -180,8 +190,7 @@ Open technical items are tracked in `docs/CORE_REFACTOR_PLAN.md` and `docs/URGEN
 - Document architectural decisions
 
 Start here:
-- Read `docs/CORE_REFACTOR_PLAN.md` for the current “source of truth”
-- Read `docs/PROJECT_PLANNING.md` for priorities and success metrics
+- Read `docs/MASTER_PLAN.md` for the current source of truth, priorities, and success metrics
 
 
 ## Legal
