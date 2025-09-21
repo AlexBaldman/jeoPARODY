@@ -480,6 +480,23 @@ body.dark-mode::after {
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
 }
 
+/* Backdrop for side menu */
+#menu-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 140;
+}
+
+#menu-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 .side-menu .menu-items {
     list-style: none;
     padding: 0;

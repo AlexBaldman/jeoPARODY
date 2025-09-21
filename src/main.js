@@ -436,6 +436,12 @@ function submitAnswer() {
   }
 }
 
+// Normalize legacy answer events to engine event name
+// This ensures any legacy emitters still drive the engine path.
+eventBus.on(GAME_EVENTS.ANSWER_SUBMITTED, ({ answer }) => {
+  if (answer) eventBus.emit('answer:submit', { answer });
+});
+
 /**
  * Set up menu interactions
  */
@@ -455,13 +461,45 @@ function setupMenuInteractions() {
   // Hamburger menu
   const hamburgerMenu = document.getElementById('hamburger-menu');
   const sideMenu = document.getElementById('side-menu');
+  const menuBackdrop = document.getElementById('menu-backdrop');
   if (hamburgerMenu && sideMenu) {
     hamburgerMenu.addEventListener('click', () => {
-      sideMenu.classList.toggle('active');
-      hamburgerMenu.classList.toggle('active');
+      const open = !sideMenu.classList.contains('active');
+      sideMenu.classList.toggle('active', open);
+      hamburgerMenu.classList.toggle('active', open);
+      sideMenu.setAttribute('aria-hidden', String(!open));
+      hamburgerMenu.setAttribute('aria-expanded', String(open));
+      menuBackdrop?.classList.toggle('active', open);
+      if (open) {
+        trapFocus(sideMenu, true);
+        // focus first focusable
+        const first = sideMenu.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        first?.focus();
+      } else {
+        trapFocus(sideMenu, false);
+        hamburgerMenu.focus();
+      }
       eventBus.emit('ui:button-click');
     });
   }
+  // Backdrop click closes
+  if (menuBackdrop && sideMenu && hamburgerMenu) {
+    menuBackdrop.addEventListener('click', () => {
+      sideMenu.classList.remove('active');
+      sideMenu.setAttribute('aria-hidden', 'true');
+      hamburgerMenu.classList.remove('active');
+      hamburgerMenu.setAttribute('aria-expanded', 'false');
+      menuBackdrop.classList.remove('active');
+      trapFocus(sideMenu, false);
+      hamburgerMenu.focus();
+    });
+  }
+  // ESC closes
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && sideMenu?.classList.contains('active')) {
+      menuBackdrop?.click();
+    }
+  });
 
   // Host animation trigger
   const hostAnimBtn = document.getElementById('host-anim-trigger');
@@ -472,6 +510,30 @@ function setupMenuInteractions() {
       eventBus.emit('host:animate', { animation: pick });
       eventBus.emit('ui:button-click');
     });
+  }
+}
+
+// Focus trap for side menu when open
+function trapFocus(container, enable) {
+  if (!container) return;
+  const handler = (e) => {
+    if (e.key !== 'Tab') return;
+    const focusables = container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (!focusables.length) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      last.focus(); e.preventDefault();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      first.focus(); e.preventDefault();
+    }
+  };
+  if (enable) {
+    container._trapHandler = handler;
+    document.addEventListener('keydown', handler);
+  } else if (container._trapHandler) {
+    document.removeEventListener('keydown', container._trapHandler);
+    container._trapHandler = null;
   }
 }
 

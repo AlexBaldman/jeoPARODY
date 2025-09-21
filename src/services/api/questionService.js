@@ -276,6 +276,27 @@ async function loadLocalQuestions() {
     return true;
   }
   
+  // If an index exists (sharded data), prefer loading a shard to reduce memory/time
+  try {
+    const idxRes = await fetch('assets/questions/index.json');
+    if (idxRes.ok) {
+      const index = await idxRes.json();
+      const years = Object.keys(index.years || {});
+      const pick = years[Math.floor(Math.random() * years.length)];
+      if (pick) {
+        console.log(`🗂️ Loading shard for year: ${pick}`);
+        const shardRes = await fetch(`assets/questions/shards/${pick}.json`);
+        if (shardRes.ok) {
+          const shardData = await shardRes.json();
+          data = Array.isArray(shardData) ? shardData : shardData.questions || [];
+          successPath = `assets/questions/shards/${pick}.json`;
+        }
+      }
+    }
+  } catch (err) {
+    console.log('ℹ️ No index/shards found or failed to load, falling back to monolithic files');
+  }
+
   const questionPaths = [
     'assets/questions/questions.json',
     'assets/questions/combined_season1-40.tsv',
@@ -286,11 +307,12 @@ async function loadLocalQuestions() {
     './questions/questions.json'
   ];
   
-  let data = null;
-  let successPath = null;
+  let data = data || null;
+  let successPath = successPath || null;
   
   // Try each path
   for (const path of questionPaths) {
+    if (data) break;
     console.log(`🔍 Trying to fetch questions from: ${path}`);
     try {
       const response = await fetch(path);
