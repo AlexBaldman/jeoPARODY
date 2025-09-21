@@ -101,7 +101,7 @@ class DialogManager {
 
     checkAIAvailability() {
         // Check if AI services are available
-        this.aiEnabled = window.geminiGameIntegration?.isEnabled || false;
+        this.aiEnabled = true;
         if (this.aiEnabled) {
             console.log('🤖 AI services detected and enabled');
         }
@@ -303,16 +303,16 @@ class DialogManager {
         });
         
         // Process with AI if available
-        if (this.aiEnabled && window.geminiGameIntegration) {
+        if (this.aiEnabled) {
             try {
                 // Show typing indicator
                 this.showTypingIndicator();
                 
                 // Get AI response
-                const response = await window.geminiGameIntegration.getConversationalResponse(
-                    userMessage,
-                    this.getConversationContext()
-                );
+                const { aiService } = await import('./ai.js');
+                const ctx = this.getConversationContext();
+                const prompt = `You are the trivia host in an ongoing chat. Keep it brief.\nUser: ${userMessage}\nContext: ${JSON.stringify(ctx)}`;
+                const response = await aiService.generate(prompt, { maxTokens: 80, temperature: 0.5 });
                 
                 // Hide typing indicator
                 this.hideTypingIndicator();
@@ -325,7 +325,7 @@ class DialogManager {
             } catch (error) {
                 console.error('AI conversation error:', error);
                 this.queueMessage('CONVERSATION', 
-                    "I'm having trouble thinking right now. Let me just say - that's a great question!", {
+                    "I'm having trouble thinking right now. That's a great question, though!", {
                     sender: 'host'
                 });
             }
