@@ -1,3 +1,13 @@
+## 2.1.0 (2025-09-23)
+- CSS architecture finalized: tokens, layers, component styles
+- Dev UX: HUD and Dev Menu; theme persistence and cycling
+- Audio: gated init on interaction (no autoplay warnings)
+- SW caching: static and question assets
+- AI: mock provider toggle + health-check utility
+- Testing: core scoring/validation; mock AI toggle
+- MCP: Playwright + Chrome DevTools servers and docs
+- Docs: README, CSS.md, MCP.md, CONTRIBUTING, CHANGELOG
+- Fix: question loader TDZ
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -25,3 +35,4 @@ All notable changes to this project will be documented in this file.
 ## 2025-09-21
 - Phase 1 finalize: modal a11y improvements, sound mappings, scoreboard polish, reduced-motion gating, mobile widths.
 - Event unification, focus trap, question sharding script, asset-check script, architecture/docs refresh.
+
