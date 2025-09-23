@@ -319,18 +319,9 @@ function applyTheme(isDark) {
   // Sync checkbox UI if present
   const themeSwitchInput = document.getElementById('theme-switch');
   if (themeSwitchInput) themeSwitchInput.checked = isDark;
-  
-  // Update game container background
-  const gameContainer = document.querySelector('.game-container');
-  if (gameContainer) {
-    if (isDark) {
-      gameContainer.style.background = 'linear-gradient(to top, #1a1a1a, #2a2a2a)';
-      document.body.style.backgroundColor = '#000';
-    } else {
-      gameContainer.style.background = 'linear-gradient(to top, #64B9FF, #5cff9bbc)';
-      document.body.style.backgroundColor = '#ff1fc3c5';
-    }
-  }
+
+  // Use attribute-driven theming (consumed by tokens.css and modular styles)
+  document.documentElement.setAttribute('data-theme-mode', isDark ? 'dark' : 'light');
 }
 
 /**
