@@ -32,3 +32,7 @@ Guidelines
 - Gate motion under `prefers-reduced-motion: reduce`.
 - Keep all imports routed through `app.css` to preserve layering.
 
+Linting & Purge
+- Stylelint: `npm run lint:css` (requires `stylelint` + `stylelint-config-standard`).
+- PurgeCSS (post-build optional): `npm run purge:css` (requires `purgecss`).
+- Safelist dynamic classes (`visible`, `expanded`, `scoreboard--*`, `speech-bubble-*`).

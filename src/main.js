@@ -798,6 +798,9 @@ try {
                 window.location.search.includes('debug=true');
   
   if (isDev) {
+    // Load Dev HUD if enabled
+    import('./dev/hud.js').then(m => m.attachDevHUD({ eventBus, app: JeopardyApp })).catch(()=>{});
+
     setInterval(() => {
       if (JeopardyApp.gameEngine) {
         const stats = JeopardyApp.gameEngine.getPerformanceStats();

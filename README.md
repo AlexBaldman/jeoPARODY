@@ -231,6 +231,11 @@ Contributor resources:
   - Set `BASE_URL=http://localhost:3000` to target a different URL
 - Or use MCP servers (see `docs/MCP.md`) to let an agent navigate, screenshot, and inspect console/DOM.
 
+## Dev HUD (optional)
+- Toggle a small overlay (FPS, event counts, score) in dev:
+  - In the browser console: `localStorage.setItem('dev_hud','1'); location.reload();`
+  - Disable: `localStorage.removeItem('dev_hud'); location.reload();`
+
 
 ## Legal
 JeoPARODY/Jeopardish is a parody/tribute project not affiliated with Jeopardy Productions, Inc. The AI host is designed to be respectful and original; questions may be transformed/reworded by AI to preserve originality. All referenced trademarks and copyrights belong to their respective owners.
