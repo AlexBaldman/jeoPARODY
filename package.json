@@ -11,9 +11,16 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "lint": "eslint src --ext .js",
+    "lint:css": "stylelint \"src/**/*.css\"",
+    "lint:css:fix": "stylelint \"src/**/*.css\" --fix",
     "analyze": "vite build --mode analyze",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "mcp:browser": "npx -y @modelcontextprotocol/server-browser",
+    "mcp:chrome": "npx -y @modelcontextprotocol/server-chrome",
+    "chrome:rdp": "powershell -ExecutionPolicy Bypass -File scripts/start-chrome-rdp.ps1",
+    "snap": "node scripts/playwright-sample.mjs",
+    "purge:css": "purgecss --config purgecss.config.cjs --output dist/assets"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",

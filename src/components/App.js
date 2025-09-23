@@ -72,9 +72,14 @@ class App extends ConnectedComponent {
 
   // Component management
   initializeComponents() {
-    // Create header with sticky positioning
-    const header = document.createElement('header');
-    header.className = 'game-header';
+    // If the global header/menu already exists (index.html wiring), do not duplicate
+    const existingHamburger = document.getElementById('hamburger-menu');
+    let header = null;
+    if (!existingHamburger) {
+      // Create header with sticky positioning
+      header = document.createElement('header');
+      header.className = 'game-header';
+    }
     
     // Create left controls container
     const leftControls = document.createElement('div');
@@ -108,43 +113,48 @@ class App extends ConnectedComponent {
       <img src="images/jeoparody.png" alt="Jeopardish Logo" class="game-logo">
     `;
     
-    // Create right hamburger menu
+    // Create right controls only if header is created here
     const rightControls = document.createElement('div');
     rightControls.className = 'header-right';
-    const hamburger = document.createElement('button');
-    hamburger.className = 'hamburger-menu';
-    hamburger.id = 'hamburger-menu';
-    hamburger.setAttribute('aria-label', 'Toggle menu');
-    hamburger.innerHTML = `
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-    `;
-    rightControls.appendChild(hamburger);
+    if (!existingHamburger) {
+      const hamburger = document.createElement('button');
+      hamburger.className = 'hamburger-menu';
+      hamburger.id = 'hamburger-menu';
+      hamburger.setAttribute('aria-label', 'Toggle menu');
+      hamburger.innerHTML = `
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>`;
+      rightControls.appendChild(hamburger);
+    }
     
     // Build header
-    header.appendChild(leftControls);
-    header.appendChild(logoContainer);
-    header.appendChild(rightControls);
+    if (header) {
+      header.appendChild(leftControls);
+      header.appendChild(logoContainer);
+      header.appendChild(rightControls);
+    }
     
-    // Create side menu
-    const sideMenu = document.createElement('nav');
-    sideMenu.className = 'side-menu';
-    sideMenu.id = 'side-menu';
-    sideMenu.innerHTML = `
-      <div class="menu-header">
-        <h3>Menu</h3>
-        <button class="close-menu" aria-label="Close menu">×</button>
-      </div>
-      <ul class="menu-items">
-        <li><button data-action="settings">⚙️ Settings</button></li>
-        <li><button data-action="stats">📊 Stats</button></li>
-        <li><button data-action="achievements">🏆 Achievements</button></li>
-        <li><button data-action="leaderboard">📈 Leaderboard</button></li>
-        <li><button data-action="profile">👤 Profile</button></li>
-        <li><button data-action="help">❓ Help</button></li>
-      </ul>
-    `;
+    // Create side menu only if not present
+    let sideMenu = document.getElementById('side-menu');
+    if (!sideMenu) {
+      sideMenu = document.createElement('nav');
+      sideMenu.className = 'side-menu';
+      sideMenu.id = 'side-menu';
+      sideMenu.innerHTML = `
+        <div class="menu-header">
+          <h3>Menu</h3>
+          <button class="close-menu" aria-label="Close menu">×</button>
+        </div>
+        <ul class="menu-items">
+          <li><button data-action="settings">⚙️ Settings</button></li>
+          <li><button data-action="stats">📊 Stats</button></li>
+          <li><button data-action="achievements">🏆 Achievements</button></li>
+          <li><button data-action="leaderboard">📈 Leaderboard</button></li>
+          <li><button data-action="profile">👤 Profile</button></li>
+          <li><button data-action="help">❓ Help</button></li>
+        </ul>`;
+    }
     
     // Create main content area
     const main = document.createElement('main');
@@ -176,8 +186,8 @@ class App extends ConnectedComponent {
     main.appendChild(controlsContainer);
     
     // Add to app
-    this.appendChild(header);
-    this.appendChild(sideMenu);
+    if (header) this.appendChild(header);
+    if (sideMenu && !sideMenu.parentNode) this.appendChild(sideMenu);
     this.appendChild(main);
     
     // Initialize and add modal manager

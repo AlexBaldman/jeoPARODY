@@ -318,7 +318,7 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
-    z-index: 1000;
+    z-index: var(--z-header);
     margin-bottom: 5px;
 }
 
@@ -333,7 +333,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 10000;
+    z-index: var(--z-modal);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -396,7 +396,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
+    z-index: var(--z-local-3);
     font-size: 18px;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);

@@ -1,0 +1,63 @@
+/* Design tokens: typography, colors, spacing, and z-index scale */
+
+:root {
+  /* Typography scale */
+  --fs-base: clamp(14px, 2vw, 18px);
+  --fs-question: clamp(18px, 3vw, 28px);
+  --fs-heading: clamp(24px, 5vw, 48px);
+  --fs-dollar: clamp(20px, 4vw, 36px);
+
+  /* Layout metrics */
+  --header-h: 80px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  /* Spacing scale */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+
+  /* Shadows */
+  --sh-elev-1: 0 2px 8px rgba(0,0,0,0.15);
+  --sh-elev-2: 0 8px 24px rgba(0,0,0,0.35);
+  --sh-elev-3: 0 20px 60px rgba(0,0,0,0.5);
+
+  /* Timing */
+  --t-fast: 160ms;
+  --t-med: 300ms;
+  --t-slow: 450ms;
+
+  /* Palette (core) */
+  --c-bg: #0b0f1a;
+  --c-surface: #1a1f2e;
+  --c-overlay: rgba(0,0,0,0.85);
+  --c-text: #e5e7eb;
+  --c-muted: #9ca3af;
+
+  --c-accent: #ffd700;
+  --c-accent-2: #ffed4e;
+  --c-success: #22c55e;
+  --c-warn: #f59e0b;
+  --c-error: #ef4444;
+
+  /* Z-index scale */
+  --z-base: 0;
+  --z-background: -2;
+  --z-plane: 1;             /* ambient effects (ticker/plane) */
+  --z-footer: 90;           /* sticky footer and low overlays */
+  --z-host: 100;            /* host image/avatar */
+  --z-panel: 150;           /* menus/panels */
+  --z-panel-backdrop: 140;  /* panel backdrops */
+  --z-scoreboard: 900;      /* side scoreboard */
+  --z-header: 1000;         /* sticky header */
+  --z-modal: 2000;          /* dialogs/overlays */
+
+  /* Local stacking helpers (component-internal) */
+  --z-local-1: 2;
+  --z-local-2: 5;
+  --z-local-3: 10;
+}

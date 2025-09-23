@@ -156,10 +156,10 @@ async function initializeCoreServices() {
   }
   
   // Initialize sound system
+  // Prepare sound system (init after first user interaction to avoid autoplay blocks)
   JeopardyApp.soundManager = soundManager;
-  await JeopardyApp.soundManager.init();
-  console.info('[🔊] Audio system ready');
-  
+  // audio will init on first interaction
+  console.info('[??] Audio system prepared (starts on first interaction)');
   // Initialize host system
   JeopardyApp.hostSystem = getHostSystem();
   // HostSystem init() is called in constructor, so no need to await it here
@@ -386,6 +386,14 @@ function setupUIBindings() {
   setupGlobalEventListeners();
   setupEventDrivenModals();
   setupNewUIModes();
+
+  // Scoreboard hover/touch peek-to-open
+  const scoreboard = document.getElementById('scoreboard');
+  if (scoreboard) {
+    scoreboard.addEventListener('mouseenter', () => scoreboard.classList.add('open'));
+    scoreboard.addEventListener('mouseleave', () => scoreboard.classList.remove('open'));
+    scoreboard.addEventListener('click', () => scoreboard.classList.toggle('open'));
+  }
 }
 
 /**
@@ -477,6 +485,12 @@ function submitAnswer() {
   }
 }
 
+// Normalize legacy answer events to engine event name
+// This ensures any legacy emitters still drive the engine path.
+eventBus.on(GAME_EVENTS.ANSWER_SUBMITTED, ({ answer }) => {
+  if (answer) eventBus.emit('answer:submit', { answer });
+});
+
 /**
  * Set up menu interactions
  */
@@ -496,13 +510,45 @@ function setupMenuInteractions() {
   // Hamburger menu
   const hamburgerMenu = document.getElementById('hamburger-menu');
   const sideMenu = document.getElementById('side-menu');
+  const menuBackdrop = document.getElementById('menu-backdrop');
   if (hamburgerMenu && sideMenu) {
     hamburgerMenu.addEventListener('click', () => {
-      sideMenu.classList.toggle('active');
-      hamburgerMenu.classList.toggle('active');
+      const open = !sideMenu.classList.contains('active');
+      sideMenu.classList.toggle('active', open);
+      hamburgerMenu.classList.toggle('active', open);
+      sideMenu.setAttribute('aria-hidden', String(!open));
+      hamburgerMenu.setAttribute('aria-expanded', String(open));
+      menuBackdrop?.classList.toggle('active', open);
+      if (open) {
+        trapFocus(sideMenu, true);
+        // focus first focusable
+        const first = sideMenu.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        first?.focus();
+      } else {
+        trapFocus(sideMenu, false);
+        hamburgerMenu.focus();
+      }
       eventBus.emit('ui:button-click');
     });
   }
+  // Backdrop click closes
+  if (menuBackdrop && sideMenu && hamburgerMenu) {
+    menuBackdrop.addEventListener('click', () => {
+      sideMenu.classList.remove('active');
+      sideMenu.setAttribute('aria-hidden', 'true');
+      hamburgerMenu.classList.remove('active');
+      hamburgerMenu.setAttribute('aria-expanded', 'false');
+      menuBackdrop.classList.remove('active');
+      trapFocus(sideMenu, false);
+      hamburgerMenu.focus();
+    });
+  }
+  // ESC closes
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && sideMenu?.classList.contains('active')) {
+      menuBackdrop?.click();
+    }
+  });
 
   // Host animation trigger
   const hostAnimBtn = document.getElementById('host-anim-trigger');
@@ -513,6 +559,30 @@ function setupMenuInteractions() {
       eventBus.emit('host:animate', { animation: pick });
       eventBus.emit('ui:button-click');
     });
+  }
+}
+
+// Focus trap for side menu when open
+function trapFocus(container, enable) {
+  if (!container) return;
+  const handler = (e) => {
+    if (e.key !== 'Tab') return;
+    const focusables = container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (!focusables.length) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      last.focus(); e.preventDefault();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      first.focus(); e.preventDefault();
+    }
+  };
+  if (enable) {
+    container._trapHandler = handler;
+    document.addEventListener('keydown', handler);
+  } else if (container._trapHandler) {
+    document.removeEventListener('keydown', container._trapHandler);
+    container._trapHandler = null;
   }
 }
 
@@ -673,7 +743,7 @@ function setupNewUIModes() {
       const q = cell._question;
       const value = cell.getAttribute('data-value');
       if (clueText) clueText.textContent = q?.question || `Clue for ${value}`;
-      clueModal?.classList.add('active');
+      openClueModal();
     });
   }
 
@@ -692,7 +762,12 @@ function setupNewUIModes() {
   // Close clue modal on outside click
   if (clueModal) {
     clueModal.addEventListener('click', (e) => {
-      if (e.target === clueModal) clueModal.classList.remove('active');
+      if (e.target === clueModal) closeClueModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && clueModal.classList.contains('active')) {
+        closeClueModal();
+      }
     });
   }
 
@@ -764,6 +839,11 @@ try {
                 window.location.search.includes('debug=true');
   
   if (isDev) {
+    // Load Dev HUD if enabled
+    import('./dev/hud.js').then(m => m.attachDevHUD({ eventBus, app: JeopardyApp })).catch(()=>{});
+    // Dev Menu
+    import('./dev/menu.js').then(m => m.attachDevMenu({ app: JeopardyApp })).catch(()=>{});
+
     setInterval(() => {
       if (JeopardyApp.gameEngine) {
         const stats = JeopardyApp.gameEngine.getPerformanceStats();
@@ -857,6 +937,26 @@ eventBus.on('answer:evaluated', () => {
   highlightValue('streak');
 });
 
+// Gated audio: start/resume AudioContext on first user gesture
+(() => {
+  const startAudio = async () => {
+    try { await JeopardyApp.soundManager.init(); } catch(_) {}
+    window.removeEventListener('click', startAudio);
+    window.removeEventListener('keydown', startAudio);
+    window.removeEventListener('touchstart', startAudio, { passive: true });
+  };
+  window.addEventListener('click', startAudio);
+  window.addEventListener('keydown', startAudio);
+  window.addEventListener('touchstart', startAudio, { passive: true });
+})();
+
+// Register service worker (if available)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+
 // ===== Helpers: Full Board Rendering =====
 function renderJeopardyBoard(game) {
   const grid = document.getElementById('board-grid');
@@ -911,7 +1011,28 @@ function attachBoardControls() {
     const date = wrap.querySelector('#board-date').value || undefined;
     const year = wrap.querySelector('#board-year').value || undefined;
     const month = wrap.querySelector('#board-month').value || undefined;
-    const game = questionService.getRandomBoard({ date, year, month });
+    const game = date
+      ? questionService.getBoardForDate(date)
+      : questionService.getRandomBoard({ date, year, month });
     renderJeopardyBoard(game);
   });
 }
+
+// ===== Clue modal helpers with focus management =====
+function openClueModal() {
+  const modal = document.getElementById('clue-modal');
+  const card = modal?.querySelector('.clue-card');
+  if (!modal || !card) return;
+  modal.classList.add('active');
+  modal.setAttribute('aria-hidden', 'false');
+  // trap focus on card
+  card.focus();
+}
+
+function closeClueModal() {
+  const modal = document.getElementById('clue-modal');
+  if (!modal) return;
+  modal.classList.remove('active');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
