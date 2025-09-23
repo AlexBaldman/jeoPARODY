@@ -19,5 +19,12 @@ UI
 - Add aria roles/labels. Trap focus in modals/menus.
 
 Validation
-- Run `node scripts/asset-check.js` to detect broken asset references.
+- Run 
+ode scripts/asset-check.js to detect broken asset references.
+
+CSS
+- Single entry: src/styles/app.css with @layer ordering.
+- Use tokens from src/styles/tokens.css (colors, spacing, z-index, header height).
+- Naming: base + modifier (e.g., .scoreboard scoreboard--basketball, .speech-bubble speech-bubble--jeopardy).
+- Prefer variables over magic numbers; avoid creating stacking contexts unless required.
 

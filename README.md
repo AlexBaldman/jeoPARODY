@@ -21,6 +21,7 @@ Learning should feel like play. JeoPARODY turns knowledge into a game loop thatâ
 - Testing
 - Roadmap
 - Contributing
+ - Styles
 - Legal
 - License
 
@@ -142,6 +143,9 @@ Options:
 
 If neither is available, the host will use witty canned lines so the game remains fully playable.
 
+Developer tip:
+- To force a mock AI (no network), open DevTools and run: `localStorage.setItem('use_mock_ai','1')`. Remove with `localStorage.removeItem('use_mock_ai')`.
+
 
 ## Optional: Firebase & Cloud Sync
 The HTML references Firebase compat scripts and `dist/js/firebase-config.js`. This is a stub for future features (auth, leaderboard, cloud saves). You can:
@@ -191,6 +195,41 @@ Open technical items are tracked in `docs/MASTER_PLAN.md`.
 
 Start here:
 - Read `docs/MASTER_PLAN.md` for the current source of truth, priorities, and success metrics
+
+Contributor resources:
+- Repository Guidelines: `AGENTS.md`
+- Architecture Overview: `ARCHITECTURE.md`
+- UI Guide: `UI_GUIDE.md`
+- Data Reference: `DATA.md`
+- AI Provider Setup: `docs/AI_PROVIDER_SETUP.md`
+- CSS Refactor Plan: `docs/css-refactor-plan.md`
+- Media Rendering Implementation: `docs/MEDIA_RENDERING_IMPLEMENTATION.md`
+- Dev Workflow & Agent Usage: `WARP.md`
+
+## Styles
+- Single entrypoint: `src/styles/app.css` (uses CSS `@layer` for base/layout/components/utilities).
+- Tokens: `src/styles/tokens.css` defines colors, spacing, radii, shadows, z-index, and header height.
+- Components: themed scoreboard and speech bubble live under `src/styles/components/`.
+- Guide: see `docs/CSS.md` for the z-index map, naming, and layering rules.
+
+## Changelog
+- 2025-09-23
+  - CSS architecture: single entrypoint with `@layer` (base/layout/components/utilities)
+  - Tokens: added `src/styles/tokens.css` (colors, spacing, radii, shadows, timings, z-index, header height)
+  - Components: new `src/styles/components/scoreboard.css` and `src/styles/components/speech-bubble.css`
+  - Theming: scoreboard and speech bubble now use modifier classes and CSS variables; dev theme cycling enabled
+  - Layering: standardized z-index usage across app; removed duplicate tokens from `enhanced-ui.css`
+  - A11y: modal focus trap and role/aria; header height tokenized
+  - AI: mock provider toggle (`localStorage.setItem('use_mock_ai','1')`); health-check utility scaffolded
+  - Tests: added unit tests for scoring/validation and a mock AI toggle test
+- Docs: added `docs/CSS.md`; updated README, WARP.md, CONTRIBUTING.md, and added `AGENTS.md`
+
+## Screenshots (optional)
+- Quick local screenshots via Playwright (requires Playwright):
+  - Start dev: `npm run dev`
+  - Capture: `npm run snap` (uses `scripts/playwright-sample.mjs`)
+  - Set `BASE_URL=http://localhost:3000` to target a different URL
+- Or use MCP servers (see `docs/MCP.md`) to let an agent navigate, screenshot, and inspect console/DOM.
 
 
 ## Legal

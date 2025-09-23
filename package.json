@@ -13,7 +13,11 @@
     "lint": "eslint src --ext .js",
     "analyze": "vite build --mode analyze",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "mcp:browser": "npx -y @modelcontextprotocol/server-browser",
+    "mcp:chrome": "npx -y @modelcontextprotocol/server-chrome",
+    "chrome:rdp": "powershell -ExecutionPolicy Bypass -File scripts/start-chrome-rdp.ps1",
+    "snap": "node scripts/playwright-sample.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
