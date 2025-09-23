@@ -19,6 +19,9 @@ import { getHostSystem } from './services/HostSystem.js';
 import { eventBus, GAME_EVENTS } from './utils/events.js';
 import { logger as console } from './utils/logger.js';
 import questionService from './services/api/questionService.js';
+import AIConfig from './services/ai/config.js';
+import installAIConsole from './services/ai/ConsoleOverlay.js';
+import installQuestionRewrite from './services/ai/rewriteIntegration.js';
 
 // Application instance - single point of truth
 const JeopardyApp = {
@@ -48,8 +51,16 @@ async function initializeApp() {
   console.info('[🎮] Initializing JeoPARODY...');
   
   try {
+    // Inject API keys via URL params (dev only)
+    injectKeysFromURL();
     // 1. Initialize core systems
     await initializeCoreServices();
+
+    // AI Console (dev overlay)
+    installAIConsole();
+
+    // Install persona rewrite pipeline for display string
+    installQuestionRewrite();
     
     // 2. Set up UI bindings
     setupUIBindings();
@@ -199,6 +210,36 @@ function setupServiceIntegration() {
       splash.classList.remove('active');
     }
   });
+}
+
+function injectKeysFromURL() {
+  try {
+    const url = new URL(window.location.href);
+    const ai = url.searchParams.get('ai');
+    const geminiKey = url.searchParams.get('gemini_key') || url.searchParams.get('key');
+    const claudeKey = url.searchParams.get('claude_key');
+    const providerOrder = url.searchParams.get('provider_order');
+    const personaId = url.searchParams.get('persona');
+    const enableLocal = url.searchParams.get('local_model');
+
+    let mutated = false;
+    if (geminiKey) { localStorage.setItem('gemini_api_key', geminiKey); mutated = true; }
+    if (claudeKey) { localStorage.setItem('claude_api_key', claudeKey); mutated = true; }
+    if (providerOrder) { AIConfig.providerOrder = providerOrder.split(','); mutated = true; }
+    if (personaId) { AIConfig.personaId = personaId; mutated = true; }
+    if (enableLocal != null) { AIConfig.featureFlags = { useLocalModel: enableLocal === '1' || enableLocal === 'true' }; mutated = true; }
+    if (ai) { mutated = true; }
+    if (mutated) {
+      url.searchParams.delete('gemini_key');
+      url.searchParams.delete('claude_key');
+      url.searchParams.delete('key');
+      url.searchParams.delete('provider_order');
+      url.searchParams.delete('persona');
+      url.searchParams.delete('local_model');
+      url.searchParams.delete('ai');
+      window.history.replaceState({}, document.title, url.toString());
+    }
+  } catch (_) { /* ignore */ }
 }
 
 /**

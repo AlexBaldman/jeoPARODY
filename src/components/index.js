@@ -8,5 +8,5 @@ export { default as QuestionDisplay } from './QuestionDisplay.js';
 export { default as GameControls } from './GameControls.js';
 export { default as Modal } from './Modal.js';
 
-// ModalManager will be imported when created
-export const ModalManager = null; // Placeholder for now
+// ModalManager placeholder remains null unless implemented later
+export const ModalManager = null;

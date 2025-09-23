@@ -6,8 +6,16 @@
  * handles caching, rate limiting, and fallbacks.
  */
 
+<<<<<<< HEAD
 import { gemini, claude, fallback } from './ai-providers.js';
 import { mock } from './ai/mockProvider.js';
+=======
+import providersDefault, { gemini, claude, fallback, local } from './ai-providers.js';
+import AIConfig from './ai/config.js';
+import PromptBuilder from './ai/PromptBuilder.js';
+import personas from './ai/personas.json';
+import { rewriteWithPolicy } from './ai/rewrite.js';
+>>>>>>> efaa3dd4d59cb99a6e0438bb0d9ddae794803669
 
 // System prompt for Trebek's personality
 const SYSTEM_PROMPT = `You are Alex Trebek hosting Jeopardy.
@@ -19,12 +27,16 @@ Your responses should be varied and entertaining.`;
 
 class AIService {
     constructor() {
+<<<<<<< HEAD
         this.providers = {
             gemini: gemini,
             claude: claude,
             mock: mock,
             fallback: fallback,
         };
+=======
+        this.providers = { gemini, claude, local, fallback };
+>>>>>>> efaa3dd4d59cb99a6e0438bb0d9ddae794803669
         this.activeProvider = 'fallback';
 
         // Caching and Rate Limiting
@@ -33,10 +45,14 @@ class AIService {
         this.lastRequestTime = 0;
         this.minRequestInterval = 1000; // 1 second
 
+        // Circuit breaker and rate-limit per provider
+        this.providerBackoff = new Map(); // providerId -> openUntil
+
         this.init();
     }
 
     init() {
+<<<<<<< HEAD
         // Optional mock toggle via localStorage: set `use_mock_ai` to '1'
         try {
             if (typeof localStorage !== 'undefined' && localStorage.getItem('use_mock_ai') === '1') {
@@ -53,7 +69,26 @@ class AIService {
         } else if (this.providers.claude.isInitialized) {
             this.activeProvider = 'claude';
         }
+=======
+        // Determine active provider by config priority and readiness
+        const order = AIConfig.providerOrder;
+        for (const id of order) {
+            const p = this.providers[id];
+            if (!p) continue;
+            if (typeof p.init === 'function') p.init();
+        }
+        this.activeProvider = this.selectReadyProvider() || 'fallback';
+>>>>>>> efaa3dd4d59cb99a6e0438bb0d9ddae794803669
         console.log(`🤖 AI Service initialized. Active provider: ${this.activeProvider}`);
+    }
+
+    selectReadyProvider() {
+        const order = AIConfig.providerOrder;
+        for (const id of order) {
+            const p = this.providers[id];
+            if (p && (p.isReady?.() || p.isInitialized)) return id;
+        }
+        return null;
     }
 
     /**
@@ -71,17 +106,40 @@ class AIService {
         // Enforce rate limiting
         await this.enforceRateLimit();
 
-        const provider = this.providers[this.activeProvider];
-        let response = await provider.generate(prompt, options);
+        let response = null;
+        let usedProvider = this.activeProvider;
+        const order = AIConfig.providerOrder;
+        for (const id of order) {
+            const p = this.providers[id];
+            if (!p) continue;
+            try {
+                if (!(p.isReady?.() ?? p.isInitialized)) continue;
+                response = await p.generate(prompt, {
+                    temperature: options.temperature ?? AIConfig.temperature,
+                    maxTokens: options.maxTokens ?? 120,
+                    seed: options.seed ?? AIConfig.seed
+                });
+                if (response) { usedProvider = id; break; }
+            } catch (e) {
+                console.warn(`[AI Service] Provider '${id}' failed:`, e);
+            }
+        }
 
         // If the primary provider fails, try the fallback
         if (!response) {
             console.warn(`[AI Service] Provider '${this.activeProvider}' failed. Using fallback.`);
             response = await this.providers.fallback.generate();
+            usedProvider = 'fallback';
         }
 
         // Cache the response
         this.cache(cacheKey, response);
+
+        // Dev overlay hook
+        if (AIConfig.featureFlags.aiConsole && typeof window !== 'undefined') {
+            window.__aiConsole?.push?.({ prompt, provider: usedProvider, response, ts: Date.now() });
+        }
+
         return response;
     }
     
@@ -126,31 +184,17 @@ const aiService = new AIService();
  */
 export async function trebekReply(context) {
     try {
-        // Build a detailed prompt for the AI
-        let userPrompt = '';
-        switch(context.prompt) {
-            case 'correct_answer':
-                userPrompt = `The contestant correctly answered "${context.userAnswer}" to the question "${context.question}". The correct answer is "${context.answer}". Give a positive and encouraging response.`;
-                break;
-            case 'wrong_answer':
-                userPrompt = `The contestant incorrectly answered "${context.userAnswer}" to the question "${context.question}". The correct answer is "${context.answer}". Give a gentle correction.`;
-                break;
-            case 'new_question':
-                userPrompt = `A new question has been selected: "${context.question}" (Category: ${context.category}, Value: $${context.value}). Give a brief introduction to this question.`;
-                break;
-            case 'game_start':
-                userPrompt = `The game is starting. The player's current score is $${context.gameState.currentScore}. Give a welcome message.`;
-                break;
-            case 'streak_milestone':
-                userPrompt = `The contestant has achieved a streak of ${context.gameState.currentStreak} correct answers. Congratulate them.`;
-                break;
-            default:
-                userPrompt = `The current question is "${context.question}". The correct answer is "${context.answer}". Make a witty comment about this.`;
-        }
-
-        // Combine the system prompt and user prompt
-        const fullPrompt = `${SYSTEM_PROMPT}\n\n${userPrompt}`;
-
+        const persona = personas.find(p => p.id === AIConfig.personaId) || personas[0];
+        const builder = new PromptBuilder(persona);
+        const eventMap = {
+            correct_answer: 'answer:correct',
+            wrong_answer: 'answer:incorrect',
+            new_question: 'question:new',
+            game_start: 'game:start',
+            streak_milestone: 'streak:milestone'
+        };
+        const event = eventMap[context.prompt] || 'question:new';
+        const fullPrompt = builder.compose(event, context);
         return await aiService.generate(fullPrompt);
 
     } catch (error) {

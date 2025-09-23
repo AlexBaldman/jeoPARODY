@@ -191,8 +191,10 @@ class App extends ConnectedComponent {
     this.appendChild(main);
     
     // Initialize and add modal manager
-    this.children.modalManager = new ModalManager();
-    this.appendChild(this.children.modalManager);
+    // Lazy-create SettingsModal and attach to app
+    const settingsMount = document.createElement('div');
+    settingsMount.id = 'settings-modal-mount';
+    this.appendChild(settingsMount);
     
     // Initialize achievements modal
     this.children.achievementsModal = new AchievementsModal(this.store, this.eventBus);
@@ -248,7 +250,18 @@ class App extends ConnectedComponent {
       button.addEventListener('click', (e) => {
         const action = e.target.dataset.action;
         console.log(`📱 Menu action: ${action}`);
-        this.eventBus.emit(`modal:open`, { type: action });
+        if (action === 'settings') {
+          import('./SettingsModal.js').then(({ default: SettingsModal }) => {
+            if (!this.children.settingsModal) {
+              this.children.settingsModal = new SettingsModal(this.store, this.eventBus);
+              const mount = this.querySelector('#settings-modal-mount');
+              if (mount) mount.appendChild(this.children.settingsModal.element);
+            }
+            this.children.settingsModal.open();
+          });
+        } else {
+          this.eventBus.emit(`modal:open`, { type: action });
+        }
         sideMenu.classList.remove('open');
       });
     });
