@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 2025-09-23 (MCP and follow-ups)
 - MCP tooling: added Playwright and Chrome RDP MCP servers with quick-start docs; new npm scripts (`mcp:browser`, `mcp:chrome`, `chrome:rdp`, `snap`).
 - Documentation: `docs/MCP.md` (workflow, client config) and `docs/CSS.md` additions; README/CONTRIBUTING/WARP updates.
 - UI/Accessibility: further polish to modal focus trap and ARIA, header/index tweaks, refined scoreboard peek/hover and speech-bubble visuals; mobile and reduced-motion adjustments.
