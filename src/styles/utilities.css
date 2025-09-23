@@ -16,4 +16,16 @@
     border: 2px solid var(--c-accent); border-radius: var(--radius-md);
     box-shadow: var(--sh-elev-3); padding: 12px 14px; display: none;
   }
+
+  /* Dev Menu */
+  .dev-menu {
+    position: fixed; left: 16px; bottom: 16px; z-index: var(--z-header);
+    background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,215,0,0.6);
+    border-radius: var(--radius-md); padding: 10px 12px; box-shadow: var(--sh-elev-2);
+    display: grid; gap: 8px; min-width: 260px;
+  }
+  .dev-menu__title { font-weight: 700; opacity: .9; }
+  .dev-menu__row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; }
+  .dev-menu .btn { background: linear-gradient(135deg, var(--c-accent), var(--c-accent-2)); color: #111; border: 0; border-radius: 6px; padding: 6px 10px; cursor: pointer; }
+  .dev-menu select { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,215,0,0.5); border-radius: 6px; padding: 4px 6px; }
 }

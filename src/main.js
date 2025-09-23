@@ -800,6 +800,8 @@ try {
   if (isDev) {
     // Load Dev HUD if enabled
     import('./dev/hud.js').then(m => m.attachDevHUD({ eventBus, app: JeopardyApp })).catch(()=>{});
+    // Dev Menu
+    import('./dev/menu.js').then(m => m.attachDevMenu({ app: JeopardyApp })).catch(()=>{});
 
     setInterval(() => {
       if (JeopardyApp.gameEngine) {

@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+- MCP tooling: added Playwright and Chrome RDP MCP servers with quick-start docs; new npm scripts (`mcp:browser`, `mcp:chrome`, `chrome:rdp`, `snap`).
+- Documentation: `docs/MCP.md` (workflow, client config) and `docs/CSS.md` additions; README/CONTRIBUTING/WARP updates.
+- UI/Accessibility: further polish to modal focus trap and ARIA, header/index tweaks, refined scoreboard peek/hover and speech-bubble visuals; mobile and reduced-motion adjustments.
+- Styles: introduced tokens/utilities and component styles (`tokens.css`, `utilities.css`, `components/scoreboard.css`, `components/speech-bubble.css`); consolidated layering and variables.
+- Services: AI provider modularization; added health check and mock provider; export/loader fixes in questionService.
+- Tests: initial unit tests for core scoring/validation and AI mock provider.
+- Build/Lint/Dev: add Stylelint config, PurgeCSS config, lightweight dev HUD/menu helpers, and a basic service worker scaffold.
+
 ## 2025-09-23
 - CSS architecture: single stylesheet entry with CSS `@layer` ordering.
 - Design tokens: `src/styles/tokens.css` (colors, spacing, radii, shadows, timings, z-index, header height).
