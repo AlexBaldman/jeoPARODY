@@ -28,23 +28,8 @@
     <!-- font stylesheet -->
     <link rel="stylesheet" href="assets/fonts/stylesheet.css">
 
-    <!-- Complete consolidated stylesheet -->
-    <link rel="stylesheet" href="assets/css/styles-complete.css?v=3.0">
-
-    <!-- App fixes stylesheet -->
-    <link rel="stylesheet" href="src/styles/app-fixes.css">
-
-    <!-- Enhanced UI stylesheet -->
-    <link rel="stylesheet" href="src/styles/enhanced-ui.css">
-
-    <!-- Media rendering stylesheet -->
-    <link rel="stylesheet" href="src/styles/media-rendering.css">
-
-    <!-- PAO styles -->
-    <link rel="stylesheet" href="src/styles/pao.css">
-
-    <!-- UX Pack: themes, components, animations -->
-    <link rel="stylesheet" href="src/styles/ux-pack.css">
+    <!-- Consolidated stylesheet (Vite will bundle @imports) -->
+    <link rel="stylesheet" href="src/styles/app.css">
     
     <!-- Old stylesheets - removed, all styles now in styles-complete.css -->
     
@@ -70,9 +55,29 @@
       // Only load debug helper in development
       try {
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-          const s = document.createElement('script');
-          s.src = 'assets/scripts/debug.js';
-          document.head.appendChild(s);
+          // Optional external debug script
+          const s = document.createElement('script'); s.src = 'assets/scripts/debug.js'; document.head.appendChild(s);
+
+          // Dev changelog badge
+          const btn = document.createElement('button');
+          btn.className = 'dev-changelog-btn focus-ring';
+          btn.textContent = "What's New";
+          btn.title = 'Open recent changes';
+          const panel = document.createElement('div');
+          panel.className = 'dev-changelog-panel';
+          document.body.append(btn, panel);
+          btn.addEventListener('click', async () => {
+            if (panel.style.display === 'block') { panel.style.display = 'none'; return; }
+            try {
+              const res = await fetch('CHANGELOG.md');
+              const text = await res.text();
+              const firstSection = text.split('\n## ')[1] || '';
+              panel.innerHTML = `<strong>Changelog</strong><pre style="white-space:pre-wrap">${firstSection.trim()}</pre>`;
+              panel.style.display = 'block';
+            } catch (_) {
+              window.open('CHANGELOG.md', '_blank');
+            }
+          });
         }
       } catch (e) {
         // Ignore debug loading errors in production
@@ -238,7 +243,7 @@
                 <div class="logo-container">
                     <img src="assets/images/title/title-jeopardish!-pixelart.png" alt="jeoPARODY!" class="logo-image">
                     <!-- Peeking scoreboard -->
-                    <div id="scoreboard" class="scoreboard">
+                    <div id="scoreboard" class="scoreboard" role="region" aria-label="Scoreboard">
                         <h2>SCOREBOARD</h2>
                         <p>SCORE: <span id="score" class="score-value">0</span></p>
                         <p>STREAK: <span id="streak" class="score-value">0</span></p>
@@ -378,7 +383,7 @@
         </div>
 
         <!-- User profile section (hidden by default) -->
-        <div id="user-profile" class="user-profile" style="display: none;">
+        <div id="user-profile" class="user-profile" style="display: none;" role="region" aria-label="User profile">
             <img id="user-avatar" class="user-avatar">
             <span id="user-name"></span>
             <button id="profile-button">edit profile</button>

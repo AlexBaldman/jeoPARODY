@@ -145,10 +145,10 @@ async function initializeCoreServices() {
   }
   
   // Initialize sound system
+  // Prepare sound system (init after first user interaction to avoid autoplay blocks)
   JeopardyApp.soundManager = soundManager;
-  await JeopardyApp.soundManager.init();
-  console.info('[🔊] Audio system ready');
-  
+  // audio will init on first interaction
+  console.info('[??] Audio system prepared (starts on first interaction)');
   // Initialize host system
   JeopardyApp.hostSystem = getHostSystem();
   // HostSystem init() is called in constructor, so no need to await it here
@@ -891,6 +891,26 @@ eventBus.on('answer:evaluated', () => {
   highlightValue('streak');
 });
 
+// Gated audio: start/resume AudioContext on first user gesture
+(() => {
+  const startAudio = async () => {
+    try { await JeopardyApp.soundManager.init(); } catch(_) {}
+    window.removeEventListener('click', startAudio);
+    window.removeEventListener('keydown', startAudio);
+    window.removeEventListener('touchstart', startAudio, { passive: true });
+  };
+  window.addEventListener('click', startAudio);
+  window.addEventListener('keydown', startAudio);
+  window.addEventListener('touchstart', startAudio, { passive: true });
+})();
+
+// Register service worker (if available)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+
 // ===== Helpers: Full Board Rendering =====
 function renderJeopardyBoard(game) {
   const grid = document.getElementById('board-grid');
@@ -945,7 +965,9 @@ function attachBoardControls() {
     const date = wrap.querySelector('#board-date').value || undefined;
     const year = wrap.querySelector('#board-year').value || undefined;
     const month = wrap.querySelector('#board-month').value || undefined;
-    const game = questionService.getRandomBoard({ date, year, month });
+    const game = date
+      ? questionService.getBoardForDate(date)
+      : questionService.getRandomBoard({ date, year, month });
     renderJeopardyBoard(game);
   });
 }
@@ -967,3 +989,4 @@ function closeClueModal() {
   modal.classList.remove('active');
   modal.setAttribute('aria-hidden', 'true');
 }
+

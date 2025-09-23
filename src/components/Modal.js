@@ -11,6 +11,10 @@ class Modal extends ConnectedComponent {
         this.modalId = options.modalId || 'modal';
         this.title = options.title || 'Modal';
         this.isOpen = false;
+        this.prevFocused = null;
+        this._onKeydownEsc = this.handleEscapeKey.bind(this);
+        this._onKeydownTrap = this.handleFocusTrap.bind(this);
+        this._onBackdropClick = null;
     }
 
     setupEventListeners() {
@@ -43,12 +47,17 @@ class Modal extends ConnectedComponent {
     open() {
         this.isOpen = true;
         this.render();
+        this.prevFocused = document.activeElement;
+        this.focusDialog();
         this.eventBus.emit('modal:opened', this.modalId);
     }
 
     close() {
         this.isOpen = false;
         this.render();
+        if (this.prevFocused && typeof this.prevFocused.focus === 'function') {
+            try { this.prevFocused.focus(); } catch (_) {}
+        }
         this.eventBus.emit('modal:closed', this.modalId);
     }
 
@@ -76,6 +85,33 @@ class Modal extends ConnectedComponent {
         }
     }
 
+    // Keep keyboard focus within the modal when open
+    handleFocusTrap(event) {
+        if (!this.isOpen || event.key !== 'Tab') return;
+        const dialog = this.element.querySelector('.modal-content');
+        if (!dialog) return;
+        const focusable = dialog.querySelectorAll('a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])');
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const active = document.activeElement;
+        if (event.shiftKey && active === first) {
+            last.focus();
+            event.preventDefault();
+        } else if (!event.shiftKey && active === last) {
+            first.focus();
+            event.preventDefault();
+        }
+    }
+
+    focusDialog() {
+        const dialog = this.element.querySelector('.modal-content');
+        if (dialog) {
+            if (!dialog.hasAttribute('tabindex')) dialog.setAttribute('tabindex', '-1');
+            dialog.focus();
+        }
+    }
+
     renderContent() {
         // Override in child classes
         return createElement('div', { className: 'modal-body' }, [
@@ -93,13 +129,14 @@ class Modal extends ConnectedComponent {
                 className: modalClass,
                 style: this.isOpen ? 'display: flex;' : 'display: none;'
             }, [
-                createElement('div', { className: 'modal-content beautiful-modal' }, [
+                createElement('div', { className: 'modal-content beautiful-modal', role: 'dialog', ariaModal: 'true', ariaLabelledby: `${this.modalId}-title` }, [
                     createElement('button', { 
                         className: 'close-modal neon-x',
                         ariaLabel: 'Close',
                         onclick: this.handleCloseClick.bind(this)
                     }, ['×']),
                     createElement('h2', { 
+                        id: `${this.modalId}-title`,
                         style: 'color: #ffd700; text-align: center; margin-bottom: 1.5rem; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);'
                     }, [this.title]),
                     this.renderContent()
@@ -110,14 +147,17 @@ class Modal extends ConnectedComponent {
         // Add backdrop click handler
         const modal = this.element.querySelector('.modal');
         if (modal) {
-            modal.addEventListener('click', this.handleBackdropClick.bind(this));
+            if (!this._onBackdropClick) this._onBackdropClick = this.handleBackdropClick.bind(this);
+            modal.addEventListener('click', this._onBackdropClick);
         }
 
         // Add escape key handler
         if (this.isOpen) {
-            document.addEventListener('keydown', this.handleEscapeKey.bind(this));
+            document.addEventListener('keydown', this._onKeydownEsc);
+            document.addEventListener('keydown', this._onKeydownTrap);
         } else {
-            document.removeEventListener('keydown', this.handleEscapeKey.bind(this));
+            document.removeEventListener('keydown', this._onKeydownEsc);
+            document.removeEventListener('keydown', this._onKeydownTrap);
         }
     }
 
@@ -130,7 +170,8 @@ class Modal extends ConnectedComponent {
 
     destroy() {
         // Clean up escape key listener
-        document.removeEventListener('keydown', this.handleEscapeKey.bind(this));
+        document.removeEventListener('keydown', this._onKeydownEsc);
+        document.removeEventListener('keydown', this._onKeydownTrap);
         
         super.destroy();
     }

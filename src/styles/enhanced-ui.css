@@ -1,21 +1,6 @@
 /* Enhanced UI Styles for Jeopardish */
 
-/* ===== Global Z-Index Scale ===== */
-:root {
-    /* Typography scale */
-    --fs-base: clamp(14px, 2vw, 18px);
-    --fs-question: clamp(18px, 3vw, 28px);
-    --fs-heading: clamp(24px, 5vw, 48px);
-    --fs-dollar: clamp(20px, 4vw, 36px);
-
-    --z-base: 0;
-    --z-background: -2;
-    --z-plane: 1;
-    --z-host: 100;
-    --z-scoreboard: 900;
-    --z-header: 1000;
-    --z-modal: 2000;
-}
+/* Tokens (typography, z-index) are defined in tokens.css and imported via app.css */
 
 
 /* ===== Media Modal Styles ===== */
@@ -75,7 +60,7 @@
     font-size: 24px;
     cursor: pointer;
     transition: all 0.3s ease;
-    z-index: 10;
+    z-index: var(--z-local-3);
 }
 
 .modal-close:hover {
@@ -469,7 +454,7 @@ body.dark-mode::after {
     backdrop-filter: blur(10px);
     border-top: 2px solid #FFD700;
     border-left: 2px solid rgba(255,215,0,0.2);
-    z-index: 150;
+    z-index: var(--z-panel);
     overflow-y: auto;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
     border-bottom-left-radius: 12px;
@@ -489,7 +474,7 @@ body.dark-mode::after {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease;
-    z-index: 140;
+    z-index: var(--z-panel-backdrop);
 }
 
 #menu-backdrop.active {
@@ -682,7 +667,7 @@ input:checked + .slider:before {
     border: 3px solid #FFD700;
     border-right: none;
     border-radius: 15px 0 0 15px;
-    z-index: 850;
+    z-index: var(--z-scoreboard);
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     box-shadow: -4px 4px 20px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 215, 0, 0.3);
     overflow: hidden;
@@ -778,7 +763,7 @@ input:checked + .slider:before {
     width: 12vmin;
     height: 6vmin;
     transform-style: preserve-3d;
-    z-index: 2;
+    z-index: var(--z-plane);
     /* Removed the scaleX(-1) that was making text backward */
 }
 
