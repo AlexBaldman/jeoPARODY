@@ -7,6 +7,7 @@
  */
 
 import { gemini, claude, fallback } from './ai-providers.js';
+import { mock } from './ai/mockProvider.js';
 
 // System prompt for Trebek's personality
 const SYSTEM_PROMPT = `You are Alex Trebek hosting Jeopardy.
@@ -21,6 +22,7 @@ class AIService {
         this.providers = {
             gemini: gemini,
             claude: claude,
+            mock: mock,
             fallback: fallback,
         };
         this.activeProvider = 'fallback';
@@ -35,6 +37,16 @@ class AIService {
     }
 
     init() {
+        // Optional mock toggle via localStorage: set `use_mock_ai` to '1'
+        try {
+            if (typeof localStorage !== 'undefined' && localStorage.getItem('use_mock_ai') === '1') {
+                this.providers.mock.enable();
+                this.activeProvider = 'mock';
+                console.log('🧪 AI Service using mock provider');
+                return;
+            }
+        } catch (_) { /* ignore storage errors */ }
+
         // Determine the active provider
         if (this.providers.gemini.isInitialized) {
             this.activeProvider = 'gemini';

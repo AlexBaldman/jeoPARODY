@@ -5,16 +5,18 @@
  * Each provider should have a `generate(prompt, options)` method.
  * For details on getting API keys, see docs/AI_PROVIDER_SETUP.md
  */
-
+import { API_CONFIG } from '../utils/constants.js';
 // ===================================================================
 // --- Provider 1: Google Gemini                                   ---
 // ===================================================================
 class GeminiProvider {
     constructor() {
+        const endpointBase = (API_CONFIG && API_CONFIG.AI && API_CONFIG.AI.GEMINI_ENDPOINT) || '/api/gemini';
         this.config = {
             useProxy: true,
-            proxyURL: 'http://localhost:3002/api/gemini/generate',
-            directAPIKey: localStorage.getItem('gemini_api_key'),
+            proxyURL: `${endpointBase}/generate`,
+            healthURL: `${endpointBase}/health`,
+            directAPIKey: typeof localStorage !== 'undefined' ? localStorage.getItem('gemini_api_key') : null,
         };
         this.isInitialized = false;
         this.init();
@@ -29,7 +31,7 @@ class GeminiProvider {
         }
 
         try {
-            const response = await fetch('http://localhost:3002/api/gemini/health');
+            const response = await fetch(this.config.healthURL);
             if (response.ok) {
                 const data = await response.json();
                 if (data.status === 'ok' && data.apiKeyConfigured) {

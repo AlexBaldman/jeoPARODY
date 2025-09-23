@@ -222,6 +222,43 @@ export function getRandomBoard(filters = {}) {
 }
 
 /**
+ * Build a deterministic board for a specific date (YYYY-MM-DD)
+ * Falls back to random board if insufficient data.
+ */
+export function getBoardForDate(date) {
+  if (!date || !allQuestions.length) return getRandomBoard();
+  const onDate = allQuestions.filter(q => String(q.airdate || '').startsWith(date));
+  if (onDate.length < 30) {
+    console.log(`[FullBoard] Not enough questions for ${date}, falling back to random board`);
+    return getRandomBoard({ date });
+  }
+  const byCat = new Map();
+  for (const q of onDate) {
+    const cat = q.category?.title || q.category || 'General Knowledge';
+    if (!byCat.has(cat)) byCat.set(cat, []);
+    byCat.get(cat).push(normalizeQuestionData(q));
+  }
+  const eligible = Array.from(byCat.entries()).filter(([, list]) => list.length >= 5);
+  if (eligible.length < 6) return getRandomBoard({ date });
+  // Deterministic selection: pick first 6 alphabetical categories
+  eligible.sort((a,b) => a[0].localeCompare(b[0]));
+  const selected = eligible.slice(0,6);
+  const values = [200,400,600,800,1000];
+  const board = selected.map(([name, list]) => {
+    // Prefer exact values if present
+    const byValue = new Map();
+    list.forEach(q => {
+      const v = Number(q.value) || 0;
+      if (!byValue.has(v)) byValue.set(v, []);
+      byValue.get(v).push(q);
+    });
+    const clues = values.map(v => (byValue.get(v)?.[0]) || list[Math.floor(Math.random()*list.length)]);
+    return { name, clues };
+  });
+  return { categories: board };
+}
+
+/**
  * Fetch a question from the external API (with timeout)
  * @returns {Promise<Object|null>} Question data or null if failed
  */
@@ -277,6 +314,8 @@ async function loadLocalQuestions() {
   }
   
   // If an index exists (sharded data), prefer loading a shard to reduce memory/time
+  let data = null;
+  let successPath = null;
   try {
     const idxRes = await fetch('assets/questions/index.json');
     if (idxRes.ok) {
@@ -307,8 +346,7 @@ async function loadLocalQuestions() {
     './questions/questions.json'
   ];
   
-  let data = data || null;
-  let successPath = successPath || null;
+  // 'data' and 'successPath' may already be set from shard loading above
   
   // Try each path
   for (const path of questionPaths) {
@@ -568,5 +606,6 @@ export default {
   getAvailableCategories,
   getQuestionsByCategory,
   getRandomCategory,
-  getRandomBoard
+  getRandomBoard,
+  getBoardForDate
 };
