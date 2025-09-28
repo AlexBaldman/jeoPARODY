@@ -114,7 +114,7 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: var(--z-header);
+    z-index: var(--z-tooltip);
 }
 
 /* Scoreboard: improved contrast + slide from header */
@@ -335,7 +335,7 @@ button:hover .button-tooltip {
     border: 2px solid #ffd700;
     border-radius: 25px;
     background: rgba(255, 255, 255, 0.95);
-    /* color: #333; */ /* This was causing the invisible text bug in dark mode */
+
     outline: none;
     transition: all 0.3s ease;
 }
@@ -580,6 +580,27 @@ input:focus {
 /* ==============================================
    STICKY HEADER WITH TITLE AND TOGGLES
    ============================================== */
+
+.no-answer-warning {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 193, 7, 0.95);
+    color: #000;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    z-index: var(--z-modal);
+    font-weight: bold;
+    text-align: center;
+    animation: fadeInOut 2s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0; transform: translate(-50%, -40%); }
+    10%, 90% { opacity: 1; transform: translate(-50%, -50%); }
+}
 
 .game-header {
     position: fixed !important;

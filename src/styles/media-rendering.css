@@ -318,7 +318,7 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
-    z-index: var(--z-header);
+    z-index: var(--z-tooltip);
     margin-bottom: 5px;
 }
 

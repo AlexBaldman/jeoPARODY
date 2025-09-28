@@ -114,27 +114,7 @@ function handleFatalError(error) {
  * Set up global event listeners
  */
 function setupGlobalEventListeners() {
-  // Theme toggle
-  const themeSwitch = document.getElementById('theme-switch');
-  if (themeSwitch) {
-    themeSwitch.addEventListener('change', toggleTheme);
-  }
-  
-  // Language toggles (header and side menu)
-  const langBtn = document.getElementById('lang-btn');
-  const langBtnMenu = document.getElementById('lang-btn-menu');
-  if (langBtn) langBtn.addEventListener('click', toggleLanguage);
-  if (langBtnMenu) langBtnMenu.addEventListener('click', toggleLanguage);
-  
-  // Hamburger menu
-  const hamburgerMenu = document.getElementById('hamburger-menu');
-  const sideMenu = document.getElementById('side-menu');
-  if (hamburgerMenu && sideMenu) {
-    hamburgerMenu.addEventListener('click', () => {
-      sideMenu.classList.toggle('active');
-      hamburgerMenu.classList.toggle('active');
-    });
-  }
+  // No global event listeners needed here anymore, App.js handles them.
 }
 
 /**
@@ -156,10 +136,9 @@ async function initializeCoreServices() {
   }
   
   // Initialize sound system
-  // Prepare sound system (init after first user interaction to avoid autoplay blocks)
   JeopardyApp.soundManager = soundManager;
-  // audio will init on first interaction
-  console.info('[??] Audio system prepared (starts on first interaction)');
+  await JeopardyApp.soundManager.init();
+  console.info('[🔊] Audio system ready');
   // Initialize host system
   JeopardyApp.hostSystem = getHostSystem();
   // HostSystem init() is called in constructor, so no need to await it here
@@ -179,13 +158,6 @@ function setupServiceIntegration() {
   // Host system responds to game events
   eventBus.on('answer:evaluated', (data) => {
     JeopardyApp.hostSystem.updateMood(JeopardyApp.gameEngine.state.stats);
-    // Update scoreboard
-    const { current, streak, high, maxStreak } = JeopardyApp.gameEngine.state.score;
-    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = String(val); };
-    set('score', current);
-    set('streak', streak);
-    set('top-score', high);
-    set('max-streak', maxStreak);
   });
   
   // Sound system handles game audio
@@ -319,18 +291,6 @@ function applyTheme(isDark) {
   // Sync checkbox UI if present
   const themeSwitchInput = document.getElementById('theme-switch');
   if (themeSwitchInput) themeSwitchInput.checked = isDark;
-  
-  // Update game container background
-  const gameContainer = document.querySelector('.game-container');
-  if (gameContainer) {
-    if (isDark) {
-      gameContainer.style.background = 'linear-gradient(to top, #1a1a1a, #2a2a2a)';
-      document.body.style.backgroundColor = '#000';
-    } else {
-      gameContainer.style.background = 'linear-gradient(to top, #64B9FF, #5cff9bbc)';
-      document.body.style.backgroundColor = '#ff1fc3c5';
-    }
-  }
 }
 
 /**
@@ -386,14 +346,6 @@ function setupUIBindings() {
   setupGlobalEventListeners();
   setupEventDrivenModals();
   setupNewUIModes();
-
-  // Scoreboard hover/touch peek-to-open
-  const scoreboard = document.getElementById('scoreboard');
-  if (scoreboard) {
-    scoreboard.addEventListener('mouseenter', () => scoreboard.classList.add('open'));
-    scoreboard.addEventListener('mouseleave', () => scoreboard.classList.remove('open'));
-    scoreboard.addEventListener('click', () => scoreboard.classList.toggle('open'));
-  }
 }
 
 /**
@@ -444,19 +396,6 @@ function setupGameControls() {
     // Handle submit button
     checkButton.addEventListener('click', submitAnswer);
   }
-
-  // Handle showing the answer
-  eventBus.on('question:show-answer', () => {
-    const answerBox = document.getElementById('answerBox');
-    const { question } = JeopardyApp.gameEngine.state;
-    if (answerBox && question.data) {
-      answerBox.innerHTML = question.data.answer;
-      answerBox.classList.add('visible');
-      console.log(`[AnswerBox] Showing answer: ${question.data.answer}`);
-    } else {
-      console.warn('[AnswerBox] Could not show answer - missing element or data');
-    }
-  });
 }
 
 /**
@@ -477,79 +416,18 @@ function submitAnswer() {
 
   if (answer) {
     console.log(`[Submit] Answer submitted: ${answer}`);
-    // Emit both the legacy engine event and the namespaced game event
-    eventBus.emit('answer:submit', { answer });
     eventBus.emit(GAME_EVENTS.ANSWER_SUBMITTED, { answer });
     inputBox.value = '';
     eventBus.emit('ui:button-click');
   }
 }
 
-// Normalize legacy answer events to engine event name
-// This ensures any legacy emitters still drive the engine path.
-eventBus.on(GAME_EVENTS.ANSWER_SUBMITTED, ({ answer }) => {
-  if (answer) eventBus.emit('answer:submit', { answer });
-});
+
 
 /**
  * Set up menu interactions
  */
 function setupMenuInteractions() {
-  // Theme toggle
-  const themeSwitch = document.getElementById('theme-switch');
-  if (themeSwitch) {
-    themeSwitch.addEventListener('change', toggleTheme);
-  }
-  
-  // Language toggles (header and side menu)
-  const langBtn = document.getElementById('lang-btn');
-  const langBtnMenu = document.getElementById('lang-btn-menu');
-  if (langBtn) langBtn.addEventListener('click', toggleLanguage);
-  if (langBtnMenu) langBtnMenu.addEventListener('click', toggleLanguage);
-  
-  // Hamburger menu
-  const hamburgerMenu = document.getElementById('hamburger-menu');
-  const sideMenu = document.getElementById('side-menu');
-  const menuBackdrop = document.getElementById('menu-backdrop');
-  if (hamburgerMenu && sideMenu) {
-    hamburgerMenu.addEventListener('click', () => {
-      const open = !sideMenu.classList.contains('active');
-      sideMenu.classList.toggle('active', open);
-      hamburgerMenu.classList.toggle('active', open);
-      sideMenu.setAttribute('aria-hidden', String(!open));
-      hamburgerMenu.setAttribute('aria-expanded', String(open));
-      menuBackdrop?.classList.toggle('active', open);
-      if (open) {
-        trapFocus(sideMenu, true);
-        // focus first focusable
-        const first = sideMenu.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-        first?.focus();
-      } else {
-        trapFocus(sideMenu, false);
-        hamburgerMenu.focus();
-      }
-      eventBus.emit('ui:button-click');
-    });
-  }
-  // Backdrop click closes
-  if (menuBackdrop && sideMenu && hamburgerMenu) {
-    menuBackdrop.addEventListener('click', () => {
-      sideMenu.classList.remove('active');
-      sideMenu.setAttribute('aria-hidden', 'true');
-      hamburgerMenu.classList.remove('active');
-      hamburgerMenu.setAttribute('aria-expanded', 'false');
-      menuBackdrop.classList.remove('active');
-      trapFocus(sideMenu, false);
-      hamburgerMenu.focus();
-    });
-  }
-  // ESC closes
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && sideMenu?.classList.contains('active')) {
-      menuBackdrop?.click();
-    }
-  });
-
   // Host animation trigger
   const hostAnimBtn = document.getElementById('host-anim-trigger');
   if (hostAnimBtn) {
@@ -562,29 +440,7 @@ function setupMenuInteractions() {
   }
 }
 
-// Focus trap for side menu when open
-function trapFocus(container, enable) {
-  if (!container) return;
-  const handler = (e) => {
-    if (e.key !== 'Tab') return;
-    const focusables = container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-    if (!focusables.length) return;
-    const first = focusables[0];
-    const last = focusables[focusables.length - 1];
-    if (e.shiftKey && document.activeElement === first) {
-      last.focus(); e.preventDefault();
-    } else if (!e.shiftKey && document.activeElement === last) {
-      first.focus(); e.preventDefault();
-    }
-  };
-  if (enable) {
-    container._trapHandler = handler;
-    document.addEventListener('keydown', handler);
-  } else if (container._trapHandler) {
-    document.removeEventListener('keydown', container._trapHandler);
-    container._trapHandler = null;
-  }
-}
+
 
 /**
  * Set up keyboard shortcuts
@@ -625,10 +481,6 @@ function loadUserPreferences() {
   const isDark = savedTheme === 'dark';
   if (savedTheme) {
     applyTheme(isDark);
-    const themeSwitch = document.getElementById('theme-switch');
-    if (themeSwitch) {
-      themeSwitch.checked = isDark;
-    }
   }
   
   // Load language preference
@@ -647,7 +499,6 @@ function saveUserPreferences() {
   eventBus.on('theme:changed', ({ theme }) => {
     // Persist and ensure UI reflects current theme
     localStorage.setItem('jeopardish_theme', theme);
-    applyTheme(theme === 'dark');
   });
   
   eventBus.on('language:changed', ({ lang }) => {
@@ -661,152 +512,6 @@ function saveUserPreferences() {
  */
 function setupNewUIModes() {
   console.log('[Debug] setupNewUIModes() called');
-  const splash = document.getElementById('splash-screen');
-  const board = document.getElementById('jeopardy-board-screen');
-  const run = document.getElementById('run-category-screen');
-  const paoContainer = document.getElementById('pao-screen-container');
-  const clueModal = document.getElementById('clue-modal');
-  const clueText = document.getElementById('clue-text');
-
-  if (splash) {
-    // Theme chooser
-    splash.querySelectorAll('.theme-dot').forEach(dot => {
-      dot.addEventListener('click', () => {
-        const theme = dot.getAttribute('data-theme');
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('jeopardish_theme_variant', theme);
-      });
-    });
-
-    // Start mode buttons
-    splash.querySelectorAll('[data-start-mode]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const mode = btn.getAttribute('data-start-mode');
-        console.log(`[Splash] Start button clicked - Mode: ${mode}`);
-        // Hide splash (use class only; avoid inline display overrides)
-        splash.classList.remove('active');
-
-        // Emit game start
-        eventBus.emit('game:start', { mode, difficulty: 'normal' });
-
-        // Show special screens if selected
-        if (mode === 'fullboard') {
-          board?.classList.remove('hidden');
-          board?.classList.add('active');
-          try {
-            const game = questionService.getRandomBoard();
-            renderJeopardyBoard(game);
-            attachBoardControls();
-          } catch (e) {
-            console.error('Failed to render fullboard', e);
-          }
-        } else if (mode === 'run-category') {
-          run?.classList.remove('hidden');
-          run?.classList.add('active');
-        } else if (mode === 'pao') {
-          import('./components/pao/PAOView.js').then(({ default: PAOView }) => {
-            if (paoContainer) {
-              paoContainer.classList.remove('hidden');
-              const pao = new PAOView();
-              pao.init(paoContainer);
-              setTimeout(() => pao.show(), 0);
-              // Store instance on container for later cleanup
-              paoContainer._pao = pao;
-            }
-          });
-        }
-      });
-    });
-
-    const settingsBtn = splash.querySelector('[data-action="open-settings"]');
-    if (settingsBtn) {
-      settingsBtn.addEventListener('click', () => {
-        eventBus.emit('modal:open', { type: 'settings' });
-      });
-    }
-  }
-
-  // Jeopardy board interactions
-  if (board) {
-    const closeBoard = board.querySelector('[data-close-board]');
-    closeBoard?.addEventListener('click', () => {
-      board.classList.remove('active');
-      board.classList.add('hidden');
-      // Return to splash
-      document.getElementById('splash-screen')?.classList.add('active');
-    });
-
-    // Open clue modal on cell click
-    board.addEventListener('click', (ev) => {
-      const cell = ev.target.closest('.clue');
-      if (!cell) return;
-      const q = cell._question;
-      const value = cell.getAttribute('data-value');
-      if (clueText) clueText.textContent = q?.question || `Clue for ${value}`;
-      openClueModal();
-    });
-  }
-
-  // PAO close by Escape or Back in header handled inside PAOView
-  // Provide an external cleanup if container is hidden later
-  if (paoContainer) {
-    const observer = new MutationObserver(() => {
-      if (paoContainer.classList.contains('hidden') && paoContainer._pao) {
-        paoContainer._pao.destroy();
-        paoContainer._pao = null;
-      }
-    });
-    observer.observe(paoContainer, { attributes: true, attributeFilter: ['class'] });
-  }
-
-  // Close clue modal on outside click
-  if (clueModal) {
-    clueModal.addEventListener('click', (e) => {
-      if (e.target === clueModal) closeClueModal();
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && clueModal.classList.contains('active')) {
-        closeClueModal();
-      }
-    });
-  }
-
-  // Run the category interactions
-  if (run) {
-    const closeRun = run.querySelector('[data-close-run]');
-    closeRun?.addEventListener('click', () => {
-      run.classList.remove('active');
-      run.classList.add('hidden');
-      document.getElementById('splash-screen')?.classList.add('active');
-    });
-
-    // Simple demo progress
-    const progress = run.querySelector('#run-progress-bar');
-    let pct = 0;
-    run.addEventListener('click', (e) => {
-      const item = e.target.closest('.run-item');
-      if (!item) return;
-      pct = Math.min(100, pct + 20);
-      if (progress) progress.style.width = pct + '%';
-      item.style.opacity = '0.6';
-    });
-  }
-
-  // Speech bubble style cycling (comic/thought variants)
-  const speech = document.getElementById('speechBubble');
-  if (speech) {
-    const styles = ['', 'speech-bubble--thought', 'speech-bubble--comic'];
-    let idx = 0;
-    speech.addEventListener('click', (ev) => {
-      const rect = speech.getBoundingClientRect();
-      const leftSide = (ev.clientX - rect.left) < rect.width / 2;
-      // Remove all variants
-      styles.forEach(cls => cls && speech.classList.remove(cls));
-      idx = (idx + (leftSide ? -1 : 1) + styles.length) % styles.length;
-      const cls = styles[idx];
-      if (cls) speech.classList.add(cls);
-    });
-  }
 
   // Apply saved theme variant
   const savedVariant = localStorage.getItem('jeopardish_theme_variant');
@@ -913,126 +618,7 @@ function setLegacyAnswerVisible(visible) {
   }
 }
 
-// ===== Helpers: Scoreboard UX =====
-function flashScoreboard() {
-  const sb = document.getElementById('scoreboard');
-  if (!sb) return;
-  sb.classList.add('open');
-  clearTimeout(sb._hideTimer);
-  sb._hideTimer = setTimeout(() => sb.classList.remove('open'), 2500);
-}
 
-function highlightValue(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.classList.remove('highlight');
-  // force reflow
-  void el.offsetWidth;
-  el.classList.add('highlight');
-}
 
-eventBus.on('answer:evaluated', () => {
-  flashScoreboard();
-  highlightValue('score');
-  highlightValue('streak');
-});
 
-// Gated audio: start/resume AudioContext on first user gesture
-(() => {
-  const startAudio = async () => {
-    try { await JeopardyApp.soundManager.init(); } catch(_) {}
-    window.removeEventListener('click', startAudio);
-    window.removeEventListener('keydown', startAudio);
-    window.removeEventListener('touchstart', startAudio, { passive: true });
-  };
-  window.addEventListener('click', startAudio);
-  window.addEventListener('keydown', startAudio);
-  window.addEventListener('touchstart', startAudio, { passive: true });
-})();
-
-// Register service worker (if available)
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
-  });
-}
-
-// ===== Helpers: Full Board Rendering =====
-function renderJeopardyBoard(game) {
-  const grid = document.getElementById('board-grid');
-  if (!grid || !game) return;
-  const cats = game.categories || [];
-  const values = ['$200', '$400', '$600', '$800', '$1000'];
-  let html = '';
-  // categories row
-  cats.forEach(cat => { html += `<div class="category">${cat.name}</div>`; });
-  // 5 rows of clues
-  for (let r = 0; r < 5; r++) {
-    for (let c = 0; c < cats.length; c++) {
-      const q = cats[c].clues[r];
-      html += `<div class="clue" data-value="${values[r]}">${values[r]}</div>`;
-    }
-  }
-  grid.innerHTML = html;
-  // attach question objects
-  const cells = grid.querySelectorAll('.clue');
-  let i = 0;
-  for (let r = 0; r < 5; r++) {
-    for (let c = 0; c < cats.length; c++) {
-      const cell = cells[i++];
-      cell._question = cats[c].clues[r];
-    }
-  }
-}
-
-function attachBoardControls() {
-  const controls = document.querySelector('#jeopardy-board-screen .board-controls');
-  if (!controls || controls._attached) return;
-  controls._attached = true;
-  const wrap = document.createElement('div');
-  wrap.style.display = 'flex';
-  wrap.style.gap = '8px';
-  wrap.style.alignItems = 'center';
-  wrap.style.marginLeft = 'auto';
-  wrap.innerHTML = `
-    <input type="date" id="board-date" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid #ffd700;border-radius:6px;padding:4px 8px;" />
-    <select id="board-year" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid #ffd700;border-radius:6px;padding:4px 8px;">
-      <option value="">Year</option>
-      ${Array.from({length: 40}, (_,i)=>2025-i).map(y=>`<option value="${y}">${y}</option>`).join('')}
-    </select>
-    <select id="board-month" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid #ffd700;border-radius:6px;padding:4px 8px;">
-      <option value="">Month</option>
-      ${Array.from({length:12},(_,i)=>`<option value="${String(i+1).padStart(2,'0')}">${String(i+1).padStart(2,'0')}</option>`).join('')}
-    </select>
-    <button id="board-apply" class="board-close" style="border:1px solid #ffd700;">Apply</button>
-  `;
-  controls.appendChild(wrap);
-  wrap.querySelector('#board-apply').addEventListener('click', () => {
-    const date = wrap.querySelector('#board-date').value || undefined;
-    const year = wrap.querySelector('#board-year').value || undefined;
-    const month = wrap.querySelector('#board-month').value || undefined;
-    const game = date
-      ? questionService.getBoardForDate(date)
-      : questionService.getRandomBoard({ date, year, month });
-    renderJeopardyBoard(game);
-  });
-}
-
-// ===== Clue modal helpers with focus management =====
-function openClueModal() {
-  const modal = document.getElementById('clue-modal');
-  const card = modal?.querySelector('.clue-card');
-  if (!modal || !card) return;
-  modal.classList.add('active');
-  modal.setAttribute('aria-hidden', 'false');
-  // trap focus on card
-  card.focus();
-}
-
-function closeClueModal() {
-  const modal = document.getElementById('clue-modal');
-  if (!modal) return;
-  modal.classList.remove('active');
-  modal.setAttribute('aria-hidden', 'true');
-}
 

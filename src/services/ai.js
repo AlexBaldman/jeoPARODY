@@ -1,21 +1,8 @@
-/**
- * Unified AI Service Abstraction Layer
- *
- * This service provides a single interface for interacting with various
- * AI providers. It intelligently selects the best available provider,
- * handles caching, rate limiting, and fallbacks.
- */
-
-<<<<<<< HEAD
-import { gemini, claude, fallback } from './ai-providers.js';
-import { mock } from './ai/mockProvider.js';
-=======
-import providersDefault, { gemini, claude, fallback, local } from './ai-providers.js';
+import providers from './ai-providers.js';
 import AIConfig from './ai/config.js';
 import PromptBuilder from './ai/PromptBuilder.js';
 import personas from './ai/personas.json';
 import { rewriteWithPolicy } from './ai/rewrite.js';
->>>>>>> efaa3dd4d59cb99a6e0438bb0d9ddae794803669
 
 // System prompt for Trebek's personality
 const SYSTEM_PROMPT = `You are Alex Trebek hosting Jeopardy.
@@ -27,16 +14,7 @@ Your responses should be varied and entertaining.`;
 
 class AIService {
     constructor() {
-<<<<<<< HEAD
-        this.providers = {
-            gemini: gemini,
-            claude: claude,
-            mock: mock,
-            fallback: fallback,
-        };
-=======
-        this.providers = { gemini, claude, local, fallback };
->>>>>>> efaa3dd4d59cb99a6e0438bb0d9ddae794803669
+        this.providers = providers;
         this.activeProvider = 'fallback';
 
         // Caching and Rate Limiting
@@ -52,41 +30,31 @@ class AIService {
     }
 
     init() {
-<<<<<<< HEAD
         // Optional mock toggle via localStorage: set `use_mock_ai` to '1'
         try {
             if (typeof localStorage !== 'undefined' && localStorage.getItem('use_mock_ai') === '1') {
-                this.providers.mock.enable();
-                this.activeProvider = 'mock';
-                console.log('🧪 AI Service using mock provider');
-                return;
+                if (this.providers.mock) {
+                    this.providers.mock.enable();
+                    this.activeProvider = 'mock';
+                    console.log('🧪 AI Service using mock provider');
+                    return;
+                }
             }
         } catch (_) { /* ignore storage errors */ }
 
-        // Determine the active provider
-        if (this.providers.gemini.isInitialized) {
-            this.activeProvider = 'gemini';
-        } else if (this.providers.claude.isInitialized) {
-            this.activeProvider = 'claude';
-        }
-=======
-        // Determine active provider by config priority and readiness
-        const order = AIConfig.providerOrder;
-        for (const id of order) {
-            const p = this.providers[id];
-            if (!p) continue;
-            if (typeof p.init === 'function') p.init();
-        }
+        // Determine active provider by readiness
         this.activeProvider = this.selectReadyProvider() || 'fallback';
->>>>>>> efaa3dd4d59cb99a6e0438bb0d9ddae794803669
         console.log(`🤖 AI Service initialized. Active provider: ${this.activeProvider}`);
     }
 
     selectReadyProvider() {
-        const order = AIConfig.providerOrder;
+        const order = ['gemini', 'claude', 'local']; // Define provider order
         for (const id of order) {
             const p = this.providers[id];
-            if (p && (p.isReady?.() || p.isInitialized)) return id;
+            if (p && (p.isReady?.() || p.isInitialized)) {
+                if (typeof p.init === 'function') p.init(); // Initialize if not already
+                return id;
+            }
         }
         return null;
     }

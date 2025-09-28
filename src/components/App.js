@@ -72,14 +72,9 @@ class App extends ConnectedComponent {
 
   // Component management
   initializeComponents() {
-    // If the global header/menu already exists (index.html wiring), do not duplicate
-    const existingHamburger = document.getElementById('hamburger-menu');
-    let header = null;
-    if (!existingHamburger) {
-      // Create header with sticky positioning
-      header = document.createElement('header');
-      header.className = 'game-header';
-    }
+    // Create header with sticky positioning
+    const header = document.createElement('header');
+    header.className = 'game-header';
     
     // Create left controls container
     const leftControls = document.createElement('div');
@@ -113,48 +108,41 @@ class App extends ConnectedComponent {
       <img src="images/jeoparody.png" alt="Jeopardish Logo" class="game-logo">
     `;
     
-    // Create right controls only if header is created here
+    // Create right controls
     const rightControls = document.createElement('div');
     rightControls.className = 'header-right';
-    if (!existingHamburger) {
-      const hamburger = document.createElement('button');
-      hamburger.className = 'hamburger-menu';
-      hamburger.id = 'hamburger-menu';
-      hamburger.setAttribute('aria-label', 'Toggle menu');
-      hamburger.innerHTML = `
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>`;
-      rightControls.appendChild(hamburger);
-    }
+    const hamburger = document.createElement('button');
+    hamburger.className = 'hamburger-menu';
+    hamburger.id = 'hamburger-menu';
+    hamburger.setAttribute('aria-label', 'Toggle menu');
+    hamburger.innerHTML = `
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>`;
+    rightControls.appendChild(hamburger);
     
     // Build header
-    if (header) {
-      header.appendChild(leftControls);
-      header.appendChild(logoContainer);
-      header.appendChild(rightControls);
-    }
+    header.appendChild(leftControls);
+    header.appendChild(logoContainer);
+    header.appendChild(rightControls);
     
-    // Create side menu only if not present
-    let sideMenu = document.getElementById('side-menu');
-    if (!sideMenu) {
-      sideMenu = document.createElement('nav');
-      sideMenu.className = 'side-menu';
-      sideMenu.id = 'side-menu';
-      sideMenu.innerHTML = `
-        <div class="menu-header">
-          <h3>Menu</h3>
-          <button class="close-menu" aria-label="Close menu">×</button>
-        </div>
-        <ul class="menu-items">
-          <li><button data-action="settings">⚙️ Settings</button></li>
-          <li><button data-action="stats">📊 Stats</button></li>
-          <li><button data-action="achievements">🏆 Achievements</button></li>
-          <li><button data-action="leaderboard">📈 Leaderboard</button></li>
-          <li><button data-action="profile">👤 Profile</button></li>
-          <li><button data-action="help">❓ Help</button></li>
-        </ul>`;
-    }
+    // Create side menu
+    const sideMenu = document.createElement('nav');
+    sideMenu.className = 'side-menu';
+    sideMenu.id = 'side-menu';
+    sideMenu.innerHTML = `
+      <div class="menu-header">
+        <h3>Menu</h3>
+        <button class="close-menu" aria-label="Close menu">×</button>
+      </div>
+      <ul class="menu-items">
+        <li><button data-action="settings">⚙️ Settings</button></li>
+        <li><button data-action="stats">📊 Stats</button></li>
+        <li><button data-action="achievements">🏆 Achievements</button></li>
+        <li><button data-action="leaderboard">📈 Leaderboard</button></li>
+        <li><button data-action="profile">👤 Profile</button></li>
+        <li><button data-action="help">❓ Help</button></li>
+      </ul>`;
     
     // Create main content area
     const main = document.createElement('main');
@@ -186,9 +174,39 @@ class App extends ConnectedComponent {
     main.appendChild(controlsContainer);
     
     // Add to app
-    if (header) this.appendChild(header);
-    if (sideMenu && !sideMenu.parentNode) this.appendChild(sideMenu);
+    this.appendChild(header);
+    this.appendChild(sideMenu);
     this.appendChild(main);
+
+    // Create and append scoreboard
+    const scoreboardElement = document.createElement('div');
+    scoreboardElement.id = 'scoreboard';
+    scoreboardElement.className = 'scoreboard';
+    scoreboardElement.setAttribute('role', 'region');
+    scoreboardElement.setAttribute('aria-label', 'Scoreboard');
+    scoreboardElement.innerHTML = `
+        <h2>SCOREBOARD</h2>
+        <p>SCORE: <span id="score" class="score-value">0</span></p>
+        <p>STREAK: <span id="streak" class="score-value">0</span></p>
+        <p>TOP SCORE: <span id="top-score" class="score-value">0</span></p>
+        <p>MAX STREAK: <span id="max-streak" class="score-value">0</span></p>
+    `;
+    this.appendChild(scoreboardElement);
+
+    // Create and append user profile
+    const userProfileElement = document.createElement('div');
+    userProfileElement.id = 'user-profile';
+    userProfileElement.className = 'user-profile';
+    userProfileElement.style.display = 'none';
+    userProfileElement.setAttribute('role', 'region');
+    userProfileElement.setAttribute('aria-label', 'User profile');
+    userProfileElement.innerHTML = `
+        <img id="user-avatar" class="user-avatar">
+        <span id="user-name"></span>
+        <button id="profile-button">edit profile</button>
+        <button id="logout-button">sign out</button>
+    `;
+    this.appendChild(userProfileElement);
     
     // Initialize and add modal manager
     // Lazy-create SettingsModal and attach to app
@@ -311,23 +329,7 @@ class App extends ConnectedComponent {
     this.addSoundControls();
   }
 
-  addSoundControls() {
-    // Create sound control button in header
-    const header = this.querySelector('.app-header');
-    if (!header) return;
-    
-    const soundControl = document.createElement('button');
-    soundControl.className = 'sound-control';
-    soundControl.setAttribute('aria-label', 'Toggle sound');
-    soundControl.innerHTML = soundManager.isMuted() ? '🔇' : '🔊';
-    
-    soundControl.addEventListener('click', () => {
-      soundManager.toggleMute();
-      soundControl.innerHTML = soundManager.isMuted() ? '🔇' : '🔊';
-    });
-    
-    header.appendChild(soundControl);
-  }
+
 
 
   render() {

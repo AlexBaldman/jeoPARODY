@@ -46,15 +46,14 @@
 
   /* Z-index scale */
   --z-base: 0;
-  --z-background: -2;
-  --z-plane: 1;             /* ambient effects (ticker/plane) */
-  --z-footer: 90;           /* sticky footer and low overlays */
-  --z-host: 100;            /* host image/avatar */
-  --z-panel: 150;           /* menus/panels */
-  --z-panel-backdrop: 140;  /* panel backdrops */
-  --z-scoreboard: 900;      /* side scoreboard */
-  --z-header: 1000;         /* sticky header */
-  --z-modal: 2000;          /* dialogs/overlays */
+  --z-host: 10;
+  --z-footer: 20;
+  --z-header: 50;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-modal-backdrop: 1000;
+  --z-modal: 1010;
+  --z-tooltip: 1020;
 
   /* Local stacking helpers (component-internal) */
   --z-local-1: 2;

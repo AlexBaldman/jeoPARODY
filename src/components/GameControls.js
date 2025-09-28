@@ -147,7 +147,7 @@ class GameControls extends ConnectedComponent {
                                     value: this.userAnswer,
                                     disabled: !this.buttonStates.submitAnswer.enabled && !this.userAnswer,
                                     onInput: this.handleInputChange.bind(this),
-                                    onKeydown: this.handleKeyDown.bind(this)
+                                    onkeydown: this.handleKeyDown.bind(this)
                                 })
                             ]
                         }),
@@ -243,21 +243,6 @@ class GameControls extends ConnectedComponent {
         // Create and show a temporary warning message
         const warningElement = createElement('div', {
             className: 'no-answer-warning',
-            style: `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: rgba(255, 193, 7, 0.95);
-                color: #000;
-                padding: 1rem 2rem;
-                border-radius: 10px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-                z-index: 1000;
-                font-weight: bold;
-                text-align: center;
-                animation: fadeInOut 2s ease-in-out;
-            `,
             textContent: 'No answer entered! Press Enter again to get a new question.'
         });
         
@@ -285,10 +270,7 @@ class GameControls extends ConnectedComponent {
         
         console.log('[GameControls] Requesting new question');
         
-        // Dispatch action to load new question
-        store.dispatch({
-            type: 'LOAD_QUESTION_REQUEST'
-        });
+        this.emit('ui:new-question-request');
         
         // The actual loading will be handled by middleware/services
         // This component just initiates the action
@@ -299,10 +281,7 @@ class GameControls extends ConnectedComponent {
         
         console.log('[GameControls] Showing answer');
         
-        // Dispatch action to show answer
-        store.dispatch({
-            type: 'SHOW_ANSWER'
-        });
+        this.emit('ui:show-answer-request');
     }
     
     handleSubmitAnswer() {
@@ -313,11 +292,7 @@ class GameControls extends ConnectedComponent {
         
         console.log('[GameControls] Submitting answer:', answer);
         
-        // Dispatch action to validate answer
-        store.dispatch({
-            type: 'VALIDATE_ANSWER_REQUEST',
-            payload: { userAnswer: answer }
-        });
+        this.emit('ui:submit-answer-request', { userAnswer: answer });
         
         // Clear input after submission
         this.clearInput();
