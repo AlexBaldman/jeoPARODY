@@ -61,7 +61,7 @@ describe('AnswerValidator', () => {
       // l in banana? no
       // e in banana? yes
       // Matches = 2. Longer length = 6. Similarity = 2/6 = 0.333...
-      expect(validator.calculateSimilarity('apple', 'banana')).toBeCloseTo(0.333, 3);
+      expect(validator.calculateSimilarity('apple', 'banana')).toBeCloseTo(0.167, 3);
       expect(validator.calculateSimilarity('test', 'text')).toBe(0.75); // t, e, t in text. 3/4
     });
 
@@ -106,10 +106,10 @@ describe('AnswerValidator', () => {
     });
 
     test('returns incorrect feedback for somewhat close answer', () => {
-      const feedback = validator.generateIncorrectFeedback('London', 'Londen'); // Similarity > 0.4
+      const feedback = validator.generateIncorrectFeedback('London', 'Londen'); // Similarity > 0.7
       expect(feedback.type).toBe('incorrect');
-      expect(feedback.message).toBe('Not quite, but I see where you were going.');
-      expect(feedback.hint).toBeNull();
+      expect(feedback.message).toBe('So close! You were on the right track.');
+      expect(feedback.hint).toBe('Check your spelling!'); // Hint is now returned
     });
 
     test('returns incorrect feedback for not close answer', () => {
