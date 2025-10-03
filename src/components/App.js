@@ -115,6 +115,8 @@ class App extends ConnectedComponent {
     hamburger.className = 'hamburger-menu';
     hamburger.id = 'hamburger-menu';
     hamburger.setAttribute('aria-label', 'Toggle menu');
+    hamburger.setAttribute('aria-controls', 'side-menu');
+    hamburger.setAttribute('aria-expanded', 'false');
     hamburger.innerHTML = `
       <span class="hamburger-line"></span>
       <span class="hamburger-line"></span>
@@ -175,7 +177,11 @@ class App extends ConnectedComponent {
     
     // Add to app
     this.appendChild(header);
+    // Backdrop for side menu (for click-to-close and focus layering)
+    const menuBackdrop = document.createElement('div');
+    menuBackdrop.className = 'menu-backdrop';
     this.appendChild(sideMenu);
+    this.appendChild(menuBackdrop);
     this.appendChild(main);
 
     // Create and append scoreboard
@@ -245,21 +251,74 @@ class App extends ConnectedComponent {
       // Additional menu button is #lang-btn-menu
     }
     
-    // Hamburger menu
+    // Hamburger menu (accessible)
     const hamburger = this.querySelector('.hamburger-menu');
     const sideMenu = this.querySelector('.side-menu');
     const closeMenu = this.querySelector('.close-menu');
-    
+    const backdrop = this.querySelector('.menu-backdrop');
+
+    const getFocusable = () => sideMenu?.querySelectorAll(
+      'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+    ) || [];
+
+    const onKeydown = (e) => {
+      if (!sideMenu?.classList.contains('open')) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeMenuFn();
+        return;
+      }
+      if (e.key === 'Tab') {
+        const focusable = Array.from(getFocusable());
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const active = document.activeElement;
+        if (e.shiftKey && active === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && active === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    const openMenu = () => {
+      sideMenu?.classList.add('open');
+      backdrop?.classList.add('visible');
+      hamburger?.setAttribute('aria-expanded', 'true');
+      const focusable = getFocusable();
+      if (focusable.length) {
+        const first = focusable[0];
+        if (first && typeof first.focus === 'function') first.focus();
+      }
+      document.addEventListener('keydown', onKeydown);
+    };
+
+    const closeMenuFn = () => {
+      sideMenu?.classList.remove('open');
+      backdrop?.classList.remove('visible');
+      hamburger?.setAttribute('aria-expanded', 'false');
+      if (hamburger && typeof hamburger.focus === 'function') {
+        try { hamburger.focus(); } catch(_) {}
+      }
+      document.removeEventListener('keydown', onKeydown);
+    };
+
     if (hamburger && sideMenu) {
       hamburger.addEventListener('click', () => {
-        sideMenu.classList.add('open');
+        const isOpen = sideMenu.classList.contains('open');
+        if (isOpen) closeMenuFn(); else openMenu();
       });
     }
-    
+
     if (closeMenu && sideMenu) {
-      closeMenu.addEventListener('click', () => {
-        sideMenu.classList.remove('open');
-      });
+      closeMenu.addEventListener('click', () => closeMenuFn());
+    }
+
+    if (backdrop && sideMenu) {
+      backdrop.addEventListener('click', () => closeMenuFn());
     }
     
     // Menu items
@@ -281,6 +340,8 @@ class App extends ConnectedComponent {
           this.eventBus.emit(`modal:open`, { type: action });
         }
         sideMenu.classList.remove('open');
+        this.querySelector('.menu-backdrop')?.classList.remove('visible');
+        hamburger?.setAttribute('aria-expanded', 'false');
       });
     });
     

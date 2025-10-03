@@ -42,8 +42,9 @@
     bottom: 80px; /* Just above the sticky footer */
     left: 20px;
     z-index: var(--z-host);
-    width: 140px;
-    height: 186px; /* maintain aspect ratio */
+    width: min(140px, 20vw);
+    aspect-ratio: 3/4;
+    height: auto; /* maintain aspect ratio */
     pointer-events: auto;
     overflow: hidden;
     border: none; /* Remove any frame */
@@ -381,6 +382,12 @@ button:hover .button-tooltip {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+    .game-header {
+        flex-wrap: wrap;
+        padding: 15px;
+        height: auto;
+    }
+
     .host-container {
         width: 80px !important;
         height: 110px !important;
