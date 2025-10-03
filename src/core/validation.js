@@ -230,10 +230,7 @@ export class AnswerValidator {
     }
 
     // Check if it's a plural issue
-    const userIsSingular = userLower.endsWith('y') ? userLower.slice(0, -1) + 'ies' : userLower + 's';
-    const userIsPlural = userLower.endsWith('ies') ? userLower.slice(0, -3) + 'y' : userLower.endsWith('s') ? userLower.slice(0, -1) : userLower;
-
-    if (userIsSingular === correctLower || userIsPlural === correctLower) {
+    if (userLower + 's' === correctLower || userLower === correctLower + 's') {
       return "Think about singular vs plural.";
     }
 
@@ -258,7 +255,7 @@ export class AnswerValidator {
     const lengthDiff = Math.abs(a.length - b.length);
     const similarity = this.calculateSimilarity(a, b);
     
-    return lengthDiff <= 2 && similarity >= 0.8;
+    return lengthDiff <= 2 && similarity > 0.8;
   }
 
   /**
