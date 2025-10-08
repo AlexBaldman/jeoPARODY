@@ -1,7 +1,8 @@
 import { eventBus } from '../../utils/events.js';
 import AIConfig from './config.js';
 import { rewriteWithPolicy } from './rewrite.js';
-import { gemini, local } from '../ai-providers.js';
+import Providers from '../ai-providers.js';
+const { gemini, local } = Providers;
 
 function getCoreFacts(question) {
 	return {

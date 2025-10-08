@@ -29,6 +29,7 @@ describe('ScoreCalculator', () => {
     expect(bonus).toBe(0);
   });
 
+  test('calculates streak bonus correctly', () => {
     expect(ScoreCalculator.calculateStreakBonus(0, 100)).toBe(0);
     expect(ScoreCalculator.calculateStreakBonus(2, 100)).toBe(0);
     expect(ScoreCalculator.calculateStreakBonus(3, 100)).toBe(50); // 100 * (1.5 - 1)
