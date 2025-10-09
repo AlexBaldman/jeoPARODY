@@ -22,15 +22,21 @@
 /* Scoreboard class alias to match component markup */
 .basketball-scoreboard,
 .scoreboard.basketball-style { /* root */ }
+
 .basketball-scoreboard::before,
 .scoreboard.basketball-style::before { /* title band */ }
+
 .basketball-scoreboard::after,
 .scoreboard.basketball-style::after { /* label */ }
+
 .basketball-scoreboard.active,
 .scoreboard.basketball-style.visible { /* active/visible */ }
+
 .basketball-scoreboard:hover,
 .scoreboard.basketball-style.hover { /* hover reveal */ }
+
 .basketball-scoreboard .scoreboard-peek,
 .scoreboard.basketball-style .scoreboard-peek { /* peek tab */ }
+
 .basketball-scoreboard .scoreboard-content,
 .scoreboard.basketball-style .scoreboard-content { /* inner layout */ }

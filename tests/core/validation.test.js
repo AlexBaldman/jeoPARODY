@@ -51,17 +51,14 @@ describe('AnswerValidator', () => {
     test('returns correct similarity for partial matches', () => {
       // 'apple' vs 'aple': longer is 'apple' (5 chars). 'aple' has 4 chars. All 4 are in 'apple'. 4/5 = 0.8
       expect(validator.calculateSimilarity('apple', 'aple')).toBe(0.8);
-      // 'apple' vs 'banana': longer is 'banana' (6 chars). 'apple' has 5 chars. 'a', 'p', 'l', 'e' are in 'banana'. 4/6 = 0.666...
-      // The current implementation is very basic: it checks if *any* char from shorter is in longer.
-      // Let's re-evaluate the expected behavior based on the current implementation.
-      // 'apple' (5) vs 'banana' (6)
+      // 'apple' vs 'banana': longer is 'banana' (6 chars). 'apple' has 5 chars.
       // a in banana? yes
       // p in banana? no
       // p in banana? no
       // l in banana? no
-      // e in banana? yes
-      // Matches = 2. Longer length = 6. Similarity = 2/6 = 0.333...
-      expect(validator.calculateSimilarity('apple', 'banana')).toBeCloseTo(0.333, 3);
+      // e in banana? no (banana = b-a-n-a-n-a, no 'e')
+      // Matches = 1. Longer length = 6. Similarity = 1/6 = 0.167...
+      expect(validator.calculateSimilarity('apple', 'banana')).toBeCloseTo(0.167, 3);
       expect(validator.calculateSimilarity('test', 'text')).toBe(0.75); // t, e, t in text. 3/4
     });
 
@@ -105,8 +102,15 @@ describe('AnswerValidator', () => {
       expect(typeof feedback.hint).toBe('string');
     });
 
+    test('returns incorrect feedback for very close answer with hint', () => {
+      const feedback = validator.generateIncorrectFeedback('London', 'Londen'); // Similarity = 1.0 (> 0.7)
+      expect(feedback.type).toBe('incorrect');
+      expect(feedback.message).toBe('So close! You were on the right track.');
+      expect(typeof feedback.hint).toBe('string'); // Should have a hint for very close answers
+    });
+
     test('returns incorrect feedback for somewhat close answer', () => {
-      const feedback = validator.generateIncorrectFeedback('London', 'Londen'); // Similarity > 0.4
+      const feedback = validator.generateIncorrectFeedback('France', 'Greece'); // Similarity = 0.5 (> 0.4 but < 0.7)
       expect(feedback.type).toBe('incorrect');
       expect(feedback.message).toBe('Not quite, but I see where you were going.');
       expect(feedback.hint).toBeNull();

@@ -1084,7 +1084,7 @@ button:hover .button-tooltip {
 
   .speechBubble {
     padding: var(--spacing-md);
-    min-height: 200px;
+    min-height: 150px; /* Reduced from 200px */
   }
 
   #questionBox {
