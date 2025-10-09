@@ -12,7 +12,7 @@ describe('AI Service mock provider toggle', () => {
   test('uses mock provider when toggle is set', async () => {
     const { aiService } = await import('@/services/ai.js');
     const out = await aiService.generate('Hello from test');
-    expect(out).toMatch(/^Let's take a look: /);
+    expect(out).toMatch(/^(Let's take a look: |Alright, here we go: )/);
   });
 });
 

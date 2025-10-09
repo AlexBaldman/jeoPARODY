@@ -9,6 +9,7 @@
     color: #111; border: 0; border-radius: var(--radius-md);
     padding: 10px 14px; box-shadow: var(--sh-elev-2); cursor: pointer;
   }
+
   .dev-changelog-panel {
     position: fixed; right: 16px; bottom: 64px; width: min(520px, 88vw);
     max-height: 60vh; overflow: auto; z-index: var(--z-modal);
@@ -20,12 +21,12 @@
   /* Dev Menu */
   .dev-menu {
     position: fixed; left: 16px; bottom: 16px; z-index: var(--z-header);
-    background: rgba(0,0,0,0.6); color: #fff; border: 1px solid rgba(255,215,0,0.6);
+    background: rgb(0 0 0 / 60%); color: #fff; border: 1px solid rgb(255 215 0 / 60%);
     border-radius: var(--radius-md); padding: 10px 12px; box-shadow: var(--sh-elev-2);
     display: grid; gap: 8px; min-width: 260px;
   }
   .dev-menu__title { font-weight: 700; opacity: .9; }
   .dev-menu__row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; }
   .dev-menu .btn { background: linear-gradient(135deg, var(--c-accent), var(--c-accent-2)); color: #111; border: 0; border-radius: 6px; padding: 6px 10px; cursor: pointer; }
-  .dev-menu select { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,215,0,0.5); border-radius: 6px; padding: 4px 6px; }
+  .dev-menu select { background: rgb(255 255 255 / 10%); color: #fff; border: 1px solid rgb(255 215 0 / 50%); border-radius: 6px; padding: 4px 6px; }
 }

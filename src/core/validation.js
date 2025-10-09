@@ -72,12 +72,19 @@ export class AnswerValidator {
    * @returns {number} Similarity score (0-1)
    */
   calculateSimilarity(a, b) {
-    // Simple character-based similarity
-    const longer = a.length > b.length ? a : b;
-    const shorter = a.length > b.length ? b : a;
+    // Character-based similarity: count each character in shorter if it exists in longer
+    const aLower = a.toLowerCase();
+    const bLower = b.toLowerCase();
+    
+    if (aLower === bLower) return 1.0;
+    if (aLower.length === 0 && bLower.length === 0) return 1.0;
+    
+    const longer = aLower.length > bLower.length ? aLower : bLower;
+    const shorter = aLower.length > bLower.length ? bLower : aLower;
     
     if (longer.length === 0) return 1.0;
     
+    // Count each character in shorter that exists in longer (not unique)
     let matches = 0;
     for (let i = 0; i < shorter.length; i++) {
       if (longer.includes(shorter[i])) {
@@ -230,7 +237,7 @@ export class AnswerValidator {
     }
 
     // Check if it's a plural issue
-    if (userLower + 's' === correctLower || userLower === correctLower + 's') {
+    if (this.isPluralSingularMismatch(userLower, correctLower)) {
       return "Think about singular vs plural.";
     }
 
@@ -255,7 +262,41 @@ export class AnswerValidator {
     const lengthDiff = Math.abs(a.length - b.length);
     const similarity = this.calculateSimilarity(a, b);
     
-    return lengthDiff <= 2 && similarity > 0.8;
+    return lengthDiff <= 2 && similarity > 0.6;
+  }
+
+  /**
+   * Check if answers differ only by plural/singular form
+   * @param {string} a - First string
+   * @param {string} b - Second string
+   * @returns {boolean} True if plural/singular mismatch
+   */
+  isPluralSingularMismatch(a, b) {
+    // Simple plural checks
+    const aWords = a.split(' ');
+    const bWords = b.split(' ');
+    
+    if (aWords.length !== bWords.length) return false;
+    
+    let differences = 0;
+    for (let i = 0; i < aWords.length; i++) {
+      const wordA = aWords[i];
+      const wordB = bWords[i];
+      
+      if (wordA !== wordB) {
+        // Check if one is plural of the other
+        if (wordA + 's' === wordB || wordA === wordB + 's' ||
+            wordA + 'es' === wordB || wordA === wordB + 'es' ||
+            wordA.replace(/y$/, 'ies') === wordB ||
+            wordB.replace(/y$/, 'ies') === wordA) {
+          differences++;
+        } else {
+          return false;
+        }
+      }
+    }
+    
+    return differences === 1;
   }
 
   /**

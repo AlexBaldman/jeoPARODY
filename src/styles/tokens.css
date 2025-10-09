@@ -22,9 +22,9 @@
   --sp-6: 32px;
 
   /* Shadows */
-  --sh-elev-1: 0 2px 8px rgba(0,0,0,0.15);
-  --sh-elev-2: 0 8px 24px rgba(0,0,0,0.35);
-  --sh-elev-3: 0 20px 60px rgba(0,0,0,0.5);
+  --sh-elev-1: 0 2px 8px rgb(0 0 0 / 15%);
+  --sh-elev-2: 0 8px 24px rgb(0 0 0 / 35%);
+  --sh-elev-3: 0 20px 60px rgb(0 0 0 / 50%);
 
   /* Timing */
   --t-fast: 160ms;
@@ -34,10 +34,9 @@
   /* Palette (core) */
   --c-bg: #0b0f1a;
   --c-surface: #1a1f2e;
-  --c-overlay: rgba(0,0,0,0.85);
+  --c-overlay: rgb(0 0 0 / 85%);
   --c-text: #e5e7eb;
   --c-muted: #9ca3af;
-
   --c-accent: #ffd700;
   --c-accent-2: #ffed4e;
   --c-success: #22c55e;

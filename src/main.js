@@ -521,6 +521,201 @@ function setupNewUIModes() {
     // Default theme
     document.documentElement.setAttribute('data-theme', 'jeopardy');
   }
+  
+  // Set up splash screen handlers
+  setupSplashScreenHandlers();
+  // Set up board screen handlers
+  setupBoardScreenHandlers();
+  // Set up run category handlers
+  setupRunCategoryHandlers();
+}
+
+/**
+ * Set up splash screen (main menu) event handlers
+ */
+function setupSplashScreenHandlers() {
+  // Game mode buttons
+  const startButtons = document.querySelectorAll('[data-start-mode]');
+  startButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      const mode = e.target.getAttribute('data-start-mode');
+      console.log(`🎮 Starting game mode: ${mode}`);
+      
+      switch (mode) {
+        case 'classic':
+          startClassicGame();
+          break;
+        case 'fullboard':
+          showFullBoard();
+          break;
+        case 'run-category':
+          showRunCategory();
+          break;
+        case 'practice':
+          startPracticeMode();
+          break;
+        case 'daily-double':
+          startDailyDouble();
+          break;
+        case 'pao':
+          showPAOTrainer();
+          break;
+        default:
+          console.warn(`Unknown game mode: ${mode}`);
+      }
+      
+      eventBus.emit('ui:button-click');
+    });
+  });
+  
+  // Settings button
+  const settingsButton = document.querySelector('[data-action="open-settings"]');
+  if (settingsButton) {
+    settingsButton.addEventListener('click', () => {
+      eventBus.emit('modal:open', { type: 'settings' });
+      eventBus.emit('ui:button-click');
+    });
+  }
+  
+  // Theme selector dots
+  const themeDots = document.querySelectorAll('.theme-dot[data-theme]');
+  themeDots.forEach(dot => {
+    dot.addEventListener('click', (e) => {
+      const theme = e.target.getAttribute('data-theme');
+      console.log(`🎨 Switching to theme: ${theme}`);
+      
+      // Remove active class from all dots
+      themeDots.forEach(d => d.classList.remove('active'));
+      // Add active class to selected dot
+      e.target.classList.add('active');
+      
+      // Apply theme
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('jeopardish_theme_variant', theme);
+      
+      eventBus.emit('theme:variant-changed', { variant: theme });
+      eventBus.emit('ui:button-click');
+    });
+  });
+  
+  // Apply saved theme variant to UI
+  const savedVariant = localStorage.getItem('jeopardish_theme_variant') || 'jeopardy';
+  const activeDot = document.querySelector(`[data-theme="${savedVariant}"]`);
+  if (activeDot) {
+    activeDot.classList.add('active');
+  }
+}
+
+/**
+ * Start classic single-question mode
+ */
+function startClassicGame() {
+  // Hide splash screen
+  const splash = document.getElementById('splash-screen');
+  if (splash) {
+    splash.classList.remove('active');
+  }
+  
+  // Start the game
+  eventBus.emit('game:start', { mode: 'classic' });
+  eventBus.emit('question:request-new');
+}
+
+/**
+ * Show full Jeopardy board
+ */
+function showFullBoard() {
+  const splash = document.getElementById('splash-screen');
+  const board = document.getElementById('jeopardy-board-screen');
+  
+  if (splash) splash.classList.remove('active');
+  if (board) board.classList.remove('hidden');
+  
+  eventBus.emit('fullboard:initialize');
+}
+
+/**
+ * Show run the category mode
+ */
+function showRunCategory() {
+  const splash = document.getElementById('splash-screen');
+  const runScreen = document.getElementById('run-category-screen');
+  
+  if (splash) splash.classList.remove('active');
+  if (runScreen) runScreen.classList.remove('hidden');
+  
+  eventBus.emit('run-category:initialize');
+}
+
+/**
+ * Start practice mode
+ */
+function startPracticeMode() {
+  const splash = document.getElementById('splash-screen');
+  if (splash) splash.classList.remove('active');
+  
+  eventBus.emit('game:start', { mode: 'practice' });
+  eventBus.emit('question:request-new');
+}
+
+/**
+ * Start daily double mode
+ */
+function startDailyDouble() {
+  const splash = document.getElementById('splash-screen');
+  if (splash) splash.classList.remove('active');
+  
+  eventBus.emit('game:start', { mode: 'daily-double' });
+  eventBus.emit('question:request-new');
+}
+
+/**
+ * Show PAO trainer
+ */
+function showPAOTrainer() {
+  const splash = document.getElementById('splash-screen');
+  const paoScreen = document.getElementById('pao-screen-container');
+  
+  if (splash) splash.classList.remove('active');
+  if (paoScreen) paoScreen.classList.remove('hidden');
+  
+  eventBus.emit('pao:initialize');
+}
+
+/**
+ * Set up board screen handlers
+ */
+function setupBoardScreenHandlers() {
+  const backButton = document.querySelector('[data-close-board]');
+  if (backButton) {
+    backButton.addEventListener('click', () => {
+      const board = document.getElementById('jeopardy-board-screen');
+      const splash = document.getElementById('splash-screen');
+      
+      if (board) board.classList.add('hidden');
+      if (splash) splash.classList.add('active');
+      
+      eventBus.emit('ui:button-click');
+    });
+  }
+}
+
+/**
+ * Set up run category handlers
+ */
+function setupRunCategoryHandlers() {
+  const backButton = document.querySelector('[data-close-run]');
+  if (backButton) {
+    backButton.addEventListener('click', () => {
+      const runScreen = document.getElementById('run-category-screen');
+      const splash = document.getElementById('splash-screen');
+      
+      if (runScreen) runScreen.classList.add('hidden');
+      if (splash) splash.classList.add('active');
+      
+      eventBus.emit('ui:button-click');
+    });
+  }
 }
 
 // Initialize when DOM is ready
