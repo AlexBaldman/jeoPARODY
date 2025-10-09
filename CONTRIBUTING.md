@@ -2,6 +2,8 @@
 
 This document provides guidelines for all contributors, human or AI, to ensure code quality, consistency, and alignment with the project's vision.
 
+See also: Repository Guidelines in `AGENTS.md` for project structure, local commands, and PR expectations.
+
 ## Core Principles
 - **Clarity over Cleverness:** Write simple, readable code.
 - **Measure, Then Optimize:** Profile performance before refactoring for speed.
