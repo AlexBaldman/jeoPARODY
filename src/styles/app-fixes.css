@@ -232,7 +232,7 @@ body:not(.dark-theme, .dark-mode) .user-profile::after {
 }
 
 /* Ticker plane/banner fixes and layering */
-\.event-ticker { z-index: var(--z-plane); pointer-events: none; }
+.event-ticker { z-index: var(--z-plane); pointer-events: none; }
 .ticker-plane { transform: none !important; }
 .speechBubble { position: relative; z-index: var(--z-local-2); }
 
@@ -1028,7 +1028,7 @@ input:focus {
 
 #questionBox {
     font-size: var(--fs-question, 22px);
-    color: #333;
+    color: inherit;
     margin-bottom: 15px;
     line-height: 1.5;
 }

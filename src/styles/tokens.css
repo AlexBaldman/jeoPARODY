@@ -43,16 +43,21 @@
   --c-warn: #f59e0b;
   --c-error: #ef4444;
 
-  /* Z-index scale */
+  /* Z-index scale (global) */
+  /* Canonical names used across components and docs */
+  --z-plane: 1;           /* ambient plane/ticker */
+  --z-footer: 90;         /* sticky footer/low overlays */
+  --z-host: 100;          /* host avatar */
+  --z-scoreboard: 900;    /* scoreboard panel */
+  --z-header: 1000;       /* sticky header */
+  --z-modal: 2000;        /* dialogs/overlays */
+
+  /* Additional aliases (legacy/local) */
   --z-base: 0;
-  --z-host: 10;
-  --z-footer: 20;
-  --z-header: 50;
-  --z-dropdown: 100;
-  --z-sticky: 200;
-  --z-modal-backdrop: 1000;
-  --z-modal: 1010;
-  --z-tooltip: 1020;
+  --z-dropdown: 1100;
+  --z-sticky: 1200;
+  --z-modal-backdrop: calc(var(--z-modal) - 10);
+  --z-tooltip: calc(var(--z-modal) + 20);
 
   /* Local stacking helpers (component-internal) */
   --z-local-1: 2;
