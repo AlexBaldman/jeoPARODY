@@ -55,7 +55,10 @@
   /* Additional aliases (legacy/local) */
   --z-base: 0;
   --z-dropdown: 1100;
-  --z-sticky: 1200;
+  /* Panels (e.g., side menu) sit below header */
+  --z-panel-backdrop: 950;
+  --z-panel: 980;
+  --z-sticky: 990;
   --z-modal-backdrop: calc(var(--z-modal) - 10);
   --z-tooltip: calc(var(--z-modal) + 20);
 
