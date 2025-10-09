@@ -1,64 +1,36 @@
-# AGENTS.md — Working Efficiently in This Repo
+# Repository Guidelines
 
-Scope: This file applies repo-wide. Follow these instructions when adding or modifying code, tests, styles, or docs.
+## Project Structure & Module Organization
+- `src/` — application code: `core/` (engine, e.g., `src/core/GameEngine.js`), `components/` (UI), `services/` (AI, API, audio), `state/`, `utils/`, `styles/`.
+- `assets/` — images, fonts, audio, question data. `public/` — static assets served as‑is.
+- `tests/` — unit/integration (e.g., `tests/core/scoring.test.js`).
+- `dist/` — production build output. `docs/` — design notes (`ARCHITECTURE.md`, `UI_GUIDE.md`, `Gemini.md`).
+- Path aliases (Vite/Jest): `@`, `@components`, `@services`, `@state`, `@utils`.
 
-## Priorities
-- Ship stable, readable code. Keep changes small and reversible.
-- Maintain 60fps UI and <3s initial load.
-- Prefer pure functions and explicit data flow.
+## Build, Test, and Development Commands
+- `npm run dev` — start Vite dev server (port 3000).
+- `npm run build` / `npm run preview` — build to `dist/` / serve build.
+- `npm test` / `npm run test:watch` / `npm run test:coverage` — Jest (jsdom) with coverage report.
+- `npm run lint` — lint JS in `src/`. `npm run lint:css` / `lint:css:fix` — Stylelint for CSS.
+- Optional: `npm run analyze` (bundle stats), `npm run purge:css` (PurgeCSS to `dist/assets`).
 
-## Project Map
-- `src/components/` — UI only; subscribe to store/selectors and emit events.
-- `src/core/` — Pure game logic (GameEngine, scoring, validation, question).
-- `src/state/` — Redux-like store, actions, reducer, selectors, persistence.
-- `src/services/` — Side effects (AI, audio, media, API, host system, storage).
-- `src/services/ai.js` — Unified AI interface (caching/rate limit; provider selection).
-- `src/services/ai/` — Providers (`gemini.js`, `claude.js`, `local.js`, `fallback.js`) + `config.js`, `healthCheck.js`.
-- `src/styles/` — Single entry `app.css` with `@layer` and tokens in `tokens.css`.
-- `docs/` — Architecture + plans; `docs/PRD.md` is the product spec, `docs/MASTER_PLAN.md` is the engineering plan.
+## Coding Style & Naming Conventions
+- ES modules, 2‑space indent, semicolons, single quotes.
+- Naming: `PascalCase` components/classes (e.g., `ScoreBoard.js`), `camelCase` functions/vars, `UPPER_SNAKE_CASE` constants.
+- Imports: `import App from '@components/App.js'`.
+- CSS: use tokens from `src/styles/tokens.css`; BEM‑like modifiers (e.g., `.scoreboard--compact`).
 
-## Coding Conventions
-- JavaScript: ES modules, 2-space indent, semicolons, single quotes.
-- Naming: `PascalCase` classes/components; `camelCase` vars/functions; `UPPER_SNAKE_CASE` constants.
-- Events: Use the canonical bus in `src/utils/events.js` (e.g., `answer:submit`, `question:new`).
-- CSS: Import via `src/styles/app.css`. Use tokens in `tokens.css`. Keep `@layer` order: base → layout → components → utilities.
-- Accessibility: Keyboard-first interactions, focus management in modals, respect `prefers-reduced-motion`.
+## Testing Guidelines
+- Framework: Jest with `jsdom`. Place tests in `tests/**` using `*.test.js` or `*.spec.js`.
+- Coverage: ≥ 60% global (see `jest.config.js`). Focus on `core/` and `state/` logic.
+- Determinism: mock network/AI (`services/api`, `services/ai`) in unit tests.
 
-## AI System Guidelines
-- Provider order and flags live in `src/services/ai/config.js`.
-- Prefer proxy-backed Gemini when available; health check via `checkAIHealth()`.
-- For offline/dev: `localStorage.setItem('use_mock_ai','1')` to force mock provider.
-- SettingsModal can update provider order, flags, temperature, and seed.
+## Commit & Pull Request Guidelines
+- Commits: imperative and scoped (e.g., `Fix: guard question loader`, `Add: scoreboard pulse`).
+- PRs: focused, include summary, test notes, and screenshots for UI changes. Ensure `lint`, `test`, and `build` pass CI (`.github/workflows/ci.yml`).
 
-## Dev Workflow
-- Install: `npm install`
-- Dev: `npm run dev`
-- Test: `npm test` (Jest); keep tests deterministic (mock network).
-- Lint: `npm run lint` and `npm run lint:css`
-- Build: `npm run build`; Preview: `npm run preview`
-
-## Change Policy
-- One focused change per PR. Update docs when behavior, config, or structure changes.
-- If you add a provider or component, document it:
-  - Providers → brief note in README (“AI Host Configuration”) + comments.
-  - Components → short description in `ARCHITECTURE.md` or UI guide if impactful.
-
-## Commit Messages
-- Style: Imperative subject with a clear type prefix. Examples:
-  - `feat(ui): add scoreboard edge-peek`
-  - `fix(ai): open circuit on 5xx proxy errors`
-  - `docs: update PRD with acceptance criteria`
-  - `refactor(core): simplify answer validation`
-
-## Where to Look First
-- Product: `docs/PRD.md`
-- Plan: `docs/MASTER_PLAN.md`
-- Architecture: `ARCHITECTURE.md`
-- CSS Architecture & Tokens: `docs/CSS.md`, `src/styles/tokens.css`
-- Agent context (role-specific): `Gemini.md`, `WARP.md`
-
-## Don’ts
-- Don’t introduce frameworks or global state libraries.
-- Don’t block the main thread with heavy sync work; schedule or defer.
-- Don’t add hard-coded styles; prefer tokens + layered CSS.
+## Security & Configuration Tips
+- Do not commit API keys/secrets. Gemini uses a proxy by default (`/api/gemini`); for local direct key, set `localStorage['gemini_api_key']`.
+- Keep configuration centralized in `src/utils/constants.js` and `src/services/ai/config.js`.
+- Review `ARCHITECTURE.md` for event vocabulary (e.g., `answer:submit`).
 
