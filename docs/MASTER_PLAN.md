@@ -48,11 +48,11 @@
 
 **Goal:** Implement a robust, multi-provider AI host system with a clear and simple configuration process.
 
-1.  **Abstract the AI Service:**
-    -   [ ] Refactor `src/services/ai.js` to be a clean interface/dispatcher.
-    -   [ ] Move provider-specific logic into `src/services/ai/gemini.js`, `src/services/ai/claude.js`, etc.
-2.  **Document AI Setup:**
-    -   [ ] Create `docs/AI_PROVIDER_SETUP.md` with a step-by-step guide for developers.
+Status update:
+- [x] `src/services/ai.js` provides a clean unified interface with caching/rate limiting.
+- [x] Provider-specific logic lives under `src/services/ai/` (gemini/claude/local/fallback) with `ai-providers.js` registry.
+- [x] Health check utility in `src/services/ai/healthCheck.js` and configuration in `src/services/ai/config.js` (provider order, flags, temperature, seed).
+- [x] `docs/AI_PROVIDER_SETUP.md` created with setup notes; README updated with current provider behavior and limitations.
 
 ### Phase 3: Ship and Iterate (Make it Fast)
 
@@ -72,7 +72,7 @@
 - **Framework:** Vanilla JavaScript. We are **not** using React. We manipulate the DOM directly for maximum performance and simplicity.
 - **State Management:** A custom Redux-like implementation in `/src/state`.
 - **Core Logic:** Pure, dependency-free functions in `/src/core`.
-- **Services:** External concerns (AI, audio, assets) are handled in `/src/services`.
+- **Services:** External concerns (AI, audio, assets) are handled in `/src/services` (AI providers under `/src/services/ai`).
 - **Build System:** Vite.
 
 ---

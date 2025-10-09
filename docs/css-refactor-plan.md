@@ -25,10 +25,10 @@
   - [x] Implement modal styles for full-size media
   - [x] Style external links and hover states
   - [x] Add loading/error handling styles
-- [ ] **Establish proper z-index hierarchy**
+- [x] **Establish proper z-index hierarchy**
   - [x] Define z-index levels as CSS variables
   - [x] Fix header, scoreboard, modals, and host image stacking
-  - [ ] Document the new hierarchy
+  - [x] Document the new hierarchy (see `docs/CSS.md`)
 - [ ] **Implement responsive typography and layout**
   - [ ] Use `clamp()` for fluid typography
   - [ ] Set breakpoints: 480 px, 768 px, 1024 px, 1440 px
@@ -111,4 +111,4 @@
   - [ ] Minify CSS for production
 
 ---
-**Current Goal:** Implement baseline media embedding CSS fixes
+**Current Goal:** Main menu cleanup + scoreboard polish; continue responsive audit

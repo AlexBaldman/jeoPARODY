@@ -125,26 +125,29 @@ npm run preview
 Note: The AI host and Firebase integrations are optional. The game runs without them using graceful fallbacks.
 
 
-## AI Host Configuration (Gemini)
-The AI host uses a Gemini proxy by default for browser safety with fallbacks if unavailable.
+## AI Host Configuration
+The AI host system is provider-based with health checks, caching, and graceful fallbacks.
 
-- Primary service: `src/services/ai.js` (unified interface + caching)
-- Providers: `src/services/ai-providers.js` (Gemini via proxy, Claude placeholder, fallback)
+- Primary interface: `src/services/ai.js` (unified API + caching/rate-limit)
+- Providers registry: `src/services/ai-providers.js` (Gemini via proxy, Claude placeholder, local, fallback)
+- Provider modules: `src/services/ai/` (e.g., `gemini.js`, `claude.js`, `local.js`, `fallback.js`)
+- Config + flags: `src/services/ai/config.js` (provider order, feature flags, temperature, seed)
+- Health check: `src/services/ai/healthCheck.js`
 
 Options:
-1) Use the proxy (recommended for development)
-- Expected endpoints (default):
-  - `http://localhost:3002/api/gemini/health`
-  - `http://localhost:3002/api/gemini/generate`
-- The app will auto-detect the proxy and enable AI replies when healthy.
+1) Proxy (recommended for development)
+- Endpoints (default, relative):
+  - `/api/gemini/health`
+  - `/api/gemini/generate`
+- The app will auto-detect a healthy proxy and enable AI replies.
 
-2) Direct API key (NOT YET IMPLEMENTED IN-CODE)
-- The provider detects `localStorage.getItem('gemini_api_key')`, but direct API calls are not implemented in the current code path. Use the proxy.
+2) Direct API key (limited)
+- `localStorage.setItem('gemini_api_key', 'YOUR_KEY')` enables direct-key initialization, but the current provider path still uses the proxy for generation. Prefer the proxy.
 
-If neither is available, the host will use witty canned lines so the game remains fully playable.
-
-Developer tip:
-- To force a mock AI (no network), open DevTools and run: `localStorage.setItem('use_mock_ai','1')`. Remove with `localStorage.removeItem('use_mock_ai')`.
+Fallbacks + developer tips:
+- If no provider is healthy, the host uses witty canned lines so the game remains playable.
+- Force a mock AI (no network): `localStorage.setItem('use_mock_ai','1')` (remove with `localStorage.removeItem('use_mock_ai')`).
+- In-app Settings: open the Settings modal to change provider order, toggle feature flags (persona rewrite, study mode, local model, AI console), and adjust temperature/seed.
 
 
 ## Optional: Firebase & Cloud Sync
