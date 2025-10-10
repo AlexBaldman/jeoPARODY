@@ -36,8 +36,9 @@ Guidelines
 - Prefer tokens over magic values; avoid creating stacking contexts unless required.
 - Gate motion under `prefers-reduced-motion: reduce`.
 - Keep all imports routed through `app.css` to preserve layering.
- - Ticker uses `pointer-events: none` to avoid intercepting clicks and stays at `--z-plane`.
- - Modals should use `.btn-modal-close` for consistent close buttons; backdrops/content at `--z-modal`.
+- Ticker uses `pointer-events: none` to avoid intercepting clicks and stays at `--z-plane`.
+- Modals should use `.btn-modal-close` for consistent close buttons; backdrops/content at `--z-modal`.
+ - Interactive elements use global `:focus-visible` outlines; add `.focus-ring` where custom components need explicit focus styling.
 
 Linting & Purge
 - Stylelint: `npm run lint:css` (requires `stylelint` + `stylelint-config-standard`).
