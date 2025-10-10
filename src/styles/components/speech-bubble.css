@@ -1,0 +1,51 @@
+@layer components {
+  /* Base speech bubble using variables */
+  .speech-bubble, .speechBubble {
+    --sbub-bg: rgb(26 26 26 / 95%);
+    --sbub-border: var(--c-accent);
+    --sbub-text: var(--c-text);
+    --sbub-tail-left: 24px;
+    --sbub-tail-size: 14px;
+
+    position: relative;
+    background: var(--sbub-bg);
+    color: var(--sbub-text);
+    border: 2px solid var(--sbub-border);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    box-shadow: var(--sh-elev-2);
+    backdrop-filter: blur(2px);
+  }
+
+  .speech-bubble::before, .speechBubble::before,
+  .speech-bubble::after, .speechBubble::after {
+    content: '';
+    position: absolute;
+    left: var(--sbub-tail-left);
+    width: 0; height: 0;
+  }
+
+  .speech-bubble::before, .speechBubble::before {
+    bottom: calc(-1 * var(--sbub-tail-size));
+    border-left: var(--sbub-tail-size) solid transparent;
+    border-right: var(--sbub-tail-size) solid transparent;
+    border-top: var(--sbub-tail-size) solid var(--sbub-border);
+  }
+
+  .speech-bubble::after, .speechBubble::after {
+    bottom: calc(-1 * (var(--sbub-tail-size) - 2px));
+    margin-left: 3px;
+    border-left: calc(var(--sbub-tail-size) - 2px) solid transparent;
+    border-right: calc(var(--sbub-tail-size) - 2px) solid transparent;
+    border-top: calc(var(--sbub-tail-size) - 2px) solid var(--sbub-bg);
+  }
+
+  /* Themes */
+  .speech-bubble-jeopardy, .speech-bubble--jeopardy, .speechBubble.jeopardy {
+    --sbub-bg: linear-gradient(180deg, #0b2aa0, #051b6f);
+    --sbub-border: var(--c-accent);
+    --sbub-text: #ffef9a;
+    --sbub-tail-left: 80px;
+  }
+}
+

@@ -88,7 +88,7 @@ export class ScoreCalculator {
    * @returns {number} Streak bonus
    */
   static calculateStreakBonus(streak, baseValue) {
-    let multiplier = 0;
+    let multiplier = 1; // Start with 1 so (multiplier - 1) is 0 if no bonus applies
 
     // Find the highest applicable streak bonus
     for (const [threshold, bonus] of Object.entries(SCORING.STREAK_BONUS)) {
@@ -164,7 +164,7 @@ export class ScoreCalculator {
         base: peekUsed ? 0 : baseValue,
         timeBonus,
         streakBonus,
-        difficultyBonus: Math.round((baseValue * difficultyMultiplier) - baseValue),
+        difficultyBonus: peekUsed ? 0 : Math.round((baseValue * difficultyMultiplier) - baseValue),
         penalty: 0
       }
     };

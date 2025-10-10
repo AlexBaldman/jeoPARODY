@@ -26,8 +26,13 @@ class ScoreBoard extends ConnectedComponent {
       isExpanded: false,
       showAnimation: false,
       isVisible: false,
-      autoHideTimeout: null
+      autoHideTimeout: null,
+      theme: (typeof localStorage !== 'undefined' && localStorage.getItem('scoreboard_theme')) || 'basketball'
     };
+
+    // Available themes for development cycling
+    this.themes = ['basketball', 'classic', 'neon'];
+    this.currentThemeIndex = Math.max(0, this.themes.indexOf(this.state.theme));
   }
 
   /**
@@ -50,11 +55,14 @@ class ScoreBoard extends ConnectedComponent {
     const { currentScore, highScore, currentStreak, bestStreak } = this.storeState;
     const { isExpanded, showAnimation, isVisible } = this.state;
 
+    const themeClass = `scoreboard--${this.state.theme}`;
     return `
-      <div class="scoreboard basketball-style ${isExpanded ? 'expanded' : ''} ${showAnimation ? 'animating' : ''} ${isVisible ? 'visible' : 'hidden'}" 
-           data-ref="root"
-           data-on-mouseenter="handleMouseEnter"
-           data-on-mouseleave="handleMouseLeave">
+      <div class="scoreboard ${themeClass} ${isExpanded ? 'expanded' : ''} ${showAnimation ? 'animating' : ''} ${isVisible ? 'visible' : 'hidden'}" 
+            data-ref="root"
+            data-on-mouseenter="handleMouseEnter"
+            data-on-mouseleave="handleMouseLeave">
+        <div class="scoreboard-theme-left-zone" data-on-click="previousTheme" title="Previous scoreboard style"></div>
+        <div class="scoreboard-theme-right-zone" data-on-click="nextTheme" title="Next scoreboard style"></div>
         
         <!-- Peek tab -->
         <div class="scoreboard-peek" data-on-click="toggleVisible">
@@ -154,6 +162,20 @@ class ScoreBoard extends ConnectedComponent {
     if (this.state.isVisible) {
       this.resetAutoHide();
     }
+  }
+
+  // Theme cycling handlers
+  previousTheme() {
+    this.currentThemeIndex = (this.currentThemeIndex - 1 + this.themes.length) % this.themes.length;
+    const next = this.themes[this.currentThemeIndex];
+    this.setState({ theme: next });
+    try { localStorage.setItem('scoreboard_theme', next); } catch(_) {}
+  }
+  nextTheme() {
+    this.currentThemeIndex = (this.currentThemeIndex + 1) % this.themes.length;
+    const next = this.themes[this.currentThemeIndex];
+    this.setState({ theme: next });
+    try { localStorage.setItem('scoreboard_theme', next); } catch(_) {}
   }
   
   /**

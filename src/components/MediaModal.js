@@ -106,8 +106,7 @@ class MediaModal extends Modal {
                 createElement('img', {
                     src: src,
                     alt: alt || 'Media content',
-                    className: 'modal-image',
-                    style: 'max-width: 100%; max-height: 80vh; object-fit: contain;'
+                    className: 'modal-image'
                 })
             ])
         ];
@@ -115,8 +114,7 @@ class MediaModal extends Modal {
         if (caption) {
             content.push(
                 createElement('p', { 
-                    className: 'modal-caption',
-                    style: 'text-align: center; margin-top: 1rem; color: #ccc;'
+                    className: 'modal-caption'
                 }, [caption])
             );
         }
@@ -131,8 +129,7 @@ class MediaModal extends Modal {
                     src: src,
                     className: 'modal-video',
                     controls: true,
-                    preload: 'metadata',
-                    style: 'max-width: 100%; max-height: 80vh;'
+                    preload: 'metadata'
                 })
             ])
         ];
@@ -140,8 +137,7 @@ class MediaModal extends Modal {
         if (caption) {
             content.push(
                 createElement('p', { 
-                    className: 'modal-caption',
-                    style: 'text-align: center; margin-top: 1rem; color: #ccc;'
+                    className: 'modal-caption'
                 }, [caption])
             );
         }
@@ -159,64 +155,28 @@ class MediaModal extends Modal {
             createElement('div', { className: 'modal-audio-container' }, [
                 createElement('div', { 
                     className: 'audio-player',
-                    style: `
-                        background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
-                        border-radius: 15px;
-                        padding: 2rem;
-                        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-                        text-align: center;
-                        min-width: 300px;
-                    `
                 }, [
                     createElement('button', {
                         id: playButtonId,
                         className: 'audio-play-btn',
                         onclick: () => this.toggleAudio(src, playButtonId, progressId, currentTimeId, totalTimeId),
-                        style: `
-                            background: linear-gradient(145deg, #4CAF50, #45a049);
-                            border: none;
-                            border-radius: 50%;
-                            width: 80px;
-                            height: 80px;
-                            color: white;
-                            font-size: 24px;
-                            cursor: pointer;
-                            margin-bottom: 1rem;
-                            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-                            transition: all 0.3s ease;
-                        `
                     }, [
                         createElement('i', { className: 'fas fa-play' })
                     ]),
                     createElement('div', { className: 'audio-info' }, [
                         createElement('p', { 
                             className: 'audio-title',
-                            style: 'color: #ffd700; font-size: 1.2rem; margin-bottom: 1rem;'
                         }, [alt || 'Audio Clip']),
                         createElement('div', { 
                             className: 'audio-progress',
-                            style: `
-                                background: #444;
-                                height: 6px;
-                                border-radius: 3px;
-                                margin-bottom: 0.5rem;
-                                overflow: hidden;
-                            `
                         }, [
                             createElement('div', {
                                 id: progressId,
                                 className: 'audio-progress-bar',
-                                style: `
-                                    background: linear-gradient(90deg, #4CAF50, #8BC34A);
-                                    height: 100%;
-                                    width: 0%;
-                                    transition: width 0.1s ease;
-                                `
                             })
                         ]),
                         createElement('div', { 
                             className: 'audio-time',
-                            style: 'display: flex; justify-content: space-between; color: #ccc; font-size: 0.9rem;'
                         }, [
                             createElement('span', { 
                                 id: currentTimeId,
@@ -236,7 +196,6 @@ class MediaModal extends Modal {
             content.push(
                 createElement('p', { 
                     className: 'modal-caption',
-                    style: 'text-align: center; margin-top: 1rem; color: #ccc;'
                 }, [caption])
             );
         }

@@ -222,6 +222,43 @@ export function getRandomBoard(filters = {}) {
 }
 
 /**
+ * Build a deterministic board for a specific date (YYYY-MM-DD)
+ * Falls back to random board if insufficient data.
+ */
+export function getBoardForDate(date) {
+  if (!date || !allQuestions.length) return getRandomBoard();
+  const onDate = allQuestions.filter(q => String(q.airdate || '').startsWith(date));
+  if (onDate.length < 30) {
+    console.log(`[FullBoard] Not enough questions for ${date}, falling back to random board`);
+    return getRandomBoard({ date });
+  }
+  const byCat = new Map();
+  for (const q of onDate) {
+    const cat = q.category?.title || q.category || 'General Knowledge';
+    if (!byCat.has(cat)) byCat.set(cat, []);
+    byCat.get(cat).push(normalizeQuestionData(q));
+  }
+  const eligible = Array.from(byCat.entries()).filter(([, list]) => list.length >= 5);
+  if (eligible.length < 6) return getRandomBoard({ date });
+  // Deterministic selection: pick first 6 alphabetical categories
+  eligible.sort((a,b) => a[0].localeCompare(b[0]));
+  const selected = eligible.slice(0,6);
+  const values = [200,400,600,800,1000];
+  const board = selected.map(([name, list]) => {
+    // Prefer exact values if present
+    const byValue = new Map();
+    list.forEach(q => {
+      const v = Number(q.value) || 0;
+      if (!byValue.has(v)) byValue.set(v, []);
+      byValue.get(v).push(q);
+    });
+    const clues = values.map(v => (byValue.get(v)?.[0]) || list[Math.floor(Math.random()*list.length)]);
+    return { name, clues };
+  });
+  return { categories: board };
+}
+
+/**
  * Fetch a question from the external API (with timeout)
  * @returns {Promise<Object|null>} Question data or null if failed
  */
@@ -276,6 +313,29 @@ async function loadLocalQuestions() {
     return true;
   }
   
+  // If an index exists (sharded data), prefer loading a shard to reduce memory/time
+  let data = null;
+  let successPath = null;
+  try {
+    const idxRes = await fetch('assets/questions/index.json');
+    if (idxRes.ok) {
+      const index = await idxRes.json();
+      const years = Object.keys(index.years || {});
+      const pick = years[Math.floor(Math.random() * years.length)];
+      if (pick) {
+        console.log(`🗂️ Loading shard for year: ${pick}`);
+        const shardRes = await fetch(`assets/questions/shards/${pick}.json`);
+        if (shardRes.ok) {
+          const shardData = await shardRes.json();
+          data = Array.isArray(shardData) ? shardData : shardData.questions || [];
+          successPath = `assets/questions/shards/${pick}.json`;
+        }
+      }
+    }
+  } catch (err) {
+    console.log('ℹ️ No index/shards found or failed to load, falling back to monolithic files');
+  }
+
   const questionPaths = [
     'assets/questions/questions.json',
     'assets/questions/combined_season1-40.tsv',
@@ -286,11 +346,11 @@ async function loadLocalQuestions() {
     './questions/questions.json'
   ];
   
-  let data = null;
-  let successPath = null;
+  // 'data' and 'successPath' may already be set from shard loading above
   
   // Try each path
   for (const path of questionPaths) {
+    if (data) break;
     console.log(`🔍 Trying to fetch questions from: ${path}`);
     try {
       const response = await fetch(path);
@@ -555,5 +615,6 @@ export default {
   getQuestionsByCategory,
   getRandomCategory,
   getRandomBoard,
+  getBoardForDate,
   getAllQuestions
 };

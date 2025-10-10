@@ -214,8 +214,7 @@ class MediaHandler {
         const container = thumbnailElement.querySelector('.thumbnail-container');
         
         container.addEventListener('click', () => {
-            this.openImageModal(url);
-            eventBus.emit('media:imageViewed', { url });
+            eventBus.emit('media:show', { type: 'image', src: url, alt: container.querySelector('img').alt });
         });
     }
 
@@ -231,99 +230,11 @@ class MediaHandler {
         const container = thumbnailElement.querySelector('.thumbnail-container');
         
         container.addEventListener('click', () => {
-            this.openVideoModal(url);
-            eventBus.emit('media:videoPlayed', { url });
+            eventBus.emit('media:show', { type: 'video', src: url, alt: container.querySelector('.media-label').textContent });
         });
     }
 
-    /**
-     * Open image in a modal
-     * @param {string} url - Image URL
-     */
-    openImageModal(url) {
-        this.closeCurrentModal();
-        
-        const modal = document.createElement('div');
-        modal.className = 'media-modal image-modal';
-        modal.innerHTML = `
-            <div class="modal-backdrop"></div>
-            <div class="modal-content">
-                <button class="modal-close" aria-label="Close">
-                    <i class="fas fa-times"></i>
-                </button>
-                <div class="modal-body">
-                    <img src="${url}" alt="Full size image" />
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(modal);
-        this.currentModal = modal;
-        
-        // Add event listeners
-        modal.querySelector('.modal-close').addEventListener('click', () => this.closeCurrentModal());
-        modal.querySelector('.modal-backdrop').addEventListener('click', () => this.closeCurrentModal());
-        
-        // Add escape key listener
-        const escapeListener = (e) => {
-            if (e.key === 'Escape') {
-                this.closeCurrentModal();
-                document.removeEventListener('keydown', escapeListener);
-            }
-        };
-        document.addEventListener('keydown', escapeListener);
-        
-        // Animate in
-        requestAnimationFrame(() => {
-            modal.classList.add('show');
-        });
-    }
 
-    /**
-     * Open video in a modal
-     * @param {string} url - Video URL
-     */
-    openVideoModal(url) {
-        this.closeCurrentModal();
-        
-        const modal = document.createElement('div');
-        modal.className = 'media-modal video-modal';
-        modal.innerHTML = `
-            <div class="modal-backdrop"></div>
-            <div class="modal-content">
-                <button class="modal-close" aria-label="Close">
-                    <i class="fas fa-times"></i>
-                </button>
-                <div class="modal-body">
-                    <video controls autoplay>
-                        <source src="${url}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(modal);
-        this.currentModal = modal;
-        
-        // Add event listeners
-        modal.querySelector('.modal-close').addEventListener('click', () => this.closeCurrentModal());
-        modal.querySelector('.modal-backdrop').addEventListener('click', () => this.closeCurrentModal());
-        
-        // Add escape key listener
-        const escapeListener = (e) => {
-            if (e.key === 'Escape') {
-                this.closeCurrentModal();
-                document.removeEventListener('keydown', escapeListener);
-            }
-        };
-        document.addEventListener('keydown', escapeListener);
-        
-        // Animate in
-        requestAnimationFrame(() => {
-            modal.classList.add('show');
-        });
-    }
 
     /**
      * Close the current modal

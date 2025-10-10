@@ -108,18 +108,19 @@ class App extends ConnectedComponent {
       <img src="images/jeoparody.png" alt="Jeopardish Logo" class="game-logo">
     `;
     
-    // Create right hamburger menu
+    // Create right controls
     const rightControls = document.createElement('div');
     rightControls.className = 'header-right';
     const hamburger = document.createElement('button');
     hamburger.className = 'hamburger-menu';
     hamburger.id = 'hamburger-menu';
     hamburger.setAttribute('aria-label', 'Toggle menu');
+    hamburger.setAttribute('aria-controls', 'side-menu');
+    hamburger.setAttribute('aria-expanded', 'false');
     hamburger.innerHTML = `
       <span class="hamburger-line"></span>
       <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-    `;
+      <span class="hamburger-line"></span>`;
     rightControls.appendChild(hamburger);
     
     // Build header
@@ -143,8 +144,7 @@ class App extends ConnectedComponent {
         <li><button data-action="leaderboard">📈 Leaderboard</button></li>
         <li><button data-action="profile">👤 Profile</button></li>
         <li><button data-action="help">❓ Help</button></li>
-      </ul>
-    `;
+      </ul>`;
     
     // Create main content area
     const main = document.createElement('main');
@@ -177,8 +177,42 @@ class App extends ConnectedComponent {
     
     // Add to app
     this.appendChild(header);
+    // Backdrop for side menu (for click-to-close and focus layering)
+    const menuBackdrop = document.createElement('div');
+    menuBackdrop.className = 'menu-backdrop';
     this.appendChild(sideMenu);
+    this.appendChild(menuBackdrop);
     this.appendChild(main);
+
+    // Create and append scoreboard
+    const scoreboardElement = document.createElement('div');
+    scoreboardElement.id = 'scoreboard';
+    scoreboardElement.className = 'scoreboard';
+    scoreboardElement.setAttribute('role', 'region');
+    scoreboardElement.setAttribute('aria-label', 'Scoreboard');
+    scoreboardElement.innerHTML = `
+        <h2>SCOREBOARD</h2>
+        <p>SCORE: <span id="score" class="score-value">0</span></p>
+        <p>STREAK: <span id="streak" class="score-value">0</span></p>
+        <p>TOP SCORE: <span id="top-score" class="score-value">0</span></p>
+        <p>MAX STREAK: <span id="max-streak" class="score-value">0</span></p>
+    `;
+    this.appendChild(scoreboardElement);
+
+    // Create and append user profile
+    const userProfileElement = document.createElement('div');
+    userProfileElement.id = 'user-profile';
+    userProfileElement.className = 'user-profile';
+    userProfileElement.style.display = 'none';
+    userProfileElement.setAttribute('role', 'region');
+    userProfileElement.setAttribute('aria-label', 'User profile');
+    userProfileElement.innerHTML = `
+        <img id="user-avatar" class="user-avatar">
+        <span id="user-name"></span>
+        <button id="profile-button">edit profile</button>
+        <button id="logout-button">sign out</button>
+    `;
+    this.appendChild(userProfileElement);
     
     // Initialize and add modal manager
     // Lazy-create SettingsModal and attach to app
@@ -217,21 +251,74 @@ class App extends ConnectedComponent {
       // Additional menu button is #lang-btn-menu
     }
     
-    // Hamburger menu
+    // Hamburger menu (accessible)
     const hamburger = this.querySelector('.hamburger-menu');
     const sideMenu = this.querySelector('.side-menu');
     const closeMenu = this.querySelector('.close-menu');
-    
+    const backdrop = this.querySelector('.menu-backdrop');
+
+    const getFocusable = () => sideMenu?.querySelectorAll(
+      'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+    ) || [];
+
+    const onKeydown = (e) => {
+      if (!sideMenu?.classList.contains('open')) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeMenuFn();
+        return;
+      }
+      if (e.key === 'Tab') {
+        const focusable = Array.from(getFocusable());
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const active = document.activeElement;
+        if (e.shiftKey && active === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && active === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    const openMenu = () => {
+      sideMenu?.classList.add('open');
+      backdrop?.classList.add('visible');
+      hamburger?.setAttribute('aria-expanded', 'true');
+      const focusable = getFocusable();
+      if (focusable.length) {
+        const first = focusable[0];
+        if (first && typeof first.focus === 'function') first.focus();
+      }
+      document.addEventListener('keydown', onKeydown);
+    };
+
+    const closeMenuFn = () => {
+      sideMenu?.classList.remove('open');
+      backdrop?.classList.remove('visible');
+      hamburger?.setAttribute('aria-expanded', 'false');
+      if (hamburger && typeof hamburger.focus === 'function') {
+        try { hamburger.focus(); } catch(_) {}
+      }
+      document.removeEventListener('keydown', onKeydown);
+    };
+
     if (hamburger && sideMenu) {
       hamburger.addEventListener('click', () => {
-        sideMenu.classList.add('open');
+        const isOpen = sideMenu.classList.contains('open');
+        if (isOpen) closeMenuFn(); else openMenu();
       });
     }
-    
+
     if (closeMenu && sideMenu) {
-      closeMenu.addEventListener('click', () => {
-        sideMenu.classList.remove('open');
-      });
+      closeMenu.addEventListener('click', () => closeMenuFn());
+    }
+
+    if (backdrop && sideMenu) {
+      backdrop.addEventListener('click', () => closeMenuFn());
     }
     
     // Menu items
@@ -253,6 +340,8 @@ class App extends ConnectedComponent {
           this.eventBus.emit(`modal:open`, { type: action });
         }
         sideMenu.classList.remove('open');
+        this.querySelector('.menu-backdrop')?.classList.remove('visible');
+        hamburger?.setAttribute('aria-expanded', 'false');
       });
     });
     
@@ -301,23 +390,7 @@ class App extends ConnectedComponent {
     this.addSoundControls();
   }
 
-  addSoundControls() {
-    // Create sound control button in header
-    const header = this.querySelector('.app-header');
-    if (!header) return;
-    
-    const soundControl = document.createElement('button');
-    soundControl.className = 'sound-control';
-    soundControl.setAttribute('aria-label', 'Toggle sound');
-    soundControl.innerHTML = soundManager.isMuted() ? '🔇' : '🔊';
-    
-    soundControl.addEventListener('click', () => {
-      soundManager.toggleMute();
-      soundControl.innerHTML = soundManager.isMuted() ? '🔇' : '🔊';
-    });
-    
-    header.appendChild(soundControl);
-  }
+
 
 
   render() {

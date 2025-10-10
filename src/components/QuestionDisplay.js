@@ -22,12 +22,12 @@ class QuestionDisplay extends ConnectedComponent {
   init() {
     this.state = {
       showAnswer: false,
-      speechBubbleStyle: 'default'
+      speechBubbleStyle: (typeof localStorage !== 'undefined' && localStorage.getItem('speech_bubble_style')) || 'default'
     };
     
     // Speech bubble styles
     this.bubbleStyles = ['default', 'comic', 'thought', 'retro', 'jeopardy'];
-    this.currentStyleIndex = 0;
+    this.currentStyleIndex = Math.max(0, this.bubbleStyles.indexOf(this.state.speechBubbleStyle));
   }
 
   /**
@@ -124,7 +124,9 @@ class QuestionDisplay extends ConnectedComponent {
    */
   previousStyle() {
     this.currentStyleIndex = (this.currentStyleIndex - 1 + this.bubbleStyles.length) % this.bubbleStyles.length;
-    this.setState({ speechBubbleStyle: this.bubbleStyles[this.currentStyleIndex] });
+    const next = this.bubbleStyles[this.currentStyleIndex];
+    this.setState({ speechBubbleStyle: next });
+    try { localStorage.setItem('speech_bubble_style', next); } catch(_) {}
     this.animateStyleChange();
   }
 
@@ -133,7 +135,9 @@ class QuestionDisplay extends ConnectedComponent {
    */
   nextStyle() {
     this.currentStyleIndex = (this.currentStyleIndex + 1) % this.bubbleStyles.length;
-    this.setState({ speechBubbleStyle: this.bubbleStyles[this.currentStyleIndex] });
+    const next = this.bubbleStyles[this.currentStyleIndex];
+    this.setState({ speechBubbleStyle: next });
+    try { localStorage.setItem('speech_bubble_style', next); } catch(_) {}
     this.animateStyleChange();
   }
 

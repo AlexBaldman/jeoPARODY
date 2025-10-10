@@ -162,11 +162,11 @@ Built-in performance tracking logs stats every 10 seconds in development mode.
 3. Wire up events in `src/main.js`
 4. Test in isolation before UI integration
 
-### CSS Organization (In Progress)
-Current refactor consolidates styles:
-- `app-fixes.css` - Critical bug fixes
-- `enhanced-ui.css` - UI enhancements
-- `media-rendering.css` - Media modal system
+### CSS Organization
+- Single entrypoint: `src/styles/app.css` using CSS `@layer` (base/layout/components/utilities).
+- Tokens: `src/styles/tokens.css` (colors, spacing, z-index, header height, shadows, timings).
+- Components: `src/styles/components/` (scoreboard, speech-bubble). Utilities in `src/styles/utilities.css`.
+- See `docs/CSS.md` for z-index map and naming.
 
 ## Development Philosophy (The Carmack Rules)
 

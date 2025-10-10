@@ -282,30 +282,20 @@ export function createPersistenceMiddleware(persistence, config = {}) {
       return true;
     }
 
-    // Check if action should trigger save
-    const shouldSave = [
-      'SCORE_UPDATE',
-      'STREAK_UPDATE',
-      'HIGH_SCORE_UPDATE',
-      'SETTINGS_UPDATE',
-      'USER_LOGIN',
-      'USER_UPDATE_PROFILE',
-      'STATS_UPDATE',
-      'STATS_ACHIEVEMENT_UNLOCK',
-      'GAME_END'
-    ].includes(action.type);
+    // Any action that gets past the throttle will trigger a save
+    const state = store.getState();
+    const stateToPersist = filterState(state, { blacklist, whitelist });
+    
+    // Determine which parts of the state to save. 
+    // This could be optimized to only save changed slices.
+    const keysToSave = getKeysToSave(action.type);
 
-    if (shouldSave) {
-      const state = store.getState();
-      const stateToPersist = filterState(state, { blacklist, whitelist });
-      
-      persistence.saveState(stateToPersist, {
-        partial: true,
-        keys: getKeysToSave(action.type)
-      });
-      
-      lastSave = now;
-    }
+    persistence.saveState(stateToPersist, {
+      partial: true,
+      keys: keysToSave
+    });
+    
+    lastSave = now;
 
     return true;
   };

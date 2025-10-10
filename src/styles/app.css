@@ -1,0 +1,42 @@
+/* Consolidated app stylesheet imports (order matters)
+ * Layering Map (z-index variables from enhanced-ui.css):
+ * - --z-plane (1): ambient effects (ticker/plane)
+ * - --z-footer (90): sticky footer and low overlays
+ * - --z-host (100): host image/avatar
+ * - --z-scoreboard (900): side scoreboard
+ * - --z-header (1000): sticky header
+ * - --z-modal (2000): dialogs and full-screen overlays
+ */
+@layer base, layout, components, utilities;
+
+@import url('./tokens.css') layer(base);            /* design tokens */
+@import url('./enhanced-ui.css') layer(base);       /* variables, z-index scale, modals */
+@import url('./media-rendering.css') layer(components);   /* media thumbnails/modal UI */
+@import url('./ux-pack.css') layer(components);           /* buttons, splash, board/overlays */
+@import url('./pao.css') layer(components);               /* PAO trainer screens */
+@import url('./components/scoreboard.css') layer(components);
+@import url('./components/speech-bubble.css') layer(components);
+@import url('./utilities.css') layer(utilities);
+@import url('./app-fixes.css') layer(utilities);          /* targeted fixes and component polish */
+
+/* Scoreboard class alias to match component markup */
+.basketball-scoreboard,
+.scoreboard.basketball-style { /* root */ }
+
+.basketball-scoreboard::before,
+.scoreboard.basketball-style::before { /* title band */ }
+
+.basketball-scoreboard::after,
+.scoreboard.basketball-style::after { /* label */ }
+
+.basketball-scoreboard.active,
+.scoreboard.basketball-style.visible { /* active/visible */ }
+
+.basketball-scoreboard:hover,
+.scoreboard.basketball-style.hover { /* hover reveal */ }
+
+.basketball-scoreboard .scoreboard-peek,
+.scoreboard.basketball-style .scoreboard-peek { /* peek tab */ }
+
+.basketball-scoreboard .scoreboard-content,
+.scoreboard.basketball-style .scoreboard-content { /* inner layout */ }

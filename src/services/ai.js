@@ -1,12 +1,4 @@
-/**
- * Unified AI Service Abstraction Layer
- *
- * This service provides a single interface for interacting with various
- * AI providers. It intelligently selects the best available provider,
- * handles caching, rate limiting, and fallbacks.
- */
-
-import providersDefault, { gemini, claude, fallback, local } from './ai-providers.js';
+import providers from './ai-providers.js';
 import AIConfig from './ai/config.js';
 import PromptBuilder from './ai/PromptBuilder.js';
 import personas from './ai/personas.json';
@@ -22,7 +14,7 @@ Your responses should be varied and entertaining.`;
 
 class AIService {
     constructor() {
-        this.providers = { gemini, claude, local, fallback };
+        this.providers = providers;
         this.activeProvider = 'fallback';
 
         // Caching and Rate Limiting
@@ -38,22 +30,31 @@ class AIService {
     }
 
     init() {
-        // Determine active provider by config priority and readiness
-        const order = AIConfig.providerOrder;
-        for (const id of order) {
-            const p = this.providers[id];
-            if (!p) continue;
-            if (typeof p.init === 'function') p.init();
-        }
+        // Optional mock toggle via localStorage: set `use_mock_ai` to '1'
+        try {
+            if (typeof localStorage !== 'undefined' && localStorage.getItem('use_mock_ai') === '1') {
+                if (this.providers.mock) {
+                    this.providers.mock.enable();
+                    this.activeProvider = 'mock';
+                    console.log('🧪 AI Service using mock provider');
+                    return;
+                }
+            }
+        } catch (_) { /* ignore storage errors */ }
+
+        // Determine active provider by readiness
         this.activeProvider = this.selectReadyProvider() || 'fallback';
         console.log(`🤖 AI Service initialized. Active provider: ${this.activeProvider}`);
     }
 
     selectReadyProvider() {
-        const order = AIConfig.providerOrder;
+        const order = ['gemini', 'claude', 'local']; // Define provider order
         for (const id of order) {
             const p = this.providers[id];
-            if (p && (p.isReady?.() || p.isInitialized)) return id;
+            if (p && (p.isReady?.() || p.isInitialized)) {
+                if (typeof p.init === 'function') p.init(); // Initialize if not already
+                return id;
+            }
         }
         return null;
     }
