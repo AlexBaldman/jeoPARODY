@@ -9,9 +9,13 @@ module.exports = {
   safelist: [
     /visible/,
     /expanded/,
+    /open/,
     /^scoreboard--/,
     /^speech-bubble/,
     /active/,
+    /^clue-modal/,
+    /^run-category-screen/,
+    /^pao-screen/,
   ]
 };
 

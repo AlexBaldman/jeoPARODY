@@ -47,7 +47,8 @@
     overflow: hidden;
 }
 
-.modal-close {
+.modal-close,
+.btn-modal-close {
     position: absolute;
     top: 1rem;
     right: 1rem;
@@ -63,7 +64,8 @@
     z-index: var(--z-local-3);
 }
 
-.modal-close:hover {
+.modal-close:hover,
+.btn-modal-close:hover {
     background: rgb(255 255 255 / 20%);
     transform: scale(1.1);
 }

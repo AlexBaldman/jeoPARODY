@@ -42,8 +42,8 @@
   - [ ] Add scoreboard animation and smooth transitions
   - [ ] Add loading animations, respect `prefers-reduced-motion`
 - [ ] **Consolidate and optimize CSS architecture**
-  - [ ] Merge redundant styles, use BEM naming
-  - [ ] Create utility classes and logical sections
+  - [x] Merge redundant styles (legacy `#scoreboard`, centered variant removed)
+  - [x] Create utility classes (e.g., `.btn-modal-close`) and logical sections
   - [ ] Minify and remove unused selectors
   - [ ] Implement CSS custom properties and source maps
 - [ ] **Enhance accessibility and performance**
@@ -55,19 +55,18 @@
   - [ ] Test in major browsers/devices
   - [ ] Document architecture, style guide, migration guide
   - [ ] Add comments, update README, set up visual regression testing
-- [ ] **Fix z-index layering and sticky elements**
-  - [ ] Set sticky header to `z-index: 1000`
-  - [ ] Move scoreboard behind header (`z-index: 900`)
-  - [ ] Ensure ticker plane flies behind other elements (`z-index: 1`)
-  - [ ] Fix modal and overlay z-indices (`z-index: 2000+`)
-  - [ ] Implement proper stacking contexts for all positioned elements
+- [x] **Fix z-index layering and sticky elements**
+  - [x] Set sticky header to `z-index: 1000`
+  - [x] Move scoreboard behind header (`z-index: 900`)
+  - [x] Ensure ticker plane flies behind other elements (`z-index: 1`) and is click-through
+  - [x] Fix modal and overlay z-indices (`z-index: 2000+`)
+  - [x] Define side menu panel/backdrop tokens below header (`--z-panel`, `--z-panel-backdrop`)
 - [ ] **Redesign scoreboard component**
-  - [ ] Use Jeopardy blue background (`#060ce9`)
-  - [ ] Gold borders and text (`#ffcc00`)
-  - [ ] Proper spacing and padding
-  - [ ] Clear player name and score display
-  - [ ] Subtle animations for score changes
-  - [ ] Fix positioning below sticky header
+  - [x] Canonical right-edge peek; remove conflicting centered variant
+  - [ ] Ensure proper spacing/padding and themes via tokens
+  - [ ] Clear player name and score display polish
+  - [ ] Subtle animations for score changes (reduced motion aware)
+  - [x] Position below sticky header
 - [ ] **Reposition and style host image**
   - [ ] Move to bottom-left (fixed)
   - [ ] Scale to `max-width: 150px`
@@ -83,9 +82,9 @@
   - [ ] Smooth keyframe animations
   - [ ] Ticker runs behind main content
 - [ ] **Style profile component with edge-peek behavior**
-  - [ ] Fixed right edge, `translateX` transitions
-  - [ ] Visual indicator tab
-  - [ ] Game-appropriate colors
+  - [x] Fixed right edge, `translateX` transitions
+  - [x] Visual indicator tab
+  - [ ] Theme polish and contrast audit
 - [ ] **Enhance animations and transitions**
   - [ ] Card flip for question reveals
   - [ ] Smooth hover effects
@@ -111,4 +110,4 @@
   - [ ] Minify CSS for production
 
 ---
-**Current Goal:** Main menu cleanup + scoreboard polish; continue responsive audit
+**Current Goal:** Side menu/backdrop polish; responsive sweep; purge + docs

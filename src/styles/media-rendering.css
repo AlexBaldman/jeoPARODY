@@ -373,7 +373,8 @@
 }
 
 /* Modal Close Button */
-.modal-close {
+.modal-close,
+.btn-modal-close {
     position: absolute;
     top: 15px;
     right: 15px;
@@ -393,13 +394,15 @@
     box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
 }
 
-.modal-close:hover {
+.modal-close:hover,
+.btn-modal-close:hover {
     background: rgb(220 53 69 / 90%);
     transform: scale(1.1) rotate(90deg);
     box-shadow: 0 6px 20px rgb(220 53 69 / 40%);
 }
 
-.modal-close:active {
+.modal-close:active,
+.btn-modal-close:active {
     transform: scale(0.95) rotate(90deg);
 }
 

@@ -214,6 +214,9 @@ Contributor resources:
 - Tokens: `src/styles/tokens.css` defines colors, spacing, radii, shadows, z-index, and header height.
 - Components: themed scoreboard and speech bubble live under `src/styles/components/`.
 - Guide: see `docs/CSS.md` for the z-index map, naming, and layering rules.
+ - Scoreboard: canonical implementation is the right-edge peek variant (`components/scoreboard.css`). Centered "basketball" variant was removed to prevent conflicts.
+ - Side Menu: positioned under the header (`top: var(--header-h)`), with panel/backdrop z-index tokens (`--z-panel`, `--z-panel-backdrop`) to avoid blocking the header.
+ - Modals: use a shared close button utility `.btn-modal-close` to standardize styling; ticker uses `pointer-events: none` and sits at `--z-plane`.
 
 ## Changelog
 - 2025-09-23
