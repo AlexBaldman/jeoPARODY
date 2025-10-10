@@ -331,10 +331,10 @@ body.dark-mode::after {
 /* Side menu */
 .side-menu {
     position: fixed;
-    top: 70px;
+    top: var(--header-h);
     right: 0;
     width: 320px;
-    max-height: 70vh;
+    max-height: calc(100vh - var(--header-h));
     transform: translateY(-120%);
     transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     background: linear-gradient(145deg, rgb(26 26 26 / 98%), rgb(45 45 45 / 98%));

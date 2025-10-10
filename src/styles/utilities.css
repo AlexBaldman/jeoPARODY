@@ -47,4 +47,7 @@
   .dev-menu__row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; }
   .dev-menu .btn { background: linear-gradient(135deg, var(--c-accent), var(--c-accent-2)); color: #111; border: 0; border-radius: 6px; padding: 6px 10px; cursor: pointer; }
   .dev-menu select { background: rgb(255 255 255 / 10%); color: #fff; border: 1px solid rgb(255 215 0 / 50%); border-radius: 6px; padding: 4px 6px; }
+
+  /* Scroll lock when menu backdrop is active (modern browsers) */
+  body:has(#menu-backdrop.active) { overflow: hidden; }
 }
