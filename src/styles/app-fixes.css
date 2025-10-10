@@ -122,65 +122,19 @@
 }
 
 /* Scoreboard: improved contrast + slide from header */
-#scoreboard {
-    position: absolute;
-    right: 0;
-    top: -200px; /* sit behind sticky header */
-    background: linear-gradient(180deg, #0b2aa0, #051b6f);
-    color: #ffef9a;
-    border: 2px solid #ffd700;
-    border-radius: 10px 0 10px 10px;
-    padding: 12px 16px;
-    width: 240px;
-    box-shadow: 0 10px 30px rgb(0 0 0 / 50%);
-    transform: translateY(0);
-    transition: transform 300ms ease, filter 300ms ease;
-    z-index: var(--z-scoreboard); /* above ticker, below header */
-}
+/* Legacy #scoreboard rules removed — use .scoreboard (components). */
 
-#scoreboard.open {
-    transform: translateY(215px); /* slide into view */
-}
+/* removed legacy #scoreboard.open */
 
-#scoreboard .score-value.highlight {
-    animation: scorePulse 900ms ease;
-}
+/* removed legacy #scoreboard highlight animation */
 
-@keyframes scorePulse {
-    0% { filter: drop-shadow(0 0 0 rgb(255 20 147 / 0%)); color: #ffef9a; }
-    25% { filter: drop-shadow(0 0 10px rgb(255 20 147 / 90%)); color: #ff4fd0; }
-    100% { filter: drop-shadow(0 0 0 rgb(255 20 147 / 0%)); color: #ffef9a; }
-}
+/* removed legacy scorePulse keyframes */
 
-/* Peek tab always visible */
-#scoreboard::before {
-    content: '\25B6'; /* triangle play icon */
-    position: absolute;
-    right: 0;
-    top: 100%;
-    transform: translateY(-8px);
-    background: #ff1fc3;
-    color: #111;
-    border: 2px solid #ffd700;
-    border-top: none;
-    border-bottom-left-radius: 8px;
-    width: 26px;
-    height: 26px;
-    display: grid;
-    place-items: center;
-    box-shadow: 0 6px 14px rgb(0 0 0 / 40%);
-}
+/* removed legacy #scoreboard peek tab */
 
-/* Light/Dark variants */
-body:not(.dark-theme, .dark-mode) #scoreboard {
-    background: linear-gradient(180deg, #fefefe, #e9ecff);
-    color: #0b143a;
-}
-body:not(.dark-theme, .dark-mode) #scoreboard .score-value { color: #0b2aa0; }
-.dark-theme #scoreboard, .dark-mode #scoreboard { background: linear-gradient(180deg, #0b2aa0, #051b6f); }
+/* removed legacy #scoreboard light/dark variants */
 
-/* Click/hover to open */
-#scoreboard:hover { filter: brightness(1.06); }
+/* removed legacy #scoreboard hover */
 
 /* User profile: peek + slide out from right bottom */
 .user-profile {
@@ -245,8 +199,8 @@ body:not(.dark-theme, .dark-mode) .user-profile::after {
 
 /* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-    #scoreboard,
-    #scoreboard .score-value.highlight,
+    .scoreboard,
+    .scoreboard .score-value.highlight,
     .side-menu,
     #menu-backdrop,
     .ticker-unit,
@@ -259,7 +213,7 @@ body:not(.dark-theme, .dark-mode) .user-profile::after {
 /* Mobile-first adjustments */
 @media (width <= 640px) {
     .side-menu { width: 90vw; max-height: 75vh; }
-    #scoreboard { width: 78vw; }
+    .scoreboard { width: 78vw; }
     .user-profile { width: 78vw; right: -78vw; }
 
     .user-profile.open,
