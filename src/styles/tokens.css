@@ -1,61 +1,105 @@
-/* Design tokens: typography, colors, spacing, and z-index scale */
+/* Design Tokens: colors, spacing, typography, radii, motion, z-index */
 
 :root {
-  /* Typography scale */
+  /* Colors */
+  --color-jeopardy-blue: #0033a0;
+  --color-jeopardy-blue-2: #0a1d66;
+  --color-gold: #ffd700;
+  --color-gold-soft: #ffef9a;
+  --color-surface: #ffffff;
+  --color-surface-2: #f7f7fb;
+  --color-text: #0b143a;
+  --color-text-muted: #666b7a;
+  --color-success: #27ae60;
+  --color-danger: #e74c3c;
+  --color-warning: #f39c12;
+
+  /* Default accent prior to variant selection */
+  --theme-accent: var(--color-jeopardy-blue);
+
+  /* Backgrounds */
+  --bg-app: linear-gradient(180deg, #f6f9ff, #eef2ff);
+  --bg-panel: rgba(255, 255, 255, 0.96);
+  --bg-overlay: rgba(0, 0, 0, 0.85);
+
+  /* Spacing */
+  --space-2xs: 2px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-3xl: 48px;
+
+  /* Typography */
+  --font-display: 'Korinna', Georgia, serif;
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --fs-base: clamp(14px, 2vw, 18px);
   --fs-question: clamp(18px, 3vw, 28px);
   --fs-heading: clamp(24px, 5vw, 48px);
   --fs-dollar: clamp(20px, 4vw, 36px);
 
-  /* Layout metrics */
-  --header-h: 80px;
+  /* Radii */
   --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-
-  /* Spacing scale */
-  --sp-1: 4px;
-  --sp-2: 8px;
-  --sp-3: 12px;
-  --sp-4: 16px;
-  --sp-5: 24px;
-  --sp-6: 32px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
 
   /* Shadows */
-  --sh-elev-1: 0 2px 8px rgb(0 0 0 / 15%);
-  --sh-elev-2: 0 8px 24px rgb(0 0 0 / 35%);
-  --sh-elev-3: 0 20px 60px rgb(0 0 0 / 50%);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.18);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.28);
 
-  /* Timing */
-  --t-fast: 160ms;
-  --t-med: 300ms;
-  --t-slow: 450ms;
+  /* Motion */
+  --dur-fast: 150ms;
+  --dur-normal: 280ms;
+  --dur-slow: 450ms;
+  --ease-standard: cubic-bezier(0.2, 0.0, 0.2, 1);
 
-  /* Palette (core) */
-  --c-bg: #0b0f1a;
-  --c-surface: #1a1f2e;
-  --c-overlay: rgb(0 0 0 / 85%);
-  --c-text: #e5e7eb;
-  --c-muted: #9ca3af;
-  --c-accent: #ffd700;
-  --c-accent-2: #ffed4e;
-  --c-success: #22c55e;
-  --c-warn: #f59e0b;
-  --c-error: #ef4444;
-
-  /* Z-index scale */
+  /* Z-Index Ladder */
   --z-base: 0;
-  --z-host: 10;
-  --z-footer: 20;
-  --z-header: 50;
-  --z-dropdown: 100;
-  --z-sticky: 200;
+  --z-header: 30;
+  --z-host: 40;
+  --z-footer: 50;
+  --z-overlay: 100;
   --z-modal-backdrop: 1000;
   --z-modal: 1010;
-  --z-tooltip: 1020;
-
-  /* Local stacking helpers (component-internal) */
-  --z-local-1: 2;
-  --z-local-2: 5;
-  --z-local-3: 10;
+  --z-tooltip: 1100;
 }
+
+/* Dark mode adjustments (no inline style writes; toggle via data-theme-mode) */
+:root[data-theme-mode='dark'] {
+  --color-surface: #111827;
+  --color-surface-2: #0a0f1f;
+  --color-text: #f3f4f6;
+  --color-text-muted: #cbd5e1;
+  --bg-app: linear-gradient(180deg, #0a1929, #1e3c72);
+  --bg-panel: rgba(17, 24, 39, 0.96);
+}
+
+/* Theme variants (existing project uses html[data-theme]) */
+html[data-theme='jeopardy'] {
+  --theme-accent: var(--color-jeopardy-blue);
+}
+
+html[data-theme='retro'] {
+  --theme-accent: #0ff;
+}
+
+html[data-theme='comic'] {
+  --theme-accent: #ff2257;
+}
+
+/* Utility tokens mapping (optional aliases to existing CSS) */
+:root {
+  --score-color: var(--color-gold);
+  --bubble-border: var(--color-gold);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-fast: 0ms; --dur-normal: 0ms; --dur-slow: 0ms; }
+}
+

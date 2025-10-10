@@ -114,7 +114,27 @@ function handleFatalError(error) {
  * Set up global event listeners
  */
 function setupGlobalEventListeners() {
-  // No global event listeners needed here anymore, App.js handles them.
+  // Theme toggle
+  const themeSwitch = document.getElementById('theme-switch');
+  if (themeSwitch) {
+    themeSwitch.addEventListener('change', toggleTheme);
+  }
+  
+  // Language toggles (header and side menu)
+  const langBtn = document.getElementById('lang-btn');
+  const langBtnMenu = document.getElementById('lang-btn-menu');
+  if (langBtn) langBtn.addEventListener('click', toggleLanguage);
+  if (langBtnMenu) langBtnMenu.addEventListener('click', toggleLanguage);
+  
+  // Hamburger menu
+  const hamburgerMenu = document.getElementById('hamburger-menu');
+  const sideMenu = document.getElementById('side-menu');
+  if (hamburgerMenu && sideMenu) {
+    hamburgerMenu.addEventListener('click', () => {
+      sideMenu.classList.toggle('active');
+      hamburgerMenu.classList.toggle('active');
+    });
+  }
 }
 
 /**
@@ -139,6 +159,7 @@ async function initializeCoreServices() {
   JeopardyApp.soundManager = soundManager;
   await JeopardyApp.soundManager.init();
   console.info('[🔊] Audio system ready');
+  
   // Initialize host system
   JeopardyApp.hostSystem = getHostSystem();
   // HostSystem init() is called in constructor, so no need to await it here
@@ -158,6 +179,13 @@ function setupServiceIntegration() {
   // Host system responds to game events
   eventBus.on('answer:evaluated', (data) => {
     JeopardyApp.hostSystem.updateMood(JeopardyApp.gameEngine.state.stats);
+    // Update scoreboard
+    const { current, streak, high, maxStreak } = JeopardyApp.gameEngine.state.score;
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = String(val); };
+    set('score', current);
+    set('streak', streak);
+    set('top-score', high);
+    set('max-streak', maxStreak);
   });
   
   // Sound system handles game audio
@@ -291,6 +319,9 @@ function applyTheme(isDark) {
   // Sync checkbox UI if present
   const themeSwitchInput = document.getElementById('theme-switch');
   if (themeSwitchInput) themeSwitchInput.checked = isDark;
+
+  // Use attribute-driven theming (consumed by tokens.css and modular styles)
+  document.documentElement.setAttribute('data-theme-mode', isDark ? 'dark' : 'light');
 }
 
 /**
@@ -396,6 +427,19 @@ function setupGameControls() {
     // Handle submit button
     checkButton.addEventListener('click', submitAnswer);
   }
+
+  // Handle showing the answer
+  eventBus.on('question:show-answer', () => {
+    const answerBox = document.getElementById('answerBox');
+    const { question } = JeopardyApp.gameEngine.state;
+    if (answerBox && question.data) {
+      answerBox.innerHTML = question.data.answer;
+      answerBox.classList.add('visible');
+      console.log(`[AnswerBox] Showing answer: ${question.data.answer}`);
+    } else {
+      console.warn('[AnswerBox] Could not show answer - missing element or data');
+    }
+  });
 }
 
 /**
@@ -416,18 +460,41 @@ function submitAnswer() {
 
   if (answer) {
     console.log(`[Submit] Answer submitted: ${answer}`);
+    // Emit both the legacy engine event and the namespaced game event
+    eventBus.emit('answer:submit', { answer });
     eventBus.emit(GAME_EVENTS.ANSWER_SUBMITTED, { answer });
     inputBox.value = '';
     eventBus.emit('ui:button-click');
   }
 }
 
-
-
 /**
  * Set up menu interactions
  */
 function setupMenuInteractions() {
+  // Theme toggle
+  const themeSwitch = document.getElementById('theme-switch');
+  if (themeSwitch) {
+    themeSwitch.addEventListener('change', toggleTheme);
+  }
+  
+  // Language toggles (header and side menu)
+  const langBtn = document.getElementById('lang-btn');
+  const langBtnMenu = document.getElementById('lang-btn-menu');
+  if (langBtn) langBtn.addEventListener('click', toggleLanguage);
+  if (langBtnMenu) langBtnMenu.addEventListener('click', toggleLanguage);
+  
+  // Hamburger menu
+  const hamburgerMenu = document.getElementById('hamburger-menu');
+  const sideMenu = document.getElementById('side-menu');
+  if (hamburgerMenu && sideMenu) {
+    hamburgerMenu.addEventListener('click', () => {
+      sideMenu.classList.toggle('active');
+      hamburgerMenu.classList.toggle('active');
+      eventBus.emit('ui:button-click');
+    });
+  }
+
   // Host animation trigger
   const hostAnimBtn = document.getElementById('host-anim-trigger');
   if (hostAnimBtn) {
@@ -439,8 +506,6 @@ function setupMenuInteractions() {
     });
   }
 }
-
-
 
 /**
  * Set up keyboard shortcuts
@@ -481,6 +546,10 @@ function loadUserPreferences() {
   const isDark = savedTheme === 'dark';
   if (savedTheme) {
     applyTheme(isDark);
+    const themeSwitch = document.getElementById('theme-switch');
+    if (themeSwitch) {
+      themeSwitch.checked = isDark;
+    }
   }
   
   // Load language preference
@@ -499,6 +568,7 @@ function saveUserPreferences() {
   eventBus.on('theme:changed', ({ theme }) => {
     // Persist and ensure UI reflects current theme
     localStorage.setItem('jeopardish_theme', theme);
+    applyTheme(theme === 'dark');
   });
   
   eventBus.on('language:changed', ({ lang }) => {
@@ -512,6 +582,147 @@ function saveUserPreferences() {
  */
 function setupNewUIModes() {
   console.log('[Debug] setupNewUIModes() called');
+  const splash = document.getElementById('splash-screen');
+  const board = document.getElementById('jeopardy-board-screen');
+  const run = document.getElementById('run-category-screen');
+  const paoContainer = document.getElementById('pao-screen-container');
+  const clueModal = document.getElementById('clue-modal');
+  const clueText = document.getElementById('clue-text');
+
+  if (splash) {
+    // Theme chooser
+    splash.querySelectorAll('.theme-dot').forEach(dot => {
+      dot.addEventListener('click', () => {
+        const theme = dot.getAttribute('data-theme');
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('jeopardish_theme_variant', theme);
+      });
+    });
+
+    // Start mode buttons
+    splash.querySelectorAll('[data-start-mode]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const mode = btn.getAttribute('data-start-mode');
+        console.log(`[Splash] Start button clicked - Mode: ${mode}`);
+        // Hide splash (use class only; avoid inline display overrides)
+        splash.classList.remove('active');
+
+        // Emit game start
+        eventBus.emit('game:start', { mode, difficulty: 'normal' });
+
+        // Show special screens if selected
+        if (mode === 'fullboard') {
+          board?.classList.remove('hidden');
+          board?.classList.add('active');
+          try {
+            const game = questionService.getRandomBoard();
+            renderJeopardyBoard(game);
+            attachBoardControls();
+          } catch (e) {
+            console.error('Failed to render fullboard', e);
+          }
+        } else if (mode === 'run-category') {
+          run?.classList.remove('hidden');
+          run?.classList.add('active');
+        } else if (mode === 'pao') {
+          import('./components/pao/PAOView.js').then(({ default: PAOView }) => {
+            if (paoContainer) {
+              paoContainer.classList.remove('hidden');
+              const pao = new PAOView();
+              pao.init(paoContainer);
+              setTimeout(() => pao.show(), 0);
+              // Store instance on container for later cleanup
+              paoContainer._pao = pao;
+            }
+          });
+        }
+      });
+    });
+
+    const settingsBtn = splash.querySelector('[data-action="open-settings"]');
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', () => {
+        eventBus.emit('modal:open', { type: 'settings' });
+      });
+    }
+  }
+
+  // Jeopardy board interactions
+  if (board) {
+    const closeBoard = board.querySelector('[data-close-board]');
+    closeBoard?.addEventListener('click', () => {
+      board.classList.remove('active');
+      board.classList.add('hidden');
+      // Return to splash
+      document.getElementById('splash-screen')?.classList.add('active');
+    });
+
+    // Open clue modal on cell click
+    board.addEventListener('click', (ev) => {
+      const cell = ev.target.closest('.clue');
+      if (!cell) return;
+      const q = cell._question;
+      const value = cell.getAttribute('data-value');
+      if (clueText) clueText.textContent = q?.question || `Clue for ${value}`;
+      clueModal?.classList.add('active');
+    });
+  }
+
+  // PAO close by Escape or Back in header handled inside PAOView
+  // Provide an external cleanup if container is hidden later
+  if (paoContainer) {
+    const observer = new MutationObserver(() => {
+      if (paoContainer.classList.contains('hidden') && paoContainer._pao) {
+        paoContainer._pao.destroy();
+        paoContainer._pao = null;
+      }
+    });
+    observer.observe(paoContainer, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // Close clue modal on outside click
+  if (clueModal) {
+    clueModal.addEventListener('click', (e) => {
+      if (e.target === clueModal) clueModal.classList.remove('active');
+    });
+  }
+
+  // Run the category interactions
+  if (run) {
+    const closeRun = run.querySelector('[data-close-run]');
+    closeRun?.addEventListener('click', () => {
+      run.classList.remove('active');
+      run.classList.add('hidden');
+      document.getElementById('splash-screen')?.classList.add('active');
+    });
+
+    // Simple demo progress
+    const progress = run.querySelector('#run-progress-bar');
+    let pct = 0;
+    run.addEventListener('click', (e) => {
+      const item = e.target.closest('.run-item');
+      if (!item) return;
+      pct = Math.min(100, pct + 20);
+      if (progress) progress.style.width = pct + '%';
+      item.style.opacity = '0.6';
+    });
+  }
+
+  // Speech bubble style cycling (comic/thought variants)
+  const speech = document.getElementById('speechBubble');
+  if (speech) {
+    const styles = ['', 'speech-bubble--thought', 'speech-bubble--comic'];
+    let idx = 0;
+    speech.addEventListener('click', (ev) => {
+      const rect = speech.getBoundingClientRect();
+      const leftSide = (ev.clientX - rect.left) < rect.width / 2;
+      // Remove all variants
+      styles.forEach(cls => cls && speech.classList.remove(cls));
+      idx = (idx + (leftSide ? -1 : 1) + styles.length) % styles.length;
+      const cls = styles[idx];
+      if (cls) speech.classList.add(cls);
+    });
+  }
 
   // Apply saved theme variant
   const savedVariant = localStorage.getItem('jeopardish_theme_variant');
@@ -520,201 +731,6 @@ function setupNewUIModes() {
   } else {
     // Default theme
     document.documentElement.setAttribute('data-theme', 'jeopardy');
-  }
-  
-  // Set up splash screen handlers
-  setupSplashScreenHandlers();
-  // Set up board screen handlers
-  setupBoardScreenHandlers();
-  // Set up run category handlers
-  setupRunCategoryHandlers();
-}
-
-/**
- * Set up splash screen (main menu) event handlers
- */
-function setupSplashScreenHandlers() {
-  // Game mode buttons
-  const startButtons = document.querySelectorAll('[data-start-mode]');
-  startButtons.forEach(button => {
-    button.addEventListener('click', (e) => {
-      const mode = e.target.getAttribute('data-start-mode');
-      console.log(`🎮 Starting game mode: ${mode}`);
-      
-      switch (mode) {
-        case 'classic':
-          startClassicGame();
-          break;
-        case 'fullboard':
-          showFullBoard();
-          break;
-        case 'run-category':
-          showRunCategory();
-          break;
-        case 'practice':
-          startPracticeMode();
-          break;
-        case 'daily-double':
-          startDailyDouble();
-          break;
-        case 'pao':
-          showPAOTrainer();
-          break;
-        default:
-          console.warn(`Unknown game mode: ${mode}`);
-      }
-      
-      eventBus.emit('ui:button-click');
-    });
-  });
-  
-  // Settings button
-  const settingsButton = document.querySelector('[data-action="open-settings"]');
-  if (settingsButton) {
-    settingsButton.addEventListener('click', () => {
-      eventBus.emit('modal:open', { type: 'settings' });
-      eventBus.emit('ui:button-click');
-    });
-  }
-  
-  // Theme selector dots
-  const themeDots = document.querySelectorAll('.theme-dot[data-theme]');
-  themeDots.forEach(dot => {
-    dot.addEventListener('click', (e) => {
-      const theme = e.target.getAttribute('data-theme');
-      console.log(`🎨 Switching to theme: ${theme}`);
-      
-      // Remove active class from all dots
-      themeDots.forEach(d => d.classList.remove('active'));
-      // Add active class to selected dot
-      e.target.classList.add('active');
-      
-      // Apply theme
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('jeopardish_theme_variant', theme);
-      
-      eventBus.emit('theme:variant-changed', { variant: theme });
-      eventBus.emit('ui:button-click');
-    });
-  });
-  
-  // Apply saved theme variant to UI
-  const savedVariant = localStorage.getItem('jeopardish_theme_variant') || 'jeopardy';
-  const activeDot = document.querySelector(`[data-theme="${savedVariant}"]`);
-  if (activeDot) {
-    activeDot.classList.add('active');
-  }
-}
-
-/**
- * Start classic single-question mode
- */
-function startClassicGame() {
-  // Hide splash screen
-  const splash = document.getElementById('splash-screen');
-  if (splash) {
-    splash.classList.remove('active');
-  }
-  
-  // Start the game
-  eventBus.emit('game:start', { mode: 'classic' });
-  eventBus.emit('question:request-new');
-}
-
-/**
- * Show full Jeopardy board
- */
-function showFullBoard() {
-  const splash = document.getElementById('splash-screen');
-  const board = document.getElementById('jeopardy-board-screen');
-  
-  if (splash) splash.classList.remove('active');
-  if (board) board.classList.remove('hidden');
-  
-  eventBus.emit('fullboard:initialize');
-}
-
-/**
- * Show run the category mode
- */
-function showRunCategory() {
-  const splash = document.getElementById('splash-screen');
-  const runScreen = document.getElementById('run-category-screen');
-  
-  if (splash) splash.classList.remove('active');
-  if (runScreen) runScreen.classList.remove('hidden');
-  
-  eventBus.emit('run-category:initialize');
-}
-
-/**
- * Start practice mode
- */
-function startPracticeMode() {
-  const splash = document.getElementById('splash-screen');
-  if (splash) splash.classList.remove('active');
-  
-  eventBus.emit('game:start', { mode: 'practice' });
-  eventBus.emit('question:request-new');
-}
-
-/**
- * Start daily double mode
- */
-function startDailyDouble() {
-  const splash = document.getElementById('splash-screen');
-  if (splash) splash.classList.remove('active');
-  
-  eventBus.emit('game:start', { mode: 'daily-double' });
-  eventBus.emit('question:request-new');
-}
-
-/**
- * Show PAO trainer
- */
-function showPAOTrainer() {
-  const splash = document.getElementById('splash-screen');
-  const paoScreen = document.getElementById('pao-screen-container');
-  
-  if (splash) splash.classList.remove('active');
-  if (paoScreen) paoScreen.classList.remove('hidden');
-  
-  eventBus.emit('pao:initialize');
-}
-
-/**
- * Set up board screen handlers
- */
-function setupBoardScreenHandlers() {
-  const backButton = document.querySelector('[data-close-board]');
-  if (backButton) {
-    backButton.addEventListener('click', () => {
-      const board = document.getElementById('jeopardy-board-screen');
-      const splash = document.getElementById('splash-screen');
-      
-      if (board) board.classList.add('hidden');
-      if (splash) splash.classList.add('active');
-      
-      eventBus.emit('ui:button-click');
-    });
-  }
-}
-
-/**
- * Set up run category handlers
- */
-function setupRunCategoryHandlers() {
-  const backButton = document.querySelector('[data-close-run]');
-  if (backButton) {
-    backButton.addEventListener('click', () => {
-      const runScreen = document.getElementById('run-category-screen');
-      const splash = document.getElementById('splash-screen');
-      
-      if (runScreen) runScreen.classList.add('hidden');
-      if (splash) splash.classList.add('active');
-      
-      eventBus.emit('ui:button-click');
-    });
   }
 }
 
@@ -739,11 +755,6 @@ try {
                 window.location.search.includes('debug=true');
   
   if (isDev) {
-    // Load Dev HUD if enabled
-    import('./dev/hud.js').then(m => m.attachDevHUD({ eventBus, app: JeopardyApp })).catch(()=>{});
-    // Dev Menu
-    import('./dev/menu.js').then(m => m.attachDevMenu({ app: JeopardyApp })).catch(()=>{});
-
     setInterval(() => {
       if (JeopardyApp.gameEngine) {
         const stats = JeopardyApp.gameEngine.getPerformanceStats();
@@ -813,7 +824,92 @@ function setLegacyAnswerVisible(visible) {
   }
 }
 
+// ===== Helpers: Scoreboard UX =====
+function flashScoreboard() {
+  const sb = document.getElementById('scoreboard');
+  if (!sb) return;
+  sb.classList.add('open');
+  clearTimeout(sb._hideTimer);
+  sb._hideTimer = setTimeout(() => sb.classList.remove('open'), 2500);
+}
 
+function highlightValue(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('highlight');
+  // force reflow
+  void el.offsetWidth;
+  el.classList.add('highlight');
+}
 
+eventBus.on('answer:evaluated', () => {
+  flashScoreboard();
+  highlightValue('score');
+  highlightValue('streak');
+});
 
+// ===== Helpers: Full Board Rendering =====
+function renderJeopardyBoard(game) {
+  const grid = document.getElementById('board-grid');
+  if (!grid || !game) return;
+  const cats = game.categories || [];
+  const values = ['$200', '$400', '$600', '$800', '$1000'];
+  
+  // Use DOM construction to prevent XSS from untrusted API data
+  const fragment = document.createDocumentFragment();
+  
+  // Create category elements with safe textContent assignment
+  cats.forEach(cat => {
+    const categoryEl = document.createElement('div');
+    categoryEl.className = 'category';
+    categoryEl.textContent = cat?.name ?? '';
+    fragment.appendChild(categoryEl);
+  });
+  
+  // Create clue elements and attach question data directly
+  for (let r = 0; r < values.length; r++) {
+    for (let c = 0; c < cats.length; c++) {
+      const clueEl = document.createElement('div');
+      clueEl.className = 'clue';
+      clueEl.dataset.value = values[r];
+      clueEl.textContent = values[r];
+      clueEl._question = cats[c].clues[r];
+      fragment.appendChild(clueEl);
+    }
+  }
+  
+  // Clear and append the fragment in one operation
+  grid.innerHTML = '';
+  grid.appendChild(fragment);
+}
 
+function attachBoardControls() {
+  const controls = document.querySelector('#jeopardy-board-screen .board-controls');
+  if (!controls || controls._attached) return;
+  controls._attached = true;
+  const wrap = document.createElement('div');
+  wrap.style.display = 'flex';
+  wrap.style.gap = '8px';
+  wrap.style.alignItems = 'center';
+  wrap.style.marginLeft = 'auto';
+  wrap.innerHTML = `
+    <input type="date" id="board-date" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid #ffd700;border-radius:6px;padding:4px 8px;" />
+    <select id="board-year" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid #ffd700;border-radius:6px;padding:4px 8px;">
+      <option value="">Year</option>
+      ${Array.from({length: 40}, (_,i)=>2025-i).map(y=>`<option value="${y}">${y}</option>`).join('')}
+    </select>
+    <select id="board-month" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid #ffd700;border-radius:6px;padding:4px 8px;">
+      <option value="">Month</option>
+      ${Array.from({length:12},(_,i)=>`<option value="${String(i+1).padStart(2,'0')}">${String(i+1).padStart(2,'0')}</option>`).join('')}
+    </select>
+    <button id="board-apply" class="board-close" style="border:1px solid #ffd700;">Apply</button>
+  `;
+  controls.appendChild(wrap);
+  wrap.querySelector('#board-apply').addEventListener('click', () => {
+    const date = wrap.querySelector('#board-date').value || undefined;
+    const year = wrap.querySelector('#board-year').value || undefined;
+    const month = wrap.querySelector('#board-month').value || undefined;
+    const game = questionService.getRandomBoard({ date, year, month });
+    renderJeopardyBoard(game);
+  });
+}
