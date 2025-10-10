@@ -103,18 +103,14 @@ class MediaHandler {
     createImageThumbnail(url, linkText) {
         const imageId = `image-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         
-        // Schedule the setup of the image thumbnail after DOM update
         setTimeout(() => this.setupImageThumbnail(imageId, url), 100);
         
         return `
-            <div class="media-thumbnail image-thumbnail" id="${imageId}">
-                <div class="thumbnail-container" data-url="${url}" title="Click to view full image">
-                    <img src="${url}" alt="${linkText}" loading="lazy" />
-                    <div class="thumbnail-overlay">
-                        <i class="fas fa-expand"></i>
-                        <span class="media-label">📷 ${linkText || 'View Image'}</span>
-                    </div>
-                </div>
+            <div class="media-player image-player" id="${imageId}">
+                <button class="image-button" data-url="${url}" title="View image">
+                    <i class="fas fa-image"></i>
+                    <span class="media-label">🖼️ ${linkText || 'View Image'}</span>
+                </button>
             </div>
         `;
     }
@@ -128,40 +124,35 @@ class MediaHandler {
     createVideoThumbnail(url, linkText) {
         const videoId = `video-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         
-        // Schedule the setup of the video thumbnail after DOM update
         setTimeout(() => this.setupVideoThumbnail(videoId, url), 100);
         
         return `
-            <div class="media-thumbnail video-thumbnail" id="${videoId}">
-                <div class="thumbnail-container" data-url="${url}" title="Click to play video">
-                    <video muted preload="metadata">
-                        <source src="${url}" type="video/mp4">
-                    </video>
-                    <div class="thumbnail-overlay">
-                        <i class="fas fa-play-circle"></i>
-                        <span class="media-label">🎬 ${linkText || 'Play Video'}</span>
-                    </div>
-                </div>
+            <div class="media-player video-player" id="${videoId}">
+                <button class="video-button" data-url="${url}" title="Play video">
+                    <i class="fas fa-play"></i>
+                    <span class="media-label">🎬 ${linkText || 'Play Video'}</span>
+                </button>
             </div>
         `;
     }
 
     /**
      * Setup audio player functionality
-     * @param {string} playerId - The audio player element ID
+     * @param {string} playerId - The player element ID
      * @param {string} url - Audio file URL
      */
     setupAudioPlayer(playerId, url) {
-        const playerElement = document.getElementById(playerId);
-        if (!playerElement) return;
+        const player = document.getElementById(playerId);
+        if (!player) return;
 
-        const playButton = playerElement.querySelector('.play-button');
-        const pauseButton = playerElement.querySelector('.pause-button');
-        const controls = playerElement.querySelector('.audio-controls');
-        const progressBar = playerElement.querySelector('.progress');
-        const timeDisplay = playerElement.querySelector('.time-display');
+        const playButton = player.querySelector('.play-button');
+        const pauseButton = player.querySelector('.pause-button');
+        const progressBar = player.querySelector('.progress');
+        const timeDisplay = player.querySelector('.time-display');
+        const audioControls = player.querySelector('.audio-controls');
 
         let audio = null;
+        let isPlaying = false;
 
         playButton.addEventListener('click', () => {
             if (!audio) {
@@ -169,37 +160,39 @@ class MediaHandler {
                 audio.addEventListener('loadedmetadata', () => {
                     timeDisplay.textContent = `0:00 / ${this.formatTime(audio.duration)}`;
                 });
-                
                 audio.addEventListener('timeupdate', () => {
                     const progress = (audio.currentTime / audio.duration) * 100;
                     progressBar.style.width = `${progress}%`;
                     timeDisplay.textContent = `${this.formatTime(audio.currentTime)} / ${this.formatTime(audio.duration)}`;
                 });
-                
                 audio.addEventListener('ended', () => {
+                    isPlaying = false;
                     playButton.style.display = 'block';
-                    controls.style.display = 'none';
-                    progressBar.style.width = '0%';
+                    audioControls.style.display = 'none';
                 });
             }
 
-            audio.play();
-            playButton.style.display = 'none';
-            controls.style.display = 'flex';
-            
-            // Emit event for analytics
-            eventBus.emit('media:audioPlayed', { url });
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+                playButton.style.display = 'block';
+                audioControls.style.display = 'none';
+            } else {
+                audio.play();
+                isPlaying = true;
+                playButton.style.display = 'none';
+                audioControls.style.display = 'flex';
+            }
         });
 
-        if (pauseButton) {
-            pauseButton.addEventListener('click', () => {
-                if (audio) {
-                    audio.pause();
-                    playButton.style.display = 'block';
-                    controls.style.display = 'none';
-                }
-            });
-        }
+        pauseButton.addEventListener('click', () => {
+            if (audio && isPlaying) {
+                audio.pause();
+                isPlaying = false;
+                playButton.style.display = 'block';
+                audioControls.style.display = 'none';
+            }
+        });
     }
 
     /**
@@ -208,14 +201,12 @@ class MediaHandler {
      * @param {string} url - Image URL
      */
     setupImageThumbnail(imageId, url) {
-        const thumbnailElement = document.getElementById(imageId);
-        if (!thumbnailElement) return;
+        const player = document.getElementById(imageId);
+        if (!player) return;
 
-        const container = thumbnailElement.querySelector('.thumbnail-container');
-        
-        container.addEventListener('click', () => {
+        const imageButton = player.querySelector('.image-button');
+        imageButton.addEventListener('click', () => {
             this.openImageModal(url);
-            eventBus.emit('media:imageViewed', { url });
         });
     }
 
@@ -225,118 +216,109 @@ class MediaHandler {
      * @param {string} url - Video URL
      */
     setupVideoThumbnail(videoId, url) {
-        const thumbnailElement = document.getElementById(videoId);
-        if (!thumbnailElement) return;
+        const player = document.getElementById(videoId);
+        if (!player) return;
 
-        const container = thumbnailElement.querySelector('.thumbnail-container');
-        
-        container.addEventListener('click', () => {
+        const videoButton = player.querySelector('.video-button');
+        videoButton.addEventListener('click', () => {
             this.openVideoModal(url);
-            eventBus.emit('media:videoPlayed', { url });
         });
     }
 
     /**
-     * Open image in a modal
+     * Open image in modal
      * @param {string} url - Image URL
      */
     openImageModal(url) {
         this.closeCurrentModal();
-        
+
         const modal = document.createElement('div');
-        modal.className = 'media-modal image-modal';
+        modal.className = 'media-modal';
         modal.innerHTML = `
-            <div class="modal-backdrop"></div>
-            <div class="modal-content">
-                <button class="modal-close" aria-label="Close">
-                    <i class="fas fa-times"></i>
-                </button>
-                <div class="modal-body">
-                    <img src="${url}" alt="Full size image" />
+            <div class="modal-overlay">
+                <div class="modal-content">
+                    <button class="modal-close">&times;</button>
+                    <img src="${url}" alt="Full size image" style="max-width: 90vw; max-height: 90vh; object-fit: contain;">
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(modal);
         this.currentModal = modal;
-        
-        // Add event listeners
-        modal.querySelector('.modal-close').addEventListener('click', () => this.closeCurrentModal());
-        modal.querySelector('.modal-backdrop').addEventListener('click', () => this.closeCurrentModal());
-        
-        // Add escape key listener
+
+        const closeButton = modal.querySelector('.modal-close');
+        const overlay = modal.querySelector('.modal-overlay');
+
+        const closeModal = () => {
+            this.closeCurrentModal();
+        };
+
+        closeButton.addEventListener('click', closeModal);
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeModal();
+        });
+
         const escapeListener = (e) => {
             if (e.key === 'Escape') {
-                this.closeCurrentModal();
+                closeModal();
                 document.removeEventListener('keydown', escapeListener);
             }
         };
         document.addEventListener('keydown', escapeListener);
-        
-        // Animate in
-        requestAnimationFrame(() => {
-            modal.classList.add('show');
-        });
     }
 
     /**
-     * Open video in a modal
+     * Open video in modal
      * @param {string} url - Video URL
      */
     openVideoModal(url) {
         this.closeCurrentModal();
-        
+
         const modal = document.createElement('div');
-        modal.className = 'media-modal video-modal';
+        modal.className = 'media-modal';
         modal.innerHTML = `
-            <div class="modal-backdrop"></div>
-            <div class="modal-content">
-                <button class="modal-close" aria-label="Close">
-                    <i class="fas fa-times"></i>
-                </button>
-                <div class="modal-body">
-                    <video controls autoplay>
+            <div class="modal-overlay">
+                <div class="modal-content">
+                    <button class="modal-close">&times;</button>
+                    <video controls style="max-width: 90vw; max-height: 90vh;">
                         <source src="${url}" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(modal);
         this.currentModal = modal;
-        
-        // Add event listeners
-        modal.querySelector('.modal-close').addEventListener('click', () => this.closeCurrentModal());
-        modal.querySelector('.modal-backdrop').addEventListener('click', () => this.closeCurrentModal());
-        
-        // Add escape key listener
+
+        const closeButton = modal.querySelector('.modal-close');
+        const overlay = modal.querySelector('.modal-overlay');
+
+        const closeModal = () => {
+            this.closeCurrentModal();
+        };
+
+        closeButton.addEventListener('click', closeModal);
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeModal();
+        });
+
         const escapeListener = (e) => {
             if (e.key === 'Escape') {
-                this.closeCurrentModal();
+                closeModal();
                 document.removeEventListener('keydown', escapeListener);
             }
         };
         document.addEventListener('keydown', escapeListener);
-        
-        // Animate in
-        requestAnimationFrame(() => {
-            modal.classList.add('show');
-        });
     }
 
     /**
-     * Close the current modal
+     * Close current modal
      */
     closeCurrentModal() {
         if (this.currentModal) {
-            this.currentModal.classList.remove('show');
-            setTimeout(() => {
-                if (this.currentModal && this.currentModal.parentNode) {
-                    this.currentModal.parentNode.removeChild(this.currentModal);
-                }
-                this.currentModal = null;
-            }, 300);
+            this.currentModal.remove();
+            this.currentModal = null;
         }
     }
 
@@ -346,18 +328,16 @@ class MediaHandler {
      * @returns {string} - Formatted time string
      */
     formatTime(seconds) {
-        if (isNaN(seconds)) return '0:00';
-        
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = Math.floor(seconds % 60);
-        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 
     /**
      * Initialize the media handler
      */
     init() {
-        console.log('🎬 Media Handler initialized');
+        console.log('[🎬] Media Handler initialized');
     }
 }
 

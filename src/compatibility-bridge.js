@@ -4,9 +4,9 @@
  * This is a temporary solution while we migrate to the new architecture
  */
 
-import questionService from './services/api/questionService.js';
+import questionService from './services/api/question-service.js';
 import { eventBus } from './utils/events.js';
-import dialogManager from './services/DialogManager.js';
+import dialogManager from './services/dialog-manager.js';
 
 console.log('🌉 Loading compatibility bridge...');
 
@@ -93,7 +93,9 @@ async function handleNewQuestion() {
     if (inputBox) inputBox.value = '';
     
     const answerBox = document.getElementById('answerBox');
-    if (answerBox) answerBox.style.display = 'none';
+    if (answerBox) {
+      answerBox.classList.remove('visible');
+    }
     
     // Get new question
     const question = await questionService.getQuestion();
@@ -128,11 +130,20 @@ function displayQuestion(question) {
   const answerBox = document.getElementById('answerBox');
   
   if (categoryBox) categoryBox.textContent = question.category;
-  if (valueBox) valueBox.textContent = `${question.value}`;
+  if (valueBox) {
+    // Remove any existing $ sign and ensure proper formatting
+    let value = question.value || 200;
+    if (typeof value === 'string') {
+      value = value.replace(/\$/g, ''); // Remove existing $
+    }
+    valueBox.textContent = `$${value}`;
+  }
   if (questionBox) questionBox.textContent = question.question;
   if (answerBox) {
-    answerBox.textContent = question.answer;
-    answerBox.style.display = 'none';
+    // Clean up answer text by removing escape characters
+    const cleanAnswer = question.answer ? question.answer.replace(/\\/g, '') : '';
+    answerBox.textContent = cleanAnswer;
+    answerBox.classList.remove('visible');
   }
   
   // Play sound
@@ -143,8 +154,8 @@ function handleShowAnswer() {
   console.log('👁️ Showing answer...');
   const answerBox = document.getElementById('answerBox');
   if (answerBox) {
-    const isHidden = answerBox.style.display === 'none';
-    answerBox.style.display = isHidden ? 'block' : 'none';
+    const isHidden = !answerBox.classList.contains('visible');
+    answerBox.classList.toggle('visible');
     
     if (isHidden) {
       eventBus.emit('answer:revealed', currentQuestion);
@@ -177,7 +188,7 @@ function handleCheckAnswer() {
   
   // Update UI
   const answerBox = document.getElementById('answerBox');
-  if (answerBox) answerBox.style.display = 'block';
+  if (answerBox) answerBox.classList.add('visible');
   
   // Update score
   updateScore(isCorrect);
@@ -238,7 +249,7 @@ function updateScore(isCorrect) {
 function playSound(soundName) {
   console.log(`🔊 Playing sound: ${soundName}`);
   // Sound playing will be handled by the sound manager when it's ready
-  eventBus.emit('sound:play', soundName);
+  eventBus.emit('sound:play', { sound: soundName });
 }
 
 function setupConsoleLogs() {

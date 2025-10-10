@@ -507,14 +507,12 @@ button:hover .button-tooltip {
   align-items: center;
   width: auto;
   height: 6vmin;
-  background: linear-gradient(135deg, rgba(255, 99, 71, 0.2), rgba(255, 192, 203, 0.2));
-  backdrop-filter: blur(2px);
+  background: transparent; /* Remove red background */
   border-radius: 4px;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
   padding: 0.5vmin 2vmin;
   animation: flyAcross 12s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   transform: translateX(-100%);
-  top: 20%;
+  top: var(--random-height, 20%); /* Allow random height variation */
 }
 
 .ticker-content {
@@ -672,8 +670,23 @@ button:hover .button-tooltip {
   top: 50%;
   transform: translateY(-50%);
   height: 4vmin;
+  background: rgba(255, 69, 0, 0.7); /* Red, semi-transparent */
+  border: 2px solid rgba(255, 0, 0, 0.8);
+  border-radius: 4px;
   display: flex;
   align-items: center;
+  padding: 0 1vmin;
+  min-width: 20vmin;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  animation: bannerFlutter 2s ease-in-out infinite;
+}
+
+/* Fluttering banner effect */
+@keyframes bannerFlutter {
+  0%, 100% { transform: translateY(-50%) rotateZ(0deg); }
+  25% { transform: translateY(-50%) rotateZ(2deg); }
+  50% { transform: translateY(-50%) rotateZ(0deg); }
+  75% { transform: translateY(-50%) rotateZ(-2deg); }
 }
 
 @keyframes flyAcross {

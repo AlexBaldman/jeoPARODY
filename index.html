@@ -12,36 +12,27 @@
     <link rel="preload" href="assets/fonts/KorinnaItalic.woff2" as="font" type="font/woff2" crossorigin>
 
     <!-- SEO related -->
-    <meta name="description" content="Jeopardish! A unique comedic trivia adventure.">
-    <meta property="og:title" content="Jeopardish!">
-    <meta property="og:description" content="A unique comedic trivia adventure.">
+    <meta name="description" content="JeoPARODY!?? A unique comedic trivia adventure.">
+    <meta property="og:title" content="JeoPARODY!??">
+    <meta property="og:description" content="A unique interactive comedic trivia adventure with AI integrated in new and novel ways.">
     <meta property="og:image" content="screenshots/jeopardish-screenshot-noQuestion.png">
     
     <!-- title -->
-    <title>Jeopardish!</title>
+    <title>JeoPARODY!??</title>
     
     <!-- favicons -->
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/public/favicon.svg" type="image/svg+xml">
     <!-- <link rel="icon" href="images/favicon2.webp" type="image/webp"> -->
     <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
 
-    <!-- font stylesheet -->
+    <!-- Font stylesheet -->
     <link rel="stylesheet" href="assets/fonts/stylesheet.css">
     
-    <!-- Complete consolidated stylesheet -->
-    <link rel="stylesheet" href="assets/css/styles-complete.css?v=3.0">
-    
-    <!-- App fixes stylesheet -->
-    <link rel="stylesheet" href="src/styles/app-fixes.css">
-    
-    <!-- Enhanced UI stylesheet -->
-    <link rel="stylesheet" href="src/styles/enhanced-ui.css">
-    
-    <!-- Media rendering stylesheet -->
-    <link rel="stylesheet" href="src/styles/media-rendering.css">
-    
-    <!-- Old stylesheets - removed, all styles now in styles-complete.css -->
-    
+    <!-- Master CSS - Single source of truth -->
+    <link rel="stylesheet" href="src/styles/master.css">
+    <!-- Beautiful Plane Animation -->
+    <link rel="stylesheet" href="src/styles/plane-animation.css">
+        
     <!-- external JS -->
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
@@ -65,16 +56,11 @@
     <!-- external CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     
-    <!-- fonts, icons, other CDN assets -->
+    <!-- Essential external fonts only -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     
     
 </head>
@@ -88,7 +74,8 @@
         
         <!-- User Profile Section  -->
         <div class="user-profile">
-            <img src="images/profile-placeholder.png" alt="Profile" class="profile-pic">
+            <!-- add profile icon -->
+            <!-- <img src="_____" alt="Profile" class="profile-pic"> -->
             <h3>Alex</h3>
             <p>Score: $0</p>
             <p>Streak: 0</p>
@@ -100,17 +87,16 @@
                 <!-- Left Controls: Language Toggle -->
                 <div class="header-controls-left">
                     <div class="toggle-container">
-                        <button id="lang-btn" class="header-icon-btn" data-lang="en" title="Switch Language">
+                        <button id="lang-btn" class="header-icon-btn js-lang-toggle" data-lang="en" title="Switch Language">
                             <i class="fas fa-language"></i>
                             <span class="flag-emoji">🇺🇸</span>
                         </button>
-                        <div class="toggle-label">TRANSLATE</div>
                     </div>
                 </div>
 
                 <!-- Center: Logo -->
                 <div class="logo-container">
-                    <img src="assets/images/title/title-Jeopardish!.png" alt="jeoPARODY!" class="logo-image">
+                    <img src="assets/images/title/title-jeopardish!-pixelart.png" alt="jeoPARODY!" class="title-image">
                     <!-- Peeking scoreboard -->
                     <div id="scoreboard" class="scoreboard">
                         <h2>SCOREBOARD</h2>
@@ -130,7 +116,7 @@
                         </label>
                         <div class="toggle-label">DARK MODE</div>
                     </div>
-                    <button id="hamburger-menu" class="hamburger-button" aria-label="Open menu">
+                    <button id="hamburger-menu" class="hamburger-button" aria-label="Open menu" aria-expanded="false">
                         <span class="hamburger-line"></span>
                         <span class="hamburger-line"></span>
                         <span class="hamburger-line"></span>
@@ -140,10 +126,10 @@
         </header>
 
         <!-- Side navigation menu -->
-        <nav id="side-menu" class="side-menu">
+        <nav id="side-menu" class="side-menu" aria-hidden="true">
             <ul class="menu-items">
                 <li>
-                    <button id="lang-btn" data-lang="en" title="Switch Language">
+                    <button id="lang-menu-btn" class="js-lang-toggle" data-lang="en" title="Switch Language">
                         <i class="fas fa-language"></i>
                     </button>
                 </li>
@@ -177,6 +163,9 @@
                 </button>
             </div>
         </nav>
+        
+        <!-- Navigation backdrop -->
+        <div class="nav-backdrop"></div>
 
         <!-- Main content area -->
         <div class="main-content-wrapper">
@@ -192,13 +181,13 @@
             
             <!-- Button container with icon buttons -->
             <div class="button-div">
-                <button id="questionButton" aria-label="Get a new question">
+                <button id="questionButton" aria-label="Get new question">
                     <i class="fas fa-sync-alt"></i>
                     <span class="button-tooltip">New Question</span>
                 </button>
-                <button id="answerButton" aria-label="Show the answer">
+                <button id="answerButton" aria-label="Show/Hide answer">
                     <i class="fas fa-eye"></i>
-                    <span class="button-tooltip">Show Answer</span>
+                    <span class="button-tooltip">Show/HideAnswer</span>
                 </button>
             </div>
             
@@ -228,11 +217,12 @@
             </div>
         </footer>
 
-        <!-- event ticker -->
-        <div class="event-ticker">
-            <div class="ticker-unit">
-                <div class="ticker-plane">
-                    <div class="wing"></div>
+        <!-- Beautiful Plane Animation Container -->
+        <div class="plane-container">
+            <div class="plane-unit" data-plane="1">
+                <div class="beautiful-plane">
+                    <div class="wing-main"></div>
+                    <div class="wing-secondary"></div>
                     <div class="tail"></div>
                     <div class="stabilizer"></div>
                     <div class="propeller"></div>
@@ -241,7 +231,7 @@
                     <div class="pontoon"></div>
                     <div class="pontoon"></div>
                     <div class="ticker-banner">
-                        <div class="ticker-content">Breaking News: Jeopardish UI now 100% bug-free... This is a scrolling ticker... More news at 11...</div>
+                        <div class="ticker-content">Welcome to JeoPARODY!?? The trivia game that's almost as good as the real thing!</div>
                     </div>
                 </div>
             </div>
@@ -285,9 +275,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- All services now integrated into modular architecture -->
     <!-- Scripts loaded via src/main.js -->
-    
-    <!-- Comedy Ticker Container -->
-    <div id="comedy-ticker-container" class="comedy-ticker"></div>
 
 </body>
 </html>

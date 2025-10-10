@@ -72,79 +72,93 @@ class App extends ConnectedComponent {
 
   // Component management
   initializeComponents() {
-    // Create header with sticky positioning
-    const header = document.createElement('header');
-    header.className = 'game-header';
-    
-    // Create left controls container
-    const leftControls = document.createElement('div');
-    leftControls.className = 'header-left';
-    
-    // Theme toggle
-    const themeSwitch = document.createElement('div');
-    themeSwitch.className = 'theme-switch';
-    themeSwitch.innerHTML = `
-      <button class="theme-toggle" aria-label="Toggle theme">
-        <span class="theme-icon">🌞</span>
-      </button>
-    `;
-    
-    // Language toggle
-    const languageToggle = document.createElement('div');
-    languageToggle.className = 'language-toggle';
-    languageToggle.innerHTML = `
-      <button class="lang-button" aria-label="Change language">
-        <span class="lang-icon">🌐</span>
-      </button>
-    `;
-    
-    leftControls.appendChild(themeSwitch);
-    leftControls.appendChild(languageToggle);
-    
-    // Create center logo
-    const logoContainer = document.createElement('div');
-    logoContainer.className = 'header-center';
-    logoContainer.innerHTML = `
-      <img src="images/jeoparody.png" alt="Jeopardish Logo" class="game-logo">
-    `;
-    
-    // Create right hamburger menu
-    const rightControls = document.createElement('div');
-    rightControls.className = 'header-right';
-    const hamburger = document.createElement('button');
-    hamburger.className = 'hamburger-menu';
-    hamburger.id = 'hamburger-menu';
-    hamburger.setAttribute('aria-label', 'Toggle menu');
-    hamburger.innerHTML = `
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-    `;
-    rightControls.appendChild(hamburger);
-    
-    // Build header
-    header.appendChild(leftControls);
-    header.appendChild(logoContainer);
-    header.appendChild(rightControls);
-    
-    // Create side menu
-    const sideMenu = document.createElement('nav');
-    sideMenu.className = 'side-menu';
-    sideMenu.id = 'side-menu';
-    sideMenu.innerHTML = `
-      <div class="menu-header">
-        <h3>Menu</h3>
-        <button class="close-menu" aria-label="Close menu">×</button>
-      </div>
-      <ul class="menu-items">
-        <li><button data-action="settings">⚙️ Settings</button></li>
-        <li><button data-action="stats">📊 Stats</button></li>
-        <li><button data-action="achievements">🏆 Achievements</button></li>
-        <li><button data-action="leaderboard">📈 Leaderboard</button></li>
-        <li><button data-action="profile">👤 Profile</button></li>
-        <li><button data-action="help">❓ Help</button></li>
-      </ul>
-    `;
+    // If the shell markup already provides header/menu, don't create duplicates.
+    const existingHamburger = document.getElementById('hamburger-menu');
+    const existingSideMenu = document.getElementById('side-menu');
+
+    let header = null;
+    let sideMenu = null;
+
+    if (!existingHamburger && !existingSideMenu) {
+      // Create header with sticky positioning
+      header = document.createElement('header');
+      header.className = 'game-header';
+      
+      // Create left controls container
+      const leftControls = document.createElement('div');
+      leftControls.className = 'header-left';
+      
+      // Theme toggle
+      const themeSwitch = document.createElement('div');
+      themeSwitch.className = 'theme-switch';
+      themeSwitch.innerHTML = `
+        <button class="theme-toggle" aria-label="Toggle theme">
+          <span class="theme-icon">🌞</span>
+        </button>
+      `;
+      
+      // Language toggle
+      const languageToggle = document.createElement('div');
+      languageToggle.className = 'language-toggle';
+      languageToggle.innerHTML = `
+        <button class="lang-button" aria-label="Change language">
+          <span class="lang-icon">🌐</span>
+        </button>
+      `;
+      
+      leftControls.appendChild(themeSwitch);
+      leftControls.appendChild(languageToggle);
+      
+      // Create center logo
+      const logoContainer = document.createElement('div');
+      logoContainer.className = 'header-center';
+      logoContainer.innerHTML = `
+        <img src="images/jeoparody.png" alt="Jeopardish Logo" class="game-logo">
+      `;
+      
+      // Create right hamburger menu
+      const rightControls = document.createElement('div');
+      rightControls.className = 'header-right';
+      const hamburger = document.createElement('button');
+      hamburger.className = 'hamburger-menu';
+      hamburger.id = 'hamburger-menu';
+      hamburger.setAttribute('aria-label', 'Toggle menu');
+      hamburger.innerHTML = `
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      `;
+      rightControls.appendChild(hamburger);
+      
+      // Build header
+      header.appendChild(leftControls);
+      header.appendChild(logoContainer);
+      header.appendChild(rightControls);
+      
+      // Create side menu
+      sideMenu = document.createElement('nav');
+      sideMenu.className = 'side-menu';
+      sideMenu.id = 'side-menu';
+      sideMenu.setAttribute('aria-hidden', 'true');
+      sideMenu.innerHTML = `
+        <div class="menu-header">
+          <h3>Menu</h3>
+          <button class="close-menu" aria-label="Close menu">×</button>
+        </div>
+        <ul class="menu-items">
+          <li><button data-action="settings">⚙️ Settings</button></li>
+          <li><button data-action="stats">📊 Stats</button></li>
+          <li><button data-action="achievements">🏆 Achievements</button></li>
+          <li><button data-action="leaderboard">📈 Leaderboard</button></li>
+          <li><button data-action="profile">👤 Profile</button></li>
+          <li><button data-action="help">❓ Help</button></li>
+        </ul>
+      `;
+    } else {
+      // Use existing elements managed by Navigation component
+      header = null; // don't create or append
+      sideMenu = null; // don't create or append
+    }
     
     // Create main content area
     const main = document.createElement('main');
@@ -176,8 +190,8 @@ class App extends ConnectedComponent {
     main.appendChild(controlsContainer);
     
     // Add to app
-    this.appendChild(header);
-    this.appendChild(sideMenu);
+    if (header) this.appendChild(header);
+    if (sideMenu) this.appendChild(sideMenu);
     this.appendChild(main);
     
     // Initialize and add modal manager
@@ -204,38 +218,20 @@ class App extends ConnectedComponent {
       });
     }
     
-    // Language toggle - handled by main.js
+    // Language toggle - handled by main.js (bind via class for multiple buttons)
     const langButton = this.querySelector('.lang-button');
     if (langButton) {
-      langButton.id = 'lang-btn'; // Set ID for main.js to find it
-      // Remove this listener as main.js handles it
+      langButton.classList.add('js-lang-toggle');
     }
     
-    // Hamburger menu
-    const hamburger = this.querySelector('.hamburger-menu');
-    const sideMenu = this.querySelector('.side-menu');
-    const closeMenu = this.querySelector('.close-menu');
-    
-    if (hamburger && sideMenu) {
-      hamburger.addEventListener('click', () => {
-        sideMenu.classList.add('open');
-      });
-    }
-    
-    if (closeMenu && sideMenu) {
-      closeMenu.addEventListener('click', () => {
-        sideMenu.classList.remove('open');
-      });
-    }
-    
+    // Hamburger menu is owned by Navigation component. Avoid duplicate handlers here.
     // Menu items
-    const menuButtons = this.querySelectorAll('.menu-items button');
+    const menuButtons = (this.querySelectorAll('.menu-items button')) || [];
     menuButtons.forEach(button => {
       button.addEventListener('click', (e) => {
         const action = e.target.dataset.action;
         console.log(`📱 Menu action: ${action}`);
         this.eventBus.emit(`modal:open`, { type: action });
-        sideMenu.classList.remove('open');
       });
     });
     

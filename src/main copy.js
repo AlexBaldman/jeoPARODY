@@ -20,11 +20,6 @@ import { getHostAnimationManager } from './services/host-animation-manager.js';
 import { getPerformanceMonitor } from './services/performance-monitor.js';
 import { getNavigation } from './components/Navigation.js';
 import { eventBus } from './utils/events.js';
-import planeAnimationService from './services/plane-animation.js';
-import dialogManager from './services/dialog-manager.js';
-import logger from './utils/logger.js';
-import theme from './services/theme.js';
-import language from './services/language.js';
 
 // Application instance - single point of truth
 const JeopardyApp = {
@@ -52,8 +47,8 @@ const JeopardyApp = {
  * Initialize the application with Carmack's "fail fast" approach
  */
 async function initializeApp() {
-  logger.time('app', 'initialization');
-  logger.info('app:init', 'Initializing JeoPARODY application');
+  const startTime = performance.now();
+  console.log('[🎮] Initializing JeoPARODY...');
   
   try {
     // 1. Start performance monitoring first
@@ -61,15 +56,8 @@ async function initializeApp() {
     
     // 2. Initialize core systems
     await initializeCoreServices();
-
-    // 3. Initialize theme/language services before wiring UI
-    theme.init();
-    language.init();
     
-    // 4. Set up service integration
-    setupServiceIntegration();
-    
-    // 5. Set up UI bindings
+    // 3. Set up UI bindings
     setupUIBindings();
     
     // 4. Start game engine
@@ -80,10 +68,9 @@ async function initializeApp() {
     
     // Mark as initialized
     JeopardyApp.initialized = true;
-    const initTime = logger.timeEnd('app', 'initialization');
-    JeopardyApp.performance.initTime = initTime;
+    JeopardyApp.performance.initTime = performance.now() - startTime;
     
-    logger.info('app:ready', 'JeoPARODY application ready', { initTime });
+    console.log(`[✅] JeoPARODY initialized in ${JeopardyApp.performance.initTime.toFixed(2)}ms`);
     
     // Log performance summary
     logPerformanceSummary();
@@ -96,7 +83,7 @@ async function initializeApp() {
     }
     
   } catch (error) {
-    logger.error('app:init:failed', 'Failed to initialize JeoPARODY', { error });
+    console.error('[❌] Failed to initialize JeoPARODY:', error);
     handleFatalError(error);
   }
 }
@@ -157,13 +144,6 @@ async function initializeCoreServices() {
   JeopardyApp.navigation = getNavigation();
   await JeopardyApp.navigation.init();
   
-  // Initialize dialog manager
-  dialogManager.init();
-  
-  // Initialize plane animation service
-  // Note: planeAnimationService is auto-initialized when imported
-  console.log('[✈️] Plane animation service ready');
-  
   console.log('[✅] Core services initialized');
 }
 
@@ -178,39 +158,18 @@ function setupServiceIntegration() {
     JeopardyApp.hostAnimationManager.init(personalityId);
   });
   
-  // Connect answer result events to host system (eventBus only)
-  eventBus.on('answer:correct', (payload) => {
-    console.log('[✅] answer:correct received', payload);
+  // Connect game events to host system
+  eventBus.on('game:correct-answer', () => {
     JeopardyApp.hostSystem.triggerAnimation('celebration');
   });
   
-  eventBus.on('answer:incorrect', (payload) => {
-    console.log('[❌] answer:incorrect received', payload);
+  eventBus.on('game:incorrect-answer', () => {
     JeopardyApp.hostSystem.triggerAnimation('thinking');
   });
   
   // Connect sound events
   eventBus.on('sound:play', (data) => {
     JeopardyApp.soundManager.playSound(data.sound);
-  });
-  
-  // Connect answer submission events
-  // Unified to 'answer:submit' only (handled via submitAnswer() and engine listeners)
-  
-  // Connect new question events
-  eventBus.on('game:new-question', async () => {
-    console.log('[🎯] New question event received');
-    if (JeopardyApp.gameEngine) {
-      await JeopardyApp.gameEngine.loadNextQuestion();
-    }
-  });
-  
-  // Connect show answer events
-  eventBus.on('game:show-answer', () => {
-    console.log('[👁️] Show answer event received');
-    if (JeopardyApp.gameEngine) {
-      JeopardyApp.gameEngine.revealAnswer();
-    }
   });
   
   console.log('[✅] Service integration complete');
@@ -315,12 +274,6 @@ function toggleTheme(e) {
   eventBus.emit('theme:changed', { theme: isDark ? 'light' : 'dark' });
   
   console.log(`[🎨] Theme changed to: ${isDark ? 'light' : 'dark'}`);
-
-  // Optional: update label text
-  const label = document.querySelector('.toggle-label');
-  if (label) {
-    label.textContent = document.body.classList.contains('dark-theme') ? 'DARK MODE' : 'LIGHT MODE';
-  }
 }
 
 /**
@@ -357,21 +310,31 @@ function toggleLanguage() {
 function setupUIBindings() {
   console.log('[🔗] Setting up UI bindings...');
   
-  // Bind UI to centralized services
-  theme.bindUI();
-  language.bindUI();
+  // Theme toggle
+  const themeSwitch = document.querySelector('.theme-switch input');
+  if (themeSwitch) {
+    themeSwitch.addEventListener('change', toggleTheme);
+  }
   
-  // Hamburger menu is handled exclusively by the Navigation component
-  // to avoid conflicting event handlers here.
+  // Language toggle
+  const langButtons = document.querySelectorAll('.js-lang-toggle');
+  langButtons.forEach(btn => {
+    btn.addEventListener('click', toggleLanguage);
+  });
   
-  // Game controls
-  setupGameControls();
-  
-  // Speech bubble cycler
-  setupSpeechBubbleCycler();
-  
-  // Keyboard shortcuts
-  setupKeyboardShortcuts();
+  // Hamburger menu
+  const hamburgerBtn = document.querySelector('.hamburger-button');
+  if (hamburgerBtn) {
+    hamburgerBtn.addEventListener('click', () => {
+      const sideMenu = document.querySelector('.side-menu');
+      if (sideMenu) {
+        sideMenu.classList.toggle('active');
+        hamburgerBtn.setAttribute('aria-expanded', 
+          hamburgerBtn.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'
+        );
+      }
+    });
+  }
   
   console.log('[✅] UI bindings configured');
 }
@@ -385,78 +348,40 @@ function setupGameControls() {
   // Question button
   const questionBtn = document.getElementById('questionButton');
   if (questionBtn) {
-    console.log('[✅] Found question button');
     questionBtn.addEventListener('click', async () => {
       console.log('[🎯] New question requested');
       eventBus.emit('game:new-question');
     });
-  } else {
-    console.log('[❌] Question button not found');
   }
   
   // Answer button
   const answerBtn = document.getElementById('answerButton');
   if (answerBtn) {
-    console.log('[✅] Found answer button');
     answerBtn.addEventListener('click', () => {
       console.log('[👁️] Show answer requested');
       eventBus.emit('game:show-answer');
     });
-  } else {
-    console.log('[❌] Answer button not found');
   }
   
   // Check button
   const checkBtn = document.getElementById('checkButton');
   if (checkBtn) {
-    console.log('[✅] Found check button');
     checkBtn.addEventListener('click', () => {
       console.log('[✅] Check answer requested');
-      const inputBox = document.getElementById('inputBox');
-      if (inputBox && inputBox.value.trim()) {
-        submitAnswer();
-      } else {
-        console.log('[❌] No answer to submit');
-      }
+      eventBus.emit('game:check-answer');
     });
-  } else {
-    console.log('[❌] Check button not found');
   }
   
   // Input box
   const inputBox = document.getElementById('inputBox');
   if (inputBox) {
-    console.log('[✅] Found input box');
     inputBox.addEventListener('keypress', (e) => {
-      if (e.key !== 'Enter') return;
-      
-      const hasInput = !!inputBox.value.trim();
-      const showingMessage = dialogManager.isMessageShowing();
-      const hasCurrentQuestion = !!(JeopardyApp.gameEngine && JeopardyApp.gameEngine.currentQuestion);
-      
-      console.log('[⏎] Smart Enter:', { hasInput, showingMessage, hasCurrentQuestion });
-      
-      // If a dialog message is showing (e.g., result), Enter advances to next question
-      if (showingMessage) {
-        eventBus.emit('game:new-question');
-        return;
-      }
-      
-      // If no current question, Enter fetches a new one
-      if (!hasCurrentQuestion) {
-        eventBus.emit('game:new-question');
-        return;
-      }
-      
-      // If there's input, submit it; otherwise, nudge the user
-      if (hasInput) {
-        submitAnswer();
-      } else {
-        dialogManager.queueMessage('TAUNT', 'Type your answer and press Enter, or press Enter again for a new question!');
+      if (e.key === 'Enter') {
+        console.log('[⏎] Answer submitted via Enter');
+        eventBus.emit('game:submit-answer', { answer: inputBox.value });
+        inputBox.value = '';
       }
     });
-  } else {
-    console.log('[❌] Input box not found');
   }
   
   console.log('[✅] Game controls configured');
@@ -468,12 +393,6 @@ function setupGameControls() {
 function setupSpeechBubbleCycler() {
   console.log('[💬] Setting up speech bubble cycler...');
   
-  // Guard: if new Bubble component zones exist, skip legacy cycler
-  if (document.querySelector('.bubble-left-zone') || document.querySelector('.bubble-right-zone')) {
-    console.log('[⏭️] Skipping legacy bubble cycler (new Bubble zones detected)');
-    return;
-  }
-
   const speechBubble = document.querySelector('.speechBubble');
   if (!speechBubble) return;
   
@@ -540,8 +459,7 @@ function submitAnswer() {
   const answer = inputBox.value.trim();
   console.log(`[📝] Submitting answer: ${answer}`);
   
-  // Standard event for engine integration
-  eventBus.emit('answer:submit', { answer });
+  eventBus.emit('game:submit-answer', { answer });
   inputBox.value = '';
 }
 
@@ -549,8 +467,40 @@ function submitAnswer() {
  * Set up menu interactions
  */
 function setupMenuInteractions() {
-  // Deprecated: handled by Navigation component
-  // Intentionally left as a no-op.
+  console.log('[🍔] Setting up menu interactions...');
+  
+  // Menu backdrop
+  const backdrop = document.querySelector('.nav-backdrop');
+  if (backdrop) {
+    backdrop.addEventListener('click', () => {
+      const sideMenu = document.querySelector('.side-menu');
+      const hamburgerBtn = document.querySelector('.hamburger-button');
+      
+      if (sideMenu) sideMenu.classList.remove('active');
+      if (hamburgerBtn) hamburgerBtn.setAttribute('aria-expanded', 'false');
+    });
+  }
+  
+  // Menu items
+  const menuItems = document.querySelectorAll('.menu-items button');
+  menuItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      const action = e.target.getAttribute('data-action');
+      console.log(`[🍔] Menu action: ${action}`);
+      
+      // Close menu after action
+      const sideMenu = document.querySelector('.side-menu');
+      const hamburgerBtn = document.querySelector('.hamburger-button');
+      
+      if (sideMenu) sideMenu.classList.remove('active');
+      if (hamburgerBtn) hamburgerBtn.setAttribute('aria-expanded', 'false');
+      
+      // Handle action
+      eventBus.emit('menu:action', { action });
+    });
+  });
+  
+  console.log('[✅] Menu interactions configured');
 }
 
 /**
@@ -607,16 +557,6 @@ function loadUserPreferences() {
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme) {
     document.body.classList.toggle('dark-theme', savedTheme === 'dark');
-    // Sync theme switch UI
-    const themeSwitch = document.querySelector('#theme-switch');
-    if (themeSwitch) {
-      themeSwitch.checked = savedTheme === 'dark';
-    }
-    // Sync label text
-    const label = document.querySelector('.toggle-label');
-    if (label) {
-      label.textContent = savedTheme === 'dark' ? 'DARK MODE' : 'LIGHT MODE';
-    }
   }
   
   // Load language

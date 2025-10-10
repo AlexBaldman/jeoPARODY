@@ -35,20 +35,22 @@
 /* Host Image Styling - optimized size, no frame */
 .host-container {
     position: fixed !important;
-    bottom: 80px; /* Just above the sticky footer */
+    bottom: 90px; /* Just above the sticky footer */
     left: 20px;
     z-index: 100;
-    width: 140px !important;
-    height: 186px !important; /* maintain aspect ratio */
+    width: 120px !important;
+    height: 160px !important; /* maintain aspect ratio */
     pointer-events: auto;
-    overflow: hidden;
+    overflow: visible; /* Allow hover effects to show */
     border: none !important; /* Remove any frame */
     box-shadow: none !important; /* Remove drop shadow frame */
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
+    contain: none; /* Prevent containment issues */
 }
 
 .host-container:hover {
-    transform: translateY(-5px) scale(1.05);
+    transform: translateY(-3px) scale(1.02);
+    z-index: 101;
 }
 
 .host-image {
@@ -738,12 +740,12 @@ input:focus {
     left: 80px;
 }
 
-/* Override generic speech bubble arrow position bottom-left */
+/* Override generic speech bubble arrow position - positioned at ~20-25% from left */
 .speechBubble::before,
 .speechBubble::after,
 .speech-bubble::before,
 .speech-bubble::after {
-    left: 80px;
+    left: 22%; /* Positioned at ~20-25% from left */
     transform: none;
 }
 
@@ -768,8 +770,8 @@ input:focus {
     content: '';
     position: absolute;
     bottom: -15px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 22%; /* Positioned at ~20-25% from left */
+    transform: none;
     width: 0;
     height: 0;
     border-left: 15px solid transparent;
@@ -782,8 +784,8 @@ input:focus {
     content: '';
     position: absolute;
     bottom: -12px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 22%; /* Positioned at ~20-25% from left */
+    transform: none;
     width: 0;
     height: 0;
     border-left: 12px solid transparent;
@@ -817,24 +819,45 @@ input:focus {
 
 #answerBox {
     font-size: 18px;
-    color: #27ae60;
-    font-weight: bold;
+    color: #27ae60 !important;
+    font-weight: bold !important;
     margin-top: 15px;
-    padding-top: 15px;
+    padding: 15px;
     border-top: 2px solid #ffd700;
+    background: rgba(39, 174, 96, 0.1);
+    border-radius: 8px;
     opacity: 0;
+    visibility: hidden;
     transform: translateY(10px);
     transition: all 0.4s ease;
+    display: block;
+    min-height: 20px;
 }
 
 #answerBox.visible {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
 }
 
 /* Adjust main content for sticky header */
 body {
     padding-top: 80px;
+}
+
+/* Fix user profile positioning */
+.user-profile {
+    position: fixed !important;
+    top: 90px !important; /* Below the header */
+    left: 20px;
+    z-index: 500 !important; /* Below header but above other content */
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #ffd700;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8px);
+    min-width: 200px;
 }
 
 .main-content-wrapper {

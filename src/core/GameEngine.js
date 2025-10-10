@@ -18,6 +18,7 @@
 
 import { eventBus } from '../utils/events.js';
 import { ACTION_TYPES } from '../state/actions.js';
+import { compareAnswers } from '../utils/answerValidator.js';
 
 // Game constants
 export const GAME_CONFIG = {
@@ -316,7 +317,39 @@ export class GameEngine {
     this.updateStatistics(isCorrect, timeElapsed, timedOut);
     
     // Update score and streak
+    const previousStreak = this.state.score.streak;
     this.updateScore(scoreData);
+    const currentStreak = this.state.score.streak;
+    
+    // Emit answer result events for UI/services
+    if (isCorrect && !timedOut) {
+      this.eventBus.emit('answer:correct', {
+        userAnswer,
+        correctAnswer: question.answer,
+        score: scoreData,
+        timeElapsed,
+        streak: currentStreak
+      });
+      // Streak events
+      if (previousStreak === 0 && currentStreak === 1) {
+        this.eventBus.emit('streak:started', { streak: currentStreak });
+      }
+      if (currentStreak > 0 && currentStreak % 5 === 0) {
+        this.eventBus.emit('streak:milestone', { streak: currentStreak });
+      }
+    } else {
+      this.eventBus.emit('answer:incorrect', {
+        userAnswer,
+        correctAnswer: question.answer,
+        score: scoreData,
+        timeElapsed,
+        timedOut,
+        streakBeforeReset: previousStreak
+      });
+      if (previousStreak > 0) {
+        this.eventBus.emit('streak:ended', { streak: previousStreak });
+      }
+    }
     
     // Check achievements
     this.checkAchievements();
@@ -340,24 +373,19 @@ export class GameEngine {
    * @returns {boolean} Whether answer is correct
    */
   checkAnswer(userAnswer, correctAnswer) {
-    if (!userAnswer || !correctAnswer) return false;
-    
-    // Normalize both answers
-    const normalize = (str) => 
-      str.toLowerCase()
-         .trim()
-         .replace(/[^a-z0-9\\s]/g, '')
-         .replace(/\\s+/g, ' ');
-    
-    const normalizedUser = normalize(userAnswer);
-    const normalizedCorrect = normalize(correctAnswer);
-    
-    // Exact match
-    if (normalizedUser === normalizedCorrect) return true;
-    
-    // Fuzzy matching for partial credit
-    const similarity = this.calculateSimilarity(normalizedUser, normalizedCorrect);
-    return similarity >= 0.8; // 80% similarity threshold
+    // Use smarter validator that handles articles, parentheses, multi-answers, and fuzzy logic
+    try {
+      return compareAnswers(userAnswer, correctAnswer);
+    } catch (e) {
+      console.warn('[GameEngine] compareAnswers failed, falling back:', e);
+      if (!userAnswer || !correctAnswer) return false;
+      const normalize = (str) => str.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ');
+      const u = normalize(userAnswer);
+      const c = normalize(correctAnswer);
+      if (u === c) return true;
+      const sim = this.calculateSimilarity(u, c);
+      return sim >= 0.8;
+    }
   }
   
   /**

@@ -12,7 +12,7 @@ import { AnswerValidator } from './validation.js';
 import { GAME_STATES, TIMING, DEBUG } from '../utils/constants.js';
 import { emitGameEvent, GAME_EVENTS, onGameEvent } from '../utils/events.js';
 import { delay } from '../utils/helpers.js';
-import { getRandomCategory, getQuestionsByCategory } from '../services/api/questionService.js';
+import { getRandomCategory, getQuestionsByCategory } from '../services/api/question-service.js';
 
 /**
  * Main Game Controller

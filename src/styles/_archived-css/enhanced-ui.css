@@ -1,6 +1,20 @@
 /* Enhanced UI Styles for Jeopardish */
 
 /* ===== Global Z-Index Scale ===== */
+/* 🚀 JeoPARODY Enhanced UI - Carmack Edition */
+/* No scroll policy - game fits in viewport */
+html, body {
+  overflow: hidden !important;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Prevent any accidental scrolling */
+* {
+  overscroll-behavior: none;
+}
+
 :root {
     /* Typography scale */
     --fs-base: clamp(14px, 2vw, 18px);
@@ -125,30 +139,32 @@
 /* ===== Basketball Scoreboard Styles ===== */
 .scoreboard.basketball-style {
     position: fixed;
-    top: 60px;
+    top: -130px; /* Hidden above the header */
     left: 50%;
-    transform: translateX(-50%) translateY(-100%);
+    transform: translateX(-50%);
     background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
     border: 3px solid #FFD700;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
     min-width: 300px;
-    transition: transform 0.3s ease;
-    z-index: var(--z-scoreboard);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 950; /* Between scoreboard (900) and header (1000) but shows behind header */
 }
 
-.scoreboard.basketball-style.visible {
-    transform: translateX(-50%) translateY(0);
+.scoreboard.basketball-style.visible,
+.scoreboard.basketball-style:hover {
+    top: 50px; /* Show below header on hover */
 }
 
 .scoreboard.basketball-style.slide-down {
     animation: slideDown 0.6s ease-out;
+    top: 50px;
 }
 
 @keyframes slideDown {
-    0% { transform: translateX(-50%) translateY(-100%); }
-    60% { transform: translateX(-50%) translateY(10px); }
-    100% { transform: translateX(-50%) translateY(0); }
+    0% { top: -130px; }
+    60% { top: 60px; }
+    100% { top: 50px; }
 }
 
 .scoreboard-peek {

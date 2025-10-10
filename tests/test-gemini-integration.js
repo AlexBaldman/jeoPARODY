@@ -8,9 +8,10 @@ async function testGeminiIntegration() {
     console.log('🧪 Testing Gemini AI Integration...\n');
     
     // Check if API key is configured
-    const apiKey = 'AIzaSyA6ew-A399YaDOPYdyHzLYo0xaM2HGxbqA';
+    const apiKey = process.env.VITE_GEMINI_API_KEY || import.meta.env?.VITE_GEMINI_API_KEY;
     if (!apiKey) {
         console.error('❌ No API key found! Please set VITE_GEMINI_API_KEY in your .env file');
+        console.error('💡 Create a .env file in the project root with: VITE_GEMINI_API_KEY=your_api_key_here');
         return;
     }
     

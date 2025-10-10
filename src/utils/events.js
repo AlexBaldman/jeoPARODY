@@ -124,7 +124,8 @@ export const GAME_EVENTS = {
   // Question events
   QUESTION_LOADED: 'game:question:loaded',
   QUESTION_DISPLAYED: 'game:question:displayed',
-  ANSWER_SUBMITTED: 'game:answer:submitted',
+  // Unified answer submission event string
+  ANSWER_SUBMITTED: 'answer:submit',
   ANSWER_CHECKED: 'game:answer:checked',
   ANSWER_REVEALED: 'game:answer:revealed',
   

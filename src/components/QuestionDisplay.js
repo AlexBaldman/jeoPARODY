@@ -13,6 +13,7 @@ import {
   } from '../state/selectors.js';
 import { GAME_STATES } from '../utils/constants.js';
 import MediaModal from './MediaModal.js';
+import { renderBubble } from './Bubble.js';
 
 /**
  * QuestionDisplay component
@@ -50,38 +51,39 @@ class QuestionDisplay extends ConnectedComponent {
     
     const isAnswerRevealed = gameStatus === GAME_STATES.ANSWER_REVEALED || showAnswer;
 
-    return `
-      <div class="speech-bubble ${speechBubbleStyle}" 
-           data-ref="root"
-           title="Click on left or right edge to change speech bubble style">
-        
-        <div class="bubble-left-zone" data-on-click="previousStyle"></div>
-        <div class="bubble-right-zone" data-on-click="nextStyle"></div>
-        
-        ${isLoading ? this.renderLoading() : ''}
-        
-        ${question ? `
-          <div class="question-content" data-ref="content">
-            <div class="category-box" data-ref="categoryBox">
-              ${question.category || ''}
-            </div>
-            
-            <div class="value-box" data-ref="valueBox">
-              ${question.value ? `for ${question.value}` : ''}
-            </div>
-            
-            <div class="question-box" data-ref="questionBox">
-              ${this.renderMediaContent(question)}
-            </div>
-            
-            <div class="answer-box ${isAnswerRevealed ? 'visible' : ''}" 
-                 data-ref="answerBox">
-              ${question.answer || ''}
-            </div>
+    const contentHtml = `
+      <div class="bubble-left-zone" data-on-click="previousStyle"></div>
+      <div class="bubble-right-zone" data-on-click="nextStyle"></div>
+
+      ${isLoading ? this.renderLoading() : ''}
+
+      ${question ? `
+        <div class="question-content" data-ref="content">
+          <div class="category-box" data-ref="categoryBox">
+            ${question.category || ''}
           </div>
-        ` : this.renderEmpty()}
-      </div>
+          
+          <div class="value-box" data-ref="valueBox">
+            ${question.value ? `for ${question.value}` : ''}
+          </div>
+          
+          <div class="question-box" data-ref="questionBox">
+            ${this.renderMediaContent(question)}
+          </div>
+          
+          <div class="answer-box ${isAnswerRevealed ? 'visible' : ''}" 
+               data-ref="answerBox">
+            ${question.answer || ''}
+          </div>
+        </div>
+      ` : this.renderEmpty()}
     `;
+
+    return renderBubble({
+      variant: speechBubbleStyle,
+      arrow: 'bottom-left',
+      contentHtml
+    });
   }
 
   /**
@@ -140,7 +142,8 @@ class QuestionDisplay extends ConnectedComponent {
    * Animate style change
    */
   animateStyleChange() {
-    const root = this.ref('root');
+    const root = this.ref('bubbleRoot');
+    if (!root) return;
     root.classList.add('style-changing');
     
     setTimeout(() => {

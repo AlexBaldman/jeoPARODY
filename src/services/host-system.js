@@ -10,7 +10,7 @@
  * - Context-aware responses
  * - Performance-optimized rendering
  * 
- * @module services/HostSystem
+ * @module services/host-system
  */
 
 import { eventBus } from '../utils/events.js';
@@ -185,7 +185,6 @@ export class HostSystem {
       height: '100%',
       cursor: 'pointer',
       zIndex: '10',
-      // Debug: backgroundColor: 'rgba(255,0,0,0.1)'
     };
     
     Object.assign(leftZone.style, zoneStyle, { left: '0' });
@@ -626,5 +625,4 @@ export function getHostSystem() {
   return hostSystemInstance;
 }
 
-// Export for testing
-export { HostSystem };
+

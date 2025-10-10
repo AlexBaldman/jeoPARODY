@@ -10,7 +10,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "lint": "eslint src --ext .js"
+    "lint": "eslint src --ext .js",
+    "scan:todos": "node scripts/scan-todos.js ."
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",

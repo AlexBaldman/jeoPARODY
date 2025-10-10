@@ -329,7 +329,7 @@ class GameControls extends ConnectedComponent {
         console.log('[GameControls] Starting chat with host');
         
         // Import DialogManager and start conversation
-        import('../services/DialogManager.js').then((module) => {
+        import('../services/dialog-manager.js').then((module) => {
             const dialogManager = module.default; // DialogManager is exported as default singleton
             if (dialogManager) {
                 dialogManager.startConversation();
