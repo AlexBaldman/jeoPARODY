@@ -14,6 +14,9 @@
   --color-danger: #e74c3c;
   --color-warning: #f39c12;
 
+  /* Default accent prior to variant selection */
+  --theme-accent: var(--color-jeopardy-blue);
+
   /* Backgrounds */
   --bg-app: linear-gradient(180deg, #f6f9ff, #eef2ff);
   --bg-panel: rgba(255, 255, 255, 0.96);
