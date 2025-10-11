@@ -6,17 +6,18 @@
 export default class HostImageCycler {
   constructor() {
     this.currentIndex = 0;
+    // All images from trebek folder
     this.hostImages = [
-      'assets/images/trebek/trebek-good-01.png',
-      'assets/images/trebek/trebek-good-02.png',
-      'assets/images/trebek/trebek-good-03.png',
-      'assets/images/trebek/trebek-good-05.png',
+      'assets/images/trebek/trebek-coy-angel.png',
       'assets/images/trebek/trebek-dope-01.png',
       'assets/images/trebek/trebek-dope-02.png',
       'assets/images/trebek/trebek-dope-03.png',
       'assets/images/trebek/trebek-dope-05.png',
-      'assets/images/trebek/trebek-smarmy-mafioso.png',
-      'assets/images/trebek/trebek-coy-angel.png'
+      'assets/images/trebek/trebek-good-01.png',
+      'assets/images/trebek/trebek-good-02.png',
+      'assets/images/trebek/trebek-good-03.png',
+      'assets/images/trebek/trebek-good-05.png',
+      'assets/images/trebek/trebek-smarmy-mafioso.png'
     ];
     this.hostImageElement = null;
     this.initialized = false;

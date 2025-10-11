@@ -7,6 +7,7 @@
  */
 
 import { eventBus } from '../../utils/events.js';
+import { formatQuestionText, formatAnswerText, formatCategoryText } from '../../utils/textFormatting.js';
 
 // Safe dev flag for unbundled environments (e.g., GitHub Pages)
 const IS_DEV = (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'development');
@@ -510,10 +511,17 @@ export function normalizeQuestionData(question) {
   const numericValue = typeof rawVal === 'number'
     ? rawVal
     : Number(String(rawVal).replace(/[^0-9.-]/g, '')) || 0;
+  
+  // Extract raw text
+  const rawCategory = question.category?.title || question.category || 'General Knowledge';
+  const rawQuestion = question.question || question.clue || '';
+  const rawAnswer = question.answer || '';
+  
+  // Apply text formatting to clean up ugly characters, breaks, quotes, etc.
   return {
-    category: question.category?.title || question.category || 'General Knowledge',
-    question: question.question || question.clue || '',
-    answer: question.answer || '',
+    category: formatCategoryText(rawCategory),
+    question: formatQuestionText(rawQuestion),
+    answer: formatAnswerText(rawAnswer),
     value: numericValue,
     airdate: question.airdate || new Date().toISOString(),
     difficulty: question.difficulty || 'Medium',

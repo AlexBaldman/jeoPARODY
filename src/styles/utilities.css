@@ -42,23 +42,69 @@
   }
 
   /* Dev Menu */
-  .dev-menu {
     position: fixed; left: 16px; bottom: 16px; z-index: var(--z-header);
     background: rgb(0 0 0 / 60%); color: #fff; border: 1px solid rgb(255 215 0 / 60%);
     border-radius: var(--radius-md); padding: 10px 12px; box-shadow: var(--sh-elev-2);
     display: grid; gap: 8px; min-width: 260px;
   }
-  .dev-menu__title { font-weight: 700; opacity: .9; }
-  .dev-menu__row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; }
-  .dev-menu .btn { background: linear-gradient(135deg, var(--c-accent), var(--c-accent-2)); color: #111; border: 0; border-radius: 6px; padding: 6px 10px; cursor: pointer; }
-  .dev-menu select { background: rgb(255 255 255 / 10%); color: #fff; border: 1px solid rgb(255 215 0 / 50%); border-radius: 6px; padding: 4px 6px; }
+ /* Dev-specific style toggles */
+.dev-only { display: none !important; }
+html.dev-mode .dev-only { display: block !important; }
 
-  /* Scroll lock when overlays are active */
-  body:has(#menu-backdrop.active),
-  body:has(.clue-modal.active),
-  body:has(#run-category-screen.active),
-  body:has(#jeopardy-board-screen.active) { overflow: hidden; }
-  /* Fallback classes when JS toggles body state */
-  body.menu-open,
-  body.modal-open { overflow: hidden; }
+/* Hide dev menu by default - use Ctrl+Shift+D to activate */
+.dev-menu {
+  position: fixed;
+  top: var(--header-h, 70px);
+  left: 10px;
+  background: rgb(20 20 20 / 95%);
+  border: 2px solid rgb(255 215 0 / 30%);
+  border-radius: 12px;
+  padding: 1rem;
+  z-index: calc(var(--z-modal) - 1);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 50%);
+  display: none !important; /* Hidden by default */
+}
+
+/* Show dev menu when activated via Ctrl+Shift+D */
+html.dev-mode-active .dev-menu,
+body.dev-mode-active .dev-menu {
+  display: block !important;
+}
+
+.dev-menu__title {
+  color: #ffd700;
+  font-weight: bold;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dev-menu__row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.dev-menu__row label {
+  color: #ccc;
+  font-size: 0.85rem;
+  min-width: 80px;
+}
+
+.dev-menu__row select,
+.dev-menu__row button {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: rgb(40 40 40);
+  color: #fff;
+  border: 1px solid rgb(255 215 0 / 40%);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dev-menu__row button:hover {
+  background: rgb(60 60 60);
+  border-color: #ffd700;
 }

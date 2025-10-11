@@ -15,21 +15,17 @@
 
 import { eventBus } from '../utils/events.js';
 
-// Audio file registry - modify this to add new sounds
+// Audio file registry - Trebek voice clips for game events
+// NOTE: These are voice clips, not UI sound effects
+// Only trigger on meaningful game events, not UI interactions
 const SOUND_REGISTRY = {
-  // Map to existing Trebek audio assets (no generic SFX available in repo)
-  // Game events
+  // Game events (appropriate use)
   correct: 'assets/audio/trebek/3018362-alx-correct-response.mp3',
   incorrect: 'assets/audio/trebek/3018725-alx-player-incorrect.mp3',
   applause: 'assets/audio/trebek/3019131-alx-final-winner.mp3',
   buzzer: 'assets/audio/trebek/3018382-alx-player-ring.mp3',
   
-  // UI interactions
-  click: 'assets/audio/trebek/3018391-alx-player-select.mp3',
-  hover: 'assets/audio/trebek/3018391-alx-player-select.mp3',
-  modal: 'assets/audio/trebek/3019050-alx-player-correct-7.mp3',
-  
-  // Host animations
+  // Host-specific animations (contextual)
   moonwalk: 'assets/audio/trebek/3018299-alx-intro.mp3',
   surprise: 'assets/audio/trebek/3019054-alx-dailyd-cor-now-first.mp3',
   hostHide: 'assets/audio/trebek/3018701-alx-back-to-player.mp3',
@@ -41,6 +37,9 @@ const SOUND_REGISTRY = {
   
   // Background/ambient
   theme: 'assets/audio/trebek/3018299-alx-intro.mp3'
+  
+  // REMOVED: click, hover, modal - these were triggering on every UI interaction
+  // causing inappropriate voice clips to play during menu navigation
 };
 
 /**
@@ -238,7 +237,6 @@ export class SoundManager {
         audio.volume = this.muted ? 0 : this.volume;
       });
     });
-    
     eventBus.emit('sound:mute-changed', { muted: this.muted });
     return this.muted;
   }
@@ -247,19 +245,19 @@ export class SoundManager {
    * Bind to game events
    */
   bindEvents() {
-    // Game events -> sounds
+    // Game events -> sounds (ONLY game-related events)
     const eventSoundMap = {
-      'answer:correct': 'correct',
-      'answer:incorrect': 'incorrect',
-      'game:complete': 'applause',
-      'ui:click': 'click',
-      'modal:open': 'modal',
-      'host:moonwalk': 'moonwalk',
-      'host:surprise': 'surprise'
+      'answer:evaluated': (data) => {
+        // Play correct/incorrect sound based on result
+        this.play(data.isCorrect ? 'correct' : 'incorrect');
+      },
+      'game:complete': () => this.play('applause'),
+      'host:moonwalk': () => this.play('moonwalk'),
+      'host:surprise': () => this.play('surprise')
     };
     
-    Object.entries(eventSoundMap).forEach(([event, sound]) => {
-      eventBus.on(event, () => this.play(sound));
+    Object.entries(eventSoundMap).forEach(([event, handler]) => {
+      eventBus.on(event, handler);
     });
     
     // Direct control events
@@ -272,7 +270,6 @@ export class SoundManager {
   /**
    * Persistent settings helpers
    */
-  loadSetting(key, defaultValue) {
     try {
       const stored = localStorage.getItem(`jeoparody_sound_${key}`);
       return stored !== null ? JSON.parse(stored) : defaultValue;

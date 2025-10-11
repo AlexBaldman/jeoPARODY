@@ -50,13 +50,17 @@ function setupGameControls(services) {
   // Show answer button
   const answerButton = document.getElementById('answerButton');
   if (answerButton) {
+    // Initialize label on load
+    updateAnswerButtonLabel();
     answerButton.addEventListener('click', () => {
-      eventBus.emit('question:show-answer');
+      toggleAnswerVisibility();
       eventBus.emit('ui:button-click');
     });
   }
-  
-  // Answer input and check button
+  /**
+ * Setup answer input and submission
+ */
+function setupAnswerInput(services) {
   const inputBox = document.getElementById('inputBox');
   const checkButton = document.getElementById('checkButton');
   
@@ -73,6 +77,11 @@ function setupGameControls(services) {
       submitAnswer(services, inputBox);
     });
   }
+  
+  // Listen for answer evaluation results
+  eventBus.on('answer:evaluated', (data) => {
+    displayAnswerFeedback(data);
+  });
   
   // Host animation trigger (menu item)
   const hostAnimBtn = document.getElementById('host-anim-trigger');
@@ -133,10 +142,54 @@ function submitAnswer(services, inputBox) {
 
   if (answer) {
     console.log(`[Submit] Answer submitted: ${answer}`);
-    eventBus.emit(GAME_EVENTS.ANSWER_SUBMITTED, { answer });
+    // Emit the event that GameEngine listens for
+    eventBus.emit('answer:submit', { answer });
     inputBox.value = '';
     eventBus.emit('ui:button-click');
   }
+}
+
+/**
+ * Display answer feedback to user
+ */
+function displayAnswerFeedback(data) {
+  const { isCorrect, correctAnswer, userAnswer, score, timeElapsed } = data;
+  const answerBox = document.getElementById('answerBox');
+  const speechBubble = document.getElementById('speechBubble');
+  
+  // Show the correct answer
+  if (answerBox) {
+    answerBox.textContent = correctAnswer;
+    answerBox.style.display = 'block';
+    answerBox.classList.add('visible');
+    
+    // Add visual feedback class
+    answerBox.classList.remove('correct', 'incorrect');
+    answerBox.classList.add(isCorrect ? 'correct' : 'incorrect');
+  }
+  
+  // Flash the speech bubble with feedback
+  if (speechBubble) {
+    speechBubble.classList.remove('correct-flash', 'incorrect-flash');
+    speechBubble.classList.add(isCorrect ? 'correct-flash' : 'incorrect-flash');
+    setTimeout(() => {
+      speechBubble.classList.remove('correct-flash', 'incorrect-flash');
+    }, 1000);
+  }
+  
+  // Log feedback
+  const emoji = isCorrect ? '✅' : '❌';
+  const message = isCorrect 
+    ? `${emoji} CORRECT! +${score.earned} points!`
+    : `${emoji} Incorrect. The answer was: ${correctAnswer}`;
+  
+  console.log(`[Answer] ${message}`);
+  console.log(`[Answer] Your answer: "${userAnswer}" | Time: ${(timeElapsed / 1000).toFixed(1)}s`);
+  
+  // Auto-advance to next question after a delay
+  setTimeout(() => {
+    eventBus.emit('question:request-new');
+  }, 3000);
 }
 
 /**
@@ -193,18 +246,98 @@ function setupModalTriggers() {
       });
     }
   });
+  
+  // Main Menu trigger (from hamburger menu)
+  const mainMenuTrigger = document.getElementById('main-menu-trigger');
+  if (mainMenuTrigger) {
+    mainMenuTrigger.addEventListener('click', () => {
+      const splash = document.getElementById('splash-screen');
+      const sideMenu = document.getElementById('side-menu');
+      const backdrop = document.getElementById('menu-backdrop');
+      
+      // Close side menu
+      if (sideMenu) sideMenu.classList.remove('active');
+      if (backdrop) backdrop.classList.remove('active');
+      
+      // Show splash screen as modal
+      if (splash) {
+        splash.classList.add('active');
+      }
+      
+      eventBus.emit('ui:button-click');
+    });
+  }
+  
+  // Hamburger menu toggle
+  const hamburger = document.getElementById('hamburger-menu');
+  const sideMenu = document.getElementById('side-menu');
+  const backdrop = document.getElementById('menu-backdrop');
+  const closeMenu = document.querySelector('.close-menu');
+  
+  if (hamburger && sideMenu && backdrop) {
+    hamburger.addEventListener('click', () => {
+      sideMenu.classList.toggle('active');
+      backdrop.classList.toggle('active');
+      eventBus.emit('ui:button-click');
+    });
+    
+    // Close menu when clicking backdrop
+    backdrop.addEventListener('click', () => {
+      sideMenu.classList.remove('active');
+      backdrop.classList.remove('active');
+    });
+    
+    // Close button
+    if (closeMenu) {
+      closeMenu.addEventListener('click', () => {
+        sideMenu.classList.remove('active');
+        backdrop.classList.remove('active');
+        eventBus.emit('ui:button-click');
+      });
+    }
+  }
 }
 
 /**
  * Set up splash screen (main menu)
  */
 function setupSplashScreen() {
+  const splash = document.getElementById('splash-screen');
+  
+  // IMPORTANT: Hide splash screen on load (Classic mode is default)
+  if (splash) {
+    splash.classList.remove('active');
+  }
+  
+  // Close button
+  const closeBtn = splash?.querySelector('.splash-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      splash.classList.remove('active');
+      eventBus.emit('ui:button-click');
+    });
+  }
+  
+  // Backdrop click to close
+  const backdrop = splash?.querySelector('.splash-backdrop');
+  if (backdrop) {
+    backdrop.addEventListener('click', () => {
+      splash.classList.remove('active');
+    });
+  }
+  
   // Game mode buttons
   const startButtons = document.querySelectorAll('[data-start-mode]');
   startButtons.forEach(button => {
     button.addEventListener('click', (e) => {
       const mode = e.target.getAttribute('data-start-mode');
       handleGameModeSelection(mode);
+      
+      // Close splash screen after selection
+      if (splash) {
+        splash.classList.remove('active');
+      }
+      
       eventBus.emit('ui:button-click');
     });
   });
@@ -218,33 +351,35 @@ function setupSplashScreen() {
     });
   }
   
-  // Theme selector dots
-  const themeDots = document.querySelectorAll('.theme-dot[data-theme]');
-  themeDots.forEach(dot => {
-    dot.addEventListener('click', (e) => {
-      const theme = e.target.getAttribute('data-theme');
-      
-      // Update UI
-      themeDots.forEach(d => d.classList.remove('active'));
-      e.target.classList.add('active');
-      
-      // Apply theme
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('jeopardish_theme_variant', theme);
-      
-      eventBus.emit('theme:variant-changed', { variant: theme });
+  // Theme toggle - Light bulb button
+  const themeToggle = document.getElementById('theme-toggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const isDark = !document.body.classList.contains('dark-mode');
+      document.documentElement.classList.toggle('dark-mode', isDark);
+      document.body.classList.toggle('dark-mode', isDark);
+      localStorage.setItem('jeopardish_theme', isDark ? 'dark' : 'light');
       eventBus.emit('ui:button-click');
-      
-      console.log(`🎨 Theme switched to: ${theme}`);
     });
-  });
+  }
   
-  // Apply saved theme variant
-  const savedVariant = localStorage.getItem('jeopardish_theme_variant') || 'jeopardy';
-  document.documentElement.setAttribute('data-theme', savedVariant);
-  const activeDot = document.querySelector(`[data-theme="${savedVariant}"]`);
-  if (activeDot) {
-    activeDot.classList.add('active');
+  // Language toggle - Wheel of Fortune style!
+  const langBtn = document.getElementById('lang-btn');
+  if (langBtn) {
+    langBtn.addEventListener('click', function() {
+      this.classList.add('spinning');
+      setTimeout(() => {
+        const currentLang = document.body.lang || 'en';
+        const newLang = currentLang === 'en' ? 'pt-BR' : 'en';
+        document.body.lang = newLang;
+        localStorage.setItem('jeopardish_lang', newLang);
+        const flagEmoji = this.querySelector('.flag-emoji');
+        if (flagEmoji) flagEmoji.textContent = newLang === 'en' ? '🇺🇸' : '🇧🇷';
+        this.setAttribute('data-lang', newLang);
+        eventBus.emit('language:changed', { language: newLang });
+        this.classList.remove('spinning');
+      }, 800);
+    });
   }
 }
 
@@ -255,6 +390,14 @@ function handleGameModeSelection(mode) {
   console.log(`🎮 Starting game mode: ${mode}`);
   
   const splash = document.getElementById('splash-screen');
+  const boardScreen = document.getElementById('jeopardy-board-screen');
+  const runScreen = document.getElementById('run-category-screen');
+  const paoScreen = document.getElementById('pao-screen-container');
+  
+  // Hide all alternate screens first
+  if (boardScreen) boardScreen.classList.add('hidden');
+  if (runScreen) runScreen.classList.add('hidden');
+  if (paoScreen) paoScreen.classList.add('hidden');
   
   switch (mode) {
     case 'classic':
@@ -366,10 +509,12 @@ function setupQuestionOrchestrator() {
     }
   });
   
-  // Show answer
+  // Show/Hide answer (toggle-friendly)
   eventBus.on('question:show-answer', () => {
-    setAnswerVisible(true);
-    eventBus.emit('game:answer:revealed');
+    toggleAnswerVisibility();
+  });
+  eventBus.on('question:hide-answer', () => {
+    setAnswerVisible(false);
   });
   
   // Keep legacy DOM in sync when question loads
@@ -397,6 +542,8 @@ function renderQuestion(question) {
     answerBox.classList.remove('visible');
     answerBox.style.display = 'none';
   }
+  // Ensure button label matches state
+  updateAnswerButtonLabel();
 }
 
 /**
@@ -414,4 +561,34 @@ function setAnswerVisible(visible) {
     answerBox.style.display = 'none';
     answerBox.classList.remove('visible');
   }
+  updateAnswerButtonLabel();
+}
+
+/**
+ * Determine if the answer is currently visible
+ */
+function isAnswerVisible() {
+  const answerBox = document.getElementById('answerBox');
+  if (!answerBox) return false;
+  return answerBox.classList.contains('visible') || answerBox.style.display === 'block';
+}
+
+/**
+ * Toggle answer visibility and announce game event when revealing
+ */
+function toggleAnswerVisibility() {
+  const nextVisible = !isAnswerVisible();
+  setAnswerVisible(nextVisible);
+  if (nextVisible) {
+    eventBus.emit('game:answer:revealed');
+  }
+}
+
+/**
+ * Keep the Show/Hide Answer button label in sync with current state
+ */
+function updateAnswerButtonLabel() {
+  const answerButton = document.getElementById('answerButton');
+  if (!answerButton) return;
+  answerButton.textContent = isAnswerVisible() ? 'Hide Answer' : 'Show Answer';
 }

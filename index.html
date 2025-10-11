@@ -63,13 +63,78 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     
     
 </head>
 <body lang="en">
 
+    <!-- Sticky Header -->
+    <header class="sticky-header">
+        <div class="header-left">
+            <!-- Theme Toggle - Retro Light Bulb -->
+            <button id="theme-toggle" class="theme-bulb" aria-label="Toggle theme" title="Toggle dark/light mode">
+                <div class="bulb-glass">
+                    <div class="bulb-filament"></div>
+                </div>
+                <div class="bulb-base"></div>
+            </button>
+            
+            <!-- Language Toggle -->
+            <button id="lang-btn" class="lang-toggle" data-lang="en" aria-label="Change language" title="Change language">
+                <span class="flag-emoji">🇺🇸</span>
+            </button>
+        </div>
+        
+        <div class="header-title">
+            <img src="images/jeoparody.png" alt="jeoPARODY" class="title-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <h1 style="display:none; color: #ffd700; font-family: Korinna, serif;">jeoPARODY!</h1>
+        </div>
+        
+        <div class="header-right">
+            <button id="hamburger-menu" class="hamburger-menu" aria-label="Toggle menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Side Menu (hamburger dropdown) -->
+    <nav id="side-menu" class="side-menu">
+        <div class="menu-header">
+            <h3>Menu</h3>
+            <button class="close-menu" aria-label="Close menu">×</button>
+        </div>
+        <ul class="menu-items">
+            <li><button id="main-menu-trigger" data-action="main-menu">🎮 Main Menu</button></li>
+            <li><button id="settings-button" data-action="settings">⚙️ Settings</button></li>
+            <li><button id="stats-button" data-action="stats">📊 Stats</button></li>
+            <li><button id="achievements-button" data-action="achievements">🏆 Achievements</button></li>
+            <li><button id="help-button" data-action="help">❓ Help</button></li>
+            <li><button id="lang-btn-menu" data-lang="en">🌐 Language</button></li>
+            <li><button id="host-anim-trigger">🎭 Test Host Animation</button></li>
+        </ul>
+    </nav>
+    <div id="menu-backdrop" class="menu-backdrop"></div>
+
     <!-- React-like app container for new component architecture -->
     <div id="app"></div>
+
+    <!-- Main Game UI Container -->
+    <main class="game-container">
+        <!-- Speech Bubble -->
+        <div class="speech-bubble-wrapper">
+            <div class="speech-bubble">
+                <div class="bubble-header">
+                    <div id="categoryBox" class="category-text">Category</div>
+                    <div id="valueBox" class="value-text">$200</div>
+                </div>
+                <div id="questionBox" class="question-text">Welcome to jeoPARODY! Click "New Question" to begin.</div>
+                <div id="answerBox" class="answer-text" style="display: none;">Answer appears here</div>
+            </div>
+        </div>
+    </main>
 
     <!-- Host Image Container -->
     <div class="host-container">
@@ -78,10 +143,29 @@
       <div class="host-click-zone host-click-right"></div>
     </div>
 
+    <!-- Sticky Footer -->
+    <footer class="sticky-footer">
+        <div class="footer-controls">
+            <button id="questionButton" class="btn btn-primary" aria-label="Get new question">
+                <i class="fas fa-question-circle"></i> New Question
+            </button>
+            <button id="answerButton" class="btn btn-secondary" aria-label="Show answer">
+                <i class="fas fa-eye"></i> Show Answer
+            </button>
+            <div class="input-group">
+                <input type="text" id="inputBox" class="answer-input" placeholder="Type your answer..." aria-label="Answer input">
+                <button id="checkButton" class="btn btn-submit" aria-label="Submit answer">
+                    <i class="fas fa-check"></i> Submit
+                </button>
+            </div>
+        </div>
+    </footer>
 
-    <!-- Splash / Start Screen Overlay -->
-    <div id="splash-screen" class="active">
+    <!-- Splash / Start Screen Overlay (Hidden by default, accessible from menu) -->
+    <div id="splash-screen" class="splash-modal">
+      <div class="splash-backdrop"></div>
       <div class="splash-card">
+        <button class="splash-close" aria-label="Close menu">×</button>
         <div class="splash-title">jeoPARODY!</div>
         <div class="splash-subtitle">Pick a mode to begin</div>
         <div class="splash-grid">

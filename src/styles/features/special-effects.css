@@ -1,0 +1,461 @@
+/**
+ * Special Effects & Decorative Elements
+ * Plane ticker, particles, and other visual effects
+ */
+
+/* ===== EVENT TICKER & PLANE ===== */
+.event-ticker {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: var(--z-plane, 1);
+  top: 0;
+  left: 0;
+}
+
+.ticker-unit {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  width: auto;
+  height: 6vmin;
+  border-radius: 4px;
+  padding: 0.5vmin 2vmin;
+  animation: flyAcross 15s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  transform: translateX(-100%);
+  top: 25%;
+}
+
+.ticker-plane {
+  position: relative;
+  width: 12vmin;
+  height: 6vmin;
+  transform-style: preserve-3d;
+  z-index: var(--z-plane, 1);
+  filter: drop-shadow(0 2px 8px rgb(0 0 0 / 30%));
+}
+
+.ticker-banner {
+  position: absolute;
+  left: 12vmin;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 4vmin;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, rgb(255 215 0 / 90%), rgb(255 165 0 / 90%));
+  color: #1a1a1a;
+  padding: 0 1.5vmin;
+  border-radius: 8px;
+  border: 2px solid #FFD700;
+  font-weight: bold;
+  text-shadow: none;
+  animation: flutter 2s ease-in-out infinite;
+  transform-origin: left center;
+  box-shadow: 0 4px 15px rgb(0 0 0 / 30%);
+  backdrop-filter: blur(2px);
+}
+
+.ticker-content {
+  color: #1a1a1a;
+  font-size: 2.2vmin;
+  font-weight: bold;
+  letter-spacing: 0.1vmin;
+  white-space: nowrap;
+  font-family: Korinna, serif;
+  text-shadow: none;
+}
+
+/* ===== CONFETTI EFFECT ===== */
+.confetti-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-toast, 4000);
+  overflow: hidden;
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #ffd700;
+  top: -10px;
+  animation: confettiFall 3s linear forwards;
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.confetti:nth-child(2n) {
+  background: #ff69b4;
+  animation-delay: 0.2s;
+}
+
+.confetti:nth-child(3n) {
+  background: #00ffff;
+  animation-delay: 0.4s;
+}
+
+.confetti:nth-child(4n) {
+  width: 8px;
+  height: 8px;
+  animation-delay: 0.6s;
+}
+
+/* ===== SPARKLE EFFECT ===== */
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 8px white;
+  animation: sparkleAnimation 1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes sparkleAnimation {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ===== PARTICLE SYSTEM ===== */
+.particle-system {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-base, 0);
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgb(255 215 0 / 50%);
+  border-radius: 50%;
+  animation: particleDrift 10s linear infinite;
+}
+
+@keyframes particleDrift {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(50px);
+    opacity: 0;
+  }
+}
+
+.particle:nth-child(2n) {
+  animation-delay: 2s;
+  animation-duration: 12s;
+}
+
+.particle:nth-child(3n) {
+  animation-delay: 4s;
+  animation-duration: 8s;
+}
+
+/* ===== RIPPLE EFFECT ===== */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgb(255 215 0 / 40%);
+  transform: scale(0);
+  animation: rippleAnimation 0.6s ease-out;
+  pointer-events: none;
+}
+
+@keyframes rippleAnimation {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ===== GLOW PULSE EFFECT ===== */
+.glow-pulse {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgb(255 215 0 / 50%);
+  }
+  50% {
+    box-shadow: 0 0 30px rgb(255 215 0 / 80%);
+  }
+}
+
+/* ===== FLOATING ANIMATION ===== */
+.floating {
+  animation: floating 3s ease-in-out infinite;
+}
+
+@keyframes floating {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* ===== SHIMMER EFFECT ===== */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 30%),
+    transparent
+  );
+  animation: shimmerAnimation 2s infinite;
+}
+
+@keyframes shimmerAnimation {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* ===== SCREEN SHAKE EFFECT ===== */
+.screen-shake {
+  animation: screenShake 0.5s ease-in-out;
+}
+
+@keyframes screenShake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* ===== TYPEWRITER EFFECT ===== */
+.typewriter {
+  overflow: hidden;
+  border-right: 2px solid #ffd700;
+  white-space: nowrap;
+  animation: typing 3s steps(40) 1s forwards, blink 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
+/* ===== NEON GLOW EFFECT ===== */
+.neon-glow {
+  text-shadow:
+    0 0 5px currentColor,
+    0 0 10px currentColor,
+    0 0 20px currentColor,
+    0 0 40px currentColor;
+  animation: neonFlicker 1.5s infinite alternate;
+}
+
+@keyframes neonFlicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    text-shadow:
+      0 0 5px currentColor,
+      0 0 10px currentColor,
+      0 0 20px currentColor,
+      0 0 40px currentColor;
+  }
+  20%, 24%, 55% {
+    text-shadow: none;
+  }
+}
+
+/* ===== LOADING SPINNER ===== */
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgb(255 215 0 / 20%);
+  border-top-color: #ffd700;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* ===== PROGRESS BAR ANIMATION ===== */
+.progress-bar {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  background: rgb(255 215 0 / 20%);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffd700, #ffa500);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 30%),
+    transparent
+  );
+  animation: progressShimmer 1.5s infinite;
+}
+
+@keyframes progressShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ===== TOAST NOTIFICATION SLIDE ===== */
+.toast-notification {
+  position: fixed;
+  top: 20px;
+  right: -400px;
+  width: 350px;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgb(26 26 26 / 95%), rgb(45 45 45 / 95%));
+  border: 2px solid #ffd700;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 40%);
+  z-index: var(--z-toast, 4000);
+  animation: toastSlideIn 0.3s ease-out forwards;
+}
+
+.toast-notification.toast-exit {
+  animation: toastSlideOut 0.3s ease-in forwards;
+}
+
+@keyframes toastSlideIn {
+  to {
+    right: 20px;
+  }
+}
+
+@keyframes toastSlideOut {
+  to {
+    right: -400px;
+  }
+}
+
+/* ===== RESPONSIVE EFFECTS ===== */
+
+@media (max-width: 768px) {
+  .ticker-unit {
+    height: 8vmin;
+  }
+
+  .ticker-plane {
+    width: 16vmin;
+    height: 8vmin;
+  }
+
+  .ticker-banner {
+    left: 16vmin;
+    height: 6vmin;
+  }
+
+  .ticker-content {
+    font-size: 3vmin;
+  }
+
+  .toast-notification {
+    width: calc(100% - 40px);
+    right: -100%;
+  }
+
+  @keyframes toastSlideIn {
+    to {
+      right: 20px;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Disable decorative animations for users who prefer reduced motion */
+  .ticker-unit,
+  .confetti,
+  .sparkle,
+  .particle,
+  .floating,
+  .shimmer::before,
+  .typewriter,
+  .neon-glow,
+  .progress-bar-fill::after {
+    animation: none !important;
+  }
+
+  .ticker-banner {
+    animation: none !important;
+    transform: translateY(-50%);
+  }
+}
+
+/* ===== UTILITY CLASSES ===== */
+
+/* Apply effects easily */
+.effect-glow { @extend .glow-pulse; }
+.effect-float { @extend .floating; }
+.effect-shimmer { @extend .shimmer; }
+.effect-neon { @extend .neon-glow; }
+.effect-shake { @extend .screen-shake; }

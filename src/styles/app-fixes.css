@@ -32,70 +32,95 @@
 
     /* Use existing italic files */
     src: url('../../assets/fonts/KorinnaItalic.woff2') format('woff2'),
-         url('../../assets/fonts/KorinnaItalic.woff') format('woff'),
-         url('../../assets/fonts/KorinnaItalic.ttf') format('truetype');
+         url('../../assets/fonts/KorinnaItalic.woff') format('woff');
     font-weight: normal;
     font-style: italic;
     font-display: swap;
 }
 
-/* Host Image Styling - optimized size, no frame */
+/* Host Image Styling - MASTER RULES (override all legacy) */
 .host-container {
     position: fixed !important;
-    bottom: 80px; /* Just above the sticky footer */
-    left: 20px;
-    z-index: var(--z-host);
-    width: min(140px, 20vw);
-    aspect-ratio: 3/4;
-    height: auto; /* maintain aspect ratio */
-    pointer-events: auto;
-    overflow: hidden;
-    border: none; /* Remove any frame */
-    box-shadow: none; /* Remove drop shadow frame */
-    transition: transform 0.3s ease;
+    bottom: 80px !important; /* Above footer */
+    left: 15px !important;
+    width: 180px !important;
+    height: 240px !important;
+    z-index: 900 !important; /* Below modals, above content */
+    pointer-events: auto !important;
+    overflow: visible !important; /* Allow overflow so nothing cuts off */
+    background: none !important; /* Transparent background */
+    border: none !important;
+    box-shadow: none !important;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
 }
 
 .host-container:hover {
-    transform: translateY(-5px) scale(1.05);
+    transform: translateY(-8px) scale(1.08) !important;
+    filter: drop-shadow(0 8px 20px rgb(255 215 0 / 50%)) !important;
 }
 
 .host-image {
     width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    object-position: center top;
-    display: block;
-    border-radius: 10px;
-    transition: transform 0.3s ease;
+    height: auto !important;
+    max-height: none !important;
+    object-fit: contain !important; /* Contain instead of cover */
+    object-position: bottom center !important;
+    image-rendering: auto !important;
+    display: block !important;
+    filter: drop-shadow(0 4px 12px rgb(0 0 0 / 50%));
+    transition: filter 0.3s ease;
 }
 
-/* Host image click zones */
-.host-click-zone {
-    border: 2px solid transparent;
-    transition: all 0.2s ease !important;
-    position: relative; /* for arrow positioning */
+/* Host image cycling - arrows appear on hover */
+.host-container {
+    cursor: pointer;
 }
 
-/* Arrow icons */
-.host-click-left::before,
-.host-click-right::before {
+.host-container::before,
+.host-container::after {
+    content: '';
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 24px;
-    font-family: sans-serif;
-    color: rgb(255 255 255 / 80%);
-    pointer-events: none;
+    width: 40px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: bold;
+    color: rgb(255 215 0 / 90%);
+    text-shadow: 
+        0 0 10px rgb(0 0 0 / 80%),
+        2px 2px 4px rgb(0 0 0 / 60%);
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 10;
 }
-.host-click-left::before { content: '◀'; left: 8px; }
-.host-click-right::before { content: '▶'; right: 8px; }
 
-/* Show arrows on hover of host container */
-.host-container:hover .host-click-left::before,
-.host-container:hover .host-click-right::before {
+.host-container::before {
+    content: '◀';
+    left: -10px;
+}
+
+.host-container::after {
+    content: '▶';
+    right: -10px;
+}
+
+/* Show arrows on hover */
+.host-container:hover::before,
+.host-container:hover::after {
     opacity: 1;
+}
+
+.host-container:hover::before {
+    left: -5px;
+}
+
+.host-container:hover::after {
+    right: -5px;
 }
 
 .host-click-zone:hover {
@@ -190,12 +215,7 @@ body:not(.dark-theme, .dark-mode) .user-profile::after {
 .ticker-plane { transform: none !important; }
 .speechBubble { position: relative; z-index: var(--z-local-2); }
 
-/* Host placement fix */
-.host-container {
-    bottom: 100px; /* ensure above footer */
-    left: 20px;
-    z-index: var(--z-host);
-}
+/* Removed duplicate - see master rules above */
 
 /* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {

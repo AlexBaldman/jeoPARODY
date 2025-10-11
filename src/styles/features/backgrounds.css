@@ -1,0 +1,240 @@
+/**
+ * Background Styles & Themes
+ * Beach backgrounds, celestial elements, and ambient effects
+ */
+
+/* ===== BASE BODY STYLES ===== */
+body {
+  font-size: var(--fs-base);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ===== DAY MODE BEACH BACKGROUND ===== */
+body:not(.dark-mode) {
+  background: linear-gradient(to bottom,
+    #87CEEB 0%,     /* Sky blue */
+    #FFE4B5 40%,    /* Sandy horizon */
+    #F4A460 60%,    /* Beach sand */
+    #DEB887 100%    /* Darker sand */
+  );
+}
+
+/* Sun for day mode */
+body:not(.dark-mode)::before {
+  content: '';
+  position: fixed;
+  top: 50px;
+  right: 100px;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, #FFD700 0%, #FFA500 40%, transparent 70%);
+  border-radius: 50%;
+  box-shadow: 0 0 50px rgb(255 215 0 / 80%);
+  z-index: -1;
+  animation: sunGlow 4s ease-in-out infinite;
+}
+
+@keyframes sunGlow {
+  0%, 100% {
+    box-shadow: 0 0 50px rgb(255 215 0 / 80%);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 70px rgb(255 215 0 / 90%);
+    transform: scale(1.05);
+  }
+}
+
+/* ===== NIGHT MODE BEACH BACKGROUND ===== */
+body.dark-mode {
+  background: linear-gradient(to bottom,
+    #0a1929 0%,     /* Night sky */
+    #1e3c72 30%,    /* Horizon */
+    #2a5298 50%,    /* Ocean */
+    #1a1a2e 100%    /* Dark sand */
+  );
+}
+
+/* Moon for night mode */
+body.dark-mode::before {
+  content: '';
+  position: fixed;
+  top: 50px;
+  right: 100px;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, #F8F8FF 0%, #E6E6FA 40%, transparent 70%);
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgb(248 248 255 / 60%);
+  z-index: -1;
+  animation: moonGlow 5s ease-in-out infinite;
+}
+
+@keyframes moonGlow {
+  0%, 100% {
+    box-shadow: 0 0 30px rgb(248 248 255 / 60%);
+  }
+  50% {
+    box-shadow: 0 0 45px rgb(248 248 255 / 75%);
+  }
+}
+
+/* Stars for night mode */
+body.dark-mode::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, white, transparent),
+    radial-gradient(2px 2px at 40px 70px, white, transparent),
+    radial-gradient(1px 1px at 50px 50px, white, transparent),
+    radial-gradient(1px 1px at 80px 10px, white, transparent),
+    radial-gradient(2px 2px at 130px 80px, white, transparent),
+    radial-gradient(1px 1px at 110px 120px, white, transparent);
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  z-index: -2;
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+/* ===== ALTERNATIVE BACKGROUNDS (Optional) ===== */
+
+/* Gradient backgrounds */
+.bg-gradient-sunset {
+  background: linear-gradient(to bottom,
+    #FF6B6B 0%,
+    #FFE66D 50%,
+    #4ECDC4 100%
+  );
+}
+
+.bg-gradient-ocean {
+  background: linear-gradient(to bottom,
+    #1e3c72 0%,
+    #2a5298 50%,
+    #7e22ce 100%
+  );
+}
+
+.bg-gradient-forest {
+  background: linear-gradient(to bottom,
+    #134e5e 0%,
+    #71b280 100%
+  );
+}
+
+/* Animated gradient background */
+.bg-animated-gradient {
+  background: linear-gradient(
+    -45deg,
+    #ee7752,
+    #e73c7e,
+    #23a6d5,
+    #23d5ab
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Particle effect background (optional) */
+.bg-particles {
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  background: radial-gradient(circle at 20% 50%, rgb(255 215 0 / 5%) 0%, transparent 50%),
+              radial-gradient(circle at 80% 80%, rgb(255 105 180 / 5%) 0%, transparent 50%),
+              radial-gradient(circle at 40% 20%, rgb(0 255 255 / 5%) 0%, transparent 50%);
+  animation: particleFloat 20s ease-in-out infinite;
+}
+
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05);
+  }
+}
+
+/* ===== RESPONSIVE BACKGROUNDS ===== */
+
+@media (max-width: 768px) {
+  /* Simplify backgrounds on mobile for performance */
+  body:not(.dark-mode)::before,
+  body.dark-mode::before {
+    width: 60px;
+    height: 60px;
+    top: 30px;
+    right: 30px;
+  }
+
+  body.dark-mode::after {
+    background-size: 150px 150px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Disable background animations for users who prefer reduced motion */
+  body:not(.dark-mode)::before,
+  body.dark-mode::before,
+  body.dark-mode::after,
+  .bg-animated-gradient,
+  .bg-particles {
+    animation: none !important;
+  }
+}
+
+/* ===== THEME UTILITIES ===== */
+
+/* Apply theme-specific background classes */
+.theme-beach {
+  /* Default beach theme (already applied to body) */
+}
+
+.theme-space {
+  background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+}
+
+.theme-sunset {
+  background: linear-gradient(to bottom, #FF6B6B 0%, #FFE66D 50%, #4ECDC4 100%);
+}
+
+.theme-minimal {
+  background: #f5f5f5;
+}
+
+.dark-mode.theme-minimal {
+  background: #1a1a1a;
+}
+
+/* Background overlay for better text contrast */
+.bg-overlay {
+  position: relative;
+}
+
+.bg-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 30%);
+  z-index: -1;
+}
+
+.dark-mode .bg-overlay::before {
+  background: rgb(0 0 0 / 50%);
+}

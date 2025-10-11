@@ -138,26 +138,13 @@
 
     25% { transform: translateX(-5px); color: #F00;
     }
-
     75% { transform: translateX(5px); color: #F00;
     }
 }
 
 
 /* ===== Host Image ===== */
-.host-image {
-    position: fixed;
-    bottom: 80px;
-    left: 20px;
-    max-width: 150px;
-    z-index: var(--z-host);
-    filter: drop-shadow(0 4px 8px rgb(0 0 0 / 40%));
-    transition: transform 0.3s ease;
-}
-
-.host-image:hover {
-    transform: translateY(-5px) scale(1.05);
-}
+/* Removed - see app-fixes.css for master rules */
 
 /* ===== Beach Background Styles ===== */
 body {

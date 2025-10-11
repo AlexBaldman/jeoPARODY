@@ -1,0 +1,487 @@
+/**
+ * Arcade/Retro UI Styling
+ * Extracted from ux-pack.css and enhanced-ui.css
+ * Provides retro gaming aesthetics and arcade-style components
+ */
+
+/* ===== RETRO FONTS AND TYPOGRAPHY ===== */
+
+/* Press Start 2P Font */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* Orbitron Font */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+.press-start {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #ffd700;
+  text-shadow:
+    2px 2px 0 #000,
+    -1px -1px 0 #000,
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000;
+}
+
+.arcade-font {
+  font-family: 'Orbitron', 'Press Start 2P', monospace;
+  font-weight: bold;
+  text-shadow:
+    2px 2px 0 #000,
+    -1px -1px 0 #000,
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000;
+}
+
+/* ===== ARCADE BUTTONS ===== */
+
+/* Base arcade button */
+.btn-arcade {
+  background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+  color: #ffd700;
+  font-family: 'Orbitron', monospace;
+  font-weight: bold;
+  text-shadow: 2px 2px 0 #8b008b;
+  border: 3px solid #ffd700;
+  box-shadow:
+    inset 2px 2px 4px rgb(255 255 255 / 20%),
+    inset -2px -2px 4px rgb(0 0 0 / 40%),
+    0 4px 8px rgb(0 0 0 / 60%);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-arcade::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+    transparent,
+    rgb(255 255 255 / 20%),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.btn-arcade:hover::before {
+  left: 100%;
+}
+
+.btn-arcade:hover {
+  background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow:
+    inset 2px 2px 4px rgb(255 255 255 / 30%),
+    inset -2px -2px 4px rgb(0 0 0 / 50%),
+    0 6px 12px rgb(255 20 147 / 60%);
+}
+
+.btn-arcade:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow:
+    inset 4px 4px 8px rgb(0 0 0 / 60%),
+    0 2px 4px rgb(0 0 0 / 60%);
+}
+
+/* Arcade button variants */
+.btn-arcade-primary {
+  background: linear-gradient(135deg, #00ffff 0%, #0080ff 100%);
+  color: #ffff00;
+  border-color: #ffff00;
+  text-shadow: 2px 2px 0 #004080;
+}
+
+.btn-arcade-success {
+  background: linear-gradient(135deg, #00ff00 0%, #32cd32 100%);
+  color: #ff69b4;
+  border-color: #ff69b4;
+  text-shadow: 2px 2px 0 #006400;
+}
+
+.btn-arcade-warning {
+  background: linear-gradient(135deg, #ffff00 0%, #ffd700 100%);
+  color: #ff4500;
+  border-color: #ff4500;
+  text-shadow: 2px 2px 0 #b8860b;
+}
+
+.btn-arcade-danger {
+  background: linear-gradient(135deg, #ff4500 0%, #ff6347 100%);
+  color: #ffff00;
+  border-color: #ffff00;
+  text-shadow: 2px 2px 0 #8b0000;
+}
+
+/* ===== RETRO PANELS AND CARDS ===== */
+
+/* Retro panel */
+.panel-retro {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 3px solid #ffd700;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow:
+    inset 2px 2px 4px rgb(255 255 255 / 10%),
+    inset -2px -2px 4px rgb(0 0 0 / 50%),
+    0 4px 8px rgb(0 0 0 / 60%);
+  position: relative;
+}
+
+.panel-retro::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  border-radius: 10px;
+  z-index: -1;
+}
+
+.panel-retro-header {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #1a1a2e;
+  padding: 0.5rem 1rem;
+  margin: -1rem -1rem 1rem -1rem;
+  border-radius: 5px 5px 0 0;
+  font-family: 'Orbitron', monospace;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 1px 1px 0 #b8860b;
+}
+
+/* Retro card */
+.card-retro {
+  background: linear-gradient(135deg, #2a2a3e 0%, #1a1a2e 100%);
+  border: 2px solid #ff69b4;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow:
+    inset 2px 2px 4px rgb(255 255 255 / 10%),
+    inset -2px -2px 4px rgb(0 0 0 / 50%),
+    0 6px 12px rgb(0 0 0 / 60%);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-retro::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg,
+    #ff69b4 0%,
+    #ffd700 50%,
+    #00ffff 100%
+  );
+}
+
+.card-retro-title {
+  color: #ffd700;
+  font-family: 'Orbitron', monospace;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 0 #1a1a2e;
+}
+
+.card-retro-body {
+  color: #e0e0e0;
+  line-height: 1.6;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+}
+
+/* ===== RETRO ANIMATIONS ===== */
+
+/* Pulsing glow effect */
+@keyframes retroPulse {
+  0%, 100% {
+    box-shadow:
+      inset 2px 2px 4px rgb(255 255 255 / 10%),
+      inset -2px -2px 4px rgb(0 0 0 / 50%),
+      0 4px 8px rgb(0 0 0 / 60%);
+  }
+  50% {
+    box-shadow:
+      inset 2px 2px 4px rgb(255 255 255 / 20%),
+      inset -2px -2px 4px rgb(0 0 0 / 60%),
+      0 6px 16px rgb(255 215 0 / 40%);
+  }
+}
+
+/* Scanning line effect */
+@keyframes scanLine {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+.retro-scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    #00ffff 50%,
+    transparent 100%
+  );
+  animation: scanLine 3s linear infinite;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* Glitch effect */
+@keyframes glitch {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+}
+
+.glitch {
+  animation: glitch 0.3s ease-in-out infinite;
+}
+
+/* ===== RETRO MENUS ===== */
+
+/* Retro menu container */
+.menu-retro {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 3px solid #ffd700;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow:
+    inset 2px 2px 4px rgb(255 255 255 / 10%),
+    inset -2px -2px 4px rgb(0 0 0 / 50%),
+    0 8px 16px rgb(0 0 0 / 60%);
+  position: relative;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.menu-retro::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, #ffd700 0%, #ff69b4 100%);
+  border-radius: 14px;
+  z-index: -1;
+}
+
+.menu-retro-title {
+  color: #ffd700;
+  font-family: 'Orbitron', monospace;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2rem;
+  text-shadow: 2px 2px 0 #1a1a2e;
+}
+
+/* Retro menu items */
+.menu-item-retro {
+  display: block;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+  color: #ffd700;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  text-align: center;
+  text-decoration: none;
+  border: 2px solid #ffd700;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  text-shadow: 1px 1px 0 #8b008b;
+  box-shadow:
+    inset 1px 1px 2px rgb(255 255 255 / 20%),
+    inset -1px -1px 2px rgb(0 0 0 / 40%),
+    0 2px 4px rgb(0 0 0 / 60%);
+}
+
+.menu-item-retro:hover {
+  background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow:
+    inset 1px 1px 2px rgb(255 255 255 / 30%),
+    inset -1px -1px 2px rgb(0 0 0 / 50%),
+    0 4px 8px rgb(255 20 147 / 60%);
+}
+
+.menu-item-retro:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow:
+    inset 2px 2px 4px rgb(0 0 0 / 60%),
+    0 1px 2px rgb(0 0 0 / 60%);
+}
+
+/* ===== RETRO FORM ELEMENTS ===== */
+
+/* Retro input */
+.input-retro {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #2a2a3e 0%, #1a1a2e 100%);
+  border: 2px solid #ff69b4;
+  border-radius: 8px;
+  color: #00ffff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  box-shadow:
+    inset 2px 2px 4px rgb(0 0 0 / 50%),
+    inset -2px -2px 4px rgb(255 255 255 / 10%),
+    0 2px 4px rgb(0 0 0 / 60%);
+  transition: all 0.3s ease;
+}
+
+.input-retro:focus {
+  outline: none;
+  border-color: #00ffff;
+  box-shadow:
+    inset 2px 2px 4px rgb(0 0 0 / 60%),
+    inset -2px -2px 4px rgb(255 255 255 / 15%),
+    0 0 8px rgb(0 255 255 / 50%),
+    0 2px 4px rgb(0 0 0 / 60%);
+}
+
+.input-retro::placeholder {
+  color: #666;
+  opacity: 0.7;
+}
+
+/* Retro select */
+.select-retro {
+  appearance: none;
+  background: linear-gradient(135deg, #2a2a3e 0%, #1a1a2e 100%);
+  border: 2px solid #ffd700;
+  border-radius: 8px;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  color: #ffd700;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow:
+    inset 2px 2px 4px rgb(0 0 0 / 50%),
+    inset -2px -2px 4px rgb(255 255 255 / 10%),
+    0 2px 4px rgb(0 0 0 / 60%);
+}
+
+.select-retro:focus {
+  outline: none;
+  border-color: #ffed4e;
+  box-shadow:
+    inset 2px 2px 4px rgb(0 0 0 / 60%),
+    inset -2px -2px 4px rgb(255 255 255 / 15%),
+    0 0 8px rgb(255 237 78 / 50%);
+}
+
+/* ===== RETRO UTILITIES ===== */
+
+/* Retro text effects */
+.text-retro-glow {
+  color: #ffd700;
+  text-shadow:
+    0 0 5px #ffd700,
+    0 0 10px #ffd700,
+    0 0 15px #ff69b4,
+    0 0 20px #ff69b4;
+}
+
+.text-retro-shadow {
+  color: #ffd700;
+  text-shadow: 3px 3px 0 #1a1a2e;
+}
+
+/* Retro borders */
+.border-retro {
+  border: 3px solid #ffd700;
+  box-shadow:
+    inset 1px 1px 2px rgb(255 255 255 / 20%),
+    inset -1px -1px 2px rgb(0 0 0 / 40%),
+    0 2px 4px rgb(0 0 0 / 60%);
+}
+
+/* Retro background patterns */
+.bg-retro-grid {
+  background-image:
+    linear-gradient(rgb(255 215 0 / 10%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 215 0 / 10%) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.bg-retro-circuit {
+  background:
+    radial-gradient(circle at 25% 25%, rgb(0 255 255 / 10%) 2px, transparent 2px),
+    radial-gradient(circle at 75% 75%, rgb(255 105 180 / 10%) 2px, transparent 2px);
+  background-size: 50px 50px;
+}
+
+/* ===== RESPONSIVE RETRO STYLES ===== */
+
+@media (max-width: 768px) {
+  .menu-retro {
+    padding: 1.5rem;
+    max-width: 90vw;
+  }
+
+  .menu-retro-title {
+    font-size: 1.25rem;
+  }
+
+  .menu-item-retro {
+    padding: 0.75rem 1rem;
+    font-size: 10px;
+  }
+
+  .panel-retro {
+    padding: 0.75rem;
+  }
+
+  .panel-retro-header {
+    font-size: 0.875rem;
+  }
+}
+
+/* ===== RETRO THEME TOGGLE ===== */
+
+/* Apply retro styles when retro theme is active */
+.theme-retro .btn-primary,
+.theme-retro .btn-secondary,
+.theme-retro .btn-submit {
+  @extend .btn-arcade;
+}
+
+.theme-retro .card {
+  @extend .card-retro;
+}
+
+.theme-retro .panel {
+  @extend .panel-retro;
+}
+
+.theme-retro h1, .theme-retro h2, .theme-retro h3 {
+  font-family: 'Orbitron', monospace;
+  text-shadow: 2px 2px 0 #1a1a2e;
+}
+
+.theme-retro .press-start,
+.theme-retro .arcade-font {
+  color: #ffd700;
+}

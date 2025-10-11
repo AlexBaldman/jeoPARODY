@@ -1,0 +1,173 @@
+/**
+ * Consolidated Typography System
+ * Combined from core/typography.css and font definitions
+ */
+
+/* Korinna Font Family - Jeopardy Official Font */
+@font-face {
+  font-family: Korinna;
+  src: url('../../../assets/fonts/KorinnaNormal.woff2') format('woff2'),
+       url('../../../assets/fonts/Korinna.woff') format('woff'),
+       url('../../../assets/fonts/Korinna.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Korinna;
+  src: url('../../../assets/fonts/KorinnaBold.woff') format('woff'),
+       url('../../../assets/fonts/KorinnaBold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Korinna;
+  src: url('../../../assets/fonts/KorinnaItalic.woff2') format('woff2'),
+       url('../../../assets/fonts/KorinnaItalic.woff') format('woff'),
+       url('../../../assets/fonts/KorinnaItalic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Korinna;
+  src: url('../../../assets/fonts/KorinnaBold-Italic.woff2') format('woff2'),
+       url('../../../assets/fonts/KorinnaBoldItalic.woff') format('woff'),
+       url('../../../assets/fonts/KorinnaBoldItalic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Typography Scale */
+:root {
+  /* Base size uses clamp for fluid typography */
+  --fs-base: clamp(14px, 2vw, 18px);
+
+  /* Scale using modular scale (1.25 ratio) */
+  --fs-xs: clamp(12px, 1.5vw, 14px);
+  --fs-sm: clamp(13px, 1.75vw, 16px);
+  --fs-md: clamp(16px, 2.5vw, 20px);
+  --fs-lg: clamp(18px, 3vw, 24px);
+  --fs-xl: clamp(20px, 3.5vw, 28px);
+  --fs-2xl: clamp(24px, 4vw, 32px);
+  --fs-3xl: clamp(28px, 5vw, 40px);
+  --fs-4xl: clamp(32px, 6vw, 48px);
+
+  /* Semantic sizes */
+  --fs-question: var(--fs-xl);
+  --fs-heading: var(--fs-4xl);
+  --fs-dollar: var(--fs-3xl);
+  --fs-category: var(--fs-lg);
+
+  /* Line heights */
+  --lh-tight: 1.2;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.75;
+
+  /* Font weights */
+  --fw-normal: 400;
+  --fw-medium: 500;
+  --fw-bold: 700;
+  --fw-black: 900;
+
+  /* Letter spacing */
+  --ls-tight: -0.02em;
+  --ls-normal: 0;
+  --ls-wide: 0.05em;
+}
+
+/* Heading styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: Korinna, serif;
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+}
+
+h1 { font-size: var(--fs-4xl); }
+h2 { font-size: var(--fs-3xl); }
+h3 { font-size: var(--fs-2xl); }
+h4 { font-size: var(--fs-xl); }
+h5 { font-size: var(--fs-lg); }
+h6 { font-size: var(--fs-md); }
+
+/* Body text */
+p {
+  line-height: var(--lh-normal);
+}
+
+/* Utility classes */
+.font-korinna { font-family: Korinna, serif; }
+.font-mono { font-family: 'Press Start 2P', monospace; }
+.font-orbitron { font-family: 'Orbitron', sans-serif; }
+
+.text-xs { font-size: var(--fs-xs); }
+.text-sm { font-size: var(--fs-sm); }
+.text-base { font-size: var(--fs-base); }
+.text-lg { font-size: var(--fs-lg); }
+.text-xl { font-size: var(--fs-xl); }
+.text-2xl { font-size: var(--fs-2xl); }
+.text-3xl { font-size: var(--fs-3xl); }
+.text-4xl { font-size: var(--fs-4xl); }
+
+.font-normal { font-weight: var(--fw-normal); }
+.font-medium { font-weight: var(--fw-medium); }
+.font-bold { font-weight: var(--fw-bold); }
+
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.uppercase { text-transform: uppercase; }
+.lowercase { text-transform: lowercase; }
+.capitalize { text-transform: capitalize; }
+
+/* Special text effects */
+.text-glow {
+  text-shadow: 0 0 10px currentColor;
+}
+
+.text-outline {
+  -webkit-text-stroke: 1px currentColor;
+  text-stroke: 1px currentColor;
+}
+
+/* Additional typography from app-fixes.css */
+.press-start {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.arcade-font {
+  font-family: 'Orbitron', 'Press Start 2P', monospace;
+  font-weight: bold;
+  text-shadow:
+    2px 2px 0 #000,
+    -1px -1px 0 #000,
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000;
+}
+
+/* Responsive typography */
+@media (max-width: 480px) {
+  .mobile\:text-sm { font-size: var(--fs-sm); }
+  .mobile\:text-base { font-size: var(--fs-base); }
+}
+
+@media (min-width: 768px) {
+  .tablet\:text-lg { font-size: var(--fs-lg); }
+  .tablet\:text-xl { font-size: var(--fs-xl); }
+}
+
+@media (min-width: 1024px) {
+  .desktop\:text-2xl { font-size: var(--fs-2xl); }
+  .desktop\:text-3xl { font-size: var(--fs-3xl); }
+}

@@ -151,10 +151,23 @@ html[data-theme="retro"] body::after {
 /* Splash Screen */
 #splash-screen {
   position: fixed; inset: 0; z-index: var(--z-modal); display: none; place-items: center;
+}
+#splash-screen.active { display: grid; animation: modalFadeIn 0.3s ease; }
+
+.splash-backdrop {
+  position: absolute; inset: 0; 
   background: radial-gradient(80% 60% at 50% 10%, rgb(255 255 255 / 8%), transparent 60%), rgb(3 6 20 / 90%);
   backdrop-filter: blur(6px);
 }
-#splash-screen.active { display: grid; }
+
+.splash-close {
+  position: absolute; top: 1rem; right: 1rem; z-index: 10;
+  background: rgb(255 255 255 / 10%); border: none; 
+  width: 40px; height: 40px; border-radius: 50%;
+  color: #ffd700; font-size: 2rem; cursor: pointer;
+  transition: all 0.3s ease;
+}
+.splash-close:hover { background: rgb(255 255 255 / 20%); transform: scale(1.1); }
 
 .splash-card {
   width: min(920px, 92vw); border-radius: var(--uxp-radius-xl); padding: 36px; position: relative;

@@ -1,0 +1,129 @@
+/**
+ * Theme System
+ * Visual themes for different game modes (Jeopardy, Retro, Comic)
+ */
+
+/* Jeopardy Theme - Official blue gradient with subtle patterns */
+html[data-theme="jeopardy"] body {
+  background: 
+    radial-gradient(1200px 600px at 80% -10%, rgb(255 255 255 / 12%), transparent 40%),
+    radial-gradient(800px 400px at 10% -20%, rgb(255 255 255 / 8%), transparent 40%),
+    linear-gradient(180deg, #0b1b60 0%, #081242 40%, #030a2a 100%);
+}
+
+html[data-theme="jeopardy"] {
+  --theme-primary: #0033a0;
+  --theme-accent: #ffd700;
+  --theme-text: #ffffff;
+}
+
+/* Retro Theme - CRT monitor aesthetic with scanlines */
+html[data-theme="retro"] body {
+  background: linear-gradient(180deg, #0d0f1a 0%, #0f1324 100%);
+}
+
+html[data-theme="retro"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-plane);
+  background: repeating-linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 5%), rgb(255 255 255 / 5%) 2px,
+    rgb(0 0 0 / 5%) 2px, rgb(0 0 0 / 5%) 4px
+  );
+  mix-blend-mode: overlay;
+  animation: crtFlicker 2.5s infinite;
+}
+
+@keyframes crtFlicker {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.25; }
+}
+
+html[data-theme="retro"] {
+  --theme-primary: #00ffff;
+  --theme-accent: #ff00ff;
+  --theme-text: #00ff00;
+}
+
+/* Comic Theme - Light, playful, pop-art inspired */
+html[data-theme="comic"] body {
+  background:
+    radial-gradient(circle at 10% 10%, rgb(255 255 255 / 5%) 0 20%, transparent 21%),
+    radial-gradient(circle at 80% 20%, rgb(255 255 255 / 6%) 0 18%, transparent 19%),
+    linear-gradient(180deg, #fff7f1 0%, #ffeede 100%);
+  color: #222;
+}
+
+html[data-theme="comic"] {
+  --theme-primary: #ff2257;
+  --theme-accent: #ffe14d;
+  --theme-text: #222222;
+}
+
+/* Dark/Light Mode System (independent of theme variants) */
+body:not(.dark-mode) {
+  background: linear-gradient(to bottom,
+    #87CEEB 0%,     /* Sky blue */
+    #FFE4B5 40%,    /* Sandy horizon */
+    #F4A460 60%,    /* Beach sand */
+    #DEB887 100%    /* Darker sand */
+  );
+}
+
+body:not(.dark-mode)::before {
+  content: '';
+  position: fixed;
+  top: 50px;
+  right: 100px;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, #FFD700 0%, #FFA500 40%, transparent 70%);
+  border-radius: 50%;
+  box-shadow: 0 0 50px rgb(255 215 0 / 80%);
+  z-index: -1;
+}
+
+body.dark-mode {
+  background: linear-gradient(to bottom,
+    #0a1929 0%,     /* Night sky */
+    #1e3c72 30%,    /* Horizon */
+    #2a5298 50%,    /* Ocean */
+    #1a1a2e 100%    /* Dark sand */
+  );
+}
+
+body.dark-mode::before {
+  content: '';
+  position: fixed;
+  top: 50px;
+  right: 100px;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, #F8F8FF 0%, #E6E6FA 40%, transparent 70%);
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgb(248 248 255 / 60%);
+  z-index: -1;
+}
+
+/* Stars for night mode */
+body.dark-mode::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, white, transparent),
+    radial-gradient(2px 2px at 40px 70px, white, transparent),
+    radial-gradient(1px 1px at 50px 50px, white, transparent),
+    radial-gradient(1px 1px at 80px 10px, white, transparent),
+    radial-gradient(2px 2px at 130px 80px, white, transparent),
+    radial-gradient(1px 1px at 110px 120px, white, transparent);
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  z-index: -2;
+}

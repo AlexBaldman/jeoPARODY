@@ -74,10 +74,9 @@ function setupServiceIntegration(services) {
     }
   });
   
-  // Sound system handles UI interactions
-  eventBus.on('ui:button-click', () => {
-    services.soundManager?.play('click');
-  });
+  // REMOVED: Don't play sounds on every button click
+  // UI sounds were triggering inappropriate Trebek voice clips
+  // Only specific game events should trigger audio
 
   // Legacy DOM update for showing answer
   // TODO: Move to QuestionDisplay component

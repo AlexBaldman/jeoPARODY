@@ -1,0 +1,83 @@
+/**
+ * JeoPARODY Master Stylesheet
+ * 
+ * Import order matters - CSS cascade flows from top to bottom.
+ * Later imports can override earlier ones.
+ * 
+ * Import Order:
+ * 1. Tokens - Design variables
+ * 2. Core - Base styles (reset, typography, layout) 
+ * 3. Legacy - Existing feature styles
+ * 4. Components - New component styles
+ * 5. Utilities - Helper classes (highest specificity)
+ * 
+ * @author JeoPARODY Team
+ * @since 2.1.0
+ */
+
+/* ===== TOKENS ===== */
+@import url('./tokens.css');
+
+/* ===== CORE FOUNDATION ===== */
+/* Note: Core files are imported but legacy styles may override */
+/* @import url('./core/reset.css'); */
+/* @import url('./core/typography.css'); */
+/* @import url('./core/layout.css'); */
+
+/* ===== GAME UI (New clean layout) ===== */
+@import url('./game-ui.css');
+
+/* ===== LEGACY FILES (Keep existing functionality) ===== */
+@import url('./enhanced-ui.css');
+@import url('./ux-pack.css');
+@import url('./app-fixes.css');
+@import url('./media-rendering.css');
+@import url('./pao.css');
+
+/* ===== NEW COMPONENTS ===== */
+@import url('./components/scoreboard.css');
+@import url('./components/speech-bubble.css');
+/* @import url('./components/button.css'); */ /* Conflicts with ux-pack buttons */
+/* @import url('./components/modal.css'); */ /* Conflicts with enhanced-ui modals */
+
+/* ===== UTILITIES ===== */
+@import url('./utilities.css');
+
+/**
+ * CSS Architecture Notes:
+ * 
+ * 1. **Tokens First**: Design tokens define the visual language
+ * 2. **Core Styles**: Typography and layout provide the foundation
+ * 3. **Components**: Reusable, modular UI elements
+ * 4. **Features**: Feature-specific styles (game board, PAO trainer, etc.)
+ * 5. **Utilities**: Helper classes for quick adjustments
+ * 
+ * Naming Conventions:
+ * - Component classes: `.component-name` (kebab-case)
+ * - Modifiers: `.component-name--modifier` (BEM-like)
+ * - States: `.component-name.is-active` or `.component-name.state`
+ * - Utilities: `.utility-name` (descriptive, e.g., `.flex`, `.text-center`)
+ * 
+ * Design Tokens:
+ * - Colors: `--c-*` (e.g., --c-accent, --c-text)
+ * - Spacing: `--sp-*` (e.g., --sp-4 = 1rem)
+ * - Font sizes: `--fs-*` (e.g., --fs-lg)
+ * - Z-index: `--z-*` (e.g., --z-modal)
+ * - Timing: `--t-*` (e.g., --t-fast)
+ * 
+ * Responsive Design:
+ * - Mobile-first approach
+ * - Breakpoints: 768px (tablet), 1024px (desktop)
+ * - Use clamp() for fluid typography
+ * 
+ * Performance:
+ * - Use CSS containment where appropriate
+ * - Minimize reflows with will-change
+ * - Use transform/opacity for animations (GPU accelerated)
+ * 
+ * Accessibility:
+ * - Respect prefers-reduced-motion
+ * - Provide focus states for all interactive elements
+ * - Ensure color contrast meets WCAG 2.1 AA
+ * - Use visually-hidden for screen reader text
+ */

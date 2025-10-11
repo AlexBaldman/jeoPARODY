@@ -1,0 +1,296 @@
+/**
+ * Critical CSS Overrides
+ *
+ * IMPORTANT: This file should only contain critical bug fixes
+ * that cannot be resolved through normal cascade or refactoring.
+ *
+ * Use sparingly! Every rule here is technical debt.
+ * Document each override with reasoning and target removal version.
+ *
+ * @since 2.2.0
+ */
+
+/* ===== HOST IMAGE OVERRIDES ===== */
+/* Fix: Host image container must allow overflow to prevent clipping
+ * Issue: Host image was being cut off at container boundaries
+ * Fix: Set overflow: visible and remove background/border constraints
+ * Target: Remove once host container is properly refactored in game-ui.css
+ */
+
+/* MASTER HOST IMAGE STYLING (override all legacy) */
+.host-container {
+  position: fixed !important;
+  bottom: 80px !important; /* Above footer */
+  left: 15px !important;
+  width: 180px !important;
+  height: 240px !important;
+  z-index: 900 !important; /* Below modals, above content */
+  pointer-events: auto !important;
+  overflow: visible !important; /* Allow overflow so nothing cuts off */
+  background: none !important; /* Transparent background */
+  border: none !important;
+  box-shadow: none !important;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+}
+
+.host-container:hover {
+  transform: translateY(-8px) scale(1.08) !important;
+  filter: drop-shadow(0 8px 20px rgb(255 215 0 / 50%)) !important;
+}
+
+.host-image {
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: contain !important; /* Contain instead of cover */
+  object-position: bottom center !important;
+  image-rendering: auto !important;
+  display: block !important;
+  filter: drop-shadow(0 4px 12px rgb(0 0 0 / 50%));
+  transition: filter 0.3s ease;
+}
+
+/* Host image cycling - arrows appear on hover */
+.host-container {
+  cursor: pointer;
+}
+
+.host-container::before,
+.host-container::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.host-container::before {
+  left: -20px;
+  border-top: 15px solid transparent;
+  border-bottom: 15px solid transparent;
+  border-right: 20px solid rgb(255 215 0 / 80%);
+  filter: drop-shadow(2px 0 4px rgb(0 0 0 / 50%));
+}
+
+.host-container::after {
+  right: -20px;
+  border-top: 15px solid transparent;
+  border-bottom: 15px solid transparent;
+  border-left: 20px solid rgb(255 215 0 / 80%);
+  filter: drop-shadow(-2px 0 4px rgb(0 0 0 / 50%));
+}
+
+.host-container:hover::before,
+.host-container:hover::after {
+  opacity: 1;
+}
+
+/* ===== FONT IMPORT OVERRIDES ===== */
+/* Fix: Ensure retro fonts load correctly
+ * Issue: Font imports were duplicated across files
+ * Fix: Centralize font imports here for reliability
+ * Target: Move to consolidated/typography.css in v2.3.0
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+/* ===== Z-INDEX OVERRIDES ===== */
+/* Fix: Ensure proper stacking order for UI elements
+ * Issue: Various components had conflicting z-index values
+ * Fix: Define clear hierarchy here
+ * Target: Move to tokens.css in v2.3.0
+ */
+
+:root {
+  /* Z-index hierarchy (override defaults) */
+  --z-base: 0;
+  --z-plane: 1;
+  --z-footer: 90;
+  --z-host: 100;
+  --z-scoreboard: 900;
+  --z-header: 1000;
+  --z-modal: 2000;
+  --z-tooltip: 3000;
+  --z-toast: 4000;
+}
+
+/* ===== RESPONSIVE BREAKPOINT OVERRIDES ===== */
+/* Fix: Ensure consistent responsive behavior
+ * Issue: Different files defined different breakpoints
+ * Fix: Standardize breakpoint values here
+ * Target: Move to consolidated/layout.css in v2.3.0
+ */
+
+/* Mobile-first responsive utilities */
+@media (width >= 640px) {
+  .sm\:block { display: block; }
+  .sm\:flex { display: flex; }
+  .sm\:hidden { display: none; }
+}
+
+@media (width >= 768px) {
+  .md\:block { display: block; }
+  .md\:flex { display: flex; }
+  .md\:grid { display: grid; }
+  .md\:hidden { display: none; }
+  .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (width >= 1024px) {
+  .lg\:block { display: block; }
+  .lg\:flex { display: flex; }
+  .lg\:grid { display: grid; }
+  .lg\:hidden { display: none; }
+  .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* ===== ACCESSIBILITY OVERRIDES ===== */
+/* Fix: Ensure proper focus states for keyboard navigation
+ * Issue: Some interactive elements lacked proper focus indicators
+ * Fix: Add consistent focus styles here
+ * Target: Move to consolidated/components.css in v2.3.0
+ */
+
+/* Focus styles for all interactive elements */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid #ffd700;
+  outline-offset: 2px;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===== DARK MODE OVERRIDES ===== */
+/* Fix: Ensure dark mode works across all components
+ * Issue: Some elements didn't properly inherit dark mode styles
+ * Fix: Force dark mode inheritance here
+ * Target: Remove once all components use CSS custom properties
+ */
+
+.dark-mode,
+.dark-mode * {
+  color-scheme: dark;
+}
+
+/* ===== PRINT STYLES OVERRIDES ===== */
+/* Fix: Ensure proper printing behavior
+ * Issue: Some elements didn't print well
+ * Fix: Add print-specific styles here
+ * Target: Move to dedicated print.css in v2.3.0
+ */
+
+@media print {
+  /* Hide non-essential elements */
+  .no-print,
+  button,
+  input,
+  nav,
+  .modal,
+  .host-container {
+    display: none !important;
+  }
+
+  /* Ensure good contrast for text */
+  body {
+    color: #000 !important;
+    background: #fff !important;
+  }
+
+  /* Optimize layout for print */
+  .speech-bubble {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Show URLs for links */
+  a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+}
+
+/* ===== PERFORMANCE OVERRIDES ===== */
+/* Fix: Optimize animations and transitions
+ * Issue: Some animations caused performance issues
+ * Fix: Add GPU acceleration and containment where needed
+ * Target: Move to consolidated/animations.css in v2.3.0
+ */
+
+/* GPU accelerate frequently animated elements */
+.host-container,
+.theme-bulb,
+.lang-toggle,
+.btn {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Contain layout shifts */
+.speech-bubble,
+.modal-container,
+.card {
+  contain: layout style paint;
+}
+
+/* ===== BROWSER COMPATIBILITY OVERRIDES ===== */
+/* Fix: Ensure compatibility across browsers
+ * Issue: Some CSS features not supported in older browsers
+ * Fix: Add fallbacks here
+ * Target: Remove once minimum browser support is updated
+ */
+
+/* Fallback for clamp() in older browsers */
+@supports not (width: clamp(1px, 2px, 3px)) {
+  .text-xs { font-size: 12px; }
+  .text-sm { font-size: 14px; }
+  .text-base { font-size: 16px; }
+  .text-lg { font-size: 18px; }
+  .text-xl { font-size: 20px; }
+  .text-2xl { font-size: 24px; }
+  .text-3xl { font-size: 28px; }
+  .text-4xl { font-size: 32px; }
+}
+
+/* Fallback for backdrop-filter in older browsers */
+@supports not (backdrop-filter: blur(1px)) {
+  .modal-backdrop {
+    background: rgb(0 0 0 / 90%);
+  }
+}
+
+/* ===== DEBUG OVERRIDES ===== */
+/* Remove in production! */
+.debug-grid {
+  background-image:
+    linear-gradient(rgb(255 0 0 / 20%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 0 0 / 20%) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.debug-outline {
+  outline: 2px solid red;
+  outline-offset: 2px;
+}
