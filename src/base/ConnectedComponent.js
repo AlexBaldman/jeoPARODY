@@ -115,7 +115,7 @@ export default class ConnectedComponent {
   /**
    * Update component state - triggers re-render
    */
-  update(partialState = {}) {
+  update() {
     if (this.mounted) {
       this.render();
     }

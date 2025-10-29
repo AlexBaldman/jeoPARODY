@@ -209,10 +209,11 @@ export class AchievementsModal extends Modal {
                 return this.stats.totalCorrect >= req.value;
             case 'streak':
                 return this.stats.bestStreak >= req.value;
-            case 'score':
+            case 'score': {
                 // Check current game score from store
                 const currentScore = this.store.getState().game?.score || 0;
                 return currentScore >= req.value;
+            }
             case 'total_score':
                 return this.stats.totalScore >= req.value;
             case 'total_correct':
@@ -320,23 +321,25 @@ export class AchievementsModal extends Modal {
                     current: this.stats.bestStreak,
                     target: req.value
                 };
-            case 'score':
+            case 'score': {
                 const currentScore = this.store.getState().game?.score || 0;
                 return {
                     current: currentScore,
                     target: req.value
                 };
+            }
             case 'total_score':
                 return {
                     current: this.stats.totalScore,
                     target: req.value
                 };
-            case 'category':
+            case 'category': {
                 const maxCategory = Math.max(...Object.values(this.stats.categoryStats), 0);
                 return {
                     current: maxCategory,
                     target: req.value
                 };
+            }
             case 'days':
                 return {
                     current: this.stats.playDates.length,

@@ -823,7 +823,7 @@ button:hover .button-tooltip {
    HAMBURGER MENU
    ==================== */
 .hamburger-button {
-  display: none;
+  /* display: none; */ /* Removed to make it always visible */
   background: none;
   border: none;
   padding: var(--spacing-sm);
@@ -857,21 +857,37 @@ button:hover .button-tooltip {
    ==================== */
 .side-menu {
   position: fixed;
-  top: 0;
-  right: -300px;
+  top: 60px; /* Adjust to header height */
+  right: 0;
   width: 300px;
-  height: 100vh;
+  height: calc(100vh - 60px); /* Adjust to header height */
   background: var(--background-dark);
   color: white;
   padding: var(--spacing-xl);
-  transition: right var(--transition-normal);
+  transition: transform var(--transition-normal);
+  transform: translateX(100%);
   z-index: var(--z-modal);
   overflow-y: auto;
 }
 
 .side-menu.active {
-  right: 0;
+  transform: translateX(0);
   box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: var(--z-modal-backdrop);
+  display: none;
+}
+
+.overlay.active {
+  display: block;
 }
 
 .menu-items {

@@ -357,8 +357,7 @@ function getNextLocalQuestion() {
  * @returns {Array} Parsed questions
  */
 export function parseCSV(text) {
-  const lines = text.split('
-');
+  const lines = text.split('\n');
   const headers = lines[0].split(',');
   return lines.slice(1).map(line => {
     const values = line.split(',');
@@ -375,8 +374,7 @@ export function parseCSV(text) {
  * @returns {Array} Parsed questions
  */
 export function parseTSV(text) {
-  const lines = text.split('
-');
+  const lines = text.split('\n');
   const headers = lines[0].split('\t');
   return lines.slice(1).map(line => {
     const values = line.split('\t');

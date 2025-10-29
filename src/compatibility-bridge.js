@@ -34,10 +34,7 @@ function initBridge() {
   setupConsoleLogs();
 }
 
-function setupOldDOMBindings() {
-  // Deprecated: UI is now wired via main.js/components
-  // Left intentionally empty to avoid duplicate bindings
-}
+
 
 let currentQuestion = null;
 
@@ -222,46 +219,9 @@ function setupConsoleLogs() {
   console.info('✨ HAVE FUN YA MANIAC!');
 }
 
-function handleEnterKey() {
-  const inputBox = document.getElementById('inputBox');
-  const hasInput = inputBox?.value?.trim();
-  const state = getGameState();
-  
-  console.debug('⏎ Smart Enter key handler:', { hasInput, showingMessage: state.showingMessage });
-  
-  // If showing a message (correct/incorrect), go to next question
-  if (state.showingMessage) {
-    console.info('📝 Message showing, getting new question');
-    handleNewQuestion();
-    return;
-  }
-  
-  // If no current question, get a new one
-  if (!currentQuestion) {
-    console.info('❓ No current question, getting new one');
-    handleNewQuestion();
-    return;
-  }
-  
-  // If user typed something, check the answer
-  if (hasInput) {
-    console.info('✅ User input detected, checking answer');
-    handleCheckAnswer();
-  } else {
-    console.info('💡 No input, prompting for answer');
-    // Maybe show a hint or prompt
-    dialogManager.queueMessage('TAUNT', 'Type your answer and press Enter, or press Enter again for a new question!');
-  }
-}
 
-function getGameState() {
-  // Simple state tracking for compatibility bridge
-  return {
-    showingMessage: document.querySelector('.speechBubble.showing-message') !== null,
-    hasQuestion: currentQuestion !== null,
-    conversationMode: dialogManager.conversationMode
-  };
-}
+
+
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {

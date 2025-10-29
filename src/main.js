@@ -51,6 +51,12 @@ async function initializeApp() {
   console.info('[🎮] Initializing JeoPARODY...');
   
   try {
+    // Create and append overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'overlay';
+    overlay.className = 'overlay';
+    document.body.appendChild(overlay);
+
     // Inject API keys via URL params (dev only)
     injectKeysFromURL();
     // 1. Initialize core systems
@@ -129,10 +135,19 @@ function setupGlobalEventListeners() {
   // Hamburger menu
   const hamburgerMenu = document.getElementById('hamburger-menu');
   const sideMenu = document.getElementById('side-menu');
-  if (hamburgerMenu && sideMenu) {
+  const overlay = document.getElementById('overlay');
+
+  if (hamburgerMenu && sideMenu && overlay) {
     hamburgerMenu.addEventListener('click', () => {
       sideMenu.classList.toggle('active');
       hamburgerMenu.classList.toggle('active');
+      overlay.classList.toggle('active');
+    });
+
+    overlay.addEventListener('click', () => {
+      sideMenu.classList.remove('active');
+      hamburgerMenu.classList.remove('active');
+      overlay.classList.remove('active');
     });
   }
 }
@@ -177,7 +192,7 @@ async function initializeCoreServices() {
  */
 function setupServiceIntegration() {
   // Host system responds to game events
-  eventBus.on('answer:evaluated', (data) => {
+  eventBus.on('answer:evaluated', () => {
     JeopardyApp.hostSystem.updateMood(JeopardyApp.gameEngine.state.stats);
     // Update scoreboard
     const { current, streak, high, maxStreak } = JeopardyApp.gameEngine.state.score;
@@ -590,61 +605,10 @@ function setupNewUIModes() {
   const clueText = document.getElementById('clue-text');
 
   if (splash) {
-    // Theme chooser
-    splash.querySelectorAll('.theme-dot').forEach(dot => {
-      dot.addEventListener('click', () => {
-        const theme = dot.getAttribute('data-theme');
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('jeopardish_theme_variant', theme);
-      });
-    });
-
-    // Start mode buttons
-    splash.querySelectorAll('[data-start-mode]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const mode = btn.getAttribute('data-start-mode');
-        console.log(`[Splash] Start button clicked - Mode: ${mode}`);
-        // Hide splash (use class only; avoid inline display overrides)
-        splash.classList.remove('active');
-
-        // Emit game start
-        eventBus.emit('game:start', { mode, difficulty: 'normal' });
-
-        // Show special screens if selected
-        if (mode === 'fullboard') {
-          board?.classList.remove('hidden');
-          board?.classList.add('active');
-          try {
-            const game = questionService.getRandomBoard();
-            renderJeopardyBoard(game);
-            attachBoardControls();
-          } catch (e) {
-            console.error('Failed to render fullboard', e);
-          }
-        } else if (mode === 'run-category') {
-          run?.classList.remove('hidden');
-          run?.classList.add('active');
-        } else if (mode === 'pao') {
-          import('./components/pao/PAOView.js').then(({ default: PAOView }) => {
-            if (paoContainer) {
-              paoContainer.classList.remove('hidden');
-              const pao = new PAOView();
-              pao.init(paoContainer);
-              setTimeout(() => pao.show(), 0);
-              // Store instance on container for later cleanup
-              paoContainer._pao = pao;
-            }
-          });
-        }
-      });
-    });
-
-    const settingsBtn = splash.querySelector('[data-action="open-settings"]');
-    if (settingsBtn) {
-      settingsBtn.addEventListener('click', () => {
-        eventBus.emit('modal:open', { type: 'settings' });
-      });
-    }
+    // Bypass splash screen and start classic mode by default
+    console.log('[Splash] Bypassing splash screen and starting classic mode');
+    splash.classList.remove('active');
+    eventBus.emit('game:start', { mode: 'classic', difficulty: 'normal' });
   }
 
   // Jeopardy board interactions
@@ -848,68 +812,6 @@ eventBus.on('answer:evaluated', () => {
   highlightValue('streak');
 });
 
-// ===== Helpers: Full Board Rendering =====
-function renderJeopardyBoard(game) {
-  const grid = document.getElementById('board-grid');
-  if (!grid || !game) return;
-  const cats = game.categories || [];
-  const values = ['$200', '$400', '$600', '$800', '$1000'];
-  
-  // Use DOM construction to prevent XSS from untrusted API data
-  const fragment = document.createDocumentFragment();
-  
-  // Create category elements with safe textContent assignment
-  cats.forEach(cat => {
-    const categoryEl = document.createElement('div');
-    categoryEl.className = 'category';
-    categoryEl.textContent = cat?.name ?? '';
-    fragment.appendChild(categoryEl);
-  });
-  
-  // Create clue elements and attach question data directly
-  for (let r = 0; r < values.length; r++) {
-    for (let c = 0; c < cats.length; c++) {
-      const clueEl = document.createElement('div');
-      clueEl.className = 'clue';
-      clueEl.dataset.value = values[r];
-      clueEl.textContent = values[r];
-      clueEl._question = cats[c].clues[r];
-      fragment.appendChild(clueEl);
-    }
-  }
-  
-  // Clear and append the fragment in one operation
-  grid.innerHTML = '';
-  grid.appendChild(fragment);
-}
 
-function attachBoardControls() {
-  const controls = document.querySelector('#jeopardy-board-screen .board-controls');
-  if (!controls || controls._attached) return;
-  controls._attached = true;
-  const wrap = document.createElement('div');
-  wrap.style.display = 'flex';
-  wrap.style.gap = '8px';
-  wrap.style.alignItems = 'center';
-  wrap.style.marginLeft = 'auto';
-  wrap.innerHTML = `
-    <input type="date" id="board-date" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid #ffd700;border-radius:6px;padding:4px 8px;" />
-    <select id="board-year" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid #ffd700;border-radius:6px;padding:4px 8px;">
-      <option value="">Year</option>
-      ${Array.from({length: 40}, (_,i)=>2025-i).map(y=>`<option value="${y}">${y}</option>`).join('')}
-    </select>
-    <select id="board-month" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid #ffd700;border-radius:6px;padding:4px 8px;">
-      <option value="">Month</option>
-      ${Array.from({length:12},(_,i)=>`<option value="${String(i+1).padStart(2,'0')}">${String(i+1).padStart(2,'0')}</option>`).join('')}
-    </select>
-    <button id="board-apply" class="board-close" style="border:1px solid #ffd700;">Apply</button>
-  `;
-  controls.appendChild(wrap);
-  wrap.querySelector('#board-apply').addEventListener('click', () => {
-    const date = wrap.querySelector('#board-date').value || undefined;
-    const year = wrap.querySelector('#board-year').value || undefined;
-    const month = wrap.querySelector('#board-month').value || undefined;
-    const game = questionService.getRandomBoard({ date, year, month });
-    renderJeopardyBoard(game);
-  });
-}
+
+
