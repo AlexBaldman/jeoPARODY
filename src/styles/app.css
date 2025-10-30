@@ -40,3 +40,230 @@
 
 .basketball-scoreboard .scoreboard-content,
 .scoreboard.basketball-style .scoreboard-content { /* inner layout */ }
+
+
+/* Base styles */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--background-color);
+  color: var(--text-color);
+  margin: 0;
+  overflow-x: hidden;
+  /* Add padding for sticky header and footer */
+  padding-top: 60px; /* Adjust to header height */
+  padding-bottom: 80px; /* Adjust to footer height */
+}
+
+/* Layout Structure */
+.sticky-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px; /* Example height */
+    background: var(--background-darker, #111827);
+    color: var(--text-light, #f9fafb);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 var(--spacing-lg, 1.5rem);
+    z-index: var(--z-header, 1000);
+    box-shadow: var(--shadow-lg, 0 10px 25px rgba(0, 0, 0, 0.2));
+    border-bottom: 2px solid var(--primary-gold, #fbbf24);
+}
+
+.main-content-area {
+    padding: var(--spacing-lg, 1.5rem);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.host-container {
+    position: fixed;
+    bottom: 80px; /* Height of the footer */
+    left: var(--spacing-md, 1rem);
+    width: 200px; /* Adjust size as needed */
+    z-index: var(--z-host, 100);
+}
+
+.host-image {
+    width: 100%;
+    height: auto;
+}
+
+
+.sticky-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px; /* Example height */
+    background: var(--background-darker, #111827);
+    color: var(--text-light, #f9fafb);
+    display: flex;
+    justify-content: space-between; /* Changed from center */
+    align-items: center;
+    padding: 0 var(--spacing-lg, 1.5rem);
+    z-index: var(--z-footer, 90);
+    box-shadow: var(--shadow-xl, 0 -20px 40px rgba(0, 0, 0, 0.3));
+    border-top: 2px solid var(--primary-gold, #fbbf24);
+}
+
+.sticky-footer .scoreboard {
+    flex: 1 1 30%; /* Takes up 30% of the space */
+    justify-content: space-around;
+}
+
+.sticky-footer .input-section {
+    flex: 1 1 70%; /* Takes up 70% of the space */
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md, 1rem);
+}
+
+.sticky-footer .input-div {
+    flex-grow: 1;
+}
+
+.sticky-footer #inputBox {
+    width: 100%;
+    background: #2c3e50;
+    color: white;
+    border: 1px solid var(--primary-gold, #fbbf24);
+}
+
+
+/* Game container */
+.game-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Header */
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Main content */
+.main-content {
+  padding: 1rem;
+}
+
+/* Footer */
+.game-footer {
+  padding: 1rem;
+  text-align: center;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--footer-bg);
+}
+
+/* Side Menu Styles */
+.side-menu {
+    position: fixed;
+    top: 60px; /* Height of sticky header */
+    right: 0;
+    width: 300px;
+    height: calc(100% - 60px);
+    background: var(--background-darker, #111827);
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: var(--z-modal, 2000);
+    padding: var(--spacing-lg, 1.5rem);
+}
+
+.side-menu.active {
+    transform: translateX(0);
+}
+
+.menu-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-items li button {
+    background: transparent;
+    border: 1px solid var(--primary-gold, #fbbf24);
+    color: var(--text-light, #f9fafb);
+    padding: var(--spacing-md, 1rem);
+    width: 100%;
+    text-align: left;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    margin-bottom: var(--spacing-md, 1rem);
+    border-radius: var(--radius-md, 0.5rem);
+}
+
+.menu-items li button:hover {
+    background: var(--primary-gold, #fbbf24);
+    color: var(--background-darker, #111827);
+}
+
+/* Profile Slide-out */
+.profile-slideout {
+    position: fixed;
+    bottom: 100px; /* Above footer */
+    right: -280px; /* Hidden by default */
+    width: 320px;
+    background: var(--background-dark, #1f2937);
+    border: 2px solid var(--primary-gold, #fbbf24);
+    border-right: none;
+    border-radius: var(--radius-md, 0.5rem) 0 0 var(--radius-md, 0.5rem);
+    z-index: var(--z-scoreboard, 900);
+    transition: right 0.3s ease-in-out;
+    box-shadow: var(--shadow-lg, 0 10px 25px rgba(0, 0, 0, 0.2));
+}
+
+.profile-slideout.visible,
+.profile-slideout:hover {
+    right: 0;
+}
+
+.profile-peek {
+    position: absolute;
+    left: -40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 80px;
+    cursor: pointer;
+    background: var(--primary-gold, #fbbf24);
+    border-radius: var(--radius-md, 0.5rem) 0 0 var(--radius-md, 0.5rem);
+    box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.profile-content {
+    padding: var(--spacing-md, 1rem);
+    color: var(--text-light, #f9fafb);
+}
+
+@media (max-width: 768px) {
+    .sticky-footer {
+        flex-direction: column;
+        height: auto;
+        padding: var(--spacing-md, 1rem);
+    }
+
+    .sticky-footer .scoreboard,
+    .sticky-footer .input-section {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+
+    .host-container {
+        width: 120px;
+        bottom: 150px; /* Adjust to new footer height */
+    }
+}
+
+
+
+

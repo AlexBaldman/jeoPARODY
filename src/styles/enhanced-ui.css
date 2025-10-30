@@ -736,14 +736,14 @@ input:checked + .slider::before {
 
 /* ===== Plane and Ticker Fixes ===== */
 .event-ticker {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-    pointer-events: none;
-    z-index: var(--z-plane);
-    top: 0;
-    left: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -1; /* Behind all content */
 }
 
 .ticker-unit {

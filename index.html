@@ -70,198 +70,213 @@
 </head>
 <body lang="en">
 
-    <!-- React-like app container for new component architecture -->
-    <div id="app"></div>
+    <header class="sticky-header">
+        <div class="logo-container">
+            <img src="assets/images/title/title-jeopardish!-pixelart.png" alt="jeoPARODY!" class="logo-image">
+        </div>
+        <div class="header-controls-right">
+            <div class="toggle-container">
+                <label for="theme-switch" class="theme-switch">
+                    <input type="checkbox" id="theme-switch">
+                    <span class="slider"></span>
+                </label>
+                <div class="toggle-label">DARK MODE</div>
+            </div>
+            <button id="host-anim-trigger" class="header-icon-btn" title="Host animation" aria-label="Trigger host animation">💃</button>
+            <button id="hamburger-menu" class="hamburger-button" aria-label="Open menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+        </div>
+    </header>
 
-    <!-- Host Image Container -->
-    <div class="host-container">
-      <img id="trebekImage" class="host-image" src="" alt="Host">
-      <div class="host-click-zone host-click-left"></div>
-      <div class="host-click-zone host-click-right"></div>
+    <div id="side-menu" class="side-menu">
+        <ul class="menu-items">
+            <li><button id="menu-new-game">New Game (Classic)</button></li>
+            <li><button id="menu-game-modes">Game Modes</button></li>
+            <li><button id="menu-settings">Settings</button></li>
+            <li><button id="menu-achievements">Achievements</button></li>
+        </ul>
     </div>
 
+    <main class="main-content-area">
+        <!-- React-like app container for new component architecture -->
+        <div id="app"></div>
 
-    <!-- Splash / Start Screen Overlay -->
-    <div id="splash-screen" class="hidden">
-      <div class="splash-card">
-        <div class="splash-title">jeoPARODY!</div>
-        <div class="splash-subtitle">Pick a mode to begin</div>
-        <div class="splash-grid">
-          <button class="btn btn-gradient" data-start-mode="classic" aria-label="Start game in classic mode">▶ Start Classic</button>
-          <button class="btn btn-neon" data-start-mode="fullboard" aria-label="Start game with a full Jeopardy board">📺 Full Jeopardy Board</button>
-          <button class="btn btn-arcade" data-start-mode="run-category" aria-label="Start game in run the category mode">🎯 Run the Category</button>
-          <button class="btn btn-gradient" data-start-mode="practice" aria-label="Start a practice session">🧠 Practice</button>
-          <button class="btn btn-neon" data-start-mode="daily-double" aria-label="Play a daily double round">💥 Daily Double</button>
-          <button class="btn btn-gradient" data-start-mode="pao" aria-label="Start the PAO trainer">🧩 PAO Trainer</button>
-          <button class="btn btn-arcade" data-action="open-settings" aria-label="Open game settings">⚙️ Settings</button>
+        <!-- Host Image Container -->
+        <div class="host-container">
+          <img id="trebekImage" class="host-image" src="" alt="Host">
+          <div class="host-click-zone host-click-left"></div>
+          <div class="host-click-zone host-click-right"></div>
         </div>
-        <div class="splash-footer">
-          <div class="theme-chooser">
-            <span>Theme:</span>
-            <div class="theme-dot" data-theme="jeopardy" title="Jeopardy"></div>
-            <div class="theme-dot" data-theme="retro" title="Retro"></div>
-            <div class="theme-dot" data-theme="comic" title="Comic"></div>
+
+
+        <!-- Splash / Start Screen Overlay -->
+        <div id="splash-screen" class="hidden">
+          <div class="splash-card">
+            <div class="splash-title">jeoPARODY!</div>
+            <div class="splash-subtitle">Pick a mode to begin</div>
+            <div class="splash-grid">
+              <button class="btn btn-gradient" data-start-mode="classic" aria-label="Start game in classic mode">▶ Start Classic</button>
+              <button class="btn btn-neon" data-start-mode="fullboard" aria-label="Start game with a full Jeopardy board">📺 Full Jeopardy Board</button>
+              <button class="btn btn-arcade" data-start-mode="run-category" aria-label="Start game in run the category mode">🎯 Run the Category</button>
+              <button class="btn btn-gradient" data-start-mode="practice" aria-label="Start a practice session">🧠 Practice</button>
+              <button class="btn btn-neon" data-start-mode="daily-double" aria-label="Play a daily double round">💥 Daily Double</button>
+              <button class="btn btn-gradient" data-start-mode="pao" aria-label="Start the PAO trainer">🧩 PAO Trainer</button>
+              <button class="btn btn-arcade" data-action="open-settings" aria-label="Open game settings">⚙️ Settings</button>
+            </div>
+            <div class="splash-footer">
+              <div class="theme-chooser">
+                <span>Theme:</span>
+                <div class="theme-dot" data-theme="jeopardy" title="Jeopardy"></div>
+                <div class="theme-dot" data-theme="retro" title="Retro"></div>
+                <div class="theme-dot" data-theme="comic" title="Comic"></div>
+              </div>
+              <div class="lives" title="Retro lives"><span class="pixel-heart"></span></div>
+            </div>
           </div>
-          <div class="lives" title="Retro lives"><span class="pixel-heart"></span></div>
         </div>
-      </div>
-    </div>
 
-    <!-- Jeopardy Board Screen -->
-    <div id="jeopardy-board-screen" class="hidden">
-      <div class="board">
-        <div class="board-controls">
-          <button class="board-close" data-close-board>⟵ Back</button>
-          <div>Full Jeopardy Board</div>
+        <!-- Jeopardy Board Screen -->
+        <div id="jeopardy-board-screen" class="hidden">
+          <div class="board">
+            <div class="board-controls">
+              <button class="board-close" data-close-board>⟵ Back</button>
+              <div>Full Jeopardy Board</div>
+            </div>
+            <div class="board-grid" id="board-grid">
+              <!-- categories -->
+              <div class="category">HISTORY</div>
+              <div class="category">SCIENCE</div>
+              <div class="category">LITERATURE</div>
+              <div class="category">WORLD</div>
+              <div class="category">MOVIES</div>
+              <div class="category">RANDOM</div>
+              <!-- values -->
+              <div class="clue" data-value="200">$200</div>
+              <div class="clue" data-value="200">$200</div>
+              <div class="clue" data-value="200">$200</div>
+              <div class="clue" data-value="200">$200</div>
+              <div class="clue" data-value="200">$200</div>
+              <div class="clue" data-value="200">$200</div>
+
+              <div class="clue" data-value="400">$400</div>
+              <div class="clue" data-value="400">$400</div>
+              <div class="clue" data-value="400">$400</div>
+              <div class="clue" data-value="400">$400</div>
+              <div class="clue" data-value="400">$400</div>
+              <div class="clue" data-value="400">$400</div>
+
+              <div class="clue" data-value="600">$600</div>
+              <div class="clue" data-value="600">$600</div>
+              <div class="clue" data-value="600">$600</div>
+              <div class="clue" data-value="600">$600</div>
+              <div class="clue" data-value="600">$600</div>
+              <div class="clue" data-value="600">$600</div>
+
+              <div class="clue" data-value="800">$800</div>
+              <div class="clue" data-value="800">$800</div>
+              <div class="clue" data-value="800">$800</div>
+              <div class="clue" data-value="800">$800</div>
+              <div class="clue" data-value="800">$800</div>
+              <div class="clue" data-value="800">$800</div>
+
+              <div class="clue" data-value="1000">$1000</div>
+              <div class="clue" data-value="1000">$1000</div>
+              <div class="clue" data-value="1000">$1000</div>
+              <div class="clue" data-value="1000">$1000</div>
+              <div class="clue" data-value="1000">$1000</div>
+              <div class="clue" data-value="1000">$1000</div>
+            </div>
+          </div>
         </div>
-        <div class="board-grid" id="board-grid">
-          <!-- categories -->
-          <div class="category">HISTORY</div>
-          <div class="category">SCIENCE</div>
-          <div class="category">LITERATURE</div>
-          <div class="category">WORLD</div>
-          <div class="category">MOVIES</div>
-          <div class="category">RANDOM</div>
-          <!-- values -->
-          <div class="clue" data-value="200">$200</div>
-          <div class="clue" data-value="200">$200</div>
-          <div class="clue" data-value="200">$200</div>
-          <div class="clue" data-value="200">$200</div>
-          <div class="clue" data-value="200">$200</div>
-          <div class="clue" data-value="200">$200</div>
 
-          <div class="clue" data-value="400">$400</div>
-          <div class="clue" data-value="400">$400</div>
-          <div class="clue" data-value="400">$400</div>
-          <div class="clue" data-value="400">$400</div>
-          <div class="clue" data-value="400">$400</div>
-          <div class="clue" data-value="400">$400</div>
-
-          <div class="clue" data-value="600">$600</div>
-          <div class="clue" data-value="600">$600</div>
-          <div class="clue" data-value="600">$600</div>
-          <div class="clue" data-value="600">$600</div>
-          <div class="clue" data-value="600">$600</div>
-          <div class="clue" data-value="600">$600</div>
-
-          <div class="clue" data-value="800">$800</div>
-          <div class="clue" data-value="800">$800</div>
-          <div class="clue" data-value="800">$800</div>
-          <div class="clue" data-value="800">$800</div>
-          <div class="clue" data-value="800">$800</div>
-          <div class="clue" data-value="800">$800</div>
-
-          <div class="clue" data-value="1000">$1000</div>
-          <div class="clue" data-value="1000">$1000</div>
-          <div class="clue" data-value="1000">$1000</div>
-          <div class="clue" data-value="1000">$1000</div>
-          <div class="clue" data-value="1000">$1000</div>
-          <div class="clue" data-value="1000">$1000</div>
+        <!-- Clue Zoom Modal -->
+        <div class="clue-modal" id="clue-modal" role="dialog" aria-modal="true" aria-labelledby="clue-title" aria-hidden="true">
+          <div class="clue-card" tabindex="-1">
+            <h2 id="clue-title" style="position:absolute; left:-9999px;">Clue</h2>
+            <div class="clue-text" id="clue-text">This is where the clue appears. What is awesome UI?</div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Clue Zoom Modal -->
-    <div class="clue-modal" id="clue-modal" role="dialog" aria-modal="true" aria-labelledby="clue-title" aria-hidden="true">
-      <div class="clue-card" tabindex="-1">
-        <h2 id="clue-title" style="position:absolute; left:-9999px;">Clue</h2>
-        <div class="clue-text" id="clue-text">This is where the clue appears. What is awesome UI?</div>
-      </div>
-    </div>
-
-    <!-- Run the Category Screen -->
-    <div id="run-category-screen" class="hidden">
-      <div class="run-wrap">
-        <div class="run-header">
-          <button class="board-close" data-close-run>⟵ Back</button>
-          <div class="run-category-title">Category: Demo</div>
-          <div style="width: 180px" class="run-progress"><span id="run-progress-bar" style="width:0%"></span></div>
+        <!-- Run the Category Screen -->
+        <div id="run-category-screen" class="hidden">
+          <div class="run-wrap">
+            <div class="run-header">
+              <button class="board-close" data-close-run>⟵ Back</button>
+              <div class="run-category-title">Category: Demo</div>
+              <div style="width: 180px" class="run-progress"><span id="run-progress-bar" style="width:0%"></span></div>
+            </div>
+            <div class="run-list" id="run-list">
+              <div class="run-item"><div class="value">$200</div><div class="text">Placeholder question will go here.</div></div>
+              <div class="run-item"><div class="value">$400</div><div class="text">Placeholder question will go here.</div></div>
+              <div class="run-item"><div class="value">$600</div><div class="text">Placeholder question will go here.</div></div>
+              <div class="run-item"><div class="value">$800</div><div class="text">Placeholder question will go here.</div></div>
+              <div class="run-item"><div class="value">$1000</div><div class="text">Placeholder question will go here.</div></div>
+            </div>
+          </div>
         </div>
-        <div class="run-list" id="run-list">
-          <div class="run-item"><div class="value">$200</div><div class="text">Placeholder question will go here.</div></div>
-          <div class="run-item"><div class="value">$400</div><div class="text">Placeholder question will go here.</div></div>
-          <div class="run-item"><div class="value">$600</div><div class="text">Placeholder question will go here.</div></div>
-          <div class="run-item"><div class="value">$800</div><div class="text">Placeholder question will go here.</div></div>
-          <div class="run-item"><div class="value">$1000</div><div class="text">Placeholder question will go here.</div></div>
-        </div>
-      </div>
-    </div>
 
-    <!-- PAO Screen Container (overlay sibling, not nested) -->
-    <div id="pao-screen-container" class="hidden"></div>
+        <!-- PAO Screen Container (overlay sibling, not nested) -->
+        <div id="pao-screen-container" class="hidden"></div>
 
-    <!-- event ticker -->
-    <div class="event-ticker">
-        <div class="ticker-unit">
-            <div class="ticker-plane">
-                <div class="wing"></div>
-                <div class="tail"></div>
-                <div class="stabilizer"></div>
-                <div class="propeller"></div>
-                <div class="propeller-hub"></div>
-                <div class="cockpit"></div>
-                <div class="pontoon"></div>
-                <div class="pontoon"></div>
-                <div class="ticker-banner">
-                    <div class="ticker-content">Breaking News: Jeopardish UI now 100% bug-free... This is a scrolling ticker... More news at 11...</div>
-                </div>
-
-                <!-- Center: Logo -->
-                <div class="logo-container">
-                    <img src="assets/images/title/title-jeopardish!-pixelart.png" alt="jeoPARODY!" class="logo-image">
-                    <!-- Peeking scoreboard -->
-                    <div id="scoreboard" class="scoreboard">
-                        <h2>SCOREBOARD</h2>
-                        <p>SCORE: <span id="score" class="score-value">0</span></p>
-                        <p>STREAK: <span id="streak" class="score-value">0</span></p>
-                        <p>TOP SCORE: <span id="top-score" class="score-value">0</span></p>
-                        <p>MAX STREAK: <span id="max-streak" class="score-value">0</span></p>
+        <!-- event ticker -->
+        <div class="event-ticker">
+            <div class="ticker-unit">
+                <div class="ticker-plane">
+                    <div class="wing"></div>
+                    <div class="tail"></div>
+                    <div class="stabilizer"></div>
+                    <div class="propeller"></div>
+                    <div class="propeller-hub"></div>
+                    <div class="cockpit"></div>
+                    <div class="pontoon"></div>
+                    <div class="pontoon"></div>
+                    <div class="ticker-banner">
+                        <div class="ticker-content">Breaking News: Jeopardish UI now 100% bug-free... This is a scrolling ticker... More news at 11...</div>
                     </div>
-                </div>
-
-                <!-- Right Controls: Theme Switch & Hamburger -->
-                <div class="header-controls-right">
-                    <div class="toggle-container">
-                        <label for="theme-switch" class="theme-switch">
-                            <input type="checkbox" id="theme-switch">
-                            <span class="slider"></span>
-                        </label>
-                        <div class="toggle-label">DARK MODE</div>
-                    </div>
-                    <button id="host-anim-trigger" class="header-icon-btn" title="Host animation" aria-label="Trigger host animation">💃</button>
-                    <button id="hamburger-menu" class="hamburger-button" aria-label="Open menu">
-                        <span class="hamburger-line"></span>
-                        <span class="hamburger-line"></span>
-                        <span class="hamburger-line"></span>
-                    </button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Palm tree decorations -->
-    <div class="palm-tree left">
-        <div class="palm-trunk"></div>
-        <div class="palm-leaves">
-            <div class="palm-leaf"></div>
-            <div class="palm-leaf"></div>
-            <div class="palm-leaf"></div>
-            <div class="palm-leaf"></div>
-            <div class="palm-leaf"></div>
-            <div class="palm-leaf"></div>
+        <!-- Palm tree decorations -->
+        <div class="palm-tree left">
+            <div class="palm-trunk"></div>
+            <div class="palm-leaves">
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+            </div>
         </div>
-    </div>
-    <div class="palm-tree right">
-        <div class="palm-trunk"></div>
-        <div class="palm-leaves">
-            <div class="palm-leaf"></div>
-            <div class="palm-leaf"></div>
-            <div class="palm-leaf"></div>
-            <div class="palm-leaf"></div>
-            <div class="palm-leaf"></div>
-            <div class="palm-leaf"></div>
+        <div class="palm-tree right">
+            <div class="palm-trunk"></div>
+            <div class="palm-leaves">
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+            </div>
         </div>
-    </div>
+    </main>
+
+    <footer class="sticky-footer">
+        <div id="scoreboard" class="scoreboard">
+            <p>SCORE: <span id="score" class="score-value">0</span></p>
+            <p>STREAK: <span id="streak" class="score-value">0</span></p>
+        </div>
+        <div class="input-section">
+            <div class="input-div">
+                <input type="text" id="inputBox" placeholder="Type your answer here...">
+            </div>
+            <button id="checkButton" class="btn">Submit</button>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- All services now integrated into modular architecture -->
@@ -269,6 +284,16 @@
     
     <!-- Comedy Ticker Container -->
     <div id="comedy-ticker-container" class="comedy-ticker"></div>
+
+    <!-- Profile Slide-out -->
+    <div id="profile-slideout" class="profile-slideout">
+        <div class="profile-peek"></div>
+        <div class="profile-content">
+            <h3>User Profile</h3>
+            <p>Username: Player1</p>
+            <p>Rank: Trivia Novice</p>
+        </div>
+    </div>
 
 </body>
 </html>
