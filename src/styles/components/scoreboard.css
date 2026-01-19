@@ -1,34 +1,227 @@
 @layer components {
+
+  /* Core Scoreboard Container */
   .scoreboard {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-around;
-    gap: var(--spacing-lg, 1.5rem);
     background: transparent;
     color: var(--text-light, #f9fafb);
     padding: 0;
-    border-radius: 0;
-    box-shadow: none;
-    width: 100%;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+  }
+
+  /* Themes */
+  .scoreboard.basketball-style {
+    position: fixed;
+    top: 70px;
+    /* Below the sticky header */
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+    background: linear-gradient(145deg, rgb(26 26 26 / 95%), rgb(45 45 45 / 95%));
+    backdrop-filter: blur(10px);
+    border: 3px solid #FFD700;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 80%), 0 0 20px rgb(255 215 0 / 30%);
+    min-width: 300px;
+    z-index: var(--z-scoreboard);
+  }
+
+  .scoreboard.basketball-style.visible {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .scoreboard.basketball-style.slide-down {
+    animation: slideDown 0.6s ease-out;
+  }
+
+  /* Peek Tab */
+  .scoreboard-peek {
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(145deg, #FFD700, #FFA500);
+    padding: 8px 25px;
+    border-radius: 0 0 15px 15px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgb(0 0 0 / 30%);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #1a1a1a;
+  }
+
+  .scoreboard-peek:hover {
+    bottom: -30px;
+    box-shadow: 0 8px 20px rgb(0 0 0 / 40%);
+    transform: translateX(-50%) scale(1.05);
+  }
+
+  .scoreboard-peek i {
+    color: #1a1a1a;
+    font-size: 16px;
+    animation: pulse 2s infinite;
+  }
+
+  /* LED Display */
+  .led-display {
+    background: #0a0a0a;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 2px solid #333;
+    box-shadow: inset 0 2px 5px rgb(0 0 0 / 50%);
     text-align: center;
   }
 
-  .scoreboard h2 {
-    display: none; /* Hide the main "SCOREBOARD" title */
+  .led-text {
+    display: block;
+    font-family: 'Orbitron', monospace;
+    color: #FFD700;
+    text-shadow: 0 0 10px rgb(255 215 0 / 80%);
+    letter-spacing: 2px;
+    font-size: 0.8em;
+    margin-bottom: 5px;
   }
 
-  .scoreboard p {
-    margin: 0;
-    font-size: 1rem;
+  .led-digits {
+    font-family: 'Orbitron', monospace;
+    font-size: 2em;
+    color: #0F0;
+    text-shadow: 0 0 15px rgb(0 255 0 / 80%);
+    font-weight: bold;
+  }
+
+  /* Layout */
+  .scoreboard-content {
+    width: 100%;
+  }
+
+  .score-display {
+    display: flex;
+    gap: 15px;
+    padding: 15px;
+    justify-content: center;
+  }
+
+  .score-section {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
   }
 
-  .scoreboard .score-value {
+  /* Expanded Stats */
+  .expanded-stats {
+    border-top: 1px solid rgb(255 215 0 / 20%);
+    padding: 10px 15px;
+    background: rgb(0 0 0 / 20%);
+    border-radius: 0 0 12px 12px;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+  }
+
+  .led-display.small .led-digits {
+    font-size: 1.2em;
+  }
+
+  /* Animations */
+  @keyframes slideDown {
+    0% {
+      transform: translateX(-50%) translateY(-100%);
+    }
+
+    60% {
+      transform: translateX(-50%) translateY(10px);
+    }
+
+    100% {
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  @keyframes pulse {
+
+    0%,
+    100% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.1);
+    }
+  }
+
+  .score-updated {
+    animation: pulse 0.3s ease;
+  }
+
+  .streak-increased {
+    animation: glowGreen 0.6s ease;
+  }
+
+  .streak-broken {
+    animation: shakeRed 0.6s ease;
+  }
+
+  @keyframes glowGreen {
+
+    0%,
+    100% {
+      text-shadow: 0 0 15px rgb(0 255 0 / 80%);
+    }
+
+    50% {
+      text-shadow: 0 0 25px rgb(0 255 0 / 100%);
+    }
+  }
+
+  @keyframes shakeRed {
+
+    0%,
+    100% {
+      transform: translateX(0);
+      color: #0F0;
+    }
+
+    25% {
+      transform: translateX(-5px);
+      color: #F00;
+    }
+
+    75% {
+      transform: translateX(5px);
+      color: #F00;
+    }
+  }
+
+  /* Header Controls */
+  .scoreboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px 15px;
+    background: rgb(0 0 0 / 30%);
+    border-radius: 12px 12px 0 0;
+    cursor: pointer;
+  }
+
+  .scoreboard-header h2 {
+    margin: 0;
+    font-size: 1em;
+  }
+
+  .toggle-icon {
+    font-size: 1.2em;
     font-weight: bold;
-    color: var(--primary-gold, #fbbf24);
-    font-size: 1.5rem;
-    margin-top: var(--spacing-xs, 0.25rem);
   }
 }

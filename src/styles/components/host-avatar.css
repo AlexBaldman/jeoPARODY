@@ -1,0 +1,19 @@
+@layer components {
+
+	/* Host Image */
+	.host-image {
+		width: 100%;
+		height: auto;
+		filter: drop-shadow(0 4px 8px rgb(0 0 0 / 40%));
+		transition: transform 0.3s ease;
+	}
+
+	.host-image:hover {
+		transform: translateY(-5px) scale(1.05);
+	}
+
+	/* Container augmentation (base in layout.css) */
+	.host-container {
+		pointer-events: auto;
+	}
+}

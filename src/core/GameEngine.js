@@ -19,7 +19,6 @@
 import { eventBus } from '../utils/events.js';
 import { ACTION_TYPES } from '../state/actions.js';
 import { getQuestion } from '../services/api/questionService.js';
-import { store } from '../state/store.js';
 
 // Game constants
 export const GAME_CONFIG = {
@@ -28,7 +27,7 @@ export const GAME_CONFIG = {
   STREAK_MULTIPLIER: 0.1,
   TIME_BONUS_MAX: 50,
   TIME_LIMIT: 30000, // 30 seconds
-  
+
   // Difficulty scaling
   DIFFICULTY_MULTIPLIERS: {
     easy: 0.8,
@@ -36,7 +35,7 @@ export const GAME_CONFIG = {
     hard: 1.2,
     expert: 1.5
   },
-  
+
   // Achievement thresholds
   ACHIEVEMENTS: {
     FIRST_CORRECT: { id: 'first-correct', threshold: 1 },
@@ -71,7 +70,7 @@ export const createGameState = () => ({
     mode: 'classic',
     isPaused: false
   },
-  
+
   // Current question
   question: {
     data: null,
@@ -80,7 +79,33 @@ export const createGameState = () => ({
     showingAnswer: false,
     timeElapsed: 0
   },
-  
+
+  // User Profile
+  user: {
+    id: 'guest',
+    name: "Guest",
+    level: 1,
+    xp: 0,
+    avatar: "default",
+    preferences: {}
+  },
+
+  // Game Settings
+  settings: {
+    soundEnabled: true,
+    difficulty: 'normal',
+    autoAdvance: true,
+    animationsEnabled: true,
+    theme: 'default'
+  },
+
+  // UI State (Non-persistent)
+  ui: {
+    loading: false,
+    currentModal: null,
+    notifications: []
+  },
+
   // Score tracking
   score: {
     current: 0,
@@ -90,7 +115,15 @@ export const createGameState = () => ({
     maxStreak: 0,
     history: []
   },
-  
+
+  // Category Progress (for Run Category mode)
+  categoryProgress: {
+    categoryName: null,
+    current: 0,
+    total: 0,
+    questions: []
+  },
+
   // Statistics
   stats: {
     questionsAnswered: 0,
@@ -100,7 +133,7 @@ export const createGameState = () => ({
     accuracy: 0,
     achievements: new Set()
   },
-  
+
   // Performance tracking
   performance: {
     frameCount: 0,
@@ -117,32 +150,32 @@ export class GameEngine {
   constructor(initialState = createGameState()) {
     this.state = initialState;
     this.eventBus = eventBus;
-    
+
     // Performance monitoring
     this.frameId = null;
     this.lastUpdate = performance.now();
-    
+
     // Game loop
     this.isRunning = false;
-    
+
     // Event handlers
     this.setupEventHandlers();
   }
-  
+
   /**
    * Start the game engine
    */
   start() {
     if (this.isRunning) return;
-    
+
     this.isRunning = true;
     this.lastUpdate = performance.now();
     this.gameLoop();
-    
+
     this.eventBus.emit('game:engine-started');
     console.log('[🎮] GameEngine started');
   }
-  
+
   /**
    * Stop the game engine
    */
@@ -152,30 +185,30 @@ export class GameEngine {
       cancelAnimationFrame(this.frameId);
       this.frameId = null;
     }
-    
+
     this.eventBus.emit('game:engine-stopped');
     console.log('[🎮] GameEngine stopped');
   }
-  
+
   /**
    * Main game loop - runs at 60fps
    */
   gameLoop = () => {
     if (!this.isRunning) return;
-    
+
     const now = performance.now();
     const deltaTime = now - this.lastUpdate;
-    
+
     // Update game state
     this.update(deltaTime);
-    
+
     // Performance tracking
     this.updatePerformanceStats(deltaTime);
-    
+
     this.lastUpdate = now;
     this.frameId = requestAnimationFrame(this.gameLoop);
   }
-  
+
   /**
    * Update game state based on current phase
    * @param {number} deltaTime - Time since last update
@@ -193,21 +226,21 @@ export class GameEngine {
         break;
     }
   }
-  
+
   /**
    * Update question timer
    */
   updateQuestionTimer(deltaTime) {
     if (!this.state.question.data) return;
-    
+
     this.state.question.timeElapsed += deltaTime;
-    
+
     // Check for time limit
     if (this.state.question.timeElapsed >= GAME_CONFIG.TIME_LIMIT) {
       this.handleTimeUp();
     }
   }
-  
+
   /**
    * Handle time limit reached
    */
@@ -215,7 +248,7 @@ export class GameEngine {
     this.evaluateAnswer('', true); // Empty answer, timed out
     this.eventBus.emit('game:time-up');
   }
-  
+
   /**
    * Transition between game phases
    * @param {string} newPhase - Target phase
@@ -224,14 +257,14 @@ export class GameEngine {
     const oldPhase = this.state.session.phase;
     if (oldPhase === newPhase) return;
     this.state.session.phase = newPhase;
-    
+
     this.eventBus.emit('game:phase-changed', {
       from: oldPhase,
       to: newPhase,
       timestamp: performance.now()
     });
   }
-  
+
   /**
    * Start a new game session
    * @param {Object} options - Game options
@@ -245,7 +278,7 @@ export class GameEngine {
       mode: options.mode || 'classic',
       isPaused: false
     };
-    
+
     this.state.score = {
       current: 0,
       previous: this.state.score.current,
@@ -254,13 +287,13 @@ export class GameEngine {
       maxStreak: this.state.score.maxStreak,
       history: []
     };
-    
+
     this.eventBus.emit('game:started', {
       sessionId: this.state.session.id,
       options
     });
   }
-  
+
   /**
    * Load a new question
    * @param {Object} questionData - Question data
@@ -271,17 +304,62 @@ export class GameEngine {
       startTime: performance.now(),
       userAnswer: '',
       showingAnswer: false,
-      timeElapsed: 0
+      timeElapsed: 0,
+      wager: 0,
+      isDailyDouble: false
     };
-    
+
+    // Daily Double Logic
+    // If mode is 'daily-double', 50% chance.
+    // If 'classic', 5% chance.
+    // If 'run-category', 0% (focus on speed).
+    const isDailyDouble = this.shouldTriggerDailyDouble(this.state.session.mode);
+
+    if (isDailyDouble) {
+      this.state.question.isDailyDouble = true;
+      this.transitionPhase('wager'); // Use string 'wager' or import GAME_PHASES
+      this.eventBus.emit('game:daily-double', {
+        maxWager: Math.max(this.state.score.current, 1000)
+      });
+      // Play sound
+      if (window.soundManager) window.soundManager.play('daily-double');
+    } else {
+      this.transitionPhase(GAME_PHASES.QUESTION);
+      this.eventBus.emit('question:loaded', {
+        question: questionData,
+        difficulty: this.state.session.difficulty
+      });
+    }
+  }
+
+  shouldTriggerDailyDouble(mode) {
+    if (mode === 'daily-double') return Math.random() < 0.5;
+    if (mode === 'classic') return Math.random() < 0.05;
+    return false;
+  }
+
+  /**
+   * Submit a wager for Daily Double
+   * @param {number} amount 
+   */
+  submitWager(amount) {
+    if (this.state.session.phase !== 'wager') return;
+
+    const maxWager = Math.max(this.state.score.current, 1000);
+    const wager = Math.max(5, Math.min(amount, maxWager)); // Min $5
+
+    this.state.question.wager = wager;
+    console.log(`[GameEngine] Wager accepted: $${wager}`);
+
+    // Proceed to question
     this.transitionPhase(GAME_PHASES.QUESTION);
-    
     this.eventBus.emit('question:loaded', {
-      question: questionData,
-      difficulty: this.state.session.difficulty
+      question: this.state.question.data,
+      difficulty: this.state.session.difficulty,
+      wager: wager
     });
   }
-  
+
   /**
    * Submit an answer
    * @param {string} userAnswer - User's answer
@@ -291,14 +369,14 @@ export class GameEngine {
       console.warn('[GameEngine] Cannot submit answer in phase:', this.state.session.phase);
       return;
     }
-    
+
     this.state.question.userAnswer = userAnswer;
     this.transitionPhase(GAME_PHASES.ANSWERING);
-    
+
     // Evaluate answer
     this.evaluateAnswer(userAnswer);
   }
-  
+
   /**
    * Evaluate user's answer
    * @param {string} userAnswer - User's answer
@@ -307,24 +385,24 @@ export class GameEngine {
   evaluateAnswer(userAnswer, timedOut = false) {
     const question = this.state.question.data;
     if (!question) return;
-    
+
     const isCorrect = this.checkAnswer(userAnswer, question.answer);
     const timeElapsed = this.state.question.timeElapsed;
-    
+
     // Calculate score
     const scoreData = this.calculateScore(isCorrect, timeElapsed, timedOut);
-    
+
     // Update statistics
     this.updateStatistics(isCorrect, timeElapsed, timedOut);
-    
+
     // Update score and streak
     this.updateScore(scoreData);
-    
+
     // Check achievements
     this.checkAchievements();
-    
+
     this.transitionPhase(GAME_PHASES.RESULT);
-    
+
     this.eventBus.emit('answer:evaluated', {
       userAnswer,
       correctAnswer: question.answer,
@@ -334,7 +412,7 @@ export class GameEngine {
       timeElapsed
     });
   }
-  
+
   /**
    * Check if answer is correct using fuzzy matching
    * @param {string} userAnswer - User's answer
@@ -343,25 +421,25 @@ export class GameEngine {
    */
   checkAnswer(userAnswer, correctAnswer) {
     if (!userAnswer || !correctAnswer) return false;
-    
+
     // Normalize both answers
     const normalize = (str) =>
       str.toLowerCase()
-         .trim()
-         .replace(/[^a-z0-9\s]/g, '')
-         .replace(/\s+/g, ' ');
-    
+        .trim()
+        .replace(/[^a-z0-9\s]/g, '')
+        .replace(/\s+/g, ' ');
+
     const normalizedUser = normalize(userAnswer);
     const normalizedCorrect = normalize(correctAnswer);
-    
+
     // Exact match
     if (normalizedUser === normalizedCorrect) return true;
-    
+
     // Fuzzy matching for partial credit
     const similarity = this.calculateSimilarity(normalizedUser, normalizedCorrect);
     return similarity >= 0.8; // 80% similarity threshold
   }
-  
+
   /**
    * Calculate string similarity using Levenshtein distance
    * @param {string} str1 - First string
@@ -370,15 +448,15 @@ export class GameEngine {
    */
   calculateSimilarity(str1, str2) {
     const matrix = [];
-    
+
     for (let i = 0; i <= str2.length; i++) {
       matrix[i] = [i];
     }
-    
+
     for (let j = 0; j <= str1.length; j++) {
       matrix[0][j] = j;
     }
-    
+
     for (let i = 1; i <= str2.length; i++) {
       for (let j = 1; j <= str1.length; j++) {
         if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
@@ -392,13 +470,13 @@ export class GameEngine {
         }
       }
     }
-    
+
     const distance = matrix[str2.length][str1.length];
     const maxLength = Math.max(str1.length, str2.length);
-    
+
     return maxLength === 0 ? 1 : 1 - (distance / maxLength);
   }
-  
+
   /**
    * Calculate score based on correctness and time
    * @param {boolean} isCorrect - Whether answer was correct
@@ -408,6 +486,15 @@ export class GameEngine {
    */
   calculateScore(isCorrect, timeElapsed, timedOut) {
     if (!isCorrect || timedOut) {
+      // IF Daily Double, deduct wager!
+      if (this.state.question.wager > 0) {
+        return {
+          base: -this.state.question.wager,
+          timeBonus: 0,
+          streakBonus: 0,
+          total: -this.state.question.wager
+        };
+      }
       return {
         base: 0,
         timeBonus: 0,
@@ -415,19 +502,24 @@ export class GameEngine {
         total: 0
       };
     }
-    
+
     const difficulty = GAME_CONFIG.DIFFICULTY_MULTIPLIERS[this.state.session.difficulty];
-    const basePoints = GAME_CONFIG.BASE_POINTS * difficulty;
-    
+    let basePoints = GAME_CONFIG.BASE_POINTS * difficulty;
+
+    // Override with Wager if Daily Double
+    if (this.state.question.wager > 0) {
+      basePoints = this.state.question.wager;
+    }
+
     // Time bonus (faster = more points)
     const timeRatio = Math.max(0, 1 - (timeElapsed / GAME_CONFIG.TIME_LIMIT));
     const timeBonus = Math.floor(GAME_CONFIG.TIME_BONUS_MAX * timeRatio);
-    
+
     // Streak bonus
     const streakBonus = Math.floor(basePoints * this.state.score.streak * GAME_CONFIG.STREAK_MULTIPLIER);
-    
+
     const total = basePoints + timeBonus + streakBonus;
-    
+
     return {
       base: basePoints,
       timeBonus,
@@ -435,18 +527,18 @@ export class GameEngine {
       total: Math.floor(total)
     };
   }
-  
+
   /**
    * Update score and streak
    * @param {Object} scoreData - Score calculation result
    */
   updateScore(scoreData) {
     const wasCorrect = scoreData.total > 0;
-    
+
     // Update score
     this.state.score.current += scoreData.total;
     this.state.score.high = Math.max(this.state.score.high, this.state.score.current);
-    
+
     // Update streak
     if (wasCorrect) {
       this.state.score.streak++;
@@ -454,7 +546,7 @@ export class GameEngine {
     } else {
       this.state.score.streak = 0;
     }
-    
+
     // Add to history
     this.state.score.history.push({
       question: this.state.question.data,
@@ -462,19 +554,34 @@ export class GameEngine {
       correct: wasCorrect,
       timestamp: performance.now()
     });
-    
+
+    // Award XP
+    if (scoreData.total > 0) {
+      this.state.user.xp += scoreData.total;
+      this.checkLevelUp();
+    }
+
     // Keep history manageable
     if (this.state.score.history.length > 100) {
       this.state.score.history = this.state.score.history.slice(-100);
     }
-
-    // Dispatch state update to the central store for persistence
-    store.dispatch('UPDATE', {
-      score: this.state.score,
-      statistics: this.state.stats
-    });
   }
-  
+
+  /**
+   * Check for level up based on XP
+   */
+  checkLevelUp() {
+    const newLevel = Math.floor(Math.sqrt(this.state.user.xp / 500)) + 1;
+    if (newLevel > this.state.user.level) {
+      this.state.user.level = newLevel;
+      this.eventBus.emit('user:level-up', {
+        level: newLevel,
+        xp: this.state.user.xp
+      });
+      console.log(`[GameEngine] User leveled up to ${newLevel}!`);
+    }
+  }
+
   /**
    * Update game statistics
    * @param {boolean} isCorrect - Whether answer was correct
@@ -483,16 +590,16 @@ export class GameEngine {
    */
   updateStatistics(isCorrect, timeElapsed, timedOut) {
     this.state.stats.questionsAnswered++;
-    
+
     if (isCorrect && !timedOut) {
       this.state.stats.correctAnswers++;
     }
-    
+
     this.state.stats.totalTime += timeElapsed;
     this.state.stats.averageTime = this.state.stats.totalTime / this.state.stats.questionsAnswered;
     this.state.stats.accuracy = this.state.stats.correctAnswers / this.state.stats.questionsAnswered;
   }
-  
+
   /**
    * Check and unlock achievements
    */
@@ -500,48 +607,48 @@ export class GameEngine {
     const achievements = GAME_CONFIG.ACHIEVEMENTS;
     const stats = this.state.stats;
     const score = this.state.score;
-    
+
     // First correct answer
     if (stats.correctAnswers >= 1 && !stats.achievements.has(achievements.FIRST_CORRECT.id)) {
       this.unlockAchievement(achievements.FIRST_CORRECT.id);
     }
-    
+
     // Streak master
     if (score.streak >= achievements.STREAK_MASTER.threshold && !stats.achievements.has(achievements.STREAK_MASTER.id)) {
       this.unlockAchievement(achievements.STREAK_MASTER.id);
     }
-    
+
     // Speed demon (last answer was fast)
     if (this.state.question.timeElapsed <= achievements.SPEED_DEMON.maxTime
-     && this.state.score.history.at(-1)?.correct
-     && !stats.achievements.has(achievements.SPEED_DEMON.id)) {
+      && this.state.score.history.at(-1)?.correct
+      && !stats.achievements.has(achievements.SPEED_DEMON.id)) {
       this.unlockAchievement(achievements.SPEED_DEMON.id);
     }
-    
+
     // Scholar (total questions)
     if (stats.questionsAnswered >= achievements.SCHOLAR.threshold && !stats.achievements.has(achievements.SCHOLAR.id)) {
       this.unlockAchievement(achievements.SCHOLAR.id);
     }
-    
+
     // Perfectionist (high accuracy with sufficient questions)
     if (stats.questionsAnswered >= 20 && stats.accuracy >= achievements.PERFECTIONIST.accuracy && !stats.achievements.has(achievements.PERFECTIONIST.id)) {
       this.unlockAchievement(achievements.PERFECTIONIST.id);
     }
   }
-  
+
   /**
    * Unlock an achievement
    * @param {string} achievementId - Achievement ID
    */
   unlockAchievement(achievementId) {
     this.state.stats.achievements.add(achievementId);
-    
+
     this.eventBus.emit('achievement:unlocked', {
       achievementId,
       timestamp: performance.now()
     });
   }
-  
+
   /**
    * Update performance statistics
    * @param {number} deltaTime - Time since last frame
@@ -556,14 +663,14 @@ export class GameEngine {
       const fps = 1000 / avgDelta;
       this.state.performance.averageFPS = (this.state.performance.averageFPS + fps) / 2;
       this._accumulatedDelta = 0;
-      
+
       // Warn if performance is poor
       if (this.state.performance.averageFPS < 30) {
         console.warn('[GameEngine] Low FPS detected:', this.state.performance.averageFPS);
       }
     }
   }
-  
+
   /**
    * Get current game state (immutable)
    * @returns {Object} Game state
@@ -571,7 +678,7 @@ export class GameEngine {
   getState() {
     return JSON.parse(JSON.stringify(this.state));
   }
-  
+
   /**
    * Get performance stats
    * @returns {Object} Performance data
@@ -586,7 +693,7 @@ export class GameEngine {
       } : null
     };
   }
-  
+
   /**
    * Setup event handlers
    */
@@ -610,13 +717,13 @@ export class GameEngine {
     this.eventBus.on('game:pause', () => this.pauseGame());
     this.eventBus.on('game:resume', () => this.resumeGame());
     this.eventBus.on('game:reset', () => this.resetGame());
-    
+
     // Question events
     this.eventBus.on('question:request-new', () => this.handleNewQuestionRequest());
     this.eventBus.on('question:load', (data) => this.loadQuestion(data.question));
     this.eventBus.on('answer:submit', (data) => this.submitAnswer(data.answer));
   }
-  
+
   /**
    * Pause the game
    */
@@ -625,7 +732,7 @@ export class GameEngine {
     this.transitionPhase(GAME_PHASES.PAUSED);
     this.eventBus.emit('game:paused');
   }
-  
+
   /**
    * Resume the game
    */
@@ -634,7 +741,7 @@ export class GameEngine {
     this.transitionPhase(GAME_PHASES.QUESTION);
     this.eventBus.emit('game:resumed');
   }
-  
+
   /**
    * Reset the game
    */
@@ -642,6 +749,24 @@ export class GameEngine {
     this.state = createGameState();
     this.transitionPhase(GAME_PHASES.MENU);
     this.eventBus.emit('game:reset');
+  }
+
+  /**
+   * Update Game Settings
+   * @param {Object} newSettings 
+   */
+  updateSettings(newSettings) {
+    this.state.settings = { ...this.state.settings, ...newSettings };
+    this.eventBus.emit('settings:changed', this.state.settings);
+  }
+
+  /**
+   * Update User Profile
+   * @param {Object} userData 
+   */
+  updateUser(userData) {
+    this.state.user = { ...this.state.user, ...userData };
+    this.eventBus.emit('user:updated', this.state.user);
   }
 }
 

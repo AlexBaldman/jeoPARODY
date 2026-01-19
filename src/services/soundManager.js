@@ -1,253 +1,238 @@
 /**
- * Unified SoundManager - Carmack Style
+ * Unified SoundManager - Carmack Style (WebAudio Edition)
  * 
- * Clean, performant audio system with zero dependencies.
- * Single responsibility: manage game audio efficiently.
- * 
- * Design principles:
- * - Simple API surface
- * - Fail gracefully
- * - Memory efficient
- * - 60fps performance
+ * High-performance audio system using Web Audio API for zero-latency SFX.
+ * Falls back to HTML5 Audio for streaming music (BGM).
  * 
  * @module services/soundManager
  */
 
 import { eventBus } from '../utils/events.js';
 
-// Audio file registry - modify this to add new sounds
+// Audio file registry
 const SOUND_REGISTRY = {
-  // Map to existing Trebek audio assets (no generic SFX available in repo)
-  // Game events
-  correct: 'assets/audio/trebek/3018362-alx-correct-response.mp3',
-  incorrect: 'assets/audio/trebek/3018725-alx-player-incorrect.mp3',
-  applause: 'assets/audio/trebek/3019131-alx-final-winner.mp3',
-  buzzer: 'assets/audio/trebek/3018382-alx-player-ring.mp3',
-  
-  // UI interactions
-  click: 'assets/audio/trebek/3018391-alx-player-select.mp3',
-  hover: 'assets/audio/trebek/3018391-alx-player-select.mp3',
-  modal: 'assets/audio/trebek/3019050-alx-player-correct-7.mp3',
-  
-  // Host animations
-  moonwalk: 'assets/audio/trebek/3018299-alx-intro.mp3',
-  surprise: 'assets/audio/trebek/3019054-alx-dailyd-cor-now-first.mp3',
-  hostHide: 'assets/audio/trebek/3018701-alx-back-to-player.mp3',
-  hostScare: 'assets/audio/trebek/3018432-alx-wii-speak-wiimote.mp3',
-  stairs: 'assets/audio/trebek/3018611-alx-player-select.mp3',
-  hostPop: 'assets/audio/trebek/3019050-alx-player-correct-7.mp3',
-  discoStart: 'assets/audio/trebek/3018299-alx-intro.mp3',
-  discoEnd: 'assets/audio/trebek/3018802-alx-intro.mp3',
-  
-  // Background/ambient
-  theme: 'assets/audio/trebek/3018299-alx-intro.mp3'
+  // SFX (Buffered - Memory Resident)
+  correct: { src: 'assets/audio/trebek/3018362-alx-correct-response.mp3', type: 'sfx' },
+  incorrect: { src: 'assets/audio/trebek/3018725-alx-player-incorrect.mp3', type: 'sfx' },
+  buzzer: { src: 'assets/audio/trebek/3018382-alx-player-ring.mp3', type: 'sfx' },
+  click: { src: 'assets/audio/trebek/3018391-alx-player-select.mp3', type: 'sfx' },
+  hover: { src: 'assets/audio/trebek/3018391-alx-player-select.mp3', type: 'sfx' },
+  modal: { src: 'assets/audio/trebek/3019050-alx-player-correct-7.mp3', type: 'sfx' },
+  hostScare: { src: 'assets/audio/trebek/3018432-alx-wii-speak-wiimote.mp3', type: 'sfx' },
+  hostPop: { src: 'assets/audio/trebek/3019050-alx-player-correct-7.mp3', type: 'sfx' },
+
+  // Longer tracks (Streamed or Buffered depending on size, treating as SFX for responsiveness)
+  applause: { src: 'assets/audio/trebek/3019131-alx-final-winner.mp3', type: 'sfx' },
+  hostHide: { src: 'assets/audio/trebek/3018701-alx-back-to-player.mp3', type: 'sfx' },
+  moonwalk: { src: 'assets/audio/trebek/3018299-alx-intro.mp3', type: 'sfx' },
+  stairs: { src: 'assets/audio/trebek/3018611-alx-player-select.mp3', type: 'sfx' },
+
+  // BGM (HTML5 Audio - Streaming)
+  theme: { src: 'assets/audio/trebek/3018299-alx-intro.mp3', type: 'bgm' }
 };
 
-/**
- * High-performance sound manager
- * Uses object pooling and RAF scheduling for 60fps
- */
 export class SoundManager {
   constructor() {
-    // Core state
-    this.audioPool = new Map();         // Pooled audio instances
-    this.loadedSounds = new Set();      // Successfully loaded sounds
-    this.failedSounds = new Set();      // Failed loads (don't retry)
-    
-    // Settings (persistent)
+    this.buffers = new Map();           // name -> AudioBuffer
+    this.bgmInstances = new Map();      // name -> Audio (HTML5)
+    this.activeSources = new Set();     // Currently playing buffer sources
+
+    // Persistent settings
     this.volume = this.loadSetting('volume', 0.7);
     this.muted = this.loadSetting('muted', false);
-    
-    // Performance tracking
-    this.playCount = 0;
-    this.lastPlayTime = 0;
-    
-    // Audio context (for modern browsers)
-    this.audioContext = null;
+
+    // WebAudio Context
+    this.ctx = null;
     this.initialized = false;
   }
-  
+
   /**
-   * Initialize audio system - call once on user interaction
+   * Initialize AudioContext (must be triggered by user gesture)
    */
   async init() {
     if (this.initialized) return true;
-    
+
     try {
-      // Initialize audio context
-      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      
-      if (this.audioContext.state === 'suspended') {
-        await this.audioContext.resume();
-      }
-      
-      // Preload critical sounds
-      await this.preloadSounds(['correct', 'incorrect', 'click']);
-      
-      // Setup event listeners
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+      // Create master gain node
+      this.masterGain = this.ctx.createGain();
+      this.masterGain.connect(this.ctx.destination);
+      this.updateMasterVolume();
+
       this.bindEvents();
-      
       this.initialized = true;
-      console.log('[🔊] SoundManager initialized');
+      console.log('[🔊] SoundManager (WebAudio) initialized');
       return true;
-      
-    } catch (error) {
-      console.warn('[🔊] Audio initialization failed:', error);
+    } catch (e) {
+      console.warn('[🔊] WebAudio init failed:', e);
       return false;
     }
   }
-  
+
   /**
-   * Preload specific sounds for instant playback
+   * Resume context if suspended (browser autoplay policy)
    */
-  async preloadSounds(soundNames = Object.keys(SOUND_REGISTRY)) {
-    const loadPromises = soundNames.map(name => this.loadSound(name));
-    const results = await Promise.allSettled(loadPromises);
-    
-    // Log results
-    const loaded = results.filter(r => r.status === 'fulfilled').length;
-    const failed = results.filter(r => r.status === 'rejected').length;
-    
-    if (failed > 0) {
-      console.warn(`[🔊] Loaded ${loaded}/${soundNames.length} sounds`);
+  async ensureContext() {
+    if (this.ctx && this.ctx.state === 'suspended') {
+      await this.ctx.resume();
     }
   }
-  
+
   /**
-   * Load a single sound with pooling
+   * Load and decode a sound
+   * @param {string} name 
    */
   async loadSound(name) {
-    if (this.loadedSounds.has(name) || this.failedSounds.has(name)) {
+    if (this.buffers.has(name) || this.bgmInstances.has(name)) return;
+
+    const config = SOUND_REGISTRY[name];
+    if (!config) {
+      // Fallback for direct paths or legacy names if needed
       return;
     }
-    
-    const url = SOUND_REGISTRY[name];
-    if (!url) {
-      console.warn(`[🔊] Unknown sound: ${name}`);
-      return;
-    }
-    
+
     try {
-      // Create pool of audio instances for overlap
-      const pool = [];
-      for (let i = 0; i < 3; i++) {
-        const audio = new Audio(url);
-        audio.volume = this.muted ? 0 : this.volume;
-        audio.preload = 'auto';
-        
-        // Wait for load
-        await new Promise((resolve, reject) => {
-          audio.addEventListener('canplaythrough', resolve, { once: true });
-          audio.addEventListener('error', reject, { once: true });
-          
-          // Fallback timeout
-          setTimeout(reject, 5000);
-        });
-        
-        pool.push(audio);
+      if (config.type === 'sfx') {
+        const response = await fetch(config.src);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await this.ctx.decodeAudioData(arrayBuffer);
+        this.buffers.set(name, audioBuffer);
+      } else {
+        // BGM - plain audio element
+        const audio = new Audio(config.src);
+        audio.loop = true; // Default loops for BGM
+        this.bgmInstances.set(name, audio);
       }
-      
-      this.audioPool.set(name, pool);
-      this.loadedSounds.add(name);
-      
-    } catch (error) {
-      this.failedSounds.add(name);
-      console.warn(`[🔊] Failed to load ${name}:`, error);
+    } catch (e) {
+      console.warn(`[🔊] Failed to load ${name}:`, e);
     }
   }
-  
+
   /**
-   * Play sound with optimal performance
+   * Preload critical assets
    */
-  play(soundName, options = {}) {
-    // Performance gate - don't spam audio
-    const now = performance.now();
-    if (now - this.lastPlayTime < 16) return; // 60fps limit
-    this.lastPlayTime = now;
-    
-    if (!this.initialized || this.muted) return;
-    
-    const pool = this.audioPool.get(soundName);
-    if (!pool) {
-      // Lazy load if not found
-      this.loadSound(soundName);
+  async preloadCritical() {
+    await this.init();
+    const critical = ['click', 'hover', 'correct', 'incorrect', 'buzzer'];
+    await Promise.all(critical.map(name => this.loadSound(name)));
+  }
+
+  /**
+   * Play a sound
+   * @param {string} name 
+   * @param {object} options { volume: 0-1, loop: boolean }
+   */
+  play(name, options = {}) {
+    if (this.muted) return;
+    this.ensureContext();
+
+    const config = SOUND_REGISTRY[name];
+
+    // 1. Try Buffered SFX
+    if (this.buffers.has(name)) {
+      this.playBuffer(name, options);
       return;
     }
-    
-    // Find available audio instance
-    const audio = pool.find(a => a.paused) || pool[0];
-    
-    // Configure playback
-    audio.currentTime = 0;
+
+    // 2. Try BGM
+    if (this.bgmInstances.has(name)) {
+      this.playBGM(name, options);
+      return;
+    }
+
+    // 3. Not loaded? Lazy load and play
+    if (config) {
+      this.loadSound(name).then(() => this.play(name, options));
+      return;
+    }
+
+    console.warn(`[🔊] Sound not found: ${name}`);
+  }
+
+  playBuffer(name, options) {
+    const buffer = this.buffers.get(name);
+    if (!buffer) return;
+
+    const source = this.ctx.createBufferSource();
+    source.buffer = buffer;
+
+    const gainNode = this.ctx.createGain();
+    const vol = (options.volume || 1);
+    gainNode.gain.value = vol;
+
+    source.connect(gainNode);
+    gainNode.connect(this.masterGain);
+
+    source.loop = options.loop || false;
+    source.start(0);
+
+    // Tracking for stopAll
+    this.activeSources.add(source);
+    source.onended = () => this.activeSources.delete(source);
+  }
+
+  playBGM(name, options) {
+    const audio = this.bgmInstances.get(name);
+    if (!audio) return;
+
     audio.volume = this.volume * (options.volume || 1);
-    
-    // Play with error handling
-    audio.play().catch(error => {
-      // Don't spam console on autoplay blocks
-      if (error.name !== 'NotAllowedError') {
-        console.warn(`[🔊] Play failed for ${soundName}:`, error);
-      }
-    });
-    
-    this.playCount++;
+    audio.currentTime = 0;
+    audio.play().catch(e => console.warn('Autoplay blocked', e));
   }
-  
-  /**
-   * Stop all sounds immediately
-   */
+
   stopAll() {
-    this.audioPool.forEach(pool => {
-      pool.forEach(audio => {
-        audio.pause();
-        audio.currentTime = 0;
-      });
+    // Stop SFX
+    this.activeSources.forEach(src => {
+      try { src.stop(); } catch (e) { }
+    });
+    this.activeSources.clear();
+
+    // Pause BGM
+    this.bgmInstances.forEach(audio => {
+      audio.pause();
+      audio.currentTime = 0;
     });
   }
-  
-  /**
-   * Update volume (0-1) with immediate effect
-   */
-  setVolume(newVolume) {
-    this.volume = Math.max(0, Math.min(1, newVolume));
+
+  setVolume(val) {
+    this.volume = Math.max(0, Math.min(1, val));
     this.saveSetting('volume', this.volume);
-    
-    // Update all audio instances
-    this.audioPool.forEach(pool => {
-      pool.forEach(audio => {
-        audio.volume = this.muted ? 0 : this.volume;
-      });
-    });
-    
-    eventBus.emit('sound:volume-changed', { volume: this.volume });
+    this.updateMasterVolume();
   }
-  
-  /**
-   * Toggle mute state
-   */
+
+  updateMasterVolume() {
+    if (this.masterGain) {
+      // Smooth transition
+      this.masterGain.gain.setTargetAtTime(
+        this.muted ? 0 : this.volume,
+        this.ctx.currentTime,
+        0.1
+      );
+    }
+    // Update BGM
+    this.bgmInstances.forEach(audio => {
+      audio.volume = this.muted ? 0 : this.volume;
+    });
+  }
+
   toggleMute() {
     this.muted = !this.muted;
     this.saveSetting('muted', this.muted);
-    
-    if (this.muted) {
-      this.stopAll();
-    }
-    
-    // Update volumes
-    this.audioPool.forEach(pool => {
-      pool.forEach(audio => {
-        audio.volume = this.muted ? 0 : this.volume;
-      });
-    });
-    
-    eventBus.emit('sound:mute-changed', { muted: this.muted });
+    this.updateMasterVolume();
     return this.muted;
   }
-  
-  /**
-   * Bind to game events
-   */
+
+  getStats() {
+    return {
+      buffered: this.buffers.size,
+      active: this.activeSources.size,
+      state: this.ctx?.state
+    };
+  }
+
+  // Event Binding
   bindEvents() {
-    // Game events -> sounds
     const eventSoundMap = {
       'answer:correct': 'correct',
       'answer:incorrect': 'incorrect',
@@ -255,65 +240,31 @@ export class SoundManager {
       'ui:click': 'click',
       'modal:open': 'modal',
       'host:moonwalk': 'moonwalk',
-      'host:surprise': 'surprise'
+      'host:surprise': 'hostScare'
     };
-    
-    Object.entries(eventSoundMap).forEach(([event, sound]) => {
-      eventBus.on(event, () => this.play(sound));
+
+    Object.entries(eventSoundMap).forEach(([evt, sound]) => {
+      eventBus.on(evt, () => this.play(sound));
     });
-    
-    // Direct control events
+
     eventBus.on('sound:play', ({ sound, options }) => this.play(sound, options));
-    eventBus.on('sound:volume', ({ volume }) => this.setVolume(volume));
-    eventBus.on('sound:toggle-mute', () => this.toggleMute());
     eventBus.on('sound:stop-all', () => this.stopAll());
   }
-  
-  /**
-   * Persistent settings helpers
-   */
-  loadSetting(key, defaultValue) {
-    try {
-      const stored = localStorage.getItem(`jeoparody_sound_${key}`);
-      return stored !== null ? JSON.parse(stored) : defaultValue;
-    } catch {
-      return defaultValue;
-    }
+
+  // Persistence
+  loadSetting(key, def) {
+    try { return JSON.parse(localStorage.getItem(`jeoparody_sound_${key}`)) ?? def; }
+    catch { return def; }
   }
-  
-  saveSetting(key, value) {
-    try {
-      localStorage.setItem(`jeoparody_sound_${key}`, JSON.stringify(value));
-    } catch (error) {
-      console.warn('[🔊] Failed to save setting:', error);
-    }
-  }
-  
-  /**
-   * Get performance stats (for debugging)
-   */
-  getStats() {
-    return {
-      initialized: this.initialized,
-      loadedSounds: this.loadedSounds.size,
-      failedSounds: this.failedSounds.size,
-      totalSounds: Object.keys(SOUND_REGISTRY).length,
-      playCount: this.playCount,
-      volume: this.volume,
-      muted: this.muted
-    };
+  saveSetting(key, val) {
+    localStorage.setItem(`jeoparody_sound_${key}`, JSON.stringify(val));
   }
 }
 
-// Singleton instance - lazy initialization
+// Singleton
 let instance = null;
-
 export function getSoundManager() {
-  if (!instance) {
-    instance = new SoundManager();
-  }
+  if (!instance) instance = new SoundManager();
   return instance;
 }
-
-// Convenience export
 export const soundManager = getSoundManager();

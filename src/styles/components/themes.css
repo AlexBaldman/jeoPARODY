@@ -1,0 +1,53 @@
+@layer components {
+
+	/* ===================================
+     RETRO THEME (SNES/Genesis Vibe)
+     =================================== */
+	html[data-theme="retro"] body {
+		background: linear-gradient(170deg, #0d0221 0%, #1a0a38 30%, #241b5e 70%, #0d0221 100%);
+		overflow-x: hidden;
+	}
+
+	/* Grid Background Overlay */
+	html[data-theme="retro"] body::before {
+		content: '';
+		position: fixed;
+		inset: 0;
+		pointer-events: none;
+		z-index: var(--z-background, -10);
+		background-image:
+			linear-gradient(to right, rgb(255 0 255 / 20%) 1px, transparent 1px),
+			linear-gradient(to bottom, rgb(255 0 255 / 20%) 1px, transparent 1px);
+		background-size: 50px 50px;
+		opacity: 0.15;
+		animation: grid-scroll 10s linear infinite;
+	}
+
+	@keyframes grid-scroll {
+		from {
+			background-position: 0 0;
+		}
+
+		to {
+			background-position: 50px 50px;
+		}
+	}
+
+	/* Retro Typography defaults */
+	html[data-theme="retro"] {
+		--font-display: 'Press Start 2P', monospace;
+		--font-ui: 'Press Start 2P', monospace;
+		--primary-gold: #0ff;
+		/* Cyan override */
+		--color-text: #fff;
+	}
+
+	/* ===================================
+     COMIC THEME
+     =================================== */
+	html[data-theme="comic"] body {
+		background-image: radial-gradient(circle, #ddd 1px, transparent 1px);
+		background-size: 20px 20px;
+		background-color: #f0f0f0;
+	}
+}

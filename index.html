@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" data-ui-arch="component-first">
+
 <head>
     <!-- viewport settings for better mobile responsiveness -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="UTF-8">
-    
+
     <!-- Preload fonts for better performance -->
     <link rel="preload" href="assets/fonts/KorinnaNormal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="assets/fonts/KorinnaBold.woff" as="font" type="font/woff" crossorigin>
@@ -16,20 +17,18 @@
     <meta property="og:title" content="Jeopardish!">
     <meta property="og:description" content="A unique comedic trivia adventure.">
     <meta property="og:image" content="screenshots/jeopardish-screenshot-noQuestion.png">
-    
+
     <!-- title -->
     <title>Jeopardish!</title>
-    
+
     <!-- favicons -->
-    <link rel="icon" href="favicon.svg" type="image/svg+xml">
-    <!-- <link rel="icon" href="images/favicon2.webp" type="image/webp"> -->
-    <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
+    <link rel="icon" href="/favicon.png" type="image/png">
 
     <!-- Single Consolidated Stylesheet - All CSS in one file -->
-    <link rel="stylesheet" href="src/styles/main.css">
-    
+    <link rel="stylesheet" href="src/styles/index.css">
+
     <!-- Old stylesheets - removed, all styles now in styles-complete.css -->
-    
+
     <!-- external JS (axios removed; modules should import their deps) -->
 
     <!-- Firebase optional: uncomment when integrating auth/cloud sync -->
@@ -42,14 +41,14 @@
 
     <!-- Load the main module with Vite -->
     <script type="module" src="src/main.js"></script>
-    
+
     <!-- Compatibility bridge (disabled by default) -->
     <script>window.JEOPARODY_DISABLE_COMPAT_BRIDGE = true;</script>
     <!-- <script type="module" src="/src/compatibility-bridge.js"></script> -->
-    
+
     <!-- external CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    
+
     <!-- fonts, icons, other CDN assets -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,10 +58,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    
-    
+    <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+
+
 </head>
+
 <body lang="en">
 
     <header class="sticky-header">
@@ -77,7 +78,8 @@
                 </label>
                 <div class="toggle-label">DARK MODE</div>
             </div>
-            <button id="host-anim-trigger" class="header-icon-btn" title="Host animation" aria-label="Trigger host animation">💃</button>
+            <button id="host-anim-trigger" class="header-icon-btn" title="Host animation"
+                aria-label="Trigger host animation">💃</button>
             <button id="hamburger-menu" class="hamburger-button" aria-label="Open menu">
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
@@ -101,117 +103,11 @@
 
         <!-- Host Image Container -->
         <div class="host-container">
-          <img id="trebekImage" class="host-image" src="" alt="Host">
-          <div class="host-click-zone host-click-left"></div>
-          <div class="host-click-zone host-click-right"></div>
+            <img id="trebekImage" class="host-image" src="" alt="Host">
+            <div class="host-click-zone host-click-left"></div>
+            <div class="host-click-zone host-click-right"></div>
         </div>
 
-
-        <!-- Splash / Start Screen Overlay -->
-        <div id="splash-screen" class="hidden">
-          <div class="splash-card">
-            <div class="splash-title">jeoPARODY!</div>
-            <div class="splash-subtitle">Pick a mode to begin</div>
-            <div class="splash-grid">
-              <button class="btn btn-gradient" data-start-mode="classic" aria-label="Start game in classic mode">▶ Start Classic</button>
-              <button class="btn btn-neon" data-start-mode="fullboard" aria-label="Start game with a full Jeopardy board">📺 Full Jeopardy Board</button>
-              <button class="btn btn-arcade" data-start-mode="run-category" aria-label="Start game in run the category mode">🎯 Run the Category</button>
-              <button class="btn btn-gradient" data-start-mode="practice" aria-label="Start a practice session">🧠 Practice</button>
-              <button class="btn btn-neon" data-start-mode="daily-double" aria-label="Play a daily double round">💥 Daily Double</button>
-              <button class="btn btn-gradient" data-start-mode="pao" aria-label="Start the PAO trainer">🧩 PAO Trainer</button>
-              <button class="btn btn-arcade" data-action="open-settings" aria-label="Open game settings">⚙️ Settings</button>
-            </div>
-            <div class="splash-footer">
-              <div class="theme-chooser">
-                <span>Theme:</span>
-                <div class="theme-dot" data-theme="jeopardy" title="Jeopardy"></div>
-                <div class="theme-dot" data-theme="retro" title="Retro"></div>
-                <div class="theme-dot" data-theme="comic" title="Comic"></div>
-              </div>
-              <div class="lives" title="Retro lives"><span class="pixel-heart"></span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Jeopardy Board Screen -->
-        <div id="jeopardy-board-screen" class="hidden">
-          <div class="board">
-            <div class="board-controls">
-              <button class="board-close" data-close-board>⟵ Back</button>
-              <div>Full Jeopardy Board</div>
-            </div>
-            <div class="board-grid" id="board-grid">
-              <!-- categories -->
-              <div class="category">HISTORY</div>
-              <div class="category">SCIENCE</div>
-              <div class="category">LITERATURE</div>
-              <div class="category">WORLD</div>
-              <div class="category">MOVIES</div>
-              <div class="category">RANDOM</div>
-              <!-- values -->
-              <div class="clue" data-value="200">$200</div>
-              <div class="clue" data-value="200">$200</div>
-              <div class="clue" data-value="200">$200</div>
-              <div class="clue" data-value="200">$200</div>
-              <div class="clue" data-value="200">$200</div>
-              <div class="clue" data-value="200">$200</div>
-
-              <div class="clue" data-value="400">$400</div>
-              <div class="clue" data-value="400">$400</div>
-              <div class="clue" data-value="400">$400</div>
-              <div class="clue" data-value="400">$400</div>
-              <div class="clue" data-value="400">$400</div>
-              <div class="clue" data-value="400">$400</div>
-
-              <div class="clue" data-value="600">$600</div>
-              <div class="clue" data-value="600">$600</div>
-              <div class="clue" data-value="600">$600</div>
-              <div class="clue" data-value="600">$600</div>
-              <div class="clue" data-value="600">$600</div>
-              <div class="clue" data-value="600">$600</div>
-
-              <div class="clue" data-value="800">$800</div>
-              <div class="clue" data-value="800">$800</div>
-              <div class="clue" data-value="800">$800</div>
-              <div class="clue" data-value="800">$800</div>
-              <div class="clue" data-value="800">$800</div>
-              <div class="clue" data-value="800">$800</div>
-
-              <div class="clue" data-value="1000">$1000</div>
-              <div class="clue" data-value="1000">$1000</div>
-              <div class="clue" data-value="1000">$1000</div>
-              <div class="clue" data-value="1000">$1000</div>
-              <div class="clue" data-value="1000">$1000</div>
-              <div class="clue" data-value="1000">$1000</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Clue Zoom Modal -->
-        <div class="clue-modal" id="clue-modal" role="dialog" aria-modal="true" aria-labelledby="clue-title" aria-hidden="true">
-          <div class="clue-card" tabindex="-1">
-            <h2 id="clue-title" style="position:absolute; left:-9999px;">Clue</h2>
-            <div class="clue-text" id="clue-text">This is where the clue appears. What is awesome UI?</div>
-          </div>
-        </div>
-
-        <!-- Run the Category Screen -->
-        <div id="run-category-screen" class="hidden">
-          <div class="run-wrap">
-            <div class="run-header">
-              <button class="board-close" data-close-run>⟵ Back</button>
-              <div class="run-category-title">Category: Demo</div>
-              <div style="width: 180px" class="run-progress"><span id="run-progress-bar" style="width:0%"></span></div>
-            </div>
-            <div class="run-list" id="run-list">
-              <div class="run-item"><div class="value">$200</div><div class="text">Placeholder question will go here.</div></div>
-              <div class="run-item"><div class="value">$400</div><div class="text">Placeholder question will go here.</div></div>
-              <div class="run-item"><div class="value">$600</div><div class="text">Placeholder question will go here.</div></div>
-              <div class="run-item"><div class="value">$800</div><div class="text">Placeholder question will go here.</div></div>
-              <div class="run-item"><div class="value">$1000</div><div class="text">Placeholder question will go here.</div></div>
-            </div>
-          </div>
-        </div>
 
         <!-- PAO Screen Container (overlay sibling, not nested) -->
         <div id="pao-screen-container" class="hidden"></div>
@@ -229,7 +125,8 @@
                     <div class="pontoon"></div>
                     <div class="pontoon"></div>
                     <div class="ticker-banner">
-                        <div class="ticker-content">Breaking News: Jeopardish UI now 100% bug-free... This is a scrolling ticker... More news at 11...</div>
+                        <div class="ticker-content">Breaking News: Jeopardish UI now 100% bug-free... This is a
+                            scrolling ticker... More news at 11...</div>
                     </div>
                 </div>
             </div>
@@ -276,7 +173,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- All services now integrated into modular architecture -->
     <!-- Scripts loaded via src/main.js -->
-    
+
     <!-- Comedy Ticker Container -->
     <div id="comedy-ticker-container" class="comedy-ticker"></div>
 
@@ -291,4 +188,5 @@
     </div>
 
 </body>
+
 </html>

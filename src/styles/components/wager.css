@@ -1,0 +1,68 @@
+.wager-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1.5rem;
+	padding: 1rem;
+}
+
+.wager-info {
+	font-size: 1.2rem;
+	color: var(--color-neon-blue);
+	font-family: var(--font-header);
+}
+
+.wager-input-group {
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+}
+
+.wager-input {
+	background: rgba(0, 0, 0, 0.5);
+	border: 2px solid var(--color-neon-blue);
+	color: var(--color-text-primary);
+	font-size: 2rem;
+	padding: 0.5rem;
+	width: 150px;
+	text-align: center;
+	font-family: var(--font-header);
+}
+
+.wager-submit {
+	font-size: 1.2rem;
+	padding: 0.5rem 1.5rem;
+}
+
+.wager-quick-btns {
+	display: flex;
+	gap: 1rem;
+}
+
+.shake {
+	animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+@keyframes shake {
+
+	10%,
+	90% {
+		transform: translate3d(-1px, 0, 0);
+	}
+
+	20%,
+	80% {
+		transform: translate3d(2px, 0, 0);
+	}
+
+	30%,
+	50%,
+	70% {
+		transform: translate3d(-4px, 0, 0);
+	}
+
+	40%,
+	60% {
+		transform: translate3d(4px, 0, 0);
+	}
+}

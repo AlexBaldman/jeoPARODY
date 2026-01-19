@@ -49,7 +49,7 @@ export const HOST_PERSONALITIES = {
     - Always professional but personable
     Respond in character with brief, authentic reactions.`
   },
-  
+
   watson: {
     id: 'watson',
     name: 'IBM Watson',
@@ -87,22 +87,22 @@ export const HOST_PERSONALITIES = {
 export const MOOD_SYSTEM = {
   calculateMood(stats) {
     const { accuracy, streak, questionsAnswered } = stats;
-    
+
     // Early game - encouraging
     if (questionsAnswered < 3) return 'encouraging';
-    
+
     // High accuracy and streak - playful/excited
     if (accuracy > 0.8 && streak > 3) return 'playful';
-    
+
     // Good performance - neutral/confident
     if (accuracy > 0.6) return 'neutral';
-    
+
     // Struggling - encouraging
     if (accuracy < 0.4) return 'encouraging';
-    
+
     // Special cases
     if (streak > 10) return 'mischievous'; // Amazing streak
-    
+
     return 'neutral';
   }
 };
@@ -118,27 +118,27 @@ export class HostSystem {
     this.currentMood = 'neutral';
     this.currentImageIndex = 0;
     this.currentImageUrl = '';
-    
+
     // Image management
     this.imageCache = new Map();
     this.preloadedImages = new Set();
-    
+
     // Animation state
     this.isAnimating = false;
     this.animationQueue = [];
-    
+
     // DOM elements
     this.hostImageElement = null;
     this.hostContainer = null;
-    
+
     // Performance optimization
     this.lastMoodUpdate = 0;
     this.moodUpdateInterval = 2000; // Update mood every 2 seconds max
-    
+
     this.setupEventHandlers();
     this.init();
   }
-  
+
   /**
    * Initialize the host system
    */
@@ -146,24 +146,24 @@ export class HostSystem {
     // Find host elements
     this.hostImageElement = document.getElementById('trebekImage');
     this.hostContainer = document.querySelector('.host-container');
-    
+
     if (!this.hostImageElement) {
       console.warn('[HostSystem] Host image element not found');
       return;
     }
-    
+
     // Set up click handlers for image cycling
     this.setupImageCycling();
-    
+
     // Preload images for current personality
     await this.preloadPersonalityImages(this.currentPersonality);
-    
+
     // Set initial image
     this.updateHostImage();
-    
+
     console.log('[👤] HostSystem initialized');
   }
-  
+
   /**
    * Setup image cycling click handlers
    */
@@ -180,7 +180,7 @@ export class HostSystem {
       rightZone.addEventListener('click', () => this.nextImage());
     }
   }
-  
+
   /**
    * Preload all images for a personality
    * @param {string} personalityId - Personality to preload
@@ -188,20 +188,20 @@ export class HostSystem {
   async preloadPersonalityImages(personalityId) {
     const personality = HOST_PERSONALITIES[personalityId];
     if (!personality) return;
-    
+
     const imagesToPreload = [];
-    
+
     // Collect all possible images
     Object.values(personality.moods).forEach(moodImages => {
       imagesToPreload.push(...moodImages);
     });
-    
+
     // Remove duplicates
     const uniqueImages = [...new Set(imagesToPreload)];
-    
+
     // Preload each image
-    const loadPromises = uniqueImages.map(imageName => this.preloadImage(imageName));
-    
+    const loadPromises = uniqueImages.map(imageName => this.preloadImage(imageName, personality.imagePrefix));
+
     try {
       await Promise.all(loadPromises);
       console.log(`[HostSystem] Preloaded ${uniqueImages.length} images for ${personalityId}`);
@@ -209,30 +209,35 @@ export class HostSystem {
       console.warn('[HostSystem] Some images failed to preload:', error);
     }
   }
-  
+
   /**
    * Preload a single image
    * @param {string} imageName - Image filename
+   * @param {string} prefix - Directory prefix
    */
-  preloadImage(imageName) {
+  preloadImage(imageName, prefix = 'trebek') {
     return new Promise((resolve, reject) => {
       if (this.preloadedImages.has(imageName)) {
         resolve();
         return;
       }
-      
+
       const img = new Image();
       img.onload = () => {
         this.imageCache.set(imageName, img);
         this.preloadedImages.add(imageName);
         resolve();
       };
-      img.onerror = reject;
-      
-      img.src = `assets/images/trebek/${imageName}`;
+      // Soft fail
+      img.onerror = () => {
+        console.warn(`[HostSystem] Failed to load: ${prefix}/${imageName}`);
+        resolve();
+      };
+
+      img.src = `assets/images/${prefix}/${imageName}`;
     });
   }
-  
+
   /**
    * Change host personality
    * @param {string} personalityId - New personality ID
@@ -242,25 +247,25 @@ export class HostSystem {
       console.warn('[HostSystem] Unknown personality:', personalityId);
       return;
     }
-    
+
     if (personalityId === this.currentPersonality) return;
-    
+
     const oldPersonality = this.currentPersonality;
     this.currentPersonality = personalityId;
     this.currentImageIndex = 0;
-    
+
     // Preload new personality images
     await this.preloadPersonalityImages(personalityId);
-    
+
     // Update image with transition
     await this.animatePersonalityChange();
-    
+
     eventBus.emit('host:personality-changed', {
       from: oldPersonality,
       to: personalityId
     });
   }
-  
+
   /**
    * Update mood based on game statistics
    * @param {Object} gameStats - Current game statistics
@@ -268,163 +273,164 @@ export class HostSystem {
   updateMood(gameStats) {
     const now = performance.now();
     if (now - this.lastMoodUpdate < this.moodUpdateInterval) return;
-    
+
     const newMood = MOOD_SYSTEM.calculateMood(gameStats);
-    
+
     if (newMood !== this.currentMood) {
       this.currentMood = newMood;
       this.updateHostImage();
-      
+
       eventBus.emit('host:mood-changed', {
         mood: newMood,
         stats: gameStats
       });
     }
-    
+
     this.lastMoodUpdate = now;
   }
-  
+
   /**
    * Get current personality configuration
    */
   getCurrentPersonality() {
     return HOST_PERSONALITIES[this.currentPersonality];
   }
-  
+
   /**
    * Get images for current mood
    */
   getCurrentMoodImages() {
     const personality = this.getCurrentPersonality();
     const moodImages = personality.moods[this.currentMood];
-    
+
     // Fallback to neutral if mood not found
     return moodImages || personality.moods.neutral || [];
   }
-  
+
   /**
    * Update host image based on current state
    */
   updateHostImage() {
     const moodImages = this.getCurrentMoodImages();
     if (!moodImages.length) return;
-    
+
     // Ensure index is valid
     this.currentImageIndex = Math.max(0, Math.min(this.currentImageIndex, moodImages.length - 1));
-    
+
+    const personality = this.getCurrentPersonality();
     const imageName = moodImages[this.currentImageIndex];
-    const newImageUrl = `assets/images/trebek/${imageName}`;
-    
+    const newImageUrl = `assets/images/${personality.imagePrefix}/${imageName}`;
+
     if (newImageUrl === this.currentImageUrl) return;
-    
+
     this.currentImageUrl = newImageUrl;
-    
+
     if (this.hostImageElement) {
       // Smooth transition
       this.transitionToImage(newImageUrl);
     }
   }
-  
+
   /**
    * Smooth image transition
    * @param {string} newImageUrl - URL of new image
    */
   async transitionToImage(newImageUrl) {
     if (!this.hostImageElement || this.isAnimating) return;
-    
+
     this.isAnimating = true;
-    
+
     // Fade out
     this.hostImageElement.style.transition = 'opacity 0.3s ease-in-out';
     this.hostImageElement.style.opacity = '0';
-    
+
     // Wait for fade out
     await new Promise(resolve => setTimeout(resolve, 300));
-    
+
     // Change image
     this.hostImageElement.src = newImageUrl;
-    
+
     // Fade in
     this.hostImageElement.style.opacity = '1';
-    
+
     // Wait for fade in
     await new Promise(resolve => setTimeout(resolve, 300));
-    
+
     this.isAnimating = false;
-    
+
     // Process animation queue
     if (this.animationQueue.length > 0) {
       const nextAnimation = this.animationQueue.shift();
       this.transitionToImage(nextAnimation);
     }
   }
-  
+
   /**
    * Go to next image in current mood
    */
   nextImage() {
     const moodImages = this.getCurrentMoodImages();
     if (!moodImages.length) return;
-    
+
     this.currentImageIndex = (this.currentImageIndex + 1) % moodImages.length;
     this.updateHostImage();
-    
+
     // Play sound effect
     soundManager.play('click', { volume: 0.3 });
-    
+
     eventBus.emit('host:image-changed', {
       direction: 'next',
       index: this.currentImageIndex
     });
   }
-  
+
   /**
    * Go to previous image in current mood
    */
   previousImage() {
     const moodImages = this.getCurrentMoodImages();
     if (!moodImages.length) return;
-    
-    this.currentImageIndex = this.currentImageIndex === 0 
-      ? moodImages.length - 1 
+
+    this.currentImageIndex = this.currentImageIndex === 0
+      ? moodImages.length - 1
       : this.currentImageIndex - 1;
-    
+
     this.updateHostImage();
-    
+
     // Play sound effect
     soundManager.play('click', { volume: 0.3 });
-    
+
     eventBus.emit('host:image-changed', {
       direction: 'previous',
       index: this.currentImageIndex
     });
   }
-  
+
   /**
    * Animate personality change
    */
   async animatePersonalityChange() {
     if (!this.hostContainer) return;
-    
+
     // Add dramatic effect
     this.hostContainer.style.transform = 'scale(0.9)';
     this.hostContainer.style.transition = 'transform 0.5s ease-in-out';
-    
+
     // Wait a moment
     await new Promise(resolve => setTimeout(resolve, 100));
-    
+
     // Update image
     this.updateHostImage();
-    
+
     // Scale back up
     this.hostContainer.style.transform = 'scale(1)';
-    
+
     // Cleanup
     setTimeout(() => {
       this.hostContainer.style.transition = '';
     }, 500);
   }
-  
+
   /**
    * Trigger special host animation
    * @param {string} animationType - Type of animation
@@ -452,46 +458,46 @@ export class HostSystem {
         break;
     }
   }
-  
+
   /**
    * Celebration animation for correct answers
    */
   async celebrationAnimation() {
     if (!this.hostContainer) return;
-    
+
     // Quick bounce effect
     this.hostContainer.style.animation = 'bounce 0.6s ease-in-out';
-    
+
     // Switch to playful mood temporarily
     const originalMood = this.currentMood;
     this.currentMood = 'playful';
     this.updateHostImage();
-    
+
     // Wait for animation
     await new Promise(resolve => setTimeout(resolve, 600));
-    
+
     // Restore original mood
     this.currentMood = originalMood;
     this.updateHostImage();
-    
+
     // Cleanup
     this.hostContainer.style.animation = '';
-    
+
     eventBus.emit('host:animation-complete', { type: 'celebrate' });
   }
-  
+
   /**
    * Thinking animation while processing
    */
   async thinkingAnimation() {
     // Subtle pulsing effect
     if (!this.hostImageElement) return;
-    
+
     this.hostImageElement.style.animation = 'pulse 1s ease-in-out infinite';
-    
+
     // This will be stopped externally when thinking is done
   }
-  
+
   /**
    * Stop thinking animation
    */
@@ -500,35 +506,35 @@ export class HostSystem {
       this.hostImageElement.style.animation = '';
     }
   }
-  
+
   /**
    * Surprise animation for unexpected events
    */
   async surpriseAnimation() {
     if (!this.hostContainer) return;
-    
+
     // Shake effect
     this.hostContainer.style.animation = 'shake 0.5s ease-in-out';
-    
+
     // Switch to mischievous mood if available
     const originalMood = this.currentMood;
     if (this.getCurrentPersonality().moods.mischievous) {
       this.currentMood = 'mischievous';
       this.updateHostImage();
     }
-    
+
     await new Promise(resolve => setTimeout(resolve, 500));
-    
+
     // Restore mood
     this.currentMood = originalMood;
     this.updateHostImage();
-    
+
     // Cleanup
     this.hostContainer.style.animation = '';
-    
+
     eventBus.emit('host:animation-complete', { type: 'surprise' });
   }
-  
+
   /**
    * Get contextual response from current personality
    * @param {string} context - Context type (correct, incorrect, etc.)
@@ -537,24 +543,24 @@ export class HostSystem {
   getResponse(context, data = {}) {
     const personality = this.getCurrentPersonality();
     const responses = personality.personality.reactions[context];
-    
+
     if (!responses || !responses.length) {
       return null;
     }
-    
+
     // Pick random response
     const response = responses[Math.floor(Math.random() * responses.length)];
-    
+
     eventBus.emit('host:response', {
       personality: this.currentPersonality,
       context,
       response,
       mood: this.currentMood
     });
-    
+
     return response;
   }
-  
+
   /**
    * Setup event handlers
    */
@@ -568,28 +574,28 @@ export class HostSystem {
         this.getResponse('incorrect', data);
       }
     });
-    
+
     // Update mood based on game stats
     eventBus.on('game:stats-updated', (data) => {
       this.updateMood(data.stats);
     });
-    
+
     // Personality change requests
     eventBus.on('host:change-personality', (data) => {
       this.changePersonality(data.personality);
     });
-    
+
     // Animation requests
     eventBus.on('host:animate', (data) => {
       this.triggerAnimation(data.animation);
     });
-    
+
     // Achievements trigger special animations
     eventBus.on('achievement:unlocked', () => {
       this.triggerAnimation('surprise');
     });
   }
-  
+
   /**
    * Get current state for debugging
    */

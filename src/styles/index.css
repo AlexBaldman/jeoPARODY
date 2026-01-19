@@ -1,0 +1,30 @@
+/* Main Entry Point for Styles */
+
+/* Define Layer Order - Later layers override earlier ones */
+@layer tokens, base, layout, components, utilities;
+
+/* Core Layers */
+@import './tokens.css' layer(tokens);
+@import './base.css' layer(base);
+@import './layout.css' layer(layout);
+
+/* Component Layers */
+@import './components/header.css' layer(components);
+@import './components/themes.css' layer(components);
+@import './components/side-menu.css' layer(components);
+@import './components/host-avatar.css' layer(components);
+@import './components/speech-bubble.css' layer(components);
+@import './components/scoreboard.css' layer(components);
+@import './components/game-screen.css' layer(components);
+@import './components/question-display.css' layer(components);
+@import './components/buttons.css' layer(components);
+@import './components/splash-screen.css' layer(components);
+@import './components/board-screen.css' layer(components);
+@import './components/media-player.css' layer(components);
+@import './components/user-profile.css' layer(components);
+@import './components/wager.css' layer(components);
+@import './components/marketing.css' layer(components);
+@import './media-rendering.css' layer(components);
+
+/* Utility Layer */
+@import './utilities.css' layer(utilities);

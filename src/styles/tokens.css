@@ -6,13 +6,66 @@
   --color-jeopardy-blue-2: #0a1d66;
   --color-gold: #ffd700;
   --color-gold-soft: #ffef9a;
+  --color-gold-rgb: 255, 215, 0; /* For rgba() usage */
   --color-surface: #ffffff;
+  --color-surface-rgb: 255, 255, 255; /* For rgba() usage */
   --color-surface-2: #f7f7fb;
   --color-text: #0b143a;
   --color-text-muted: #666b7a;
+  --gray-600: #666;
   --color-success: #27ae60;
+  --color-success-rgb: 39, 174, 96; /* For rgba() usage */
+  --green-400: #20c997;
+  --green-300: #2dd4bf;
+  --green-300-rgb: 45, 212, 191; /* For rgba() usage */
   --color-danger: #e74c3c;
+  --color-danger-rgb: 231, 76, 60; /* For rgba() usage */
   --color-warning: #f39c12;
+  --color-warning-rgb: 243, 156, 18; /* For rgba() usage */
+
+  --gray-700: #333;
+  --pink-500: #ff1fc3;
+  --pink-500-rgb: 255, 20, 147; /* For rgba() usage */
+  --pink-400: #ff4fd0;
+  --pink-700: #f0f;
+  --pink-700-rgb: 255, 0, 255; /* For rgba() usage */
+
+  /* Grayscale & Blues for Dark Mode */
+  --gray-980: #0a0f1f;
+  --gray-950: #0a1929;
+  --gray-900: #111827;
+  --gray-900-rgb: 17, 24, 39; /* For rgba() usage */
+  --gray-900-solid: #111;
+  --gray-800: #1f2937;
+  --gray-400: #cbd5e1;
+  --gray-300: #e5e7eb;
+  --gray-200: #e6e6fa;
+  --gray-100: #f3f4f6;
+  --blue-900: #1e3c72;
+    --blue-950: #2a5298;
+      --blue-100: #e6f0ff;
+      --blue-200: #e9ecff;
+    
+      --blue-700: #0735a8;  --blue-800: #0b1b60;
+  --blue-deep: #030a2a;
+
+  --cyan-500: #0ff;
+  --cyan-500-rgb: 0, 255, 255; /* For rgba() usage */
+  --red-500: #ff2257;
+  --color-orange: #FFA500;
+  --color-orange-rgb: 255, 165, 0; /* For rgba() usage */
+  --color-dark-gold: #b38f00;
+
+  --yellow-soft: #fffbe6;
+  --yellow-lighter: #ffeede;
+
+  --blue-sky: #87CEEB;
+  --blue-500-rgb: 52, 152, 219; /* For rgba() usage */
+  --blue-600-rgb: 41, 128, 185; /* For rgba() usage */
+  --peach: #FFE4B5;
+  --gray-500: #999;
+
+  --black-rgb: 0, 0, 0; /* For rgba() usage */
 
   /* Default accent prior to variant selection */
   --theme-accent: var(--color-jeopardy-blue);
@@ -60,13 +113,42 @@
 
   /* Z-Index Ladder */
   --z-base: 0;
+  --z-plane: 1;
   --z-header: 30;
   --z-host: 40;
   --z-footer: 50;
   --z-overlay: 100;
+  --z-panel: 980;
+  --z-panel-backdrop: 950;
+  --z-scoreboard: 900;
   --z-modal-backdrop: 1000;
   --z-modal: 1010;
   --z-tooltip: 1100;
+  --z-local-1: 1; /* Component local z-index */
+  --z-local-2: 2;
+  --z-local-3: 3;
+
+  /* Layout Dimensions */
+  --header-h: 60px;
+  --header-height: var(--header-h);
+  --footer-height: 80px;
+  --sidebar-width: 320px;
+
+  /* UX Pack specific tokens (consolidated) */
+  --uxp-primary: #4f46e5;
+  --uxp-secondary: #22c55e;
+  --uxp-accent: #f59e0b;
+  --uxp-comic-red: #ff2257;
+  --uxp-comic-yellow: #ffe14d;
+  --uxp-gold: #ffd700; /* Redundant with --color-gold, but keeping for now as it's used directly in ux-pack.css */
+  --uxp-jeopardy-blue: #0033a0; /* Redundant with --color-jeopardy-blue, but keeping for now */
+  --uxp-bg-dark: #0b1020;
+  --uxp-bg-light: #f4f6fb;
+  --uxp-glass: rgb(255 255 255 / 8%);
+  --uxp-shadow-xl: 0 25px 80px rgb(0 0 0 / 45%);
+  --uxp-radius-lg: 18px;
+  --uxp-radius-xl: 28px;
+  --uxp-duration: 300ms;
 }
 
 /* Dark mode adjustments (no inline style writes; toggle via data-theme-mode) */

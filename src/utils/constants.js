@@ -13,7 +13,8 @@ export const GAME_STATES = {
   AWAITING_ANSWER: 'awaiting_answer',
   ANSWER_REVEALED: 'answer_revealed',
   CHECKING_ANSWER: 'checking_answer',
-  ROUND_END: 'round_end'
+  ROUND_END: 'round_end',
+  WAGER: 'wager'
 };
 
 // Game Phases (alias for GAME_STATES for backward compatibility)
@@ -120,6 +121,19 @@ export const ERRORS = {
     LOAD_FAILED: 'Failed to load game state.',
     QUOTA_EXCEEDED: 'Storage quota exceeded.'
   }
+};
+
+// UI Screens
+export const UI_SCREENS = {
+  SPLASH: 'splash',
+  GAME: 'game',
+  FULLBOARD: 'fullboard',
+  RUNCATEGORY: 'run-category',
+  PAO: 'pao',
+  SETTINGS: 'settings',
+  ACHIEVEMENTS: 'achievements',
+  LEADERBOARD: 'leaderboard',
+  PROFILE: 'profile'
 };
 
 // Debug Flags (Carmack: "Always have debug flags, but make them obvious")

@@ -1,0 +1,100 @@
+@layer components {
+
+	/* Side menu */
+	.side-menu {
+		background: linear-gradient(145deg, rgb(26 26 26 / 98%), rgb(45 45 45 / 98%));
+		backdrop-filter: blur(10px);
+		border-top: 2px solid var(--primary-gold);
+		border-left: 2px solid rgb(255 215 0 / 20%);
+		box-shadow: 0 20px 40px rgb(0 0 0 / 40%);
+		border-bottom-left-radius: 12px;
+	}
+
+	.side-menu.active {
+		box-shadow: 0 24px 60px rgb(0 0 0 / 55%);
+	}
+
+	/* Backdrop for side menu */
+	#menu-backdrop {
+		position: fixed;
+		inset: 0;
+		background: rgb(0 0 0 / 35%);
+		backdrop-filter: blur(2px);
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.25s ease;
+		z-index: var(--z-panel-backdrop);
+	}
+
+	#menu-backdrop.active {
+		opacity: 1;
+		pointer-events: auto;
+	}
+
+	.side-menu .menu-items {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.side-menu .menu-items li {
+		border-bottom: 1px solid rgb(255 215 0 / 20%);
+	}
+
+	.side-menu .menu-items button {
+		width: 100%;
+		background: none;
+		border: none;
+		color: white;
+		padding: 15px 20px;
+		text-align: left;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		font-size: 14px;
+		cursor: pointer;
+		transition: all 0.3s ease;
+	}
+
+	.side-menu .menu-items button:hover {
+		background: rgb(255 215 0 / 10%);
+		color: var(--primary-gold);
+		transform: translateX(5px);
+	}
+
+	.side-menu .menu-items button i {
+		width: 20px;
+		text-align: center;
+		color: var(--primary-gold);
+	}
+
+	.auth-buttons-div {
+		position: absolute;
+		bottom: 20px;
+		left: 20px;
+		right: 20px;
+	}
+
+	.auth-buttons-div button {
+		width: 100%;
+		background: linear-gradient(135deg, var(--primary-gold) 0%, var(--color-orange, #FFA500) 100%);
+		border: none;
+		color: #1a1a1a;
+		padding: 12px;
+		margin-bottom: 10px;
+		border-radius: 8px;
+		font-weight: bold;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+	}
+
+	.auth-buttons-div button:hover {
+		background: linear-gradient(135deg, var(--color-orange, #FFA500) 0%, var(--primary-gold) 100%);
+		transform: translateY(-2px);
+		box-shadow: 0 4px 15px rgb(255 215 0 / 40%);
+	}
+}

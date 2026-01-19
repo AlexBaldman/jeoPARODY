@@ -1,0 +1,119 @@
+@layer components {
+
+	/* Marketing / Ticker Animation */
+	.event-ticker {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+		pointer-events: none;
+		z-index: var(--z-plane, -1);
+	}
+
+	.ticker-unit {
+		position: absolute;
+		display: flex;
+		align-items: center;
+		width: auto;
+		height: 6vmin;
+		border-radius: 4px;
+		padding: 0.5vmin 2vmin;
+		animation: flyAcross 15s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+		transform: translateX(-100%);
+		top: 25%;
+	}
+
+	.ticker-plane {
+		position: relative;
+		width: 12vmin;
+		height: 6vmin;
+		transform-style: preserve-3d;
+		z-index: var(--z-plane, -1);
+	}
+
+	.ticker-banner {
+		position: absolute;
+		left: 12vmin;
+		top: 50%;
+		transform: translateY(-50%);
+		height: 4vmin;
+		display: flex;
+		align-items: center;
+		background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 165, 0, 0.9));
+		color: var(--gray-900);
+		padding: 0 1.5vmin;
+		border-radius: 8px;
+		border: 2px solid var(--primary-gold);
+		font-weight: bold;
+		text-shadow: none;
+		animation: flutter 2s ease-in-out infinite;
+		transform-origin: left center;
+		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+		backdrop-filter: blur(2px);
+	}
+
+	.ticker-content {
+		color: var(--gray-900);
+		font-size: 2.2vmin;
+		font-weight: bold;
+		letter-spacing: 0.1vmin;
+		white-space: nowrap;
+		font-family: var(--font-display);
+		text-shadow: none;
+	}
+
+	@keyframes flyAcross {
+		0% {
+			transform: translateX(-100%) translateY(0);
+			opacity: 0.8;
+		}
+
+		15% {
+			opacity: 1;
+		}
+
+		25% {
+			transform: translateX(25vw) translateY(-2vmin);
+		}
+
+		50% {
+			transform: translateX(50vw) translateY(2vmin);
+		}
+
+		75% {
+			transform: translateX(75vw) translateY(-1vmin);
+			opacity: 1;
+		}
+
+		85% {
+			opacity: 0.8;
+		}
+
+		100% {
+			transform: translateX(calc(100vw + 20vmin)) translateY(0);
+			opacity: 0;
+		}
+	}
+
+	@keyframes flutter {
+
+		0%,
+		100% {
+			transform: translateY(-50%) rotateZ(0deg);
+		}
+
+		25% {
+			transform: translateY(-52%) rotateZ(1deg);
+		}
+
+		50% {
+			transform: translateY(-50%) rotateZ(0deg);
+		}
+
+		75% {
+			transform: translateY(-48%) rotateZ(-1deg);
+		}
+	}
+}

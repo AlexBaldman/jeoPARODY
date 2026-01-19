@@ -1,0 +1,76 @@
+@layer components {
+
+	/* Gorgeous Buttons */
+	.btn {
+		--bshadow: 0 8px 24px rgb(0 0 0 / 25%);
+		--uxp-duration: 0.3s;
+		--uxp-gold: #ffd700;
+
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+		padding: 14px 22px;
+		border-radius: 14px;
+		border: 0;
+		cursor: pointer;
+		font-weight: 800;
+		letter-spacing: .3px;
+		color: #0b0b0b;
+		transition: transform var(--uxp-duration), box-shadow var(--uxp-duration), filter var(--uxp-duration);
+		font-family: var(--font-ui, sans-serif);
+	}
+
+	.btn-gradient {
+		background: linear-gradient(135deg, var(--uxp-gold) 0%, #ffe680 100%);
+		box-shadow: 0 6px 0 #b38f00, var(--bshadow);
+	}
+
+	.btn-gradient:hover {
+		transform: translateY(-2px);
+		filter: brightness(1.05) saturate(1.1);
+	}
+
+	.btn-gradient:active {
+		transform: translateY(0);
+		box-shadow: 0 2px 0 #b38f00, 0 4px 12px rgb(0 0 0 / 20%);
+	}
+
+	.btn-neon {
+		background: linear-gradient(135deg, #20c997, #2dd4bf);
+		color: white;
+		text-shadow: 0 0 8px rgb(255 255 255 / 40%);
+		box-shadow: 0 0 0 0 rgb(45 212 191 / 60%), var(--bshadow);
+		position: relative;
+		isolation: isolate;
+	}
+
+	.btn-neon::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		box-shadow: 0 0 20px 6px rgb(45 212 191 / 50%);
+		opacity: 0;
+		transition: opacity var(--uxp-duration);
+	}
+
+	.btn-neon:hover::after {
+		opacity: 1;
+	}
+
+	.btn-arcade {
+		background: #111;
+		color: #0ff;
+		border: 2px solid #0ff;
+		font-family: 'Press Start 2P', monospace;
+		text-transform: uppercase;
+		box-shadow: 0 0 12px rgb(0 255 255 / 50%), inset 0 0 8px rgb(0 255 255 / 25%);
+	}
+
+	.btn-arcade:hover {
+		color: #f0f;
+		border-color: #f0f;
+		box-shadow: 0 0 16px rgb(255 0 255 / 60%), inset 0 0 10px rgb(255 0 255 / 35%);
+	}
+}

@@ -1,0 +1,36 @@
+@layer base {
+  :root {
+    --font-heading: 'Outfit', system-ui, sans-serif;
+  }
+  
+  html {
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+  }
+
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    overflow-x: hidden;
+    /* Add padding for sticky header and footer */
+    padding-top: var(--header-height, 60px);
+    padding-bottom: var(--footer-height, 80px);
+    line-height: 1.5;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading, inherit);
+    margin-top: 0;
+  }
+
+  button {
+    cursor: pointer;
+    font-family: inherit;
+  }
+}
