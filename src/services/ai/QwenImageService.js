@@ -1,48 +1,77 @@
-/**
- * QwenImageService - Stub implementation for PAO image generation
- * 
- * This is a placeholder service that would integrate with Qwen AI for image generation.
- * Currently returns placeholder URLs to prevent build errors.
- */
+// QwenImageService.js - functional client with fetch and placeholder fallback
 
-class QwenImageService {
+export default class QwenImageService {
   constructor() {
-    this.initialized = false;
+    const saved = JSON.parse(localStorage.getItem('qwen_image_config') || '{}');
+    this.endpoint = saved.endpoint || (window.QWEN_IMAGE_ENDPOINT || '');
+    this.apiKey = saved.apiKey || (window.QWEN_IMAGE_API_KEY || '');
   }
 
-  async initialize() {
-    // TODO: Initialize Qwen API connection
-    this.initialized = true;
+  setConfig({ endpoint, apiKey }) {
+    this.endpoint = endpoint || '';
+    this.apiKey = apiKey || '';
+    localStorage.setItem('qwen_image_config', JSON.stringify({ endpoint: this.endpoint, apiKey: this.apiKey }));
   }
 
   /**
    * Generate an image from text prompt
-   * @param {string} prompt - Text description for image generation
-   * @returns {Promise<string|null>} - Generated image URL or null if failed
+   * @param {string} prompt 
+   * @returns {Promise<string>} Image URL
    */
   async generateImage(prompt) {
     try {
-      // TODO: Replace with actual Qwen API call
-      console.log(`[QwenImageService] Would generate image for: "${prompt}"`);
-      
-      // Return placeholder image URL for now
-      // You can replace this with actual Qwen API integration later
-      const placeholderUrl = `https://via.placeholder.com/150x150/4a90e2/ffffff?text=${encodeURIComponent(prompt.substring(0, 10))}`;
-      
-      return placeholderUrl;
-    } catch (error) {
-      console.error('[QwenImageService] Failed to generate image:', error);
-      return null;
+      if (this.endpoint) {
+        const res = await fetch(this.endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(this.apiKey ? { 'Authorization': `Bearer ${this.apiKey}` } : {})
+          },
+          body: JSON.stringify({ prompt })
+        });
+        if (!res.ok) throw new Error(`Qwen endpoint error: ${res.status}`);
+        const data = await res.json();
+        // Expected data.url or data.image
+        return data.url || data.image || '';
+      }
+      // Fallback: placeholder image (free)
+      const encoded = encodeURIComponent(prompt.substring(0, 24));
+      return `https://dummyimage.com/512x512/eeeeee/333333&text=${encoded}`;
+    } catch (e) {
+      console.warn('Qwen generateImage failed, using placeholder:', e.message);
+      const encoded = encodeURIComponent(prompt.substring(0, 24));
+      return `https://dummyimage.com/512x512/eeeeee/333333&text=${encoded}`;
     }
   }
 
   /**
-   * Check if the service is available
-   * @returns {boolean}
+   * Edit an existing image (img2img)
+   * @param {string} prompt 
+   * @param {Blob} sourceBlob 
+   * @returns {Promise<string>} Image URL
    */
-  isAvailable() {
-    return this.initialized;
+  async editImage(prompt, sourceBlob) {
+    try {
+      if (this.endpoint) {
+        const formData = new FormData();
+        formData.append('prompt', prompt);
+        formData.append('image', sourceBlob, 'input.png');
+
+        const res = await fetch(this.endpoint + '/edit', { // Assuming /edit endpoint
+          method: 'POST',
+          headers: {
+            ...(this.apiKey ? { 'Authorization': `Bearer ${this.apiKey}` } : {})
+          },
+          body: formData
+        });
+        if (!res.ok) throw new Error(`Qwen edit error: ${res.status}`);
+        const data = await res.json();
+        return data.url || data.image || '';
+      }
+      return this.generateImage(prompt + ' (edited)');
+    } catch (e) {
+      console.warn('Qwen editImage failed:', e.message);
+      return this.generateImage(prompt);
+    }
   }
 }
-
-export default QwenImageService;

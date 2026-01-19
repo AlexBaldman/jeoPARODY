@@ -127,7 +127,24 @@ class PAOView {
 
   async generateImageFor(card) {
     const prompt = `${card.person} ${card.action} ${card.object}`.trim();
-    const url = await this.qwen.generateImage(prompt);
+    let url;
+
+    // Use img2img if we already have an image
+    if (card.imageUrl && card.imageUrl.startsWith('http')) {
+      try {
+        console.log(`[PAOView] Requesting image edit for: "${prompt}"`);
+        const response = await fetch(card.imageUrl);
+        const blob = await response.blob();
+        url = await this.qwen.editImage(prompt, blob);
+      } catch (e) {
+        console.warn('[PAOView] Image edit failed, falling back to generation:', e);
+        url = await this.qwen.generateImage(prompt);
+      }
+    } else {
+      console.log(`[PAOView] Requesting new image for: "${prompt}"`);
+      url = await this.qwen.generateImage(prompt);
+    }
+
     if (url) {
       card.imageUrl = url;
       this.render();

@@ -32,7 +32,7 @@ export function deepClone(obj) {
   if (obj === null || typeof obj !== 'object') return obj;
   if (obj instanceof Date) return new Date(obj.getTime());
   if (obj instanceof Array) return obj.map(item => deepClone(item));
-  
+
   const clonedObj = {};
   for (const key in obj) {
     if (obj.hasOwnProperty(key)) {
@@ -104,15 +104,15 @@ export function lerp(start, end, progress) {
  */
 export function levenshteinDistance(a, b) {
   const matrix = [];
-  
+
   for (let i = 0; i <= b.length; i++) {
     matrix[i] = [i];
   }
-  
+
   for (let j = 0; j <= a.length; j++) {
     matrix[0][j] = j;
   }
-  
+
   for (let i = 1; i <= b.length; i++) {
     for (let j = 1; j <= a.length; j++) {
       if (b.charAt(i - 1) === a.charAt(j - 1)) {
@@ -126,7 +126,7 @@ export function levenshteinDistance(a, b) {
       }
     }
   }
-  
+
   return matrix[b.length][a.length];
 }
 
@@ -139,9 +139,9 @@ export function levenshteinDistance(a, b) {
 export function stringSimilarity(a, b) {
   const longer = a.length > b.length ? a : b;
   const shorter = a.length > b.length ? b : a;
-  
+
   if (longer.length === 0) return 1.0;
-  
+
   const editDistance = levenshteinDistance(longer, shorter);
   return (longer.length - editDistance) / longer.length;
 }
@@ -155,7 +155,7 @@ export function formatTimeRemaining(milliseconds) {
   const seconds = Math.ceil(milliseconds / 1000);
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
-  
+
   if (minutes > 0) {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   }
@@ -171,7 +171,7 @@ export function formatTime(seconds) {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const secs = seconds % 60;
-  
+
   if (hours > 0) {
     return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }
@@ -209,7 +209,7 @@ export function delay(ms) {
  */
 export async function retryWithBackoff(fn, maxAttempts = 3, initialDelay = 1000) {
   let lastError;
-  
+
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
       return await fn();
@@ -221,7 +221,7 @@ export async function retryWithBackoff(fn, maxAttempts = 3, initialDelay = 1000)
       }
     }
   }
-  
+
   throw lastError;
 }
 
@@ -235,7 +235,7 @@ export async function retryWithBackoff(fn, maxAttempts = 3, initialDelay = 1000)
  */
 export function createElement(tag, attrs = {}, ...children) {
   const element = document.createElement(tag);
-  
+
   // Set attributes
   Object.entries(attrs).forEach(([key, value]) => {
     if (key === 'className') {
@@ -253,11 +253,11 @@ export function createElement(tag, attrs = {}, ...children) {
       element.setAttribute(key, value);
     }
   });
-  
+
   // Add children
   children.forEach(child => {
     if (child === null || child === undefined) return;
-    
+
     if (typeof child === 'string' || typeof child === 'number') {
       element.appendChild(document.createTextNode(child));
     } else if (child instanceof Element) {
@@ -272,6 +272,37 @@ export function createElement(tag, attrs = {}, ...children) {
       });
     }
   });
-  
   return element;
+}
+
+/**
+ * Capture an image element's content as a Blob
+ * @param {HTMLImageElement} imgElement - The image element to capture
+ * @returns {Promise<Blob>} - Promise resolving to a Blob
+ */
+export async function getImageBlobFromElement(imgElement) {
+  if (!imgElement) throw new Error('No image element provided');
+
+  // Attempt to fetch if it's a URL
+  try {
+    const response = await fetch(imgElement.src);
+    if (response.ok) return await response.blob();
+  } catch (e) {
+    console.warn('[Helpers] Fetch failed for image blob, falling back to canvas:', e);
+  }
+
+  // Fallback to canvas for local/tainted images
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = imgElement.naturalWidth || imgElement.width;
+    canvas.height = imgElement.naturalHeight || imgElement.height;
+
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(imgElement, 0, 0);
+
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error('Failed to create blob from canvas'));
+    }, 'image/png');
+  });
 }

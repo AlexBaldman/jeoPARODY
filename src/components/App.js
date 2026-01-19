@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import ConnectedComponent from '../base/ConnectedComponent.js';
 import { ScoreBoard, QuestionDisplay, GameControls, ModalManager } from './index.js';
 import AchievementsModal from './AchievementsModal.js';
@@ -34,8 +33,8 @@ class App extends ConnectedComponent {
   // State selectors
   selectState(state) {
     return {
-      phase: state.game.phase,
-      isInitialized: state.game.phase !== GAME_PHASES.INITIAL
+      phase: state.game?.phase || GAME_PHASES.INITIAL,
+      isInitialized: state.game?.phase !== GAME_PHASES.INITIAL
     };
   }
 
@@ -44,367 +43,22 @@ class App extends ConnectedComponent {
     console.log('🎮 App component initializing...');
     this.classList.add('app-container');
     this.initializeComponents();
-    
+
     // Initialize sound manager
     this.initializeSoundManager();
-    
+
     // Initialize game if needed
     if (!this.state || !this.state.isInitialized) {
       console.log('🎮 Emitting game:initialize event');
       this.eventBus.emit('game:initialize');
     }
-    
+
     // Add to container if provided
     if (this.container) {
       this.container.appendChild(this);
     }
   }
-  
-  // Lifecycle methods
-  connectedCallback() {
-    super.connectedCallback();
-    console.log('🎮 App component connected to DOM');
-  }
 
-  disconnectedCallback() {
-    this.cleanupComponents();
-    super.disconnectedCallback();
-  }
-
-  // Component management
-  initializeComponents() {
-    // Create header with sticky positioning
-    const header = document.createElement('header');
-    header.className = 'game-header';
-    
-    // Create left controls container
-    const leftControls = document.createElement('div');
-    leftControls.className = 'header-left';
-    
-    // Theme toggle
-    const themeSwitch = document.createElement('div');
-    themeSwitch.className = 'theme-switch';
-    themeSwitch.innerHTML = `
-      <button class="theme-toggle" aria-label="Toggle theme">
-        <span class="theme-icon">🌞</span>
-      </button>
-    `;
-    
-    // Language toggle
-    const languageToggle = document.createElement('div');
-    languageToggle.className = 'language-toggle';
-    languageToggle.innerHTML = `
-      <button class="lang-button" aria-label="Change language">
-        <span class="lang-icon">🌐</span>
-      </button>
-    `;
-    
-    leftControls.appendChild(themeSwitch);
-    leftControls.appendChild(languageToggle);
-    
-    // Create center logo
-    const logoContainer = document.createElement('div');
-    logoContainer.className = 'header-center';
-    logoContainer.innerHTML = `
-      <img src="images/jeoparody.png" alt="Jeopardish Logo" class="game-logo">
-    `;
-    
-    // Create right controls
-    const rightControls = document.createElement('div');
-    rightControls.className = 'header-right';
-    const hamburger = document.createElement('button');
-    hamburger.className = 'hamburger-menu';
-    hamburger.id = 'hamburger-menu';
-    hamburger.setAttribute('aria-label', 'Toggle menu');
-    hamburger.setAttribute('aria-controls', 'side-menu');
-    hamburger.setAttribute('aria-expanded', 'false');
-    hamburger.innerHTML = `
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>`;
-    rightControls.appendChild(hamburger);
-    
-    // Build header
-    header.appendChild(leftControls);
-    header.appendChild(logoContainer);
-    header.appendChild(rightControls);
-    
-    // Create side menu
-    const sideMenu = document.createElement('nav');
-    sideMenu.className = 'side-menu';
-    sideMenu.id = 'side-menu';
-    sideMenu.innerHTML = `
-      <div class="menu-header">
-        <h3>Menu</h3>
-        <button class="close-menu" aria-label="Close menu">×</button>
-      </div>
-      <ul class="menu-items">
-        <li><button data-action="settings">⚙️ Settings</button></li>
-        <li><button data-action="stats">📊 Stats</button></li>
-        <li><button data-action="achievements">🏆 Achievements</button></li>
-        <li><button data-action="leaderboard">📈 Leaderboard</button></li>
-        <li><button data-action="profile">👤 Profile</button></li>
-        <li><button data-action="help">❓ Help</button></li>
-      </ul>`;
-    
-    // Create main content area
-    const main = document.createElement('main');
-    main.className = 'app-main';
-    
-    // Create component containers
-    const scoreBoardContainer = document.createElement('div');
-    scoreBoardContainer.className = 'scoreboard-container';
-    
-    const questionContainer = document.createElement('div');
-    questionContainer.className = 'question-container';
-    
-    const controlsContainer = document.createElement('div');
-    controlsContainer.className = 'controls-container';
-    
-    // Initialize child components
-    this.children.scoreBoard = new ScoreBoard();
-    this.children.questionDisplay = new QuestionDisplay();
-    this.children.gameControls = new GameControls();
-    
-    // Append components to containers
-    scoreBoardContainer.appendChild(this.children.scoreBoard);
-    questionContainer.appendChild(this.children.questionDisplay);
-    controlsContainer.appendChild(this.children.gameControls);
-    
-    // Build layout
-    main.appendChild(scoreBoardContainer);
-    main.appendChild(questionContainer);
-    main.appendChild(controlsContainer);
-    
-    // Add to app
-    this.appendChild(header);
-    // Backdrop for side menu (for click-to-close and focus layering)
-    const menuBackdrop = document.createElement('div');
-    menuBackdrop.className = 'menu-backdrop';
-    this.appendChild(sideMenu);
-    this.appendChild(menuBackdrop);
-    this.appendChild(main);
-
-    // Create and append scoreboard
-    const scoreboardElement = document.createElement('div');
-    scoreboardElement.id = 'scoreboard';
-    scoreboardElement.className = 'scoreboard';
-    scoreboardElement.setAttribute('role', 'region');
-    scoreboardElement.setAttribute('aria-label', 'Scoreboard');
-    scoreboardElement.innerHTML = `
-        <h2>SCOREBOARD</h2>
-        <p>SCORE: <span id="score" class="score-value">0</span></p>
-        <p>STREAK: <span id="streak" class="score-value">0</span></p>
-        <p>TOP SCORE: <span id="top-score" class="score-value">0</span></p>
-        <p>MAX STREAK: <span id="max-streak" class="score-value">0</span></p>
-    `;
-    this.appendChild(scoreboardElement);
-
-    // Create and append user profile
-    const userProfileElement = document.createElement('div');
-    userProfileElement.id = 'user-profile';
-    userProfileElement.className = 'user-profile';
-    userProfileElement.style.display = 'none';
-    userProfileElement.setAttribute('role', 'region');
-    userProfileElement.setAttribute('aria-label', 'User profile');
-    userProfileElement.innerHTML = `
-        <img id="user-avatar" class="user-avatar">
-        <span id="user-name"></span>
-        <button id="profile-button">edit profile</button>
-        <button id="logout-button">sign out</button>
-    `;
-    this.appendChild(userProfileElement);
-    
-    // Initialize and add modal manager
-    // Lazy-create SettingsModal and attach to app
-    const settingsMount = document.createElement('div');
-    settingsMount.id = 'settings-modal-mount';
-    this.appendChild(settingsMount);
-    
-    // Initialize achievements modal
-    this.children.achievementsModal = new AchievementsModal(this.store, this.eventBus);
-    this.appendChild(this.children.achievementsModal.element);
-    
-    // Setup event handlers
-    this.setupHeaderEvents();
-  }
-  
-  setupHeaderEvents() {
-    // Theme toggle
-    const themeToggle = this.querySelector('.theme-toggle');
-    if (themeToggle) {
-      themeToggle.addEventListener('click', () => {
-        const isDark = !document.body.classList.contains('dark-theme');
-        document.documentElement.classList.toggle('dark-theme', isDark);
-        document.documentElement.classList.toggle('dark-mode', isDark);
-        document.body.classList.toggle('dark-theme', isDark);
-        document.body.classList.toggle('dark-mode', isDark);
-        const icon = themeToggle.querySelector('.theme-icon');
-        icon.textContent = isDark ? '🌚' : '🌞';
-        localStorage.setItem('jeopardish_theme', isDark ? 'dark' : 'light');
-      });
-    }
-    
-    // Language toggle - handled by main.js
-    const langButton = this.querySelector('.lang-button');
-    if (langButton) {
-      langButton.id = 'lang-btn';
-      // Additional menu button is #lang-btn-menu
-    }
-    
-    // Hamburger menu (accessible)
-    const hamburger = this.querySelector('.hamburger-menu');
-    const sideMenu = this.querySelector('.side-menu');
-    const closeMenu = this.querySelector('.close-menu');
-    const backdrop = this.querySelector('.menu-backdrop');
-
-    const getFocusable = () => sideMenu?.querySelectorAll(
-      'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
-    ) || [];
-
-    const onKeydown = (e) => {
-      if (!sideMenu?.classList.contains('open')) return;
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        closeMenuFn();
-        return;
-      }
-      if (e.key === 'Tab') {
-        const focusable = Array.from(getFocusable());
-        if (!focusable.length) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        const active = document.activeElement;
-        if (e.shiftKey && active === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && active === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    };
-
-    const openMenu = () => {
-      sideMenu?.classList.add('open');
-      backdrop?.classList.add('visible');
-      hamburger?.setAttribute('aria-expanded', 'true');
-      const focusable = getFocusable();
-      if (focusable.length) {
-        const first = focusable[0];
-        if (first && typeof first.focus === 'function') first.focus();
-      }
-      document.addEventListener('keydown', onKeydown);
-    };
-
-    const closeMenuFn = () => {
-      sideMenu?.classList.remove('open');
-      backdrop?.classList.remove('visible');
-      hamburger?.setAttribute('aria-expanded', 'false');
-      if (hamburger && typeof hamburger.focus === 'function') {
-        try { hamburger.focus(); } catch(_) {}
-      }
-      document.removeEventListener('keydown', onKeydown);
-    };
-
-    if (hamburger && sideMenu) {
-      hamburger.addEventListener('click', () => {
-        const isOpen = sideMenu.classList.contains('open');
-        if (isOpen) closeMenuFn(); else openMenu();
-      });
-    }
-
-    if (closeMenu && sideMenu) {
-      closeMenu.addEventListener('click', () => closeMenuFn());
-    }
-
-    if (backdrop && sideMenu) {
-      backdrop.addEventListener('click', () => closeMenuFn());
-    }
-    
-    // Menu items
-    const menuButtons = this.querySelectorAll('.menu-items button');
-    menuButtons.forEach(button => {
-      button.addEventListener('click', (e) => {
-        const action = e.target.dataset.action;
-        console.log(`📱 Menu action: ${action}`);
-        if (action === 'settings') {
-          import('./SettingsModal.js').then(({ default: SettingsModal }) => {
-            if (!this.children.settingsModal) {
-              this.children.settingsModal = new SettingsModal(this.store, this.eventBus);
-              const mount = this.querySelector('#settings-modal-mount');
-              if (mount) mount.appendChild(this.children.settingsModal.element);
-            }
-            this.children.settingsModal.open();
-          });
-        } else {
-          this.eventBus.emit(`modal:open`, { type: action });
-        }
-        sideMenu.classList.remove('open');
-        this.querySelector('.menu-backdrop')?.classList.remove('visible');
-        hamburger?.setAttribute('aria-expanded', 'false');
-=======
-import ConnectedComponent from '../base/ConnectedComponent.js';
-import { ScoreBoard, QuestionDisplay, GameControls, ModalManager } from './index.js';
-import AchievementsModal from './AchievementsModal.js';
-import { eventBus } from '../utils/events.js';
-import { GAME_PHASES } from '../utils/constants.js';
-import { soundManager } from '../services/soundManager.js';
-
-/**
- * Main application component that orchestrates all UI components.
- * 
- * Responsibilities:
- * - Component composition and layout
- * - High-level application state management
- * - Initialization and cleanup
- * 
- * @extends ConnectedComponent
- */
-class App extends ConnectedComponent {
-  constructor(config = {}) {
-    super();
-    this.config = config;
-    this.store = config.store;
-    this.eventBus = config.eventBus;
-    this.container = config.container;
-    this.children = {
-      scoreBoard: null,
-      questionDisplay: null,
-      gameControls: null,
-      modalManager: null
-    };
-  }
-
-  // State selectors
-  selectState(state) {
-    return {
-      phase: state.game.phase,
-      isInitialized: state.game.phase !== GAME_PHASES.INITIAL
-    };
-  }
-
-  // Initialize the component
-  init() {
-    console.log('🎮 App component initializing...');
-    this.classList.add('app-container');
-    this.initializeComponents();
-    
-    // Initialize sound manager
-    this.initializeSoundManager();
-    
-    // Initialize game if needed
-    if (!this.state || !this.state.isInitialized) {
-      console.log('🎮 Emitting game:initialize event');
-      this.eventBus.emit('game:initialize');
-    }
-    
-    // Add to container if provided
-    if (this.container) {
-      this.container.appendChild(this);
-    }
-  }
-  
   // Lifecycle methods
   connectedCallback() {
     super.connectedCallback();
@@ -429,11 +83,11 @@ class App extends ConnectedComponent {
       // Create header with sticky positioning
       header = document.createElement('header');
       header.className = 'game-header';
-      
+
       // Create left controls container
       const leftControls = document.createElement('div');
       leftControls.className = 'header-left';
-      
+
       // Theme toggle
       const themeSwitch = document.createElement('div');
       themeSwitch.className = 'theme-switch';
@@ -442,7 +96,7 @@ class App extends ConnectedComponent {
           <span class="theme-icon">🌞</span>
         </button>
       `;
-      
+
       // Language toggle
       const languageToggle = document.createElement('div');
       languageToggle.className = 'language-toggle';
@@ -451,36 +105,37 @@ class App extends ConnectedComponent {
           <span class="lang-icon">🌐</span>
         </button>
       `;
-      
+
       leftControls.appendChild(themeSwitch);
       leftControls.appendChild(languageToggle);
-      
+
       // Create center logo
       const logoContainer = document.createElement('div');
       logoContainer.className = 'header-center';
       logoContainer.innerHTML = `
         <img src="images/jeoparody.png" alt="Jeopardish Logo" class="game-logo">
       `;
-      
-      // Create right hamburger menu
+
+      // Create right controls
       const rightControls = document.createElement('div');
       rightControls.className = 'header-right';
       const hamburger = document.createElement('button');
       hamburger.className = 'hamburger-menu';
       hamburger.id = 'hamburger-menu';
       hamburger.setAttribute('aria-label', 'Toggle menu');
+      hamburger.setAttribute('aria-controls', 'side-menu');
+      hamburger.setAttribute('aria-expanded', 'false');
       hamburger.innerHTML = `
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-      `;
+        <span class="hamburger-line"></span>`;
       rightControls.appendChild(hamburger);
-      
+
       // Build header
       header.appendChild(leftControls);
       header.appendChild(logoContainer);
       header.appendChild(rightControls);
-      
+
       // Create side menu
       sideMenu = document.createElement('nav');
       sideMenu.className = 'side-menu';
@@ -498,97 +153,115 @@ class App extends ConnectedComponent {
           <li><button data-action="leaderboard">📈 Leaderboard</button></li>
           <li><button data-action="profile">👤 Profile</button></li>
           <li><button data-action="help">❓ Help</button></li>
-        </ul>
-      `;
-    } else {
-      // Use existing elements managed by Navigation component
-      header = null; // don't create or append
-      sideMenu = null; // don't create or append
+        </ul>`;
     }
-    
+
     // Create main content area
     const main = document.createElement('main');
     main.className = 'app-main';
-    
+
     // Create component containers
     const scoreBoardContainer = document.createElement('div');
     scoreBoardContainer.className = 'scoreboard-container';
-    
+
     const questionContainer = document.createElement('div');
     questionContainer.className = 'question-container';
-    
+
     const controlsContainer = document.createElement('div');
     controlsContainer.className = 'controls-container';
-    
+
     // Initialize child components
     this.children.scoreBoard = new ScoreBoard();
     this.children.questionDisplay = new QuestionDisplay();
     this.children.gameControls = new GameControls();
-    
+
     // Append components to containers
     scoreBoardContainer.appendChild(this.children.scoreBoard);
     questionContainer.appendChild(this.children.questionDisplay);
     controlsContainer.appendChild(this.children.gameControls);
-    
+
     // Build layout
     main.appendChild(scoreBoardContainer);
     main.appendChild(questionContainer);
     main.appendChild(controlsContainer);
-    
+
     // Add to app
     if (header) this.appendChild(header);
     if (sideMenu) this.appendChild(sideMenu);
     this.appendChild(main);
-    
+
+    // Create and append scoreboard elements for legacy support if needed
+    if (!document.getElementById('scoreboard')) {
+      const sb = document.createElement('div');
+      sb.id = 'scoreboard';
+      sb.className = 'scoreboard';
+      sb.innerHTML = `
+        <h2>SCOREBOARD</h2>
+        <p>SCORE: <span id="score" class="score-value">0</span></p>
+        <p>STREAK: <span id="streak" class="score-value">0</span></p>
+        <p>TOP SCORE: <span id="top-score" class="score-value">0</span></p>
+        <p>MAX STREAK: <span id="max-streak" class="score-value">0</span></p>
+      `;
+      this.appendChild(sb);
+    }
+
     // Initialize and add modal manager
     this.children.modalManager = new ModalManager();
     this.appendChild(this.children.modalManager);
-    
+
     // Initialize achievements modal
     this.children.achievementsModal = new AchievementsModal(this.store, this.eventBus);
     this.appendChild(this.children.achievementsModal.element);
-    
+
     // Setup event handlers
     this.setupHeaderEvents();
   }
-  
+
   setupHeaderEvents() {
     // Theme toggle
     const themeToggle = this.querySelector('.theme-toggle');
     if (themeToggle) {
       themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-theme');
+        const isDark = !document.body.classList.contains('dark-theme');
+        document.documentElement.classList.toggle('dark-theme', isDark);
+        document.documentElement.classList.toggle('dark-mode', isDark);
+        document.body.classList.toggle('dark-theme', isDark);
+        document.body.classList.toggle('dark-mode', isDark);
         const icon = themeToggle.querySelector('.theme-icon');
-        icon.textContent = document.body.classList.contains('dark-theme') ? '🌚' : '🌞';
-        localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+        if (icon) icon.textContent = isDark ? '🌚' : '🌞';
+        localStorage.setItem('jeopardish_theme', isDark ? 'dark' : 'light');
       });
     }
-    
-    // Language toggle - handled by main.js (bind via class for multiple buttons)
+
+    // Language toggle
     const langButton = this.querySelector('.lang-button');
     if (langButton) {
       langButton.classList.add('js-lang-toggle');
     }
-    
-    // Hamburger menu is owned by Navigation component. Avoid duplicate handlers here.
+
     // Menu items
-    const menuButtons = (this.querySelectorAll('.menu-items button')) || [];
+    const menuButtons = this.querySelectorAll('.menu-items button');
     menuButtons.forEach(button => {
       button.addEventListener('click', (e) => {
         const action = e.target.dataset.action;
         console.log(`📱 Menu action: ${action}`);
         this.eventBus.emit(`modal:open`, { type: action });
->>>>>>> main
+
+        // Close menu after action
+        const sideMenu = this.querySelector('.side-menu');
+        const hamburger = this.querySelector('.hamburger-menu');
+        if (sideMenu) sideMenu.classList.remove('open');
+        if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
       });
     });
-    
+
     // Apply saved theme
     const savedTheme = localStorage.getItem('jeopardish_theme');
     if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark-theme', true);
-      document.documentElement.classList.add('dark-mode', true);
-      document.body.classList.add('dark-theme', true);
-      document.body.classList.add('dark-mode', true);
+      document.documentElement.classList.add('dark-theme');
+      document.documentElement.classList.add('dark-mode');
+      document.body.classList.add('dark-theme');
+      document.body.classList.add('dark-mode');
       const icon = themeToggle?.querySelector('.theme-icon');
       if (icon) icon.textContent = '🌚';
     }
@@ -601,7 +274,7 @@ class App extends ConnectedComponent {
         child.parentNode.removeChild(child);
       }
     });
-    
+
     // Clear references
     this.children = {
       scoreBoard: null,
@@ -615,20 +288,14 @@ class App extends ConnectedComponent {
   initializeSoundManager() {
     // Initialize sounds (this ensures they're loaded)
     soundManager.init();
-    
+
     // Wire up game event sounds
     eventBus.on('answer:correct', () => soundManager.play('correct'));
     eventBus.on('answer:incorrect', () => soundManager.play('incorrect'));
     eventBus.on('game:start', () => soundManager.play('theme'));
     eventBus.on('game:over', () => soundManager.play('gameover'));
-    eventBus.on('button:click', () => soundManager.play('click'));
-    
-    // Add sound control UI
-    this.addSoundControls();
+    eventBus.on('ui:button-click', () => soundManager.play('click'));
   }
-
-
-
 
   render() {
     // App component doesn't re-render after initialization
@@ -637,7 +304,9 @@ class App extends ConnectedComponent {
 }
 
 // Define custom element
-customElements.define('jeopardish-app', App);
+if (!customElements.get('jeopardish-app')) {
+  customElements.define('jeopardish-app', App);
+}
 
 export default App;
 export { App };
