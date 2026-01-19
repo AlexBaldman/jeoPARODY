@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" data-ui-arch="component-first">
+
+<head>
+    <!-- viewport settings for better mobile responsiveness -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+
+    <!-- Preload fonts for better performance -->
+    <link rel="preload" href="./assets/KorinnaNormal-B9CgEyjk.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="./assets/KorinnaBold-Cd5X_5KP.woff" as="font" type="font/woff" crossorigin>
+    <link rel="preload" href="./assets/KorinnaItalic-DaKXyVJ2.woff2" as="font" type="font/woff2" crossorigin>
+
+    <!-- SEO related -->
+    <meta name="description" content="JeoPARODY!?? A unique comedic trivia adventure.">
+    <meta property="og:title" content="JeoPARODY!??">
+    <meta property="og:description"
+        content="A unique interactive comedic trivia adventure with AI integrated in new and novel ways.">
+    <meta property="og:image" content="screenshots/jeopardish-screenshot-noQuestion.png">
+
+    <!-- title -->
+    <title>Jeopardish!</title>
+
+    <!-- favicons -->
+    <link rel="icon" href="./favicon.png" type="image/png">
+
+    <!-- Single Consolidated Stylesheet - All CSS in one file -->
+
+    <!-- external JS (axios removed; modules should import their deps) -->
+
+    <!-- Firebase optional: uncomment when integrating auth/cloud sync -->
+    <!--
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="/public/dist/js/firebase-config.js"></script>
+    -->
+
+    <!-- Load the main module with Vite -->
+
+    <!-- Compatibility bridge (disabled by default) -->
+    <script>window.JEOPARODY_DISABLE_COMPAT_BRIDGE = true;</script>
+    <!-- <script type="module" src="/src/compatibility-bridge.js"></script> -->
+
+    <!-- external CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- fonts, icons, other CDN assets -->
+    <!-- Essential external fonts only -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+  <script type="module" crossorigin src="./assets/index-DwMABRas.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-moKoaQ0w.css">
+</head>
+
+<body lang="en">
+
+    <header class="sticky-header">
+        <div class="logo-container">
+            <img src="./assets/title-jeopardish!-pixelart-D9DI4hRR.png" alt="jeoPARODY!" class="logo-image">
+        </div>
+        <div class="header-controls-right">
+            <div class="toggle-container">
+                <label for="theme-switch" class="theme-switch">
+                    <input type="checkbox" id="theme-switch">
+                    <span class="slider"></span>
+                </label>
+                <div class="toggle-label">DARK MODE</div>
+            </div>
+            <button id="host-anim-trigger" class="header-icon-btn" title="Host animation"
+                aria-label="Trigger host animation">💃</button>
+            <button id="hamburger-menu" class="hamburger-button" aria-label="Open menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+        </div>
+    </header>
+
+    <div id="side-menu" class="side-menu">
+        <ul class="menu-items">
+            <li><button id="menu-new-game">New Game (Classic)</button></li>
+            <li><button id="menu-game-modes">Game Modes</button></li>
+            <li><button id="menu-settings">Settings</button></li>
+            <li><button id="menu-achievements">Achievements</button></li>
+        </ul>
+    </div>
+
+    <main class="main-content-area">
+        <!-- React-like app container for new component architecture -->
+        <div id="app"></div>
+
+        <!-- Host Image Container -->
+        <div class="host-container">
+            <img id="trebekImage" class="host-image" src="" alt="Host">
+            <div class="host-click-zone host-click-left"></div>
+            <div class="host-click-zone host-click-right"></div>
+        </div>
+
+
+        <!-- PAO Screen Container (overlay sibling, not nested) -->
+        <div id="pao-screen-container" class="hidden"></div>
+
+        <!-- Beautiful Plane Animation Container -->
+        <div class="plane-container">
+            <div class="plane-unit" data-plane="1">
+                <div class="beautiful-plane">
+                    <div class="wing-main"></div>
+                    <div class="wing-secondary"></div>
+                    <div class="tail"></div>
+                    <div class="stabilizer"></div>
+                    <div class="propeller"></div>
+                    <div class="propeller-hub"></div>
+                    <div class="cockpit"></div>
+                    <div class="pontoon"></div>
+                    <div class="pontoon"></div>
+                    <div class="ticker-banner">
+                        <div class="ticker-content">Breaking News: Jeopardish UI now 100%
+                            bug-free... This is a
+                            scrolling ticker... More news at 11...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Palm tree decorations -->
+        <div class="palm-tree left">
+            <div class="palm-trunk"></div>
+            <div class="palm-leaves">
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+            </div>
+        </div>
+        <div class="palm-tree right">
+            <div class="palm-trunk"></div>
+            <div class="palm-leaves">
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+                <div class="palm-leaf"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="sticky-footer">
+        <div id="scoreboard" class="scoreboard">
+            <p>SCORE: <span id="score" class="score-value">0</span></p>
+            <p>STREAK: <span id="streak" class="score-value">0</span></p>
+        </div>
+        <div class="input-section">
+            <div class="input-div">
+                <input type="text" id="inputBox" placeholder="Type your answer here...">
+            </div>
+            <button id="checkButton" class="btn">Submit</button>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- All services now integrated into modular architecture -->
+    <!-- Scripts loaded via src/main.js -->
+    <!-- Comedy Ticker Container -->
+    <div id="comedy-ticker-container" class="comedy-ticker"></div>
+
+    <!-- Profile Slide-out -->
+    <div id="profile-slideout" class="profile-slideout">
+        <div class="profile-peek"></div>
+        <div class="profile-content">
+            <h3>User Profile</h3>
+            <p>Username: Player1</p>
+            <p>Rank: Trivia Novice</p>
+        </div>
+    </div>
+
+</body>
+
+</html>
