@@ -1,0 +1,358 @@
+/* ============================================
+   BEAUTIFUL PLANE ANIMATION
+   ============================================ */
+
+/* Plane container - positioned within game container area */
+.plane-container {
+  position: absolute;
+  top: 80px; /* Below header */
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 200px); /* Between header and footer */
+  pointer-events: none;
+  z-index: 1; /* Behind other game elements */
+  overflow: hidden;
+}
+
+/* Individual plane unit */
+.plane-unit {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  animation: flyAcross 12s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  transform: translateX(-100%);
+  /* Random height will be set via JavaScript */
+  top: 20%;
+}
+
+/* The beautiful plane - smaller size */
+.beautiful-plane {
+  position: relative;
+  width: 8vmin;
+  height: 4vmin;
+  transform-style: preserve-3d;
+  z-index: 2;
+}
+
+/* Plane body (fuselage) - White with yellow/coral highlights */
+.beautiful-plane::before {
+  content: '';
+  position: absolute;
+  width: 8vmin;
+  height: 2vmin;
+  background: linear-gradient(180deg, 
+    #FFFFFF 0%, /* White top */
+    #FFFACD 30%, /* Light yellow middle */
+    #FFB6C1 70%, /* Light coral bottom */
+    #FFA07A 100% /* Light salmon bottom */
+  );
+  clip-path: polygon(0 40%, 15% 0, 85% 0, 100% 40%, 95% 100%, 5% 100%);
+  top: 1vmin;
+  left: 0;
+  box-shadow: 
+    0 2px 4px rgba(0,0,0,0.2),
+    inset 0 1px 2px rgba(255,255,255,0.3);
+  border-radius: 1vmin;
+}
+
+/* Main wing - Yellow with coral highlights */
+.wing-main {
+  position: absolute;
+  width: 9vmin;
+  height: 0.8vmin;
+  background: linear-gradient(180deg, #FFD700 0%, #FFB6C1 100%);
+  left: -0.5vmin;
+  top: 1.8vmin;
+  transform: perspective(12vmin) rotateY(-10deg) rotateX(45deg);
+  box-shadow: 
+    0 0.2vmin 0.4vmin rgba(0,0,0,0.3),
+    0 0 0.8vmin rgba(255,215,0,0.4);
+  clip-path: polygon(0 50%, 15% 0, 85% 0, 100% 50%, 85% 100%, 15% 100%);
+  border-radius: 0.3vmin;
+}
+
+/* Secondary wing - Smaller, lighter */
+.wing-secondary {
+  position: absolute;
+  width: 6vmin;
+  height: 0.5vmin;
+  background: linear-gradient(180deg, #FFFACD 0%, #FFB6C1 100%);
+  left: 1vmin;
+  top: 1.3vmin;
+  transform: perspective(10vmin) rotateY(-5deg) rotateX(30deg);
+  box-shadow: 0 0.1vmin 0.2vmin rgba(0,0,0,0.2);
+  clip-path: polygon(0 50%, 20% 0, 80% 0, 100% 50%, 80% 100%, 20% 100%);
+  border-radius: 0.2vmin;
+}
+
+/* Tail - Yellow with coral */
+.tail {
+  position: absolute;
+  width: 2.5vmin;
+  height: 1.5vmin;
+  background: linear-gradient(180deg, #FFD700 0%, #FFB6C1 100%);
+  right: 0.3vmin;
+  top: 0.5vmin;
+  transform: perspective(6vmin) rotateX(25deg);
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+  box-shadow: 0 0 0.4vmin rgba(255,215,0,0.3);
+  border-radius: 0.3vmin;
+}
+
+/* Horizontal stabilizer */
+.stabilizer {
+  position: absolute;
+  width: 2.5vmin;
+  height: 0.5vmin;
+  background: linear-gradient(180deg, #FFFACD 0%, #FFB6C1 100%);
+  right: 0.8vmin;
+  top: 1vmin;
+  clip-path: polygon(0 50%, 25% 0, 100% 0, 100% 100%, 25% 100%);
+  box-shadow: 0 0.1vmin 0.2vmin rgba(0,0,0,0.2);
+  border-radius: 0.2vmin;
+}
+
+/* Animated propeller */
+.propeller {
+  position: absolute;
+  width: 2.5vmin;
+  height: 2.5vmin;
+  left: -1.2vmin;
+  top: 0.8vmin;
+  animation: spin 0.08s linear infinite;
+}
+
+.propeller::before,
+.propeller::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 0.4vmin;
+  background: linear-gradient(90deg, #666 0%, #999 50%, #666 100%);
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  border-radius: 0.1vmin;
+  box-shadow: 0 0 0.1vmin rgba(0,0,0,0.5);
+}
+
+.propeller::before {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.propeller::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+/* Propeller hub */
+.propeller-hub {
+  position: absolute;
+  width: 0.8vmin;
+  height: 0.8vmin;
+  background: linear-gradient(135deg, #333 0%, #666 100%);
+  border-radius: 50%;
+  left: -0.4vmin;
+  top: 1.6vmin;
+  z-index: 3;
+  box-shadow: 0 0 0.2vmin rgba(0,0,0,0.5);
+}
+
+/* Cockpit window */
+.cockpit {
+  position: absolute;
+  width: 1.5vmin;
+  height: 1vmin;
+  background: linear-gradient(135deg, #87CEEB 0%, #4682B4 100%);
+  left: 1.5vmin;
+  top: 1.2vmin;
+  clip-path: polygon(0 25%, 100% 15%, 100% 85%, 0 75%);
+  box-shadow: 
+    inset 0 0 0.2vmin rgba(0,0,0,0.3),
+    0 0 0.3vmin rgba(135,206,235,0.4);
+  border-radius: 0.3vmin;
+}
+
+/* Orange pontoons - more pontoon shaped */
+.pontoon {
+  position: absolute;
+  width: 5vmin;
+  height: 0.8vmin;
+  background: linear-gradient(180deg, #FF8C00 0%, #FFA500 100%);
+  bottom: -0.5vmin;
+  border-radius: 50% 50% 40% 40%;
+  box-shadow: 
+    0 0.2vmin 0.4vmin rgba(0,0,0,0.3),
+    inset 0 0.1vmin 0.2vmin rgba(255,255,255,0.3);
+}
+
+.pontoon:first-of-type {
+  left: 1.2vmin;
+  transform: translateY(0.4vmin);
+}
+
+.pontoon:last-of-type {
+  left: 1.2vmin;
+  transform: translateY(-0.6vmin);
+}
+
+/* Red semi-transparent banner */
+.ticker-banner {
+  position: absolute;
+  left: 8vmin;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 2.5vmin;
+  background: rgba(255, 69, 0, 0.7); /* Red, semi-transparent */
+  border: 1px solid rgba(255, 0, 0, 0.8);
+  border-radius: 0.3vmin;
+  display: flex;
+  align-items: center;
+  padding: 0 0.8vmin;
+  min-width: 12vmin;
+  width: auto;
+  max-width: 50vmin;
+  box-shadow: 
+    0 0.2vmin 0.4vmin rgba(0, 0, 0, 0.3),
+    0 0 0.5vmin rgba(255, 69, 0, 0.2);
+  animation: bannerFlutter 3s ease-in-out infinite;
+  backdrop-filter: blur(2px);
+}
+
+/* Banner content */
+.ticker-content {
+  color: #FFFFFF;
+  font-size: 1.1vmin;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 
+    0 0 0.2vmin rgba(0,0,0,0.8),
+    0 0 0.4vmin rgba(255,255,255,0.3);
+  font-family: 'Press Start 2P', monospace;
+  letter-spacing: 0.05vmin;
+}
+
+/* Banner flutter animation */
+@keyframes bannerFlutter {
+  0%, 100% { 
+    transform: translateY(-50%) rotateZ(0deg) scaleY(1); 
+  }
+  25% { 
+    transform: translateY(-50%) rotateZ(1deg) scaleY(1.02); 
+  }
+  50% { 
+    transform: translateY(-50%) rotateZ(0deg) scaleY(1); 
+  }
+  75% { 
+    transform: translateY(-50%) rotateZ(-1deg) scaleY(0.98); 
+  }
+}
+
+/* Flight animation - forward direction with random heights */
+@keyframes flyAcross {
+  0% {
+    transform: translateX(-100%) translateY(0);
+  }
+  15% {
+    transform: translateX(15vw) translateY(-0.5vmin);
+  }
+  30% {
+    transform: translateX(30vw) translateY(0.5vmin);
+  }
+  45% {
+    transform: translateX(45vw) translateY(-0.3vmin);
+  }
+  60% {
+    transform: translateX(60vw) translateY(0.8vmin);
+  }
+  75% {
+    transform: translateX(75vw) translateY(-0.5vmin);
+  }
+  90% {
+    transform: translateX(90vw) translateY(0.3vmin);
+  }
+  100% {
+    transform: translateX(calc(100vw + 15vmin)) translateY(0);
+  }
+}
+
+/* Reverse flight (right-to-left) */
+@keyframes flyAcrossReverse {
+  0% {
+    transform: translateX(calc(100vw + 15vmin)) translateY(0);
+  }
+  15% {
+    transform: translateX(85vw) translateY(-0.5vmin);
+  }
+  30% {
+    transform: translateX(70vw) translateY(0.5vmin);
+  }
+  45% {
+    transform: translateX(55vw) translateY(-0.3vmin);
+  }
+  60% {
+    transform: translateX(40vw) translateY(0.8vmin);
+  }
+  75% {
+    transform: translateX(25vw) translateY(-0.5vmin);
+  }
+  90% {
+    transform: translateX(10vw) translateY(0.3vmin);
+  }
+  100% {
+    transform: translateX(-100%) translateY(0);
+  }
+}
+
+/* Apply reverse styles when needed */
+.plane-unit.reverse {
+  animation-name: flyAcrossReverse;
+}
+
+.plane-unit.reverse .beautiful-plane {
+  transform: scaleX(-1);
+}
+
+.plane-unit.reverse .ticker-banner {
+  left: auto;
+  right: 8vmin;
+}
+
+/* Propeller spin animation */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Only show one plane at a time */
+.plane-unit:nth-child(2),
+.plane-unit:nth-child(3) {
+  display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .beautiful-plane {
+    width: 10vmin;
+    height: 5vmin;
+  }
+  
+  .beautiful-plane::before {
+    width: 10vmin;
+    height: 2.5vmin;
+  }
+  
+  .wing-main {
+    width: 11vmin;
+    height: 1vmin;
+  }
+  
+  .ticker-banner {
+    min-width: 15vmin;
+  }
+  
+  .ticker-content {
+    font-size: 1.4vmin;
+  }
+}
