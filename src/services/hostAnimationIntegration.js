@@ -104,7 +104,7 @@ class HostAnimationIntegration {
         this.lastStreak = currentStreak;
     }
 
-    handleCorrectAnswer(data) {
+    handleCorrectAnswer(_data) {
         if (!this.hostAnimationManager || !this.isInitialized) return;
 
         const animations = ['stairs', 'duckAndScare', 'moonwalk'];
@@ -129,7 +129,7 @@ class HostAnimationIntegration {
         console.log('Triggered correct answer animation:', randomAnimation);
     }
 
-    handleIncorrectAnswer(data) {
+    handleIncorrectAnswer(_data) {
         if (!this.hostAnimationManager || !this.isInitialized) return;
 
         const animations = ['hideLeft', 'duckAndScare'];

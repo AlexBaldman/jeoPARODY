@@ -1,3 +1,5 @@
+import { soundManager } from './soundManager.js';
+
 // Host Animation Manager
 class HostAnimationManager {
     constructor() {
@@ -11,6 +13,11 @@ class HostAnimationManager {
     }
 
     init() {
+        if (!this.host || !this.gameContainer) {
+            console.warn('[HostAnimationManager] Host animation DOM is unavailable.');
+            return;
+        }
+
         // Add disco ball element
         this.discoBall = document.createElement('div');
         this.discoBall.className = 'disco-ball';
@@ -144,7 +151,7 @@ class HostAnimationManager {
     }
 
     async hideLeft() {
-        soundManager.play('hostHide');
+        this.playSound('hostHide');
         this.host.style.transition = 'left 1.5s ease-in-out';
         this.host.style.left = '-15vw';
         await this.wait(1500);
@@ -159,18 +166,18 @@ class HostAnimationManager {
             "AH-HA!"
         ];
         
-        soundManager.play('hostHide');
+        this.playSound('hostHide');
         this.host.style.transition = 'bottom 1s ease-in-out';
         this.host.style.bottom = '-20vh';
         await this.wait(1000);
-        
-        soundManager.play('hostScare');
+
+        this.playSound('hostScare');
         this.host.style.bottom = '0';
         this.showExclamation(exclamations[Math.floor(Math.random() * exclamations.length)]);
     }
 
     async stairs() {
-        soundManager.play('stairs');
+        this.playSound('stairs');
         const steps = 5;
         const stepHeight = 20;
         
@@ -181,14 +188,14 @@ class HostAnimationManager {
             await this.wait(300);
         }
         
-        soundManager.play('hostPop');
+        this.playSound('hostPop');
         this.host.style.transform = 'scale(1.2)';
         await this.wait(200);
         this.host.style.transform = 'scale(1)';
     }
 
     async moonwalk() {
-        soundManager.play('discoStart');
+        this.playSound('discoStart');
         this.startDiscoMode();
         
         this.host.style.transition = 'all 2s ease-in-out';
@@ -197,7 +204,7 @@ class HostAnimationManager {
         
         await this.wait(2000);
         
-        soundManager.play('discoEnd');
+        this.playSound('discoEnd');
         this.stopDiscoMode();
         this.host.style.transform = 'scaleX(1)';
         this.host.style.left = '2vw';
@@ -225,9 +232,17 @@ class HostAnimationManager {
     }
 
     wait(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise(resolve => { setTimeout(resolve, ms); });
+    }
+
+    playSound(name) {
+        soundManager.play(name);
     }
 }
 
 // Create global host animation manager instance
-const hostAnimationManager = new HostAnimationManager(); 
+export const hostAnimationManager = new HostAnimationManager();
+
+if (typeof window !== 'undefined') {
+    window.hostAnimationManager = hostAnimationManager;
+}

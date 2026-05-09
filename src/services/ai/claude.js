@@ -11,7 +11,7 @@ class ClaudeProvider {
     isReady() { return this.isInitialized && Date.now() >= this._circuitOpenUntil; }
     openCircuit(durationMs = 30000) { this._circuitOpenUntil = Date.now() + durationMs; }
 
-    async generate(prompt, options = {}) {
+    async generate(prompt, _options = {}) {
         if (!this.isReady()) return null;
 
         console.warn("Claude API call is not yet implemented.");

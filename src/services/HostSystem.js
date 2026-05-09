@@ -339,7 +339,7 @@ export class HostSystem {
     this.hostImageElement.style.opacity = '0';
     
     // Wait for fade out
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise(resolve => { setTimeout(resolve, 300); });
     
     // Change image
     this.hostImageElement.src = newImageUrl;
@@ -348,7 +348,7 @@ export class HostSystem {
     this.hostImageElement.style.opacity = '1';
     
     // Wait for fade in
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise(resolve => { setTimeout(resolve, 300); });
     
     this.isAnimating = false;
     
@@ -411,7 +411,7 @@ export class HostSystem {
     this.hostContainer.style.transition = 'transform 0.5s ease-in-out';
     
     // Wait a moment
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise(resolve => { setTimeout(resolve, 100); });
     
     // Update image
     this.updateHostImage();
@@ -468,7 +468,7 @@ export class HostSystem {
     this.updateHostImage();
     
     // Wait for animation
-    await new Promise(resolve => setTimeout(resolve, 600));
+    await new Promise(resolve => { setTimeout(resolve, 600); });
     
     // Restore original mood
     this.currentMood = originalMood;
@@ -517,7 +517,7 @@ export class HostSystem {
       this.updateHostImage();
     }
     
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => { setTimeout(resolve, 500); });
     
     // Restore mood
     this.currentMood = originalMood;
@@ -534,7 +534,7 @@ export class HostSystem {
    * @param {string} context - Context type (correct, incorrect, etc.)
    * @param {Object} data - Additional context data
    */
-  getResponse(context, data = {}) {
+  getResponse(context, _data = {}) {
     const personality = this.getCurrentPersonality();
     const responses = personality.personality.reactions[context];
     

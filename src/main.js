@@ -177,7 +177,7 @@ async function initializeCoreServices() {
  */
 function setupServiceIntegration() {
   // Host system responds to game events
-  eventBus.on('answer:evaluated', (data) => {
+  eventBus.on('answer:evaluated', (_data) => {
     JeopardyApp.hostSystem.updateMood(JeopardyApp.gameEngine.state.stats);
     // Update scoreboard
     const { current, streak, high, maxStreak } = JeopardyApp.gameEngine.state.score;

@@ -32,7 +32,7 @@ class GeminiProvider {
                     return true;
                 }
             }
-        } catch (error) {
+        } catch (_error) {
             console.warn('⚠️ Gemini proxy not available.');
         }
         return false;

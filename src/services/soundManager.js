@@ -33,7 +33,7 @@ const SOUND_REGISTRY = {
   moonwalk: 'assets/audio/trebek/3018299-alx-intro.mp3',
   surprise: 'assets/audio/trebek/3019054-alx-dailyd-cor-now-first.mp3',
   hostHide: 'assets/audio/trebek/3018701-alx-back-to-player.mp3',
-  hostScare: 'assets/audio/trebek/3018432-alx-wii-speak-wiimote.mp3',
+  hostScare: 'assets/audio/trebek/3018484-alx-wii-speak-wiimote.mp3',
   stairs: 'assets/audio/trebek/3018611-alx-player-select.mp3',
   hostPop: 'assets/audio/trebek/3019050-alx-player-correct-7.mp3',
   discoStart: 'assets/audio/trebek/3018299-alx-intro.mp3',

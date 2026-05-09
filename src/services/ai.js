@@ -2,15 +2,6 @@ import providers from './ai-providers.js';
 import AIConfig from './ai/config.js';
 import PromptBuilder from './ai/PromptBuilder.js';
 import personas from './ai/personas.json';
-import { rewriteWithPolicy } from './ai/rewrite.js';
-
-// System prompt for Trebek's personality
-const SYSTEM_PROMPT = `You are Alex Trebek hosting Jeopardy.
-You have a witty, slightly sarcastic but always professional personality.
-Keep responses brief (1-2 sentences) unless asked for an explanation.
-Reference contestants by name when possible.
-Occasionally make subtle jokes or puns related to the question or answer.
-Your responses should be varied and entertaining.`;
 
 class AIService {
     constructor() {
@@ -76,7 +67,9 @@ class AIService {
 
         let response = null;
         let usedProvider = this.activeProvider;
-        const order = AIConfig.providerOrder;
+        const order = this.activeProvider === 'mock'
+            ? ['mock', ...AIConfig.providerOrder]
+            : AIConfig.providerOrder;
         for (const id of order) {
             const p = this.providers[id];
             if (!p) continue;
@@ -137,7 +130,7 @@ class AIService {
         const now = Date.now();
         const timeSince = now - this.lastRequestTime;
         if (timeSince < this.minRequestInterval) {
-            await new Promise(resolve => setTimeout(resolve, this.minRequestInterval - timeSince));
+            await new Promise(resolve => { setTimeout(resolve, this.minRequestInterval - timeSince); });
         }
         this.lastRequestTime = Date.now();
     }
@@ -167,7 +160,7 @@ export async function trebekReply(context) {
 
     } catch (error) {
         console.error('Error generating Trebek response:', error);
-        return await fallback.generate();
+        return await aiService.providers.fallback.generate();
     }
 }
 

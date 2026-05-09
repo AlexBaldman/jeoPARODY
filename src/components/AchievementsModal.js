@@ -109,7 +109,7 @@ export class AchievementsModal extends Modal {
         if (saved) {
             try {
                 this.earnedAchievements = JSON.parse(saved);
-            } catch (e) {
+            } catch (_e) {
                 this.earnedAchievements = {};
             }
         } else {
@@ -121,7 +121,7 @@ export class AchievementsModal extends Modal {
         if (stats) {
             try {
                 this.stats = JSON.parse(stats);
-            } catch (e) {
+            } catch (_e) {
                 this.stats = this.getDefaultStats();
             }
         } else {

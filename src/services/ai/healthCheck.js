@@ -10,7 +10,7 @@ export async function checkAIHealth(healthURL = '/api/gemini/health') {
     const ok = data.status ? data.status === 'ok' : true;
     const apiKeyConfigured = !!data.apiKeyConfigured;
     return { ok, apiKeyConfigured };
-  } catch (e) {
+  } catch (_e) {
     return { ok: false, apiKeyConfigured: false };
   }
 }

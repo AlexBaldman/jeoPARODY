@@ -8,10 +8,12 @@ import { gemini } from './ai/gemini.js';
 import { claude } from './ai/claude.js';
 import { fallback } from './ai/fallback.js';
 import { local } from './ai/local.js';
+import { mock } from './ai/mockProvider.js';
 
 export default {
     gemini,
     claude,
     fallback,
     local,
+    mock,
 };

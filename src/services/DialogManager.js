@@ -198,8 +198,6 @@ class DialogManager {
     }
 
     async displayConversationMessage(message) {
-        const elements = this.getDialogElements();
-        
         // Create conversation UI if needed
         if (!document.querySelector('.conversation-ui')) {
             this.createConversationUI();
@@ -220,7 +218,7 @@ class DialogManager {
     }
 
     // Game Event Handlers
-    handleCorrectAnswer(data) {
+    handleCorrectAnswer(_data) {
         const message = this.getRandomMessage(this.correctMessages);
         const streak = store.getState().game.streak;
         
@@ -460,7 +458,7 @@ class DialogManager {
         }
     }
 
-    animateMessage(message) {
+    animateMessage(_message) {
         const elements = this.getDialogElements();
         if (!elements.speechBubble) return;
         

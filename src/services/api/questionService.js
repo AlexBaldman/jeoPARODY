@@ -26,6 +26,7 @@ let allQuestions = [];
 let questions = [];
 let isInitialized = false;
 let lastLoadTime = null;
+let loadedQuestionIndex = null;
 
 /**
  * Initialize the question service
@@ -185,7 +186,7 @@ export function getRandomBoard(filters = {}) {
     return true;
   };
 
-  const pool = allQuestions.filter(q => withinRange(q.airdate));
+  const pool = allQuestions.filter(q => withinRange(q.airdate || q.air_date));
   const byCat = new Map();
   for (const q of pool) {
     const cat = q.category?.title || q.category || 'General Knowledge';
@@ -313,6 +314,20 @@ async function loadLocalQuestions() {
     return true;
   }
   
+  let starterQuestions = [];
+  try {
+    const starterRes = await fetch('assets/questions/starter-pack.json');
+    if (starterRes.ok) {
+      const starterData = await starterRes.json();
+      if (Array.isArray(starterData)) {
+        starterQuestions = starterData;
+        console.log(`⚡ Loaded starter pack with ${starterQuestions.length} questions`);
+      }
+    }
+  } catch (_err) {
+    console.log('ℹ️ No starter pack found, continuing with primary question sources');
+  }
+
   // If an index exists (sharded data), prefer loading a shard to reduce memory/time
   let data = null;
   let successPath = null;
@@ -320,6 +335,7 @@ async function loadLocalQuestions() {
     const idxRes = await fetch('assets/questions/index.json');
     if (idxRes.ok) {
       const index = await idxRes.json();
+      loadedQuestionIndex = index;
       const years = Object.keys(index.years || {});
       const pick = years[Math.floor(Math.random() * years.length)];
       if (pick) {
@@ -332,8 +348,32 @@ async function loadLocalQuestions() {
         }
       }
     }
-  } catch (err) {
+  } catch (_err) {
     console.log('ℹ️ No index/shards found or failed to load, falling back to monolithic files');
+  }
+
+  try {
+    if (!data) {
+      const manifestRes = await fetch('assets/questions/manifest.json');
+      if (manifestRes.ok) {
+        const manifest = await manifestRes.json();
+        loadedQuestionIndex = manifest;
+        const shards = Array.isArray(manifest.shards) ? manifest.shards : [];
+        const shard = shards[Math.floor(Math.random() * shards.length)];
+
+        if (shard?.file) {
+          console.log(`🗂️ Loading manifest shard: ${shard.file}`);
+          const shardRes = await fetch(`assets/questions/${shard.file}`);
+          if (shardRes.ok) {
+            const shardData = await shardRes.json();
+            data = Array.isArray(shardData) ? shardData : shardData.questions || [];
+            successPath = `assets/questions/${shard.file}`;
+          }
+        }
+      }
+    }
+  } catch (_err) {
+    console.log('ℹ️ No manifest shards found, continuing with fallback files');
   }
 
   const questionPaths = [
@@ -382,6 +422,11 @@ async function loadLocalQuestions() {
     }
   }
   
+  if (!data && starterQuestions.length > 0) {
+    data = starterQuestions;
+    successPath = 'assets/questions/starter-pack.json';
+  }
+
   if (!data) {
     console.error('❌ Failed to load questions from any path');
     console.log('📂 Current location:', window.location.href);
@@ -416,12 +461,12 @@ async function loadLocalQuestions() {
       });
     }
     
-    allQuestions = data;
+    allQuestions = mergeQuestionLists(starterQuestions, data).map((question, index) => normalizeQuestionData(question, index));
     lastLoadTime = Date.now();
     
     // Emit event for other parts of the app
-    eventBus.emit('questions:loaded', { count: data.length });
-    console.log(`✅ Question service loaded successfully with ${data.length} questions`);
+    eventBus.emit('questions:loaded', { count: allQuestions.length });
+    console.log(`✅ Question service loaded successfully with ${allQuestions.length} questions`);
     
   } catch (error) {
     console.error('❌ Error processing questions:', error);
@@ -500,27 +545,75 @@ export function parseTSV(text) {
   });
 }
 
+function stableHash(value) {
+  let hash = 2166136261;
+  const input = String(value);
+
+  for (let i = 0; i < input.length; i += 1) {
+    hash ^= input.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
+}
+
+function createStableQuestionId(question, index = 0) {
+  if (question.id !== undefined && question.id !== null && String(question.id).trim()) {
+    return question.id;
+  }
+
+  const parts = [
+    question.show_number,
+    question.round,
+    question.category?.title || question.category,
+    question.value,
+    question.question,
+    index
+  ];
+
+  return `clue-${stableHash(parts.join('|')).toString(36)}`;
+}
+
+function mergeQuestionLists(priorityQuestions, fallbackQuestions) {
+  const merged = [];
+  const seen = new Set();
+
+  for (const [index, question] of [...priorityQuestions, ...fallbackQuestions].entries()) {
+    const id = createStableQuestionId(question, index);
+    if (seen.has(id)) continue;
+
+    seen.add(id);
+    merged.push({ ...question, id });
+  }
+
+  return merged;
+}
+
 /**
  * Normalize question data from various sources
  * @param {Object} question - Raw question data
+ * @param {number} index - Fallback index for stable id generation
  * @returns {Object} Normalized question
  */
-export function normalizeQuestionData(question) {
+export function normalizeQuestionData(question, index = 0) {
   const rawVal = question.value ?? 200;
   const numericValue = typeof rawVal === 'number'
     ? rawVal
     : Number(String(rawVal).replace(/[^0-9.-]/g, '')) || 0;
   return {
+    id: createStableQuestionId(question, index),
     category: question.category?.title || question.category || 'General Knowledge',
     question: question.question || question.clue || '',
     answer: question.answer || '',
     value: numericValue,
-    airdate: question.airdate || new Date().toISOString(),
+    airdate: question.airdate || question.air_date || null,
     difficulty: question.difficulty || 'Medium',
     times_used: question.times_used || 1,
     contestant: question.contestant || 'Unknown',
     season: question.season || 'Unknown',
-    episode: question.episode || 'Unknown'
+    episode: question.episode || question.show_number || 'Unknown',
+    round: question.round || 'Unknown',
+    showNumber: question.showNumber || question.show_number || null
   };
 }
 
@@ -580,6 +673,7 @@ export function getStats() {
     totalQuestions: allQuestions.length,
     remainingQuestions: questions.length,
     lastLoadTime,
+    loadedQuestionIndex,
     config: CONFIG
   };
 }

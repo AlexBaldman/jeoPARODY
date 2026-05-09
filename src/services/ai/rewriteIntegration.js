@@ -33,7 +33,7 @@ export function installQuestionRewrite() {
 				qb.dataset.canonical = question.question;
 				qb.textContent = text || question.question;
 			}
-		} catch (e) {
+		} catch (_e) {
 			// Silent failure keeps UI responsive
 		}
 	});

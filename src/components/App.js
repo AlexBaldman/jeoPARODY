@@ -1,5 +1,5 @@
 import ConnectedComponent from '../base/ConnectedComponent.js';
-import { ScoreBoard, QuestionDisplay, GameControls, ModalManager } from './index.js';
+import { ScoreBoard, QuestionDisplay, GameControls } from './index.js';
 import AchievementsModal from './AchievementsModal.js';
 import { eventBus } from '../utils/events.js';
 import { GAME_PHASES } from '../utils/constants.js';
