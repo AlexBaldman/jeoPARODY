@@ -75,7 +75,7 @@ docs/                  # Architecture documentation and planning
 - Pure functions for answer validation and similarity matching (Levenshtein distance)
 
 #### AI System (`src/services/ai.js`, `src/services/ai-providers.js`)
-- Multi-provider abstraction (Gemini, Claude, fallback)
+- Multi-provider abstraction (Gemini, Claude placeholder, local, fallback, mock)
 - Auto-detection of available providers with graceful degradation
 - Intelligent caching and rate limiting
 - Alex Trebek personality with contextual responses
@@ -125,18 +125,19 @@ npm test GameEngine
 ### Provider Configuration
 The AI system supports multiple providers with automatic fallback:
 
-1. **Gemini** (Primary): Via proxy at `localhost:3002` or direct API key
-2. **Claude** (Secondary): Direct API integration
+1. **Gemini** (Primary): Via local proxy endpoints
+2. **Local**: Lightweight host cadence without network calls
 3. **Fallback**: Canned witty responses when AI unavailable
+4. **Mock**: Deterministic development/test responses when `localStorage.use_mock_ai` is set to `1`
+5. **Claude**: Provider scaffold exists, but API calls are not implemented yet
 
 ### Development Setup
 ```javascript
-// For direct API key (development only)
-localStorage.setItem('gemini_api_key', 'YOUR_API_KEY');
-
 // Check AI status in console
 window.JeopardyApp.hostSystem.getStatus();
 ```
+
+Direct browser API-key paths are not a reliable current MVP path. Use a local proxy for remote providers.
 
 ## Performance Requirements
 

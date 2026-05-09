@@ -2,11 +2,15 @@
 
 This guide provides step-by-step instructions for configuring AI providers for the JeoPARODY host. We prioritize free-tier options to allow for easy development and testing.
 
-The AI host system is designed to be modular. You can configure one or more providers, and the system will use the one that is available, falling back to witty, pre-canned responses if no AI provider is configured.
+The AI host system is modular, but the reliable current path is proxy-first with local/fallback behavior when remote services are unavailable.
 
 ## Configuration Priority
-1.  **Proxy Server (Default):** The application will first try to connect to a local proxy server. This is the recommended approach for team development.
-2.  **Direct API Key:** If the proxy is not found, the application will look for an API key stored in the browser's `localStorage`. This is a great option for solo development.
+1.  **Proxy Server (Default):** The application tries to connect to a local Gemini proxy. This is the recommended development path.
+2.  **Local Provider:** If the proxy is unavailable, the local provider can still generate lightweight host cadence without network calls.
+3.  **Fallback Provider:** If no provider can answer, fallback lines keep gameplay unblocked.
+4.  **Mock Provider:** For deterministic development and tests, set `localStorage.setItem('use_mock_ai', '1')` and reload.
+
+Direct browser API keys are detected in parts of the code, but direct Gemini and Claude API calls are not implemented as a complete working path yet. Do not rely on `localStorage` API keys for the current MVP.
 
 ---
 
@@ -20,23 +24,22 @@ Google provides a generous free tier for its Gemini API, which is perfect for th
 2.  **Create an API Key:** In the top left, click the "**Get API key**" button. You may need to sign in with your Google account and create a new project.
 3.  **Copy your key:** A new API key will be generated for you. Copy this key and store it somewhere safe. It will look something like `AIzaSy...`.
 
-### Step 2: Configure JeoPARODY to use the Key
+### Step 2: Configure the Proxy
 
-This is the easiest way to get started for local development.
+Use a local proxy that exposes:
 
-1.  **Run JeoPARODY:** Start the application locally (`npm run dev`).
-2.  **Open Browser Console:** Open your browser's developer tools and go to the Console.
-3.  **Set the API Key in localStorage:** Paste and run the following command, replacing `YOUR_GEMINI_API_KEY` with the key you just copied:
-    ```javascript
-    localStorage.setItem('gemini_api_key', 'YOUR_GEMINI_API_KEY');
-    ```
-4.  **Refresh the page.** The application will now detect the key and start making calls to the Gemini API for the host's dialogue.
+```text
+/api/gemini/health
+/api/gemini/generate
+```
+
+The browser app calls the proxy instead of sending provider secrets directly from the client.
 
 ---
 
 ## Option 2: Anthropic Claude
 
-Anthropic's Claude is another powerful model. While it doesn't have a persistent free *tier* for its API in the same way as Gemini, it often provides **free credits** for new developers.
+Claude is scaffolded as a provider, but direct Claude API calls are currently a placeholder.
 
 ### Step 1: Get your API Key
 
@@ -45,17 +48,9 @@ Anthropic's Claude is another powerful model. While it doesn't have a persistent
 3.  **Generate an API Key:** Navigate to the API Keys section of your dashboard and create a new key.
 4.  **Copy your key.**
 
-### Step 2: Configure JeoPARODY to use the Key
+### Step 2: Implementation Needed
 
-The process is similar to Gemini, but you'll use a different `localStorage` variable.
-
-1.  **Run JeoPARODY:** Start the application locally (`npm run dev`).
-2.  **Open Browser Console:** Open your browser's developer tools and go to the Console.
-3.  **Set the API Key in localStorage:** Paste and run the following command, replacing `YOUR_CLAUDE_API_KEY` with your key:
-    ```javascript
-    localStorage.setItem('claude_api_key', 'YOUR_CLAUDE_API_KEY');
-    ```
-4.  **Refresh the page.** If you have both Gemini and Claude keys set, the system may prioritize one over the other (this behavior will be defined in `src/services/ai.js`).
+Before using Claude in the app, implement the provider call in `src/services/ai/claude.js` and keep secrets behind a proxy or other server-side boundary.
 
 ---
 
@@ -64,4 +59,18 @@ The process is similar to Gemini, but you'll use a different `localStorage` vari
 You'll know the AI host is working if:
 -   The host's dialogue is dynamic and context-aware (e.g., it comments on your answers).
 -   You do **not** see fallback lines like "That's a response, alright."
--   You can see network requests being made to the respective AI provider in the "Network" tab of your browser's developer tools.
+-   You can see network requests to your local proxy in the browser's Network tab.
+
+For a no-network development check, force the mock provider:
+
+```js
+localStorage.setItem('use_mock_ai', '1');
+location.reload();
+```
+
+The service should report `mock` as the active provider. Disable it with:
+
+```js
+localStorage.removeItem('use_mock_ai');
+location.reload();
+```

@@ -1,86 +1,226 @@
-# JeoPARODY: The Master Plan (Consolidated)
+# JeoPARODY Master Plan
 
-**Source of Truth:** This document supersedes all previous planning documents. It is the definitive guide for the next phase of development.
+Canonical roadmap for the `dock` / `crew` / `bridge` / `cockpit` stack.
 
-**Guiding Principle (The Carmack Way):** *"The code should do what it looks like it does."* We will prioritize simplicity, stability, and shippability. We will build a solid foundation before adding more features. No clever code. No half-finished features. We will make it work, make it right, and then make it fast.
+This is the source of truth for what we are building next, why we are building it, and which docs explain the details.
 
----
+> Shipshape, not ship-of-Theseus-shape. ⚓
 
-## 1. Project Vision & Philosophy
+## 1. What This Repo Is
 
-- **Vision:** An AI-infused, Jeopardy-style trivia experience that hides a serious learning engine inside a delightful, comedic game.
-- **Philosophy:**
-    - **Data-first design:** Clear state shapes. Pure functions. Predictable flow.
-    - **Performance through simplicity:** Vanilla JS with targeted DOM updates. 60fps is a non-negotiable constraint.
-    - **Extensible by construction:** Cleanly separated components, services, and core logic.
-    - **Comedy + clarity:** A witty host and joyful animations without compromising maintainability.
+JeoPARODY is the main game repo. It is also becoming the project cockpit: the app, the coordination layer, and the operational truth all live in one place.
 
----
+- `dock` is the workspace and source of truth.
+- `crew` are the people and agents doing the work.
+- `bridge` is the communication layer.
+- `cockpit` is the human-facing control surface.
+- `fleet` is the set of related tools, services, and helpers.
 
-## 2. Current State Analysis (Brutal Honesty)
+For the naming brainstorm, see [brainstorming.md](brainstorming.md). For the broader docs map, see [docs/README.md](README.md).
 
-- **What's Working:** The core game loop is functional. The service-based architecture is sound. The vision is clear.
-- **What Needs Immediate Attention:**
-    1.  **Documentation Chaos:** Multiple, conflicting planning documents create confusion.
-    2.  **UI/UX Bugs:** Several visual and functional bugs degrade the user experience (e.g., invisible answer text, broken submission).
-    3.  **Incomplete State Management:** The state system is not fully implemented and lacks persistence.
-    4.  **Monolithic AI Service:** The current AI integration is not modular enough to easily support multiple providers.
+## 2. Current Reality Check
 
----
+What is already working:
 
-## 3. The Plan: From Foundation to Features
+- Core trivia loop exists.
+- Answer validation has been improved.
+- Question loading has been hardened.
+- Mock/local/fallback AI paths are registered and testable.
+- Host animation audio calls are guarded behind the sound manager.
+- Coordination artifacts now exist.
+- The cockpit prototype is real, even if still light.
 
-### Phase 1: Foundational Stability (Make it Work)
+What still needs discipline:
 
-**Goal:** Achieve a "zero-bug bounce" state. The application must be stable, predictable, and free of console errors.
+- The docs set has overlapping plans and historical notes.
+- The CSS and media system still need cleanup and consolidation.
+- Dependency audit findings still need a deliberate security pass.
+- The bridge/repo/tool story is still a little too playful in places and not quite strict enough in others.
+- The cockpit is a promising dashboard, not yet a full project operating system.
+- The latest concrete health snapshot lives in [REPO_REVIEW_2026-05-04.md](REPO_REVIEW_2026-05-04.md).
 
-1.  **Consolidate Documentation (This phase):** Establish this document as the single source of truth.
-2.  **Stabilize the Core Application:**
-    -   [ ] Fix invisible answer text bug.
-    -   [ ] Fix duplicate host image rendering.
-    -   [ ] Fix all major CSS alignment and z-index issues.
-    -   [ ] Ensure the answer submission (Enter key and button) is reliable.
-3.  **Refine State Management:**
-    -   [ ] Solidify the Redux-like store for all critical game state.
-    -   [ ] Implement `localStorage` persistence for score, progress, and settings.
+## 3. Planning Rules
 
-### Phase 2: AI Host Integration (Make it Right)
+1. The repo is the truth. Docs describe the truth; they do not replace it.
+2. The canonical plan lives here.
+3. Historical audits stay historical.
+4. Experiments stay labeled as experiments.
+5. No clever naming if a plain name will do the job.
+6. Use puns as garnish, not as scaffolding.
 
-**Goal:** Implement a robust, multi-provider AI host system with a clear and simple configuration process.
+## 4. Roadmap
 
-1.  **Abstract the AI Service:**
-    -   [ ] Refactor `src/services/ai.js` to be a clean interface/dispatcher.
-    -   [ ] Move provider-specific logic into `src/services/ai/gemini.js`, `src/services/ai/claude.js`, etc.
-2.  **Document AI Setup:**
-    -   [ ] Create `docs/AI_PROVIDER_SETUP.md` with a step-by-step guide for developers.
+### Phase 0: Keep the Water Calm 🛟
 
-### Phase 3: Ship and Iterate (Make it Fast)
+Goal: make the project state visible, stable, and hard to misunderstand.
 
-**Goal:** Prepare the application for users and establish a cycle of continuous improvement.
+Deliverables:
 
-1.  **Performance & Polish:**
-    -   [ ] Conduct a performance audit; ensure all animations are 60fps.
-    -   [ ] Polish all UI transitions and interactions.
-2.  **Testing & Validation:**
-    -   [ ] Write unit tests for all critical core logic and utilities.
-    -   [ ] Establish an end-to-end testing plan (e.g., using Playwright or Cypress).
+- Keep `coordination/active-work.md` as the live claim board.
+- Keep log files append-only and timestamped.
+- Keep the cockpit honest by flagging stale claims and drift.
+- Publish a docs index so future humans and agents know where to look first.
+- Keep canonical and historical docs clearly labeled.
 
----
+Reference docs:
 
-## 4. Technical Architecture (The Reality)
+- [SHIPYARD_COMMAND_MANUAL.md](SHIPYARD_COMMAND_MANUAL.md)
+- [FLEET_REGISTRY.md](FLEET_REGISTRY.md)
+- [MCP.md](MCP.md)
+- [brainstorming.md](brainstorming.md)
 
-- **Framework:** Vanilla JavaScript. We are **not** using React. We manipulate the DOM directly for maximum performance and simplicity.
-- **State Management:** A custom Redux-like implementation in `/src/state`.
-- **Core Logic:** Pure, dependency-free functions in `/src/core`.
-- **Services:** External concerns (AI, audio, assets) are handled in `/src/services`.
-- **Build System:** Vite.
+### Phase 1: Core Game Loop 🎮
 
----
+Goal: make the trivia loop clean, fast, and delightful.
 
-## 5. The Carmack Rules (How We Work)
+Deliverables:
 
-1.  **No Clever Code:** Readability and simplicity are paramount.
-2.  **Measure Everything:** If you can't measure it, you can't improve it. Profile performance continuously.
-3.  **Fail Fast & Loud:** Errors should be immediately obvious, not hidden.
-4.  **One Feature Per PR:** Keep changes small, focused, and reversible.
-5.  **Ship It:** Perfect is the enemy of good. We will ship a stable, working product and iterate.
+- Robust answer submission and validation.
+- Clear reasons for accepted or rejected answers.
+- Reliable scoring and session persistence.
+- Daily board or comparable structured board mode.
+- Review-misses loop for learning.
+- Fast transitions from clue to clue.
+
+Reference docs:
+
+- [EXPERIMENT_IDEA_LEDGER.md](EXPERIMENT_IDEA_LEDGER.md)
+- [JEOPARDISH_MIGRATION_AUDIT_2026-05-01.md](JEOPARDISH_MIGRATION_AUDIT_2026-05-01.md)
+- [MVP_SYSTEMS_AUDIT_2026-04-30.md](MVP_SYSTEMS_AUDIT_2026-04-30.md)
+
+### Phase 2: Data Pipeline and Question Bank 🧮
+
+Goal: make the clue data compact, indexable, and boring in the good way.
+
+Deliverables:
+
+- A manifest plus shard strategy.
+- Starter data for fast first load.
+- Stable IDs for review and persistence.
+- Better handling of archive weirdness and alternate answers.
+
+Reference docs:
+
+- [JEOPARDISH_MIGRATION_AUDIT_2026-05-01.md](JEOPARDISH_MIGRATION_AUDIT_2026-05-01.md)
+- [EXPERIMENT_IDEA_LEDGER.md](EXPERIMENT_IDEA_LEDGER.md)
+
+### Phase 3: Host Personality and AI Providers 🎙️
+
+Goal: keep the host funny, useful, and optional.
+
+Deliverables:
+
+- Modular AI provider setup.
+- Graceful fallback lines.
+- Local-first behavior when remote services are unavailable.
+- A witty host layer that never blocks play.
+
+Reference docs:
+
+- [AI_PROVIDER_SETUP.md](AI_PROVIDER_SETUP.md)
+
+### Phase 4: Cockpit, Coordination, and Drift Detection 🧭
+
+Goal: make project state visible to humans and agents.
+
+Deliverables:
+
+- Live cockpit view of claims, logs, and drift.
+- Clear distinction between active work, completed work, and historical notes.
+- A single path for agent logs and handoffs.
+- Better contradiction detection between docs and runtime reality.
+
+Reference docs:
+
+- [SHIPYARD_COMMAND_MANUAL.md](SHIPYARD_COMMAND_MANUAL.md)
+- [FLEET_REGISTRY.md](FLEET_REGISTRY.md)
+- [MCP.md](MCP.md)
+
+### Phase 5: Visual Polish and Media 🪩
+
+Goal: keep the game readable while making it feel alive.
+
+Deliverables:
+
+- CSS cleanup and hierarchy.
+- Media rendering consistency.
+- Host, ticker, scoreboard, and modal layering that does not fight itself.
+- Responsive behavior that works on mobile without drama.
+- Accessibility and reduced-motion support.
+
+Reference docs:
+
+- [CSS.md](CSS.md)
+- [css-refactor-plan.md](css-refactor-plan.md)
+- [CSS_AUDIT_REPORT.md](CSS_AUDIT_REPORT.md)
+- [MEDIA_RENDERING_IMPLEMENTATION.md](MEDIA_RENDERING_IMPLEMENTATION.md)
+
+### Phase 6: Bridge and Fleet Integrations 🚢
+
+Goal: keep remote control tools useful without letting them become chaos engines.
+
+Deliverables:
+
+- Clear boundary between the game repo and bridge projects.
+- Safe allowlists for remote commands.
+- Explicit repo roots and agent scopes.
+- A shared operational vocabulary that does not collide.
+
+Reference repos:
+
+- `codex-telegram-bridge`
+- `mobile-codex-bridge`
+- `crew`
+
+## 5. Documentation Map
+
+### Canonical
+
+- [docs/README.md](README.md)
+- [MASTER_PLAN.md](MASTER_PLAN.md)
+- [REPO_REVIEW_2026-05-04.md](REPO_REVIEW_2026-05-04.md)
+- [brainstorming.md](brainstorming.md)
+
+### Historical / Audit
+
+- [MVP_SYSTEMS_AUDIT_2026-04-30.md](MVP_SYSTEMS_AUDIT_2026-04-30.md)
+- [JEOPARDISH_MIGRATION_AUDIT_2026-05-01.md](JEOPARDISH_MIGRATION_AUDIT_2026-05-01.md)
+- [EXPERIMENT_IDEA_LEDGER.md](EXPERIMENT_IDEA_LEDGER.md)
+
+### Implementation Guides
+
+- [AI_PROVIDER_SETUP.md](AI_PROVIDER_SETUP.md)
+- [CSS.md](CSS.md)
+- [css-refactor-plan.md](css-refactor-plan.md)
+- [CSS_AUDIT_REPORT.md](CSS_AUDIT_REPORT.md)
+- [MEDIA_RENDERING_IMPLEMENTATION.md](MEDIA_RENDERING_IMPLEMENTATION.md)
+- [MCP.md](MCP.md)
+
+### Operational Lore
+
+- [SHIPYARD_COMMAND_MANUAL.md](SHIPYARD_COMMAND_MANUAL.md)
+- [FLEET_REGISTRY.md](FLEET_REGISTRY.md)
+
+## 6. Mood Board
+
+We are allowed to be funny here, but the plan still needs to be legible.
+
+- When the build is green: `Shipshape.`
+- When drift is detected: `Course correction underway.`
+- When the host reacts: `The ship has opinions.`
+- When a plan is too cute: `Keep the pun, lose the fog.`
+
+### Visual anchors
+
+These are mood setters, not requirements:
+
+![JeoPARODY title card](../assets/images/title/title-jeopardish!-pixelart.png)
+
+![Trebek dope pose](../assets/images/trebek/trebek-dope-02.png)
+
+## 7. Shipyard Motto
+
+The repository is the machine.
+The agents are the technicians.
+The cockpit is the view.
+The plan is only useful if it stays attached to reality.

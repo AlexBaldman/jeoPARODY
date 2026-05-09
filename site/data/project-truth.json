@@ -1,0 +1,183 @@
+{
+  "generatedAt": "2026-05-02T20:16:45.467Z",
+  "project": "JeoPARODY",
+  "activeWork": [
+    {
+      "area": "Shipyard Prototype",
+      "owner": "Gemini",
+      "started": "2026-05-01T06:40:00Z",
+      "status": "Done",
+      "claimed": "`scripts/build-cockpit.mjs`, `coordination/*`, `site/*`, `package.json`",
+      "notes": "Built the truth visualization cockpit and drift engine."
+    },
+    {
+      "area": "Validation Convergence + JS Lint Baseline",
+      "owner": "Codex",
+      "started": "2026-05-02T19:40:56Z",
+      "status": "In Progress",
+      "claimed": "`src/utils/validators.js`, `src/core/validation.js`, `src/utils/answerValidator.js`, `tests/core/validation.test.js`, `package.json`, `package-lock.json`, `eslint.config.js`, `coordination/active-work.md`, `coordination/logs/*`",
+      "notes": "Converging old answer validation utilities onto the canonical validators path and making JS lint runnable if dependency/tooling changes are needed."
+    },
+    {
+      "area": "Canonical Runtime + Scoring Convergence",
+      "owner": "Codex",
+      "started": "2026-05-02T19:21:08Z",
+      "status": "Done",
+      "claimed": "`src/core/GameEngine.js`, `tests/core/scoring.test.js`, `coordination/active-work.md`, `coordination/decisions/*`, `coordination/logs/*`, `ARCHITECTURE.md`",
+      "notes": "Documented the MVP runtime path and converged GameEngine scoring onto ScoreCalculator without touching UI, validation, question loading, or CSS. Log: `coordination/logs/2026-05-02/20260502T192322Z-codex-canonical-runtime-and-scoring-convergence.md`."
+    },
+    {
+      "area": "Review & Protocol Upgrade",
+      "owner": "Gemini",
+      "started": "2026-04-30T22:30:00Z",
+      "status": "Done",
+      "claimed": "`coordination/*`, `src/main.js.*`, `package.json`, `docs/*`, `scripts/agent-log.mjs`",
+      "notes": "Integrated ROOMS, cleaned artifacts."
+    },
+    {
+      "area": "Baseline Verification",
+      "owner": "Gemini",
+      "started": "2026-05-01T05:33:53Z",
+      "status": "Done",
+      "claimed": "`package.json`, `tests/*`, `src/*`",
+      "notes": "Verified env, tests, and build."
+    },
+    {
+      "area": "Scoring Huddle",
+      "owner": "Gemini",
+      "started": "2026-04-30T23:10:00Z",
+      "status": "Done",
+      "claimed": "`coordination/huddles/*`",
+      "notes": "Decided on scoring semantics."
+    },
+    {
+      "area": "Hybrid Arcade Scoring Slice",
+      "owner": "Codex",
+      "started": "2026-05-01T06:35:46Z",
+      "status": "Done",
+      "claimed": "`src/core/scoring.js`, `src/utils/constants.js`, `tests/core/scoring.test.js`, `coordination/*`, `src/utils/validators.js`, `src/core/validation.js`, `src/core/GameEngine.js`, `src/services/api/questionService.js`, `src/state/actions.js`, `scripts/shard-questions.js`, `scripts/asset-check.js`, `assets/questions/*`, `tests/*`, `docs/*`, `DATA.md`, `src/services/soundManager.js`",
+      "notes": "Implemented hybrid scoring and core migration."
+    },
+    {
+      "area": "Coordination Initialization",
+      "owner": "Gemini",
+      "started": "2026-05-01T05:00:00Z",
+      "status": "Done",
+      "claimed": "`coordination/*`, `scripts/agent-log.mjs`, `package.json`",
+      "notes": "Established initial system."
+    },
+    {
+      "area": "Core Migration Pass",
+      "owner": "Codex",
+      "started": "2026-05-01T05:16:53Z",
+      "status": "Done",
+      "claimed": "`src/utils/validators.js`, `src/core/validation.js`, `src/core/GameEngine.js`, `src/services/api/questionService.js`, `src/state/actions.js`, `scripts/shard-questions.js`, `scripts/asset-check.js`, `assets/questions/*`, `tests/*`, `docs/JEOPARDISH_MIGRATION_AUDIT_2026-05-01.md`",
+      "notes": "Ported answer validation, starter pack, shard generation, data normalization, and fixed missing action constants in canonical JeoPARODY."
+    }
+  ],
+  "recentLogs": [
+    {
+      "file": "coordination/logs/2026-05-01/20260501T063748Z-codex-hybrid-arcade-scoring-slice.md",
+      "timestamp": "2026-05-01T06:37:48Z",
+      "agent": "Codex",
+      "tool": "Codex",
+      "task": "Hybrid arcade scoring slice",
+      "status": "completed",
+      "files_touched": [
+        "src/core/scoring.js",
+        "src/utils/constants.js",
+        "tests/core/scoring.test.js",
+        "coordination/active-work.md",
+        "coordination/reviews/2026-05-01-codex-hybrid-scoring-review.md"
+      ],
+      "summary": "Agent: Codex"
+    },
+    {
+      "file": "coordination/logs/2026-05-01/20260501T055733Z-gemini-coordination-repair-huddle-initialization.md",
+      "timestamp": "2026-05-01T05:57:33Z",
+      "agent": "Gemini",
+      "tool": "Gemini CLI",
+      "task": "Coordination Repair & Huddle Initialization",
+      "status": "completed",
+      "files_touched": [
+        "coordination/*",
+        "docs/*"
+      ],
+      "summary": "Agent: Gemini"
+    },
+    {
+      "file": "coordination/logs/2026-05-01/20260501T053353Z-gemini-baseline-verification.md",
+      "timestamp": "2026-05-01T05:33:53Z",
+      "agent": "Gemini",
+      "tool": "Gemini CLI",
+      "task": "Baseline Verification",
+      "status": "completed",
+      "files_touched": [
+        "package.json",
+        "tests/*",
+        "src/*"
+      ],
+      "summary": "Agent: Gemini"
+    },
+    {
+      "file": "coordination/logs/2026-05-01/20260501T052851Z-codex-core-jeopardish-migration.md",
+      "timestamp": "2026-05-01T05:28:51Z",
+      "agent": "Codex",
+      "tool": "OpenAI Codex CLI",
+      "task": "core Jeopardish migration",
+      "status": "completed",
+      "files_touched": [
+        "src/utils/validators.js",
+        "src/core/validation.js",
+        "src/core/GameEngine.js",
+        "src/services/api/questionService.js",
+        "src/state/actions.js",
+        "src/services/soundManager.js",
+        "scripts/shard-questions.js",
+        "scripts/asset-check.js",
+        "assets/questions/starter-pack.json",
+        "assets/questions/index.json",
+        "assets/questions/manifest.json",
+        "assets/questions/shards/*",
+        "tests/core/validation.test.js",
+        "tests/services/questionService.test.js",
+        "tests/state/actions.test.js",
+        "docs/JEOPARDISH_MIGRATION_AUDIT_2026-05-01.md",
+        "DATA.md",
+        "coordination/active-work.md"
+      ],
+      "summary": "Agent: Codex"
+    },
+    {
+      "file": "coordination/logs/2026-05-01/20260501T050342Z-gemini-canonical-coordination-initialization.md",
+      "timestamp": "2026-05-01T05:03:42Z",
+      "agent": "Gemini",
+      "tool": "Gemini CLI",
+      "task": "Canonical coordination initialization",
+      "status": "completed",
+      "files_touched": [
+        "coordination/*",
+        "scripts/agent-log.mjs",
+        "package.json"
+      ],
+      "summary": "Agent: Gemini"
+    },
+    {
+      "file": "coordination/logs/2026-05-02/20260502T185248Z-gemini-shipyard-prototype.md",
+      "summary": "Agent: Gemini"
+    },
+    {
+      "file": "coordination/logs/2026-05-02/20260502T192322Z-codex-canonical-runtime-and-scoring-convergence.md",
+      "summary": "Agent: Codex"
+    },
+    {
+      "file": "coordination/logs/2026-05-02/20260502T201554Z-codex-validation-convergence-and-js-lint-baseline.md",
+      "summary": "Agent: Codex"
+    }
+  ],
+  "drift": [],
+  "baseline": {
+    "tests": "PASS",
+    "build": "PASS"
+  }
+}

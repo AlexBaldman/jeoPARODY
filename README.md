@@ -113,7 +113,7 @@ Prerequisites:
 
 Install and run:
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 Build and preview:
@@ -129,7 +129,7 @@ Note: The AI host and Firebase integrations are optional. The game runs without 
 The AI host uses a Gemini proxy by default for browser safety with fallbacks if unavailable.
 
 - Primary service: `src/services/ai.js` (unified interface + caching)
-- Providers: `src/services/ai-providers.js` (Gemini via proxy, Claude placeholder, fallback)
+- Providers: `src/services/ai-providers.js` (Gemini via proxy, Claude placeholder, local, fallback, mock)
 
 Options:
 1) Use the proxy (recommended for development)
@@ -144,13 +144,14 @@ Options:
 If neither is available, the host will use witty canned lines so the game remains fully playable.
 
 Developer tip:
-- To force a mock AI (no network), open DevTools and run: `localStorage.setItem('use_mock_ai','1')`. Remove with `localStorage.removeItem('use_mock_ai')`.
+- No network is required for the default local/fallback host behavior.
+- To force deterministic development responses, set `localStorage.setItem('use_mock_ai', '1')` and reload. Remove it with `localStorage.removeItem('use_mock_ai')`.
 
 
 ## Optional: Firebase & Cloud Sync
-The HTML references Firebase compat scripts and `dist/js/firebase-config.js`. This is a stub for future features (auth, leaderboard, cloud saves). You can:
+Firebase compat scripts in `index.html` are currently commented out. This is a stub for future features (auth, leaderboard, cloud saves). When that work resumes, you can:
 - Provide your Firebase config at `public/dist/js/firebase-config.js` (match the expected global config)
-- Or remove the script tag in `index.html` if not using Firebase yet
+- Uncomment the Firebase script tags in `index.html`
 
 Planned Firebase uses:
 - Auth: anonymous + OAuth providers
@@ -168,6 +169,18 @@ Planned Firebase uses:
 npm test
 npm run test:watch
 npm run test:coverage
+```
+- Production build:
+```bash
+npm run build
+```
+- JavaScript lint currently exits successfully with a warning backlog; `no-undef` is enforced as an error:
+```bash
+npm run lint
+```
+- CSS lint is a known failing quality gate until the style refactor is completed:
+```bash
+npm run lint:css
 ```
 - E2E (planned): Cypress/Playwright to be added; see `docs/MASTER_PLAN.md`
 
@@ -197,10 +210,11 @@ Start here:
 - Read `docs/MASTER_PLAN.md` for the current source of truth, priorities, and success metrics
 
 Contributor resources:
-- Repository Guidelines: `AGENTS.md`
+- Agent Guide: `Gemini.md`
 - Architecture Overview: `ARCHITECTURE.md`
 - UI Guide: `UI_GUIDE.md`
 - Data Reference: `DATA.md`
+- Docs Index: `docs/README.md`
 - AI Provider Setup: `docs/AI_PROVIDER_SETUP.md`
 - CSS Refactor Plan: `docs/css-refactor-plan.md`
 - Media Rendering Implementation: `docs/MEDIA_RENDERING_IMPLEMENTATION.md`
@@ -220,9 +234,9 @@ Contributor resources:
   - Theming: scoreboard and speech bubble now use modifier classes and CSS variables; dev theme cycling enabled
   - Layering: standardized z-index usage across app; removed duplicate tokens from `enhanced-ui.css`
   - A11y: modal focus trap and role/aria; header height tokenized
-  - AI: mock provider toggle (`localStorage.setItem('use_mock_ai','1')`); health-check utility scaffolded
-  - Tests: added unit tests for scoring/validation and a mock AI toggle test
-- Docs: added `docs/CSS.md`; updated README, WARP.md, CONTRIBUTING.md, and added `AGENTS.md`
+  - AI: local provider fallback and health-check utility scaffolded
+  - Tests: added unit tests for scoring/validation and AI service provider behavior
+- Docs: added `docs/CSS.md`; updated README, WARP.md, and CONTRIBUTING.md
 
 ## Screenshots (optional)
 - Quick local screenshots via Playwright (requires Playwright):

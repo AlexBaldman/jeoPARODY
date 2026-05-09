@@ -67,18 +67,17 @@ The AI is a core feature, providing the host's personality.
 
 - **Primary Service:** `src/services/ai.js` provides a unified interface.
 - **Providers:** Provider-specific logic is in `src/services/ai-providers.js`. The system is designed to be multi-provider with graceful fallbacks.
-- **Configuration:** For development, the AI can be configured via `localStorage`.
-    - **To use a mock AI (no network calls):** `localStorage.setItem('use_mock_ai', '1')`
-    - **To use a Gemini API key directly:** `localStorage.setItem('gemini_api_key', 'YOUR_API_KEY')`
-- **Contribution:** When working on AI features, ensure changes are made in a modular way that respects the provider abstraction. Test with both the real API and the mock provider.
+- **Configuration:** For development, use the Gemini proxy path for remote AI, the local/fallback providers when no network service is available, and `localStorage.setItem('use_mock_ai', '1')` for deterministic mock responses.
+- **Known gap:** Direct `localStorage` API-key paths are detected in parts of the code but are not complete working provider calls yet.
+- **Contribution:** When working on AI features, ensure changes are made in a modular way that respects the provider abstraction. Test the proxy, local provider, fallback provider, and mock provider.
 
 ## 7. Committing and Contributing
 
 - **Pre-Commit Checklist:**
     1.  `npm run lint` passes.
-    2.  `npm run lint:css` passes.
-    3.  `npm test` passes.
-    4.  `node scripts/asset-check.js` runs without errors.
+    2.  `npm test` passes.
+    3.  `npm run build` passes.
+    4.  `npm run lint:css` is checked or explicitly called out as known CSS refactor debt.
     5.  The application builds and runs correctly via `npm run dev`.
 - **Commit Messages:** Use a clear, imperative subject line (≤72 chars) with a prefix (e.g., `Fix:`, `Refactor:`, `Feat:`).
 - **Pull Requests:** Keep PRs small and focused on a single feature or fix. Provide a clear description of the changes.
