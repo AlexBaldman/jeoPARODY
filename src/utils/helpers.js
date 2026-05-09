@@ -35,7 +35,7 @@ export function deepClone(obj) {
   
   const clonedObj = {};
   for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
       clonedObj[key] = deepClone(obj[key]);
     }
   }
@@ -197,7 +197,7 @@ export function formatNumber(number, decimals = 0) {
  * @returns {Promise} Promise that resolves after delay
  */
 export function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise(resolve => { setTimeout(resolve, ms); });
 }
 
 /**

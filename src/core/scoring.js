@@ -5,8 +5,7 @@
  * Complex scoring systems often hide bugs."
  */
 
-import { SCORING, RULES } from '../utils/constants.js';
-import { clamp } from '../utils/helpers.js';
+import { SCORING } from '../utils/constants.js';
 import { emitGameEvent, GAME_EVENTS } from '../utils/events.js';
 
 /**
@@ -22,7 +21,7 @@ export class ScoreCalculator {
   static calculateCorrectScore(params) {
     const {
       baseValue = 200,
-      timeElapsed = 0,
+      timeElapsed = null,
       streak = 0,
       difficulty = 'medium',
       peekUsed = false
@@ -33,20 +32,15 @@ export class ScoreCalculator {
       return 0;
     }
 
-    // Base score
-    let score = baseValue * SCORING.CORRECT_MULTIPLIER;
+    const baseScore = baseValue * SCORING.CORRECT_MULTIPLIER;
 
-    // Time bonus
-    const timeBonus = this.calculateTimeBonus(timeElapsed);
-    score += timeBonus;
+    const timeBonus = Number.isFinite(timeElapsed)
+      ? this.calculateTimeBonus(timeElapsed)
+      : 0;
 
-    // Streak bonus
     const streakBonus = this.calculateStreakBonus(streak, baseValue);
-    score += streakBonus;
-
-    // Difficulty multiplier
     const difficultyMultiplier = this.getDifficultyMultiplier(difficulty);
-    score = Math.round(score * difficultyMultiplier);
+    const score = Math.round((baseScore + timeBonus + streakBonus) * difficultyMultiplier);
 
     return Math.max(0, score);
   }
@@ -88,11 +82,13 @@ export class ScoreCalculator {
    * @returns {number} Streak bonus
    */
   static calculateStreakBonus(streak, baseValue) {
-    let multiplier = 1; // Start with 1 so (multiplier - 1) is 0 if no bonus applies
+    let multiplier = 1;
+    const thresholds = Object.entries(SCORING.STREAK_BONUS)
+      .map(([threshold, bonus]) => [Number(threshold), bonus])
+      .sort(([a], [b]) => a - b);
 
-    // Find the highest applicable streak bonus
-    for (const [threshold, bonus] of Object.entries(SCORING.STREAK_BONUS)) {
-      if (streak >= parseInt(threshold)) {
+    for (const [threshold, bonus] of thresholds) {
+      if (streak >= threshold) {
         multiplier = bonus;
       }
     }
@@ -125,10 +121,10 @@ export class ScoreCalculator {
     const {
       isCorrect,
       baseValue,
-      timeElapsed,
-      streak,
-      difficulty,
-      peekUsed
+      timeElapsed = null,
+      streak = 0,
+      difficulty = 'medium',
+      peekUsed = false
     } = roundData;
 
     if (!isCorrect) {
@@ -154,17 +150,18 @@ export class ScoreCalculator {
     };
 
     const total = this.calculateCorrectScore(params);
-    const timeBonus = peekUsed ? 0 : this.calculateTimeBonus(timeElapsed);
+    const base = peekUsed ? 0 : baseValue * SCORING.CORRECT_MULTIPLIER;
+    const timeBonus = !peekUsed && Number.isFinite(timeElapsed) ? this.calculateTimeBonus(timeElapsed) : 0;
     const streakBonus = peekUsed ? 0 : this.calculateStreakBonus(streak, baseValue);
-    const difficultyMultiplier = this.getDifficultyMultiplier(difficulty);
+    const preDifficultyTotal = base + timeBonus + streakBonus;
 
     return {
       total,
       breakdown: {
-        base: peekUsed ? 0 : baseValue,
+        base,
         timeBonus,
         streakBonus,
-        difficultyBonus: peekUsed ? 0 : Math.round((baseValue * difficultyMultiplier) - baseValue),
+        difficultyBonus: peekUsed ? 0 : total - preDifficultyTotal,
         penalty: 0
       }
     };

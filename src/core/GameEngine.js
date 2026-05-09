@@ -10,32 +10,21 @@
  * - Achievement tracking
  * - Performance monitoring
  * 
- * Zero dependencies on DOM or external services.
- * Pure functions that transform data.
+ * No direct DOM dependencies. Browser services connect through the event bus.
+ * Scoring and answer validation delegate to canonical utility modules.
  * 
  * @module core/GameEngine
  */
 
 import { eventBus } from '../utils/events.js';
-import { ACTION_TYPES } from '../state/actions.js';
 import { getQuestion } from '../services/api/questionService.js';
 import { store } from '../state/store.js';
+import { compareAnswersDetailed } from '../utils/validators.js';
+import { ScoreCalculator } from './scoring.js';
 
 // Game constants
 export const GAME_CONFIG = {
-  // Scoring
-  BASE_POINTS: 100,
-  STREAK_MULTIPLIER: 0.1,
-  TIME_BONUS_MAX: 50,
   TIME_LIMIT: 30000, // 30 seconds
-  
-  // Difficulty scaling
-  DIFFICULTY_MULTIPLIERS: {
-    easy: 0.8,
-    normal: 1.0,
-    hard: 1.2,
-    expert: 1.5
-  },
   
   // Achievement thresholds
   ACHIEVEMENTS: {
@@ -308,7 +297,8 @@ export class GameEngine {
     const question = this.state.question.data;
     if (!question) return;
     
-    const isCorrect = this.checkAnswer(userAnswer, question.answer);
+    const validation = compareAnswersDetailed(userAnswer, question.answer);
+    const isCorrect = validation.isCorrect;
     const timeElapsed = this.state.question.timeElapsed;
     
     // Calculate score
@@ -331,7 +321,8 @@ export class GameEngine {
       isCorrect,
       timedOut,
       score: scoreData,
-      timeElapsed
+      timeElapsed,
+      validation
     });
   }
   
@@ -342,24 +333,7 @@ export class GameEngine {
    * @returns {boolean} Whether answer is correct
    */
   checkAnswer(userAnswer, correctAnswer) {
-    if (!userAnswer || !correctAnswer) return false;
-    
-    // Normalize both answers
-    const normalize = (str) =>
-      str.toLowerCase()
-         .trim()
-         .replace(/[^a-z0-9\s]/g, '')
-         .replace(/\s+/g, ' ');
-    
-    const normalizedUser = normalize(userAnswer);
-    const normalizedCorrect = normalize(correctAnswer);
-    
-    // Exact match
-    if (normalizedUser === normalizedCorrect) return true;
-    
-    // Fuzzy matching for partial credit
-    const similarity = this.calculateSimilarity(normalizedUser, normalizedCorrect);
-    return similarity >= 0.8; // 80% similarity threshold
+    return compareAnswersDetailed(userAnswer, correctAnswer).isCorrect;
   }
   
   /**
@@ -407,33 +381,51 @@ export class GameEngine {
    * @returns {Object} Score data
    */
   calculateScore(isCorrect, timeElapsed, timedOut) {
-    if (!isCorrect || timedOut) {
-      return {
-        base: 0,
-        timeBonus: 0,
-        streakBonus: 0,
-        total: 0
-      };
-    }
-    
-    const difficulty = GAME_CONFIG.DIFFICULTY_MULTIPLIERS[this.state.session.difficulty];
-    const basePoints = GAME_CONFIG.BASE_POINTS * difficulty;
-    
-    // Time bonus (faster = more points)
-    const timeRatio = Math.max(0, 1 - (timeElapsed / GAME_CONFIG.TIME_LIMIT));
-    const timeBonus = Math.floor(GAME_CONFIG.TIME_BONUS_MAX * timeRatio);
-    
-    // Streak bonus
-    const streakBonus = Math.floor(basePoints * this.state.score.streak * GAME_CONFIG.STREAK_MULTIPLIER);
-    
-    const total = basePoints + timeBonus + streakBonus;
-    
+    const baseValue = this.getCurrentQuestionValue();
+    const streak = isCorrect && !timedOut ? this.state.score.streak + 1 : 0;
+    const score = ScoreCalculator.calculateRoundScore({
+      isCorrect: isCorrect && !timedOut,
+      baseValue,
+      timeElapsed,
+      streak,
+      difficulty: this.getScoringDifficulty(),
+      peekUsed: false
+    });
+
     return {
-      base: basePoints,
-      timeBonus,
-      streakBonus,
-      total: Math.floor(total)
+      ...score.breakdown,
+      total: score.total
     };
+  }
+
+  /**
+   * Get the current clue value as a score number.
+   * @returns {number} Score value
+   */
+  getCurrentQuestionValue() {
+    const rawValue = this.state.question.data?.value;
+    if (typeof rawValue === 'number' && Number.isFinite(rawValue)) {
+      return rawValue;
+    }
+
+    if (typeof rawValue === 'string') {
+      const parsed = Number(rawValue.replace(/[^0-9.-]/g, ''));
+      if (Number.isFinite(parsed) && parsed > 0) {
+        return parsed;
+      }
+    }
+
+    return 200;
+  }
+
+  /**
+   * Map engine difficulty names onto the canonical scorer vocabulary.
+   * @returns {string} Scoring difficulty
+   */
+  getScoringDifficulty() {
+    return this.state.session.difficulty === 'normal'
+      ? 'medium'
+      : this.state.session.difficulty;
   }
   
   /**
@@ -444,7 +436,7 @@ export class GameEngine {
     const wasCorrect = scoreData.total > 0;
     
     // Update score
-    this.state.score.current += scoreData.total;
+    this.state.score.current = Math.max(0, this.state.score.current + scoreData.total);
     this.state.score.high = Math.max(this.state.score.high, this.state.score.current);
     
     // Update streak

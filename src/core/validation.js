@@ -5,7 +5,7 @@
  * This is where the game's integrity lives."
  */
 
-import { checkAnswer as checkAnswerUtil } from '../utils/validators.js';
+import { compareAnswersDetailed } from '../utils/validators.js';
 import { generateId } from '../utils/helpers.js';
 
 /**
@@ -26,19 +26,24 @@ export class AnswerValidator {
    */
   validate(userAnswer, correctAnswer, options = {}) {
     const startTime = Date.now();
-    
-    // Use utility function for core validation
-    const isCorrect = checkAnswerUtil(userAnswer, correctAnswer, options.threshold);
+    const match = compareAnswersDetailed(userAnswer, correctAnswer, options.threshold);
+    const isCorrect = match.isCorrect;
     
     // Generate detailed result
     const result = {
       id: generateId(),
       isCorrect,
+      reason: match.reason,
       userAnswer,
       correctAnswer,
+      normalizedUserAnswer: match.normalizedUserAnswer,
+      normalizedCorrectAnswer: match.normalizedCorrectAnswer,
+      acceptedAnswers: match.acceptedAnswers,
+      distance: match.distance,
+      threshold: match.threshold,
       timestamp: startTime,
       processingTime: Date.now() - startTime,
-      confidence: this.calculateConfidence(userAnswer, correctAnswer),
+      confidence: match.confidence,
       feedback: this.generateFeedback(isCorrect, userAnswer, correctAnswer)
     };
 

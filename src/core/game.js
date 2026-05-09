@@ -5,7 +5,7 @@
  * Complex behavior emerges from simple rules applied consistently."
  */
 
-import { GAME_STATES, TIMING } from '../utils/constants.js';
+import { GAME_STATES } from '../utils/constants.js';
 import { emitGameEvent, GAME_EVENTS } from '../utils/events.js';
 import { generateId } from '../utils/helpers.js';
 
@@ -122,7 +122,7 @@ export class GameEngine {
    * @param {string} state - State being entered
    * @param {Object} data - State data
    */
-  enterState(state, data) {
+  enterState(state, _data) {
     switch (state) {
       case GAME_STATES.LOADING:
         console.log('🔄 Loading new question...');

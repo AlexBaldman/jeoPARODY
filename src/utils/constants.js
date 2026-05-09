@@ -31,9 +31,9 @@ export const SCORING = {
   CORRECT_MULTIPLIER: 1,
   INCORRECT_PENALTY: 0.5,
   STREAK_BONUS: {
-    3: 1.5,
-    5: 2,
-    10: 3
+    3: 1.25,
+    5: 1.5,
+    10: 2
   },
   TIME_BONUS_MAX: 500,
   TIME_BONUS_DECAY: 10 // points per second

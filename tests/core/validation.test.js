@@ -1,4 +1,13 @@
 import { AnswerValidator } from '@/core/validation.js';
+import {
+  cleanAnswer as cleanLegacyAnswer,
+  compareAnswers as compareLegacyAnswers,
+  compareAnswersDetailed as compareLegacyAnswersDetailed
+} from '@/utils/answerValidator.js';
+import {
+  cleanAnswer as cleanCanonicalAnswer,
+  compareAnswersDetailed as compareCanonicalAnswersDetailed
+} from '@/utils/validators.js';
 
 describe('AnswerValidator', () => {
   const validator = new AnswerValidator();
@@ -28,6 +37,23 @@ describe('AnswerValidator', () => {
   test('numeric answers with different formatting match', () => {
     const res = validator.validate('1.000', '1000'); // Assuming locale-aware or just stripping non-digits
     expect(res.isCorrect).toBe(true);
+  });
+
+  test('Jeopardy-style prompt prefixes pass', () => {
+    const res = validator.validate('What is the Eiffel Tower?', 'Eiffel Tower');
+    expect(res.isCorrect).toBe(true);
+    expect(res.reason).toBe('exact');
+  });
+
+  test('parenthetical alternate answers pass', () => {
+    const res = validator.validate('La Tour Eiffel', 'The Eiffel Tower (or La Tour Eiffel)');
+    expect(res.isCorrect).toBe(true);
+    expect(res.acceptedAnswers).toContain('latoureiffel');
+  });
+
+  test('tiny substring guesses are rejected', () => {
+    const res = validator.validate('cop', 'Copernicus');
+    expect(res.isCorrect).toBe(false);
   });
 
   describe('calculateConfidence', () => {
@@ -199,3 +225,20 @@ describe('AnswerValidator', () => {
   });
 });
 
+describe('legacy answerValidator compatibility wrapper', () => {
+  test('uses the canonical compact normalizer', () => {
+    expect(cleanLegacyAnswer('What is The Eiffel Tower?')).toBe(cleanCanonicalAnswer('What is The Eiffel Tower?'));
+  });
+
+  test('uses canonical detailed comparison for legacy boolean matches', () => {
+    expect(compareLegacyAnswers('La Tour Eiffel', 'The Eiffel Tower (or La Tour Eiffel)')).toBe(true);
+    expect(compareLegacyAnswers('cop', 'Copernicus')).toBe(false);
+  });
+
+  test('re-exports detailed comparison from canonical validators', () => {
+    const legacy = compareLegacyAnswersDetailed('What is Paris?', 'Paris');
+    const canonical = compareCanonicalAnswersDetailed('What is Paris?', 'Paris');
+
+    expect(legacy).toMatchObject(canonical);
+  });
+});

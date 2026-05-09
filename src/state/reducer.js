@@ -6,7 +6,6 @@
  */
 
 import { ACTION_TYPES } from './actions.js';
-import { deepClone } from '../utils/helpers.js';
 
 /**
  * Initial state structure
@@ -402,7 +401,7 @@ export function combineReducers(reducers) {
  */
 export function createReducer(initialState, handlers) {
   return (state = initialState, action) => {
-    if (handlers.hasOwnProperty(action.type)) {
+    if (Object.prototype.hasOwnProperty.call(handlers, action.type)) {
       return handlers[action.type](state, action);
     }
     return state;

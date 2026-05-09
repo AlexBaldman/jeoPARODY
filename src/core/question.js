@@ -7,7 +7,6 @@
 
 import { validateQuestion } from '../utils/validators.js';
 import { shuffleArray, generateId } from '../utils/helpers.js';
-import { ERRORS } from '../utils/constants.js';
 
 /**
  * Question data structure
