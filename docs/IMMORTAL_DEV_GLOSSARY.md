@@ -26,6 +26,41 @@ The persistent asynchronous collaboration protocol among humans and agents. Read
 LISTEN → UNDERSTAND THE BEAT → ADD A VERIFIED BAR → PASS THE CYPHER
 ```
 
+## ThesaurusSAURUS Rex
+The immortal glossary itself as a living translation layer between project mythology and precise operational meaning. When a coined phrase becomes useful to multiple agents, ThesaurusSAURUS Rex gives it one durable definition so the next worker does not have to reverse-engineer the joke, metaphor, or architectural intent from chat archaeology.
+
+```text
+NEW PHRASE → DEFINE IT ONCE → LINK IT TO BEHAVIOR → REUSE ACROSS AGENTS
+```
+
+Its job is to reduce semantic drift, naming collisions, duplicated discovery, and the peculiar human tendency to invent six terms for the same subsystem before lunch.
+
+## The Hive
+The collaborative project ecology in which many agents/humans can build separate cells that fit together around shared contracts, state, vocabulary, evidence, and goals.
+
+A healthy Hive favors local autonomy with globally legible interfaces. Worker bees should be able to make useful cells without carrying the entire project in context.
+
+```text
+SHARED STATE + SHARED GLOSSARY + CLEAR CONTRACTS
+                ↓
+       INDEPENDENT CELLS
+                ↓
+        COHERENT HIVE
+```
+
+## Worker Bee
+Any agent or human performing a bounded piece of work inside the Hive. A Worker Bee should receive enough local context and shared vocabulary to contribute safely, record what it changed, and leave the cell understandable to the next worker.
+
+**Design implication:** architecture and documentation should minimize the amount of hidden context a new worker needs before producing useful verified work.
+
+## The Queen
+The source of high-level intent, taste, prioritization, and directional constraints in the Hive. The Queen can coexist with distributed execution and should not become a central implementation bottleneck.
+
+The architectural goal is to let intent propagate through durable contracts, journals, glossaries, tests, and world/project state so the Hive continues to thrive even when the Queen is not synchronously supervising each cell.
+
+## Thrive
+A Hive state in which independent contributions compound instead of collide: workers can understand the current beat, make bounded changes, verify them, preserve context, and hand off cleanly. Thrive is an emergent property of good coordination primitives rather than constant central micromanagement.
+
 ## Lead Domino
 The smallest upstream change that unlocks the largest amount of trustworthy downstream progress. Prefer a verified lead domino over a broad collection of downstream improvements.
 
