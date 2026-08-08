@@ -125,9 +125,29 @@ class PAOView {
     this.save();
   }
 
+  async getImageBlobFromUrl(url) {
+    if (!url) return null;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) return null;
+      return await response.blob();
+    } catch (error) {
+      console.warn('[PAOView] Unable to load source image blob for edit:', error);
+      return null;
+    }
+  }
+
   async generateImageFor(card) {
     const prompt = `${card.person} ${card.action} ${card.object}`.trim();
-    const url = await this.qwen.generateImage(prompt);
+    let url = '';
+    const sourceBlob = await this.getImageBlobFromUrl(card.imageUrl);
+
+    if (sourceBlob && this.qwen.isEditConfigured?.()) {
+      url = await this.qwen.editImage(prompt, sourceBlob);
+    } else {
+      url = await this.qwen.generateImage(prompt);
+    }
+
     if (url) {
       card.imageUrl = url;
       this.render();
@@ -297,7 +317,12 @@ class PAOView {
   }
 
   show() { if (this.root) this.root.classList.add('active'); }
-  hide() { if (this.root) this.root.classList.remove('active'); }
+  hide() {
+    if (!this.root) return;
+    this.root.classList.remove('active');
+    this.root.parentElement?.classList.add('hidden');
+    document.getElementById('splash-screen')?.classList.add('active');
+  }
 }
 
 export default PAOView;

@@ -8,7 +8,14 @@ class LocalStyleProvider {
         const text = String(prompt || '')
             .replace(/\s+/g, ' ')
             .trim();
-        const prefix = Math.random() < 0.5 ? "Alright, here we go: " : "Let's take a look: ";
+        const prefixes = ["Alright, here we go: ", "Let's take a look: "];
+        const seed = Number(options.seed) || 0;
+        let hash = seed;
+        for (let i = 0; i < text.length; i += 1) {
+            hash = ((hash << 5) - hash) + text.charCodeAt(i);
+            hash |= 0;
+        }
+        const prefix = prefixes[Math.abs(hash) % prefixes.length];
         const out = (prefix + text).slice(0, maxLen);
         return out;
     }

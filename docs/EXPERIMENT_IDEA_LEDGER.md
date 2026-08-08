@@ -1,6 +1,6 @@
 # Jeopardish Experiment Idea Ledger
 
-This ledger feeds the canonical roadmap in [MASTER_PLAN.md](MASTER_PLAN.md). The ideas here are candidates, not commitments.
+This ledger feeds the canonical roadmap in [PRODUCTION_REMEDIATION_PLAN_2026-05-26.md](PRODUCTION_REMEDIATION_PLAN_2026-05-26.md). The ideas here are candidates, not commitments.
 
 This ledger preserves useful ideas from messy, unfinished, or oversized branches so cleanup does not erase creative direction. Items here are not release commitments; they are candidates to rebuild cleanly when the core MVP can support them.
 

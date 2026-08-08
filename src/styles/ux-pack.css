@@ -151,32 +151,400 @@ html[data-theme="retro"] body::after {
 /* Splash Screen */
 #splash-screen {
   position: fixed; inset: 0; z-index: var(--z-modal); display: none; place-items: center;
-  background: radial-gradient(80% 60% at 50% 10%, rgb(255 255 255 / 8%), transparent 60%), rgb(3 6 20 / 90%);
-  backdrop-filter: blur(6px);
+  overflow: auto;
+  padding: clamp(18px, 4vw, 48px);
+  background:
+    radial-gradient(circle at 50% 10%, rgb(255 240 120 / 16%), transparent 24%),
+    radial-gradient(circle at 14% 18%, rgb(0 245 255 / 20%), transparent 18%),
+    radial-gradient(circle at 86% 24%, rgb(255 0 180 / 18%), transparent 20%),
+    linear-gradient(180deg, #160f35 0%, #07152d 52%, #020711 100%);
+  backdrop-filter: blur(3px);
+  isolation: isolate;
 }
 #splash-screen.active { display: grid; }
 
+#splash-screen::before,
+#splash-screen::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+#splash-screen::before {
+  z-index: -1;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 5%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 5%) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: linear-gradient(to bottom, transparent, #000 16%, #000 78%, transparent);
+  animation: splashGridDrift 9s linear infinite;
+}
+
+#splash-screen::after {
+  z-index: 2;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgb(255 255 255 / 6%) 0 1px,
+      rgb(0 0 0 / 12%) 1px 3px,
+      transparent 3px 5px
+    ),
+    radial-gradient(circle at 50% 50%, transparent 52%, rgb(0 0 0 / 34%) 100%);
+  mix-blend-mode: overlay;
+  animation: splashCrtPulse 3.2s ease-in-out infinite;
+}
+
 .splash-card {
-  width: min(920px, 92vw); border-radius: var(--uxp-radius-xl); padding: 36px; position: relative;
-  background: linear-gradient(180deg, rgb(255 255 255 / 14%), rgb(255 255 255 / 8%));
-  border: 1px solid rgb(255 255 255 / 18%); box-shadow: var(--uxp-shadow-xl);
+  width: min(980px, 100%);
+  border-radius: 0;
+  padding: clamp(18px, 3vw, 34px);
+  position: relative;
+  color: #fffbe8;
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 13%), transparent 24%),
+    linear-gradient(180deg, rgb(7 14 44 / 96%), rgb(13 8 35 / 98%));
+  border: 4px solid #ffdc5d;
+  box-shadow:
+    0 0 0 6px #120817,
+    0 0 0 10px #21e6ff,
+    0 28px 70px rgb(0 0 0 / 65%),
+    inset 0 0 36px rgb(0 245 255 / 16%);
+  clip-path: polygon(16px 0, calc(100% - 16px) 0, 100% 16px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 16px), 0 16px);
+}
+
+.splash-card::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgb(255 255 255 / 15%);
+  pointer-events: none;
+}
+
+.splash-hud {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+  color: #81ffe7;
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(8px, 1.45vw, 13px);
+  line-height: 1.5;
+  text-shadow: 0 0 10px rgb(33 230 255 / 72%);
+  text-transform: uppercase;
+}
+
+.splash-screen-frame {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  padding: clamp(24px, 5vw, 52px) clamp(16px, 4vw, 42px);
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 10%, rgb(255 255 255 / 12%), transparent 34%),
+    linear-gradient(180deg, #071c6b, #06113f 54%, #03071c);
+  border: 4px solid #0b0f25;
+  box-shadow:
+    inset 0 -10px 0 rgb(0 0 0 / 36%),
+    inset 0 0 0 4px rgb(255 255 255 / 8%),
+    0 12px 0 #070817;
+}
+
+.splash-screen-frame::after {
+  content: "INSERT WIT";
+  position: absolute;
+  right: 18px;
+  bottom: 12px;
+  color: rgb(255 255 255 / 34%);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  letter-spacing: 1px;
+}
+
+.splash-kicker {
+  margin-bottom: 16px;
+  color: #ff7ad9;
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(8px, 1.4vw, 12px);
+  letter-spacing: 1.4px;
+  line-height: 1.7;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgb(255 0 180 / 62%);
 }
 
 .splash-title {
-  font-family: Korinna, serif; font-size: clamp(28px, 5vw, 54px); color: #fff; text-align: center; margin: 6px 0 20px;
-  text-shadow: 0 6px 18px rgb(0 0 0 / 45%), 0 0 30px rgb(80 130 255 / 60%);
+  margin: 0 0 18px;
+  color: #fff4a8;
+  font-family: Korinna, 'Press Start 2P', serif;
+  font-size: clamp(44px, 9vw, 104px);
+  font-weight: 900;
+  letter-spacing: clamp(1px, 0.9vw, 8px);
+  line-height: 0.9;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow:
+    0 5px 0 #9b4b00,
+    0 10px 0 #351100,
+    0 0 24px rgb(255 220 93 / 58%),
+    0 0 52px rgb(255 0 180 / 38%);
 }
-.splash-subtitle { color: #cbd5e1; text-align: center; margin-bottom: 20px; }
-.splash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+
+.splash-title,
+.host-container {
+  cursor: pointer;
+}
+
+.splash-title.secret-tap-pulse {
+  transform: scale(1.018);
+  filter: brightness(1.18) saturate(1.18);
+}
+
+.host-container.secret-tap-pulse {
+  filter: drop-shadow(0 0 16px rgb(129 255 231 / 70%));
+  transform: translateY(-7px) scale(1.06);
+}
+
+.splash-subtitle {
+  max-width: 620px;
+  margin: 0 0 22px;
+  color: #dff7ff;
+  font-size: clamp(14px, 2vw, 19px);
+  line-height: 1.5;
+  text-align: center;
+  text-shadow: 0 2px 0 rgb(0 0 0 / 56%);
+}
+
+.splash-start {
+  width: min(380px, 100%);
+  min-height: 74px;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+  border: 3px solid #240b00;
+  border-radius: 0;
+  color: #160b00;
+  font-family: 'Press Start 2P', monospace;
+  text-transform: uppercase;
+  box-shadow:
+    0 8px 0 #8c4a00,
+    0 0 0 4px #fff2a3,
+    0 0 22px rgb(255 220 93 / 52%);
+}
+
+.splash-start:hover {
+  transform: translateY(-3px);
+}
+
+.splash-start:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 3px 0 #8c4a00,
+    0 0 0 4px #fff2a3,
+    0 0 18px rgb(255 220 93 / 46%);
+}
+
+#splash-screen.secret-unlocking .splash-screen-frame {
+  box-shadow:
+    inset 0 -10px 0 rgb(0 0 0 / 36%),
+    inset 0 0 0 4px rgb(255 255 255 / 8%),
+    0 12px 0 #070817,
+    0 0 26px rgb(129 255 231 / 42%);
+}
+
+#splash-screen.secret-unlocked .splash-screen-frame {
+  animation: secretCabinetUnlock 520ms steps(4, end);
+}
+
+.secret-mode-toast {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  z-index: 3;
+  width: max-content;
+  max-width: min(460px, calc(100% - 28px));
+  padding: 10px 14px;
+  color: #06113f;
+  background: #81ffe7;
+  border: 3px solid #030611;
+  box-shadow:
+    4px 4px 0 #030611,
+    0 0 18px rgb(129 255 231 / 58%);
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(8px, 1.35vw, 11px);
+  letter-spacing: 1px;
+  line-height: 1.6;
+  text-align: center;
+  text-transform: uppercase;
+  transform: translate(-50%, 12px) scale(0.96);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.secret-mode-toast--active {
+  animation: secretToastPop 520ms steps(4, end) forwards;
+}
+
+.secret-mode-burst {
+  position: fixed;
+  right: clamp(14px, 3vw, 36px);
+  bottom: clamp(86px, 10vh, 132px);
+  z-index: 10010;
+  max-width: min(420px, calc(100vw - 28px));
+  padding: 12px 16px;
+  color: #fff4a8;
+  background:
+    linear-gradient(135deg, #ff2257, #7c1dff 55%, #06113f);
+  border: 4px solid #fff4a8;
+  box-shadow:
+    5px 5px 0 #030611,
+    0 0 24px rgb(255 34 87 / 60%),
+    0 0 38px rgb(33 230 255 / 42%);
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(9px, 1.5vw, 14px);
+  letter-spacing: 1px;
+  line-height: 1.6;
+  text-align: center;
+  text-transform: uppercase;
+  transform: translateX(120%) rotate(3deg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.secret-mode-burst::before {
+  content: "TOASTY";
+  display: block;
+  margin-bottom: 4px;
+  color: #81ffe7;
+  font-size: 0.72em;
+  letter-spacing: 1.4px;
+}
+
+.secret-mode-burst--active {
+  animation: secretBurstSlide 1500ms steps(7, end) forwards;
+}
+
+.start-prompt {
+  font-size: clamp(11px, 2vw, 17px);
+  animation: pressStartBlink 1.2s steps(2, end) infinite;
+}
+
+.start-caption {
+  font-size: 9px;
+  letter-spacing: 1px;
+  opacity: 0.74;
+}
+
+.splash-grid,
+.splash-menu {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+
 .splash-card .btn { width: 100%; padding: 16px 18px; }
-.splash-footer { display: flex; gap: 12px; justify-content: space-between; align-items: center; margin-top: 20px; flex-wrap: wrap; }
-.theme-chooser { display: flex; gap: 8px; align-items: center; color: #e5e7eb; }
+
+.mode-select {
+  display: grid;
+  gap: 7px;
+  min-height: 98px;
+  padding: 14px;
+  color: #f7fbff;
+  text-align: left;
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 12%), transparent 32%),
+    linear-gradient(180deg, #18285d, #09122e);
+  border: 2px solid #21e6ff;
+  border-radius: 0;
+  box-shadow:
+    inset 0 -5px 0 rgb(0 0 0 / 32%),
+    0 5px 0 #030611;
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    filter 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.mode-select:hover,
+.mode-select:focus-visible {
+  border-color: #ffdc5d;
+  filter: brightness(1.12);
+  transform: translateY(-3px);
+  box-shadow:
+    inset 0 -5px 0 rgb(0 0 0 / 28%),
+    0 8px 0 #030611,
+    0 0 18px rgb(33 230 255 / 38%);
+}
+
+.mode-select:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 -3px 0 rgb(0 0 0 / 36%),
+    0 2px 0 #030611;
+}
+
+.mode-select-beta {
+  border-color: #ff7ad9;
+}
+
+.mode-select-options {
+  border-color: #8ff05b;
+}
+
+.mode-kicker,
+.mode-status {
+  color: #81ffe7;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  letter-spacing: 0.8px;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+.mode-title {
+  color: #fff4a8;
+  font-family: Korinna, georgia, serif;
+  font-size: clamp(20px, 2.4vw, 30px);
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: 0 2px 0 rgb(0 0 0 / 54%);
+}
+
+.mode-status {
+  color: #dbeafe;
+  opacity: 0.78;
+}
+
+.splash-footer {
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 22px;
+  flex-wrap: wrap;
+  color: #dff7ff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.theme-chooser {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  color: #dff7ff;
+}
 
 .theme-dot { 
-  width: 24px; height: 24px; border-radius: 50%; cursor: pointer; 
-  border: 2px solid rgb(255 255 255 / 60%); 
-  box-shadow: 0 0 0 2px rgb(0 0 0 / 25%) inset; 
-  transition: all 0.3s ease;
+  width: 26px; height: 26px; padding: 0; border-radius: 0; cursor: pointer; 
+  border: 2px solid rgb(255 255 255 / 70%); 
+  box-shadow: 0 0 0 2px rgb(0 0 0 / 42%) inset, 0 4px 0 rgb(0 0 0 / 48%); 
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
   position: relative;
 }
 .theme-dot[data-theme="jeopardy"] { background: var(--uxp-jeopardy-blue); }
@@ -196,15 +564,105 @@ html[data-theme="retro"] body::after {
 }
 
 .theme-dot.active::after {
-  content: '✓';
+  content: "";
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 10px;
-  font-weight: bold;
-  text-shadow: 0 0 2px rgb(0 0 0 / 80%);
+  inset: 6px;
+  background: #fff;
+  box-shadow: 0 0 8px rgb(255 255 255 / 80%);
+}
+
+.lives {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  min-height: 30px;
+}
+
+@keyframes splashGridDrift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(34px, 34px, 0); }
+}
+
+@keyframes splashCrtPulse {
+  0%, 100% { opacity: 0.42; }
+  50% { opacity: 0.68; }
+}
+
+@keyframes pressStartBlink {
+  0%, 58% { opacity: 1; }
+  59%, 100% { opacity: 0.26; }
+}
+
+@keyframes secretCabinetUnlock {
+  0% { filter: hue-rotate(0deg) brightness(1); transform: translateX(0); }
+  25% { filter: hue-rotate(80deg) brightness(1.2); transform: translateX(-3px); }
+  50% { filter: hue-rotate(180deg) brightness(1.35); transform: translateX(3px); }
+  75% { filter: hue-rotate(280deg) brightness(1.18); transform: translateX(-2px); }
+  100% { filter: hue-rotate(360deg) brightness(1); transform: translateX(0); }
+}
+
+@keyframes secretToastPop {
+  0% { opacity: 0; transform: translate(-50%, 12px) scale(0.96); }
+  45% { opacity: 1; transform: translate(-50%, -2px) scale(1.02); }
+  100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+@keyframes secretBurstSlide {
+  0% { opacity: 0; transform: translateX(120%) rotate(3deg); }
+  18%, 72% { opacity: 1; transform: translateX(0) rotate(-2deg); }
+  100% { opacity: 0; transform: translateX(120%) rotate(3deg); }
+}
+
+@media (width <= 760px) {
+  #splash-screen {
+    place-items: start center;
+    padding: 16px;
+  }
+
+  .splash-card {
+    box-shadow:
+      0 0 0 4px #120817,
+      0 0 0 7px #21e6ff,
+      0 22px 50px rgb(0 0 0 / 62%),
+      inset 0 0 28px rgb(0 245 255 / 14%);
+  }
+
+  .splash-hud {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .splash-hud span:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .splash-screen-frame::after {
+    display: none;
+  }
+
+  .splash-menu {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-select {
+    min-height: 78px;
+  }
+
+  .splash-footer,
+  .theme-chooser {
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #splash-screen::before,
+  #splash-screen::after,
+  #splash-screen.secret-unlocked .splash-screen-frame,
+  .secret-mode-burst--active,
+  .secret-mode-toast--active,
+  .start-prompt {
+    animation: none;
+  }
 }
 
 /* Jeopardy Board Screen */
@@ -245,106 +703,3 @@ html[data-theme="retro"] body::after {
 /* Utility */
 .hidden { display: none !important; }
 
-/* ===================================
-   SNES/GENESIS RETRO SPLASH SCREEN
-   =================================== */
-
-html[data-theme="retro"] #splash-screen {
-  background: linear-gradient(170deg, #0d0221 0%, #1a0a38 30%, #241b5e 70%, #0d0221 100%);
-  overflow: hidden;
-}
-
-html[data-theme="retro"] #splash-screen::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, rgb(255 0 255 / 40%) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(255 0 255 / 40%) 1px, transparent 1px);
-  background-size: 50px 50px;
-  opacity: 0.1;
-  animation: grid-scroll 10s linear infinite;
-}
-
-@keyframes grid-scroll {
-  from { background-position: 0 0; }
-  to { background-position: 50px 50px; }
-}
-
-html[data-theme="retro"] .splash-card {
-  background: rgb(10 0 30 / 60%);
-  border: 2px solid #f0f;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 0 20px #f0f, 0 0 40px #0ff, inset 0 0 15px rgb(255 0 255 / 50%);
-  animation: float 6s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-html[data-theme="retro"] .splash-title {
-  font-family: 'Press Start 2P', monospace;
-  font-size: clamp(32px, 6vw, 64px);
-  color: #fff;
-  text-shadow:
-    0 0 5px #fff,
-    0 0 10px #fff,
-    0 0 20px #f0f,
-    0 0 30px #f0f,
-    0 0 40px #f0f,
-    0 0 55px #f0f,
-    0 0 75px #f0f;
-}
-
-html[data-theme="retro"] .splash-subtitle {
-  font-family: 'Press Start 2P', monospace;
-  color: #0ff;
-  font-size: 1rem;
-  text-shadow: 0 0 5px #0ff;
-}
-
-html[data-theme="retro"] .splash-card .btn {
-  font-family: 'Press Start 2P', monospace;
-  text-transform: uppercase;
-  border-radius: 8px;
-  border: 2px solid;
-  transition: all 0.2s ease-in-out;
-}
-
-html[data-theme="retro"] .splash-card .btn-gradient {
-  background: linear-gradient(135deg, #f0f, #ff6ec7);
-  color: #fff;
-  border-color: #ffc1f9;
-  box-shadow: 0 4px 0 #a0f, 0 6px 10px rgb(0 0 0 / 40%);
-}
-
-html[data-theme="retro"] .splash-card .btn-gradient:hover {
-  transform: translateY(-2px) scale(1.02);
-  filter: brightness(1.1);
-  box-shadow: 0 6px 0 #a0f, 0 8px 15px rgb(0 0 0 / 30%);
-}
-
-html[data-theme="retro"] .splash-card .btn-gradient:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 0 #a0f, 0 4px 8px rgb(0 0 0 / 40%);
-}
-
-html[data-theme="retro"] .splash-card .btn-neon {
-  background: linear-gradient(135deg, #0ff, #00b8d4);
-  color: #000;
-  border-color: #7fffff;
-  box-shadow: 0 4px 0 #088, 0 6px 10px rgb(0 0 0 / 40%);
-}
-
-html[data-theme="retro"] .splash-card .btn-neon:hover {
-  transform: translateY(-2px) scale(1.02);
-  filter: brightness(1.1);
-  box-shadow: 0 6px 0 #088, 0 8px 15px rgb(0 0 0 / 30%);
-}
-
-html[data-theme="retro"] .splash-card .btn-neon:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 0 #088, 0 4px 8px rgb(0 0 0 / 40%);
-}

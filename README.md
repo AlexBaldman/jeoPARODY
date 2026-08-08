@@ -50,7 +50,7 @@ What it grows into:
 - Organized assets (images, fonts, questions, audio) under `assets/`
 - Vite-based dev/build pipeline
 
-See `docs/MASTER_PLAN.md` for the deeper architecture and planning details.
+See `docs/PRODUCTION_REMEDIATION_PLAN_2026-05-26.md` for the current stabilization roadmap and release gates.
 
 
 ## Architecture Overview
@@ -73,7 +73,7 @@ jeoPARODY/
 │   ├── utils/               # events, constants, helpers
 │   └── styles/              # app-fixes.css, enhanced-ui.css, media-rendering.css
 ├── assets/                  # images, fonts, questions, audio, css, scripts, data
-├── docs/                    # architecture & plans (see MASTER_PLAN.md)
+├── docs/                    # architecture & plans (see PRODUCTION_REMEDIATION_PLAN_2026-05-26.md)
 ├── tests/                   # integration and future unit tests
 ├── vite.config.js           # build config
 └── jest.config.js           # test config
@@ -174,29 +174,33 @@ npm run test:coverage
 ```bash
 npm run build
 ```
-- JavaScript lint currently exits successfully with a warning backlog; `no-undef` is enforced as an error:
+- JavaScript lint:
 ```bash
 npm run lint
 ```
-- CSS lint is a known failing quality gate until the style refactor is completed:
+- CSS lint:
 ```bash
 npm run lint:css
 ```
-- E2E (planned): Cypress/Playwright to be added; see `docs/MASTER_PLAN.md`
+- Browser runtime smoke testing exists but currently identifies launch and preview-content blockers being tracked in `docs/PRODUCTION_REMEDIATION_PLAN_2026-05-26.md`:
+```bash
+npm run test:runtime
+```
 
 
 ## Roadmap
-Short version; see `docs/MASTER_PLAN.md` for full context.
+Short version; see `docs/PRODUCTION_REMEDIATION_PLAN_2026-05-26.md` for ordering, acceptance checks, and full context.
 
-- Phase 1: Host Personality System
-  - Multi-host architecture, gallery UI, distinct prompts, personality fx
-- Phase 2: Advanced Modes
-  - Category runs, time challenges, Study Mode with AI explanations
-- Phase 3: Social + Multiplayer
-  - Real-time 1v1, friend system, leaderboards, mobile polish
-- Continuous: Performance, accessibility, testing, bundle hygiene
+- Phase 0: Restore release barriers
+  - Interactive startup, production content packaging, fair scoring, deterministic clue flow, safe browser boundaries
+- Phase 1: Ship the learning loop
+  - Review Misses, lazy deterministic clue recovery, spaced retrieval basics
+- Phase 2: Original identity
+  - Cohesive host/world design, optimized production assets, provenance and licensing decisions
+- Phase 3: Expand only after gates pass
+  - Full board, mnemonic tools, optional AI, social/multiplayer work
 
-Open technical items are tracked in `docs/MASTER_PLAN.md`.
+Open technical items are tracked in `docs/PRODUCTION_REMEDIATION_PLAN_2026-05-26.md`.
 
 
 ## Contributing
@@ -207,7 +211,7 @@ Open technical items are tracked in `docs/MASTER_PLAN.md`.
 - Document architectural decisions
 
 Start here:
-- Read `docs/MASTER_PLAN.md` for the current source of truth, priorities, and success metrics
+- Read `docs/PRODUCTION_REMEDIATION_PLAN_2026-05-26.md` for the current source of truth, priorities, and release gates
 
 Contributor resources:
 - Agent Guide: `Gemini.md`

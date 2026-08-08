@@ -1,0 +1,1681 @@
+{
+  "generatedAt": "2026-06-25T06:47:30.482Z",
+  "title": "JeoPARODY Knowledge Base",
+  "summary": {
+    "docs": 52,
+    "lines": 4622,
+    "categories": {
+      "canonical": 8,
+      "root": 4,
+      "runtime": 8,
+      "shipyard": 19,
+      "historical": 12,
+      "reference": 1
+    },
+    "statuses": {
+      "active": 12,
+      "reference": 3,
+      "needs-update": 8,
+      "external-candidate": 9,
+      "historical": 20
+    }
+  },
+  "truthStack": [
+    {
+      "path": "docs/PRODUCTION_REMEDIATION_PLAN_2026-05-26.md",
+      "title": "JeoPARODY Production Remediation Plan - 2026-05-26",
+      "summary": "Status: Active canonical stabilization roadmap",
+      "category": "canonical",
+      "status": "active",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "migration"
+      ],
+      "headings": [
+        "Purpose",
+        "Rules Of Execution",
+        "Current Baseline",
+        "Known Blocking Defects",
+        "Fence Sequence",
+        "Fence 0: Preserve The Control Room",
+        "Objective",
+        "Why First",
+        "Chunk 0A: Preserve Jeopardish Lines",
+        "Chunk 0B: Preserve JeoPARODY Rebuild"
+      ],
+      "lineCount": 632,
+      "updatedHint": "2026-05-27T02:25:10.814Z"
+    },
+    {
+      "path": "ARCHITECTURE.md",
+      "title": "Architecture",
+      "summary": "MVP runtime: `index.html` + `src/main.js` + `GameEngine` + event bus + simple DOM contract.",
+      "category": "canonical",
+      "status": "active",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai"
+      ],
+      "headings": [],
+      "lineCount": 23,
+      "updatedHint": "2026-05-09T03:18:31.253Z"
+    },
+    {
+      "path": "coordination/active-work.md",
+      "title": "Active Work",
+      "summary": "- This is now the candidate canonical repository for JeoPARODY development.",
+      "category": "canonical",
+      "status": "active",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "Open Coordination Notes"
+      ],
+      "lineCount": 25,
+      "updatedHint": "2026-05-27T05:17:51.335Z"
+    },
+    {
+      "path": "docs/README.md",
+      "title": "Docs Index",
+      "summary": "This folder is split into a few kinds of documents:",
+      "category": "canonical",
+      "status": "active",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "Current Health Snapshot",
+        "At a Glance",
+        "Reading Order",
+        "Tone Guide",
+        "Meme Shelf"
+      ],
+      "lineCount": 79,
+      "updatedHint": "2026-06-03T03:46:21.407Z"
+    }
+  ],
+  "readingPaths": [
+    {
+      "id": "mvp",
+      "title": "MVP Stabilization",
+      "description": "The shortest path from beautiful chaos to a shippable classic-mode loop.",
+      "docs": [
+        {
+          "path": "docs/PRODUCTION_REMEDIATION_PLAN_2026-05-26.md",
+          "title": "JeoPARODY Production Remediation Plan - 2026-05-26",
+          "summary": "Status: Active canonical stabilization roadmap",
+          "category": "canonical",
+          "status": "active",
+          "tags": [
+            "mvp",
+            "architecture",
+            "gameplay",
+            "design",
+            "ai",
+            "assets",
+            "migration"
+          ],
+          "headings": [
+            "Purpose",
+            "Rules Of Execution",
+            "Current Baseline",
+            "Known Blocking Defects",
+            "Fence Sequence",
+            "Fence 0: Preserve The Control Room",
+            "Objective",
+            "Why First",
+            "Chunk 0A: Preserve Jeopardish Lines",
+            "Chunk 0B: Preserve JeoPARODY Rebuild"
+          ],
+          "lineCount": 632,
+          "updatedHint": "2026-05-27T02:25:10.814Z"
+        },
+        {
+          "path": "ARCHITECTURE.md",
+          "title": "Architecture",
+          "summary": "MVP runtime: `index.html` + `src/main.js` + `GameEngine` + event bus + simple DOM contract.",
+          "category": "canonical",
+          "status": "active",
+          "tags": [
+            "mvp",
+            "architecture",
+            "gameplay",
+            "design",
+            "ai"
+          ],
+          "headings": [],
+          "lineCount": 23,
+          "updatedHint": "2026-05-09T03:18:31.253Z"
+        },
+        {
+          "path": "docs/CARMACK_CONVERGENCE_REVIEW.md",
+          "title": "Carmack Convergence Review",
+          "summary": "Purpose: Keep JeoPARODY honest, fast, funny, and educational while converging the best work from Jeopardish and JeoPARODY.",
+          "category": "canonical",
+          "status": "active",
+          "tags": [
+            "mvp",
+            "architecture",
+            "gameplay",
+            "design",
+            "ai",
+            "assets",
+            "migration"
+          ],
+          "headings": [
+            "One-Sentence Verdict",
+            "The Real Product",
+            "What The Project Already Has",
+            "JeoPARODY",
+            "Jeopardish",
+            "Vision Work",
+            "Current Hard Truths",
+            "Carmack Rules For This Project",
+            "The Finely Tuned Machine",
+            "Product Refinement Priorities"
+          ],
+          "lineCount": 248,
+          "updatedHint": "2026-06-03T03:46:21.205Z"
+        },
+        {
+          "path": "coordination/active-work.md",
+          "title": "Active Work",
+          "summary": "- This is now the candidate canonical repository for JeoPARODY development.",
+          "category": "canonical",
+          "status": "active",
+          "tags": [
+            "mvp",
+            "architecture",
+            "gameplay",
+            "design",
+            "ai",
+            "assets",
+            "coordination",
+            "migration"
+          ],
+          "headings": [
+            "Open Coordination Notes"
+          ],
+          "lineCount": 25,
+          "updatedHint": "2026-05-27T05:17:51.335Z"
+        }
+      ]
+    },
+    {
+      "id": "salvage",
+      "title": "Jeopardish Salvage Map",
+      "description": "What to mine from prior versions without dragging the old architecture back aboard.",
+      "docs": [
+        {
+          "path": "docs/SOURCE_MATERIAL_INDEX.md",
+          "title": "JeoPARODY Source Material Index",
+          "summary": "Status: Active orientation document",
+          "category": "canonical",
+          "status": "active",
+          "tags": [
+            "mvp",
+            "architecture",
+            "gameplay",
+            "design",
+            "ai",
+            "assets",
+            "coordination",
+            "migration"
+          ],
+          "headings": [
+            "Core Relationship",
+            "Current Canonical Docs",
+            "Historical But Important Docs",
+            "Legacy Source Repo: Jeopardish",
+            "Reading Order For A New Agent",
+            "Date And Supersession Rules"
+          ],
+          "lineCount": 79,
+          "updatedHint": "2026-06-03T03:46:20.857Z"
+        },
+        {
+          "path": "docs/SALVAGE_REGISTER.md",
+          "title": "Jeopardish -> JeoPARODY Salvage Register",
+          "summary": "Status: Active migration control",
+          "category": "canonical",
+          "status": "active",
+          "tags": [
+            "mvp",
+            "architecture",
+            "gameplay",
+            "design",
+            "ai",
+            "assets",
+            "migration"
+          ],
+          "headings": [
+            "Migration Rule",
+            "High-Value Salvage",
+            "Pending Decisions",
+            "Explicitly Do Not Salvage",
+            "Next Salvage Sequence"
+          ],
+          "lineCount": 61,
+          "updatedHint": "2026-06-03T03:46:21.029Z"
+        },
+        {
+          "path": "docs/JEOPARDISH_MIGRATION_AUDIT_2026-05-01.md",
+          "title": "Jeopardish Migration Audit - 2026-05-01",
+          "summary": "- Canonical target: `/Users/alex/coding/Jeopardish/canonical-jeoparody` on `main`, tracking `origin/main`.",
+          "category": "historical",
+          "status": "historical",
+          "tags": [
+            "mvp",
+            "architecture",
+            "gameplay",
+            "design",
+            "ai",
+            "coordination",
+            "migration"
+          ],
+          "headings": [
+            "Repos audited",
+            "Integrated in this pass",
+            "Jeopardish nuggets still worth mining",
+            "Avoid"
+          ],
+          "lineCount": 45,
+          "updatedHint": "2026-05-09T03:18:31.259Z"
+        },
+        {
+          "path": "docs/MVP_SYSTEMS_AUDIT_2026-04-30.md",
+          "title": "Jeopardish MVP Systems Audit — 2026-04-30",
+          "summary": "Jeopardish already has a viable seed: a fast static trivia loop, a large local clue bank, answer normalization, score/streak persistence, and a visual identity that is more distinctive than a generic quiz app. The current `master` is stable",
+          "category": "historical",
+          "status": "historical",
+          "tags": [
+            "mvp",
+            "architecture",
+            "gameplay",
+            "design",
+            "ai",
+            "assets",
+            "migration"
+          ],
+          "headings": [
+            "Executive take",
+            "Current repo reality",
+            "Systems Thinking Audit",
+            "Product system",
+            "Engineering system",
+            "Content/data system",
+            "Experience system",
+            "Carmack-Style Audit",
+            "Rockstar-Quality Creative Audit",
+            "Branch Audit"
+          ],
+          "lineCount": 321,
+          "updatedHint": "2026-05-09T03:18:31.260Z"
+        }
+      ]
+    },
+    {
+      "id": "implementation",
+      "title": "Implementation Guides",
+      "description": "Subsystem notes for CSS, media, AI providers, and browser automation.",
+      "docs": [
+        {
+          "path": "docs/CSS.md",
+          "title": "CSS Architecture",
+          "summary": "This project uses a single CSS entry (`src/styles/app.css`) with layers:",
+          "category": "runtime",
+          "status": "active",
+          "tags": [
+            "architecture",
+            "gameplay",
+            "design",
+            "ai"
+          ],
+          "headings": [],
+          "lineCount": 39,
+          "updatedHint": "2026-05-01T04:24:50.028Z"
+        },
+        {
+          "path": "docs/MEDIA_RENDERING_IMPLEMENTATION.md",
+          "title": "Media Rendering System Implementation",
+          "summary": "This implementation provides a comprehensive CSS styling system for the MediaHandler.js functionality in the JeoPARODY application. The system supports various media types with enhanced user interaction, accessibility features, and responsi",
+          "category": "runtime",
+          "status": "active",
+          "tags": [
+            "gameplay",
+            "design",
+            "ai",
+            "assets"
+          ],
+          "headings": [
+            "Overview",
+            "Files Added/Modified",
+            "1. `src/styles/media-rendering.css` (NEW)",
+            "2. `index.html` (MODIFIED)",
+            "3. `src/styles/app-fixes.css` (MODIFIED)",
+            "4. `test-media-rendering.html` (NEW)",
+            "CSS Classes Implemented",
+            "Audio Player Classes",
+            "Thumbnail Classes",
+            "Modal Classes"
+          ],
+          "lineCount": 219,
+          "updatedHint": "2026-05-01T04:24:50.028Z"
+        },
+        {
+          "path": "docs/AI_PROVIDER_SETUP.md",
+          "title": "AI Provider Setup Guide",
+          "summary": "This guide provides step-by-step instructions for configuring AI providers for the JeoPARODY host. We prioritize free-tier options to allow for easy development and testing.",
+          "category": "runtime",
+          "status": "active",
+          "tags": [
+            "mvp",
+            "gameplay",
+            "design",
+            "ai"
+          ],
+          "headings": [
+            "Configuration Priority",
+            "Option 1: Google Gemini (Recommended)",
+            "Step 1: Get your API Key",
+            "Step 2: Configure the Proxy",
+            "Option 2: Anthropic Claude",
+            "Step 1: Get your API Key",
+            "Step 2: Implementation Needed",
+            "Verifying the Setup"
+          ],
+          "lineCount": 77,
+          "updatedHint": "2026-05-09T03:18:31.258Z"
+        },
+        {
+          "path": "docs/MCP.md",
+          "title": "MCP Integration (Playwright + Chrome DevTools)",
+          "summary": "This repo includes scripts to run two Model Context Protocol servers for browser automation:",
+          "category": "runtime",
+          "status": "active",
+          "tags": [
+            "gameplay",
+            "design",
+            "ai",
+            "coordination"
+          ],
+          "headings": [
+            "Quick Start",
+            "Tips",
+            "What to Capture for this Project"
+          ],
+          "lineCount": 66,
+          "updatedHint": "2026-05-01T04:24:50.028Z"
+        }
+      ]
+    }
+  ],
+  "docs": [
+    {
+      "path": "AGENTS.md",
+      "title": "JeoPARODY Agent Protocol",
+      "summary": "This repo follows the global [AGENTS.md](../AGENTS.md) protocols with the following project-specific rules.",
+      "category": "canonical",
+      "status": "active",
+      "tags": [
+        "design",
+        "ai",
+        "coordination"
+      ],
+      "headings": [
+        "1. \"The Carmack Rule\"",
+        "2. Decision Gating",
+        "3. Coordination"
+      ],
+      "lineCount": 18,
+      "updatedHint": "2026-05-09T03:18:31.252Z"
+    },
+    {
+      "path": "ARCHITECTURE.md",
+      "title": "Architecture",
+      "summary": "MVP runtime: `index.html` + `src/main.js` + `GameEngine` + event bus + simple DOM contract.",
+      "category": "canonical",
+      "status": "active",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai"
+      ],
+      "headings": [],
+      "lineCount": 23,
+      "updatedHint": "2026-05-09T03:18:31.253Z"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "title": "Changelog",
+      "summary": "- CSS architecture finalized: tokens, layers, component styles",
+      "category": "root",
+      "status": "reference",
+      "tags": [
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "coordination"
+      ],
+      "headings": [
+        "2.1.0 (2025-09-23)",
+        "2025-09-23 (MCP and follow-ups)",
+        "2025-09-23",
+        "2025-09-21"
+      ],
+      "lineCount": 39,
+      "updatedHint": "2026-05-01T04:24:49.489Z"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "title": "Contributing to jeoPARODY",
+      "summary": "This document provides guidelines for all contributors, human or AI, to ensure code quality, consistency, and alignment with the project's vision.",
+      "category": "runtime",
+      "status": "needs-update",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "coordination"
+      ],
+      "headings": [
+        "Core Principles",
+        "Project Structure & Module Organization",
+        "Build, Test, and Development Commands",
+        "Coding Style & Naming Conventions",
+        "Testing Guidelines",
+        "Commit & Pull Request Guidelines",
+        "Security & Configuration",
+        "AI Agent Instructions"
+      ],
+      "lineCount": 48,
+      "updatedHint": "2026-05-01T04:24:49.489Z"
+    },
+    {
+      "path": "DATA.md",
+      "title": "Data Loading",
+      "summary": "Goal: fast startup, small memory, flexible filtering.",
+      "category": "runtime",
+      "status": "needs-update",
+      "tags": [
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets"
+      ],
+      "headings": [],
+      "lineCount": 21,
+      "updatedHint": "2026-05-09T03:18:31.253Z"
+    },
+    {
+      "path": "Gemini.md",
+      "title": "Gemini Agent Guide for jeoPARODY",
+      "summary": "This document provides essential guidelines for the Gemini agent to effectively understand, navigate, and contribute to the `jeoPARODY` project. Adherence to these principles is critical for maintaining code quality and architectural integr",
+      "category": "root",
+      "status": "needs-update",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "coordination"
+      ],
+      "headings": [
+        "1. Project Vision & Philosophy",
+        "2. Core Development Workflow",
+        "3. Architecture & Code Conventions",
+        "Directory Structure",
+        "Key Conventions",
+        "4. CSS Style Guide",
+        "5. Testing Guidelines",
+        "6. AI Integration",
+        "7. Committing and Contributing"
+      ],
+      "lineCount": 84,
+      "updatedHint": "2026-05-09T03:18:31.253Z"
+    },
+    {
+      "path": "README.md",
+      "title": "JeoPARODY (aka Jeopardish)",
+      "summary": "> “The code should do what it looks like it does.” – John Carmack",
+      "category": "root",
+      "status": "needs-update",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "Why this project exists",
+        "Table of Contents",
+        "Vision & Philosophy",
+        "Current Capabilities (MVP)",
+        "Architecture Overview",
+        "Getting Started",
+        "AI Host Configuration (Gemini)",
+        "Optional: Firebase & Cloud Sync",
+        "Content & Media Pipeline",
+        "Testing"
+      ],
+      "lineCount": 268,
+      "updatedHint": "2026-05-27T02:25:01.907Z"
+    },
+    {
+      "path": "UI_GUIDE.md",
+      "title": "UI Guide",
+      "summary": "Mobile-first. High contrast. Minimal motion by default.",
+      "category": "runtime",
+      "status": "needs-update",
+      "tags": [
+        "gameplay",
+        "design",
+        "ai"
+      ],
+      "headings": [],
+      "lineCount": 16,
+      "updatedHint": "2026-05-01T04:24:49.490Z"
+    },
+    {
+      "path": "WARP.md",
+      "title": "WARP.md",
+      "summary": "This file provides guidance to WARP (warp.dev) when working with code in this repository.",
+      "category": "runtime",
+      "status": "needs-update",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "migration"
+      ],
+      "headings": [
+        "Project Overview",
+        "Core Development Commands",
+        "Development Workflow",
+        "Testing & Quality",
+        "Performance & Analysis",
+        "Architecture Overview",
+        "Core Philosophy",
+        "Directory Structure",
+        "Key Components",
+        "State Management"
+      ],
+      "lineCount": 216,
+      "updatedHint": "2026-05-09T03:18:31.254Z"
+    },
+    {
+      "path": "coordination/README.md",
+      "title": "Multi-Agent Coordination",
+      "summary": "This folder is the shared coordination surface for Codex, Gemini CLI, subagents, browser tools, shell sessions, and humans working on Jeopardish.",
+      "category": "root",
+      "status": "needs-update",
+      "tags": [
+        "mvp",
+        "gameplay",
+        "design",
+        "ai",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "Read First",
+        "Required Convention",
+        "Log Quality Bar",
+        "Generated vs Human Files"
+      ],
+      "lineCount": 59,
+      "updatedHint": "2026-05-09T03:18:31.254Z"
+    },
+    {
+      "path": "coordination/ROOMS.md",
+      "title": "Agent Rooms",
+      "summary": "Agent Rooms are named collaboration modes for humans, CLI agents, browser harnesses, bots, and review tools. They define how work should be coordinated, what artifacts should be written, and what behavior is expected.",
+      "category": "shipyard",
+      "status": "external-candidate",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "Core Rule",
+        "Room Types",
+        "Pair Coding",
+        "Architecture Huddle",
+        "Creative Jam",
+        "Serious Code Review",
+        "Release Captain",
+        "Weird Lab",
+        "Human State Metadata",
+        "Recommended Start Prompt"
+      ],
+      "lineCount": 192,
+      "updatedHint": "2026-05-09T03:18:31.254Z"
+    },
+    {
+      "path": "coordination/active-work.md",
+      "title": "Active Work",
+      "summary": "- This is now the candidate canonical repository for JeoPARODY development.",
+      "category": "canonical",
+      "status": "active",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "Open Coordination Notes"
+      ],
+      "lineCount": 25,
+      "updatedHint": "2026-05-27T05:17:51.335Z"
+    },
+    {
+      "path": "coordination/decisions/2026-05-02-canonical-mvp-runtime.md",
+      "title": "2026-05-02 - Canonical MVP Runtime",
+      "summary": "The repository contains several partially valid app paths: static DOM wiring in `index.html` and `src/main.js`, `GameEngine`, a Redux-like store, component classes, controller/session modules, and a disabled compatibility bridge. The app cu",
+      "category": "historical",
+      "status": "reference",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "ai",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "Decision",
+        "Why",
+        "Consequences",
+        "Follow-ups"
+      ],
+      "lineCount": 38,
+      "updatedHint": "2026-05-09T03:18:31.255Z"
+    },
+    {
+      "path": "coordination/decisions/README.md",
+      "title": "Decisions",
+      "summary": "Use this folder for architecture and product decisions that should outlive a chat session.",
+      "category": "historical",
+      "status": "needs-update",
+      "tags": [
+        "architecture",
+        "coordination"
+      ],
+      "headings": [
+        "Decision",
+        "Why",
+        "Consequences",
+        "Follow-ups"
+      ],
+      "lineCount": 30,
+      "updatedHint": "2026-05-09T03:18:31.255Z"
+    },
+    {
+      "path": "coordination/handoffs/2026-05-01-gemini-migration-inventory.md",
+      "title": "2026-05-01T05:05:00Z - Gemini - Jeopardish Brain Features for Evaluation (UPDATED)",
+      "summary": "This handoff inventories the high-value logic and data features from the `Jeopardish` prototype project and their current integration status in the `jeoPARODY` canonical repo.",
+      "category": "historical",
+      "status": "historical",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "🧪 Project Relationship",
+        "🧠 Brain Features (Logic)",
+        "📚 Data Features",
+        "🎭 Host & UI Juice",
+        "🏗️ Next Steps for Agents"
+      ],
+      "lineCount": 54,
+      "updatedHint": "2026-05-09T03:18:31.256Z"
+    },
+    {
+      "path": "coordination/huddles/2026-05-01-scoring-semantics.md",
+      "title": "Architecture Huddle: Scoring & Session Semantics",
+      "summary": "**Topic:** Reconciling JeoPARODY vs. Jeopardish scoring models.",
+      "category": "historical",
+      "status": "historical",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "ai",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "Current State",
+        "JeoPARODY Model (`src/core/scoring.js`)",
+        "Jeopardish Model (`game-session.js`)",
+        "Decision Points",
+        "Proposed Direction",
+        "Agent Feedback Requested"
+      ],
+      "lineCount": 39,
+      "updatedHint": "2026-05-09T03:18:31.256Z"
+    },
+    {
+      "path": "coordination/huddles/README.md",
+      "title": "Huddles",
+      "summary": "Use this folder for brainstorming, creative jams, architecture huddles, and timeboxed group sessions.",
+      "category": "historical",
+      "status": "historical",
+      "tags": [
+        "architecture",
+        "ai",
+        "coordination"
+      ],
+      "headings": [
+        "Goal",
+        "Ideas / Notes",
+        "Keep",
+        "Kill",
+        "Park",
+        "Next Steps"
+      ],
+      "lineCount": 39,
+      "updatedHint": "2026-05-09T03:18:31.256Z"
+    },
+    {
+      "path": "coordination/live/README.md",
+      "title": "Live Agent Sessions",
+      "summary": "Use this folder for live terminal transcripts and real-time status files. This is how one agent can watch another agent's work without needing direct access to its terminal UI.",
+      "category": "shipyard",
+      "status": "external-candidate",
+      "tags": [
+        "design",
+        "ai",
+        "coordination"
+      ],
+      "headings": [
+        "Start A Logged Session",
+        "Review A Live Session",
+        "Naming Convention",
+        "Safety"
+      ],
+      "lineCount": 52,
+      "updatedHint": "2026-05-09T03:18:31.257Z"
+    },
+    {
+      "path": "coordination/logs/2026-05-01/20260501T050342Z-gemini-canonical-coordination-initialization.md",
+      "title": "20260501T050342Z - Gemini - Canonical coordination initialization",
+      "summary": "timestamp: 2026-05-01T05:03:42Z",
+      "category": "shipyard",
+      "status": "historical",
+      "tags": [
+        "design",
+        "ai",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "Files Touched",
+        "Summary",
+        "Validation",
+        "Risks / Follow-ups",
+        "Next-Agent Notes"
+      ],
+      "lineCount": 38,
+      "updatedHint": "2026-05-02T18:31:45.727Z"
+    },
+    {
+      "path": "coordination/logs/2026-05-01/20260501T052851Z-codex-core-jeopardish-migration.md",
+      "title": "20260501T052851Z - Codex - core Jeopardish migration",
+      "summary": "timestamp: 2026-05-01T05:28:51Z",
+      "category": "shipyard",
+      "status": "historical",
+      "tags": [
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "Files Touched",
+        "Summary",
+        "Validation",
+        "Risks / Follow-ups",
+        "Next-Agent Notes"
+      ],
+      "lineCount": 53,
+      "updatedHint": "2026-05-02T18:32:21.505Z"
+    },
+    {
+      "path": "coordination/logs/2026-05-01/20260501T053353Z-gemini-baseline-verification.md",
+      "title": "20260501T053353Z - Gemini - Baseline Verification",
+      "summary": "timestamp: 2026-05-01T05:33:53Z",
+      "category": "shipyard",
+      "status": "historical",
+      "tags": [
+        "design",
+        "ai",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "Files Touched",
+        "Summary",
+        "Validation",
+        "Risks / Follow-ups",
+        "Next-Agent Notes"
+      ],
+      "lineCount": 38,
+      "updatedHint": "2026-05-02T18:32:42.154Z"
+    },
+    {
+      "path": "coordination/logs/2026-05-01/20260501T055733Z-gemini-coordination-repair-huddle-initialization.md",
+      "title": "20260501T055733Z - Gemini - Coordination Repair & Huddle Initialization",
+      "summary": "timestamp: 2026-05-01T05:57:33Z",
+      "category": "shipyard",
+      "status": "historical",
+      "tags": [
+        "architecture",
+        "ai",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "Files Touched",
+        "Summary",
+        "Validation",
+        "Risks / Follow-ups",
+        "Next-Agent Notes"
+      ],
+      "lineCount": 37,
+      "updatedHint": "2026-05-02T18:32:55.047Z"
+    },
+    {
+      "path": "coordination/logs/2026-05-01/20260501T063748Z-codex-hybrid-arcade-scoring-slice.md",
+      "title": "20260501T063748Z - Codex - Hybrid arcade scoring slice",
+      "summary": "timestamp: 2026-05-01T06:37:48Z",
+      "category": "shipyard",
+      "status": "historical",
+      "tags": [
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "Files Touched",
+        "Summary",
+        "Validation",
+        "Risks / Follow-ups",
+        "Next-Agent Notes"
+      ],
+      "lineCount": 40,
+      "updatedHint": "2026-05-02T18:33:16.607Z"
+    },
+    {
+      "path": "coordination/logs/2026-05-02/20260502T185248Z-gemini-shipyard-prototype.md",
+      "title": "20260502T185248Z - Gemini - Shipyard Prototype",
+      "summary": "Built the first prototype of Shipyard: The Project Cockpit. Added a Node script that parses coordination files, detects drift (ghost edits, stale claims, broken links), and emits a Project Truth JSON. Retrofitted existing logs with frontmat",
+      "category": "shipyard",
+      "status": "historical",
+      "tags": [
+        "architecture",
+        "design",
+        "ai",
+        "coordination"
+      ],
+      "headings": [
+        "Files Touched",
+        "Summary",
+        "Validation",
+        "Risks / Follow-ups",
+        "Next-Agent Notes"
+      ],
+      "lineCount": 31,
+      "updatedHint": "2026-05-02T18:52:48.978Z"
+    },
+    {
+      "path": "coordination/logs/2026-05-02/20260502T192322Z-codex-canonical-runtime-and-scoring-convergence.md",
+      "title": "20260502T192322Z - Codex - Canonical runtime and scoring convergence",
+      "summary": "- coordination/decisions/2026-05-02-canonical-mvp-runtime.md",
+      "category": "shipyard",
+      "status": "historical",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "coordination"
+      ],
+      "headings": [
+        "Files Touched",
+        "Summary",
+        "Validation",
+        "Risks / Follow-ups",
+        "Next-Agent Notes"
+      ],
+      "lineCount": 32,
+      "updatedHint": "2026-05-02T19:23:22.392Z"
+    },
+    {
+      "path": "coordination/logs/2026-05-02/20260502T201554Z-codex-validation-convergence-and-js-lint-baseline.md",
+      "title": "20260502T201554Z - Codex - Validation convergence and JS lint baseline",
+      "summary": "- tests/core/validation.test.js",
+      "category": "shipyard",
+      "status": "historical",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "coordination"
+      ],
+      "headings": [
+        "Files Touched",
+        "Summary",
+        "Validation",
+        "Risks / Follow-ups",
+        "Next-Agent Notes"
+      ],
+      "lineCount": 33,
+      "updatedHint": "2026-05-02T20:15:54.801Z"
+    },
+    {
+      "path": "coordination/logs/2026-05-02/20260502T201939Z-codex-telegram-bridge-mvp.md",
+      "title": "20260502T201939Z - Codex - Telegram bridge MVP",
+      "summary": "- coordination/prompts/TELEGRAM_BRIDGE.md",
+      "category": "shipyard",
+      "status": "historical",
+      "tags": [
+        "mvp",
+        "design",
+        "ai",
+        "assets",
+        "coordination"
+      ],
+      "headings": [
+        "Files Touched",
+        "Summary",
+        "Validation",
+        "Risks / Follow-ups",
+        "Next-Agent Notes"
+      ],
+      "lineCount": 32,
+      "updatedHint": "2026-05-02T20:19:39.937Z"
+    },
+    {
+      "path": "coordination/logs/2026-05-26/handoff.md",
+      "title": "Dev Journal: 2026-05-26 - Roadmap Handover",
+      "summary": "Initiated a strategic review of the `coding/` folder. Developed a unified roadmap for Voice Lab, Agent-Sea, and JeoPARODY.",
+      "category": "shipyard",
+      "status": "historical",
+      "tags": [
+        "mvp",
+        "design",
+        "ai",
+        "assets",
+        "coordination"
+      ],
+      "headings": [
+        "Session Summary",
+        "Strategic Decisions",
+        "Roadmap Phases",
+        "Handoff Status"
+      ],
+      "lineCount": 19,
+      "updatedHint": "2026-05-27T05:17:37.649Z"
+    },
+    {
+      "path": "coordination/prompts/CODEX_OBSERVER.md",
+      "title": "Codex Observer Prompt",
+      "summary": "Use this when asking Codex to watch or review another agent.",
+      "category": "shipyard",
+      "status": "external-candidate",
+      "tags": [
+        "ai",
+        "coordination"
+      ],
+      "headings": [],
+      "lineCount": 25,
+      "updatedHint": "2026-05-09T03:18:31.257Z"
+    },
+    {
+      "path": "coordination/prompts/GEMINI_START.md",
+      "title": "Gemini Start Prompt",
+      "summary": "Use this when starting Gemini CLI inside Jeopardish or canonical-jeoparody.",
+      "category": "shipyard",
+      "status": "external-candidate",
+      "tags": [
+        "architecture",
+        "design",
+        "ai",
+        "coordination",
+        "migration"
+      ],
+      "headings": [],
+      "lineCount": 26,
+      "updatedHint": "2026-05-09T03:18:31.257Z"
+    },
+    {
+      "path": "coordination/prompts/TELEGRAM_BRIDGE.md",
+      "title": "Telegram Bridge Prompt / Spec",
+      "summary": "Use this as the operating spec for a Telegram or messaging bridge.",
+      "category": "shipyard",
+      "status": "external-candidate",
+      "tags": [
+        "design",
+        "ai",
+        "coordination"
+      ],
+      "headings": [
+        "Local Implementation",
+        "Role",
+        "Allowed Read Commands",
+        "Allowed Action Commands",
+        "Dangerous Commands",
+        "Required Security",
+        "Current Command Surface",
+        "Notification Events"
+      ],
+      "lineCount": 93,
+      "updatedHint": "2026-05-09T03:18:31.257Z"
+    },
+    {
+      "path": "coordination/reviews/2026-05-01-codex-hybrid-scoring-review.md",
+      "title": "2026-05-01 - Codex Hybrid Scoring Review",
+      "summary": "Reviewed the scoring migration risk after the parallel Codex/Gemini work and implemented only the approved Hybrid Arcade scoring slice.",
+      "category": "historical",
+      "status": "historical",
+      "tags": [
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "Scope",
+        "Coordination Findings",
+        "Scoring Decision",
+        "Validation",
+        "Follow-ups"
+      ],
+      "lineCount": 37,
+      "updatedHint": "2026-05-09T03:18:31.258Z"
+    },
+    {
+      "path": "coordination/reviews/README.md",
+      "title": "Reviews",
+      "summary": "Use this folder for serious code reviews, live-agent reviews, release-readiness reviews, and post-pass critiques.",
+      "category": "historical",
+      "status": "historical",
+      "tags": [
+        "gameplay",
+        "coordination"
+      ],
+      "headings": [
+        "Findings",
+        "Open Questions",
+        "Recommended Actions",
+        "Checks Suggested"
+      ],
+      "lineCount": 30,
+      "updatedHint": "2026-05-09T03:18:31.258Z"
+    },
+    {
+      "path": "coordination/templates/agent-log-template.md",
+      "title": "{{timestamp}} - {{agent}} - {{task}}",
+      "summary": "Agent: {{agent}}",
+      "category": "shipyard",
+      "status": "external-candidate",
+      "tags": [
+        "coordination"
+      ],
+      "headings": [
+        "Files Touched",
+        "Summary",
+        "Validation",
+        "Risks / Follow-ups",
+        "Next-Agent Notes"
+      ],
+      "lineCount": 28,
+      "updatedHint": "2026-05-09T03:18:31.258Z"
+    },
+    {
+      "path": "docs/AI_PROVIDER_SETUP.md",
+      "title": "AI Provider Setup Guide",
+      "summary": "This guide provides step-by-step instructions for configuring AI providers for the JeoPARODY host. We prioritize free-tier options to allow for easy development and testing.",
+      "category": "runtime",
+      "status": "active",
+      "tags": [
+        "mvp",
+        "gameplay",
+        "design",
+        "ai"
+      ],
+      "headings": [
+        "Configuration Priority",
+        "Option 1: Google Gemini (Recommended)",
+        "Step 1: Get your API Key",
+        "Step 2: Configure the Proxy",
+        "Option 2: Anthropic Claude",
+        "Step 1: Get your API Key",
+        "Step 2: Implementation Needed",
+        "Verifying the Setup"
+      ],
+      "lineCount": 77,
+      "updatedHint": "2026-05-09T03:18:31.258Z"
+    },
+    {
+      "path": "docs/CARMACK_CONVERGENCE_REVIEW.md",
+      "title": "Carmack Convergence Review",
+      "summary": "Purpose: Keep JeoPARODY honest, fast, funny, and educational while converging the best work from Jeopardish and JeoPARODY.",
+      "category": "canonical",
+      "status": "active",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "migration"
+      ],
+      "headings": [
+        "One-Sentence Verdict",
+        "The Real Product",
+        "What The Project Already Has",
+        "JeoPARODY",
+        "Jeopardish",
+        "Vision Work",
+        "Current Hard Truths",
+        "Carmack Rules For This Project",
+        "The Finely Tuned Machine",
+        "Product Refinement Priorities"
+      ],
+      "lineCount": 248,
+      "updatedHint": "2026-06-03T03:46:21.205Z"
+    },
+    {
+      "path": "docs/CSS.md",
+      "title": "CSS Architecture",
+      "summary": "This project uses a single CSS entry (`src/styles/app.css`) with layers:",
+      "category": "runtime",
+      "status": "active",
+      "tags": [
+        "architecture",
+        "gameplay",
+        "design",
+        "ai"
+      ],
+      "headings": [],
+      "lineCount": 39,
+      "updatedHint": "2026-05-01T04:24:50.028Z"
+    },
+    {
+      "path": "docs/CSS_AUDIT_REPORT.md",
+      "title": "CSS AUDIT REPORT - JEOPARDISH PROJECT",
+      "summary": "**Project Path:** `/Users/alex/coding/projects/jeoparody`",
+      "category": "historical",
+      "status": "historical",
+      "tags": [
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "EXECUTIVE SUMMARY",
+        "🔍 1. DOUBLE DOLLAR SIGN DISPLAY ISSUES",
+        "CRITICAL FINDINGS",
+        "⚡ 2. Z-INDEX CONFLICTS AND STACKING CONTEXT ISSUES",
+        "**CRITICAL Z-INDEX CONFLICTS IDENTIFIED:**",
+        "📱 3. MEDIA EMBEDDING HTML RENDERING ISSUES",
+        "**MEDIA HANDLER PROBLEMS (HIGH PRIORITY)**",
+        "📐 4. RESPONSIVE DESIGN BREAKPOINT ISSUES",
+        "**BREAKPOINT ANALYSIS:**",
+        "🎯 5. PRIORITY MATRIX FOR FIXES"
+      ],
+      "lineCount": 314,
+      "updatedHint": "2026-05-01T04:24:50.028Z"
+    },
+    {
+      "path": "docs/EXPERIMENT_IDEA_LEDGER.md",
+      "title": "Jeopardish Experiment Idea Ledger",
+      "summary": "This ledger feeds the canonical roadmap in [PRODUCTION_REMEDIATION_PLAN_2026-05-26.md](PRODUCTION_REMEDIATION_PLAN_2026-05-26.md). The ideas here are candidates, not commitments.",
+      "category": "reference",
+      "status": "reference",
+      "tags": [
+        "mvp",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "migration"
+      ],
+      "headings": [
+        "High-value ideas to rebuild for MVP",
+        "Arcade cabinet / funky game-show frame",
+        "Comedy ticker / host quips",
+        "Host reactions and image cycling",
+        "Explainable answer validation",
+        "Smarter scoring",
+        "Daily board",
+        "Review misses",
+        "Later-stage ideas",
+        "AI host personality"
+      ],
+      "lineCount": 94,
+      "updatedHint": "2026-05-27T02:24:40.930Z"
+    },
+    {
+      "path": "docs/FLEET_REGISTRY.md",
+      "title": "🚢 SHIPYARD: Comprehensive Fleet Registry",
+      "summary": "This registry is a living map of roles and tools, not the canonical roadmap. For priorities and sequencing, start with [PRODUCTION_REMEDIATION_PLAN_2026-05-26.md](PRODUCTION_REMEDIATION_PLAN_2026-05-26.md) and [docs/README.md](README.md).",
+      "category": "shipyard",
+      "status": "external-candidate",
+      "tags": [
+        "mvp",
+        "architecture",
+        "design",
+        "ai",
+        "assets",
+        "coordination"
+      ],
+      "headings": [
+        "👑 1. Command & Control (Root)",
+        "🎨 2. The Creative Squad (Multimedia)",
+        "💼 3. The Career Squad (Strategic A-Team)",
+        "🕹️ 4. The Game World Fleet (RPG & Trivia)",
+        "🗺️ Future Expansion Roadmap",
+        "Phase 19: The Financial Branch (`Treasurer`)",
+        "Phase 20: The \"Handyman\" Automation (`WP_Handyman`)",
+        "Phase 21: Real-Time Live Streaming"
+      ],
+      "lineCount": 69,
+      "updatedHint": "2026-05-27T02:24:41.230Z"
+    },
+    {
+      "path": "docs/JEOPARDISH_MIGRATION_AUDIT_2026-05-01.md",
+      "title": "Jeopardish Migration Audit - 2026-05-01",
+      "summary": "- Canonical target: `/Users/alex/coding/Jeopardish/canonical-jeoparody` on `main`, tracking `origin/main`.",
+      "category": "historical",
+      "status": "historical",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "Repos audited",
+        "Integrated in this pass",
+        "Jeopardish nuggets still worth mining",
+        "Avoid"
+      ],
+      "lineCount": 45,
+      "updatedHint": "2026-05-09T03:18:31.259Z"
+    },
+    {
+      "path": "docs/MCP.md",
+      "title": "MCP Integration (Playwright + Chrome DevTools)",
+      "summary": "This repo includes scripts to run two Model Context Protocol servers for browser automation:",
+      "category": "runtime",
+      "status": "active",
+      "tags": [
+        "gameplay",
+        "design",
+        "ai",
+        "coordination"
+      ],
+      "headings": [
+        "Quick Start",
+        "Tips",
+        "What to Capture for this Project"
+      ],
+      "lineCount": 66,
+      "updatedHint": "2026-05-01T04:24:50.028Z"
+    },
+    {
+      "path": "docs/MEDIA_RENDERING_IMPLEMENTATION.md",
+      "title": "Media Rendering System Implementation",
+      "summary": "This implementation provides a comprehensive CSS styling system for the MediaHandler.js functionality in the JeoPARODY application. The system supports various media types with enhanced user interaction, accessibility features, and responsi",
+      "category": "runtime",
+      "status": "active",
+      "tags": [
+        "gameplay",
+        "design",
+        "ai",
+        "assets"
+      ],
+      "headings": [
+        "Overview",
+        "Files Added/Modified",
+        "1. `src/styles/media-rendering.css` (NEW)",
+        "2. `index.html` (MODIFIED)",
+        "3. `src/styles/app-fixes.css` (MODIFIED)",
+        "4. `test-media-rendering.html` (NEW)",
+        "CSS Classes Implemented",
+        "Audio Player Classes",
+        "Thumbnail Classes",
+        "Modal Classes"
+      ],
+      "lineCount": 219,
+      "updatedHint": "2026-05-01T04:24:50.028Z"
+    },
+    {
+      "path": "docs/MVP_SYSTEMS_AUDIT_2026-04-30.md",
+      "title": "Jeopardish MVP Systems Audit — 2026-04-30",
+      "summary": "Jeopardish already has a viable seed: a fast static trivia loop, a large local clue bank, answer normalization, score/streak persistence, and a visual identity that is more distinctive than a generic quiz app. The current `master` is stable",
+      "category": "historical",
+      "status": "historical",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "migration"
+      ],
+      "headings": [
+        "Executive take",
+        "Current repo reality",
+        "Systems Thinking Audit",
+        "Product system",
+        "Engineering system",
+        "Content/data system",
+        "Experience system",
+        "Carmack-Style Audit",
+        "Rockstar-Quality Creative Audit",
+        "Branch Audit"
+      ],
+      "lineCount": 321,
+      "updatedHint": "2026-05-09T03:18:31.260Z"
+    },
+    {
+      "path": "docs/PRODUCTION_REMEDIATION_PLAN_2026-05-26.md",
+      "title": "JeoPARODY Production Remediation Plan - 2026-05-26",
+      "summary": "Status: Active canonical stabilization roadmap",
+      "category": "canonical",
+      "status": "active",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "migration"
+      ],
+      "headings": [
+        "Purpose",
+        "Rules Of Execution",
+        "Current Baseline",
+        "Known Blocking Defects",
+        "Fence Sequence",
+        "Fence 0: Preserve The Control Room",
+        "Objective",
+        "Why First",
+        "Chunk 0A: Preserve Jeopardish Lines",
+        "Chunk 0B: Preserve JeoPARODY Rebuild"
+      ],
+      "lineCount": 632,
+      "updatedHint": "2026-05-27T02:25:10.814Z"
+    },
+    {
+      "path": "docs/README.md",
+      "title": "Docs Index",
+      "summary": "This folder is split into a few kinds of documents:",
+      "category": "canonical",
+      "status": "active",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "Current Health Snapshot",
+        "At a Glance",
+        "Reading Order",
+        "Tone Guide",
+        "Meme Shelf"
+      ],
+      "lineCount": 79,
+      "updatedHint": "2026-06-03T03:46:21.407Z"
+    },
+    {
+      "path": "docs/REPO_REVIEW_2026-05-04.md",
+      "title": "JeoPARODY Repo Review - 2026-05-04 EDT",
+      "summary": "Scope: local inspection of `/Users/alex/coding/jeoPARODY`, docs review, dependency install, and available verification.",
+      "category": "historical",
+      "status": "historical",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets"
+      ],
+      "headings": [
+        "Summary",
+        "Verification",
+        "Findings",
+        "Resolved in implementation pass: AI fallback path",
+        "Resolved in implementation pass: Host animation sound dependency",
+        "Resolved in implementation pass: Mock AI registration",
+        "Medium: AI setup docs must stay proxy-first",
+        "Medium: CSS lint gate is not yet actionable",
+        "High: Dependency audit has critical/high advisories",
+        "Recommended Next Steps"
+      ],
+      "lineCount": 70,
+      "updatedHint": "2026-05-09T03:18:31.260Z"
+    },
+    {
+      "path": "docs/SALVAGE_REGISTER.md",
+      "title": "Jeopardish -> JeoPARODY Salvage Register",
+      "summary": "Status: Active migration control",
+      "category": "canonical",
+      "status": "active",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "migration"
+      ],
+      "headings": [
+        "Migration Rule",
+        "High-Value Salvage",
+        "Pending Decisions",
+        "Explicitly Do Not Salvage",
+        "Next Salvage Sequence"
+      ],
+      "lineCount": 61,
+      "updatedHint": "2026-06-03T03:46:21.029Z"
+    },
+    {
+      "path": "docs/SHIPYARD_COMMAND_MANUAL.md",
+      "title": "🚢 SHIPYARD: The AI Agent Operating System",
+      "summary": "**Version:** 1.0.0 (High-End Engineering Edition)",
+      "category": "shipyard",
+      "status": "external-candidate",
+      "tags": [
+        "mvp",
+        "architecture",
+        "design",
+        "ai",
+        "assets",
+        "coordination"
+      ],
+      "headings": [
+        "🏗️ 1. System Architecture",
+        "The Repository (The Dock)",
+        "The Fleet (The Crew)",
+        "🎭 2. The Creative Fleet (Multimedia Branch)",
+        "🎨 The Muralist",
+        "🎬 The Director",
+        "🎙️ The Ventriloquist",
+        "💼 3. The Career Squad (Strategic A-Team)",
+        "👑 Career Master (Orchestrator)",
+        "🔍 Job Scout"
+      ],
+      "lineCount": 113,
+      "updatedHint": "2026-05-27T02:24:41.487Z"
+    },
+    {
+      "path": "docs/SOURCE_MATERIAL_INDEX.md",
+      "title": "JeoPARODY Source Material Index",
+      "summary": "Status: Active orientation document",
+      "category": "canonical",
+      "status": "active",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "coordination",
+        "migration"
+      ],
+      "headings": [
+        "Core Relationship",
+        "Current Canonical Docs",
+        "Historical But Important Docs",
+        "Legacy Source Repo: Jeopardish",
+        "Reading Order For A New Agent",
+        "Date And Supersession Rules"
+      ],
+      "lineCount": 79,
+      "updatedHint": "2026-06-03T03:46:20.857Z"
+    },
+    {
+      "path": "docs/brainstorming.md",
+      "title": "Brainstorming: Nautical Naming for the Shipyard Stack",
+      "summary": "This note captures the naming brainstorm around the nautical theme for the `dock` / `crew` / `bridge` / `cockpit` ecosystem.",
+      "category": "shipyard",
+      "status": "external-candidate",
+      "tags": [
+        "architecture",
+        "design",
+        "ai",
+        "coordination"
+      ],
+      "headings": [
+        "Core Metaphor Map",
+        "Naming Rules",
+        "Recommended Canonical Terms",
+        "Fun Alliterative Phrases",
+        "Dock",
+        "Crew",
+        "Bridge",
+        "Cockpit / Pilothouse",
+        "Nautical Puns That Fit the System",
+        "Playful Compound Names"
+      ],
+      "lineCount": 128,
+      "updatedHint": "2026-05-09T03:18:31.261Z"
+    },
+    {
+      "path": "docs/css-refactor-plan.md",
+      "title": "jeoPARODY Enhanced UI CSS Overhaul Plan",
+      "summary": "- User provided a detailed, prioritized list for a full CSS/UI audit and refactor.",
+      "category": "historical",
+      "status": "historical",
+      "tags": [
+        "mvp",
+        "architecture",
+        "gameplay",
+        "design",
+        "ai",
+        "assets",
+        "migration"
+      ],
+      "headings": [
+        "Notes",
+        "Task List"
+      ],
+      "lineCount": 115,
+      "updatedHint": "2026-05-01T04:24:50.029Z"
+    }
+  ]
+}

@@ -2,6 +2,7 @@
 
 | Area | Owner | Started UTC | Status | Files Claimed | Notes |
 |---|---|---:|---|---|---|
+| Roadmap Stabilization & Integration | Gemini CLI | 2026-05-26T00:00:00Z | Active | `coordination/*`, `src/*`, `vite.config.js` | Initiating the unified roadmap: JeoPARODY P0s, Voice Lab narration, and The Cockpit telemetry. |
 | Production Readiness Cleanup | Codex | 2026-05-09T03:17:26Z | In Progress | `coordination/active-work.md`, `coordination/logs/*`, `src/main.js`, `src/init/*`, `src/services/HostSystem.js`, `scripts/runtime-state-check.mjs`, `package.json`, `package-lock.json`, selected CSS/stylelint files after review | Implementing the JeoPARODY production cleanup plan from the previous agent: stabilize current work, remove conflict artifacts, mine runtime checks/UI fixes selectively, reduce lint/audit debt, and verify the static Vite app. |
 | Telegram Bridge MVP | Codex | 2026-05-02T20:17:41Z | Done | `scripts/telegram-bridge.mjs`, `package.json`, `coordination/prompts/TELEGRAM_BRIDGE.md`, `coordination/active-work.md`, `coordination/logs/*` | Implemented a local allowlisted Telegram bridge for safe repo status, logs, verification, and notes. Log: `coordination/logs/2026-05-02/20260502T201939Z-codex-telegram-bridge-mvp.md`. |
 | Shipyard Prototype | Gemini | 2026-05-01T06:40:00Z | Done | `scripts/build-cockpit.mjs`, `coordination/*`, `site/*`, `package.json` | Built the truth visualization cockpit and drift engine. |

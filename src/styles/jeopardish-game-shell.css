@@ -1,0 +1,407 @@
+/* Jeopardish Core Design System - Surgical Migration */
+/* Only the essential visual language: graphic novel aesthetic + pixel art personality */
+
+@layer components {
+  /* Base Reset (Minimal) */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  /* Game Shell - The Main Container */
+  .game-shell {
+    width: min(1440px, calc(100vw - 24px));
+    min-height: calc(100vh - 24px);
+    margin: 12px auto;
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    background: var(--gradient-game-shell);
+    border: 5px solid var(--jeopardy-ink);
+    border-radius: var(--radius-3xl);
+    box-shadow: var(--shadow-jeopardy), inset 0 0 0 6px rgba(255, 255, 255, 0.14);
+    overflow: hidden;
+  }
+
+  /* Top Bar - Header */
+  .topbar {
+    min-height: 108px;
+    display: grid;
+    grid-template-columns: 72px 1fr 110px;
+    align-items: center;
+    gap: var(--space-lg);
+    padding: 18px clamp(18px, 4vw, 48px);
+    background: var(--jeopardy-panel);
+    border-bottom: 5px solid var(--jeopardy-ink);
+  }
+
+  .brand-lockup {
+    min-width: 0;
+    text-align: center;
+  }
+
+  .eyebrow {
+    margin: 0 0 4px;
+    color: var(--jeopardy-cyan);
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    color: var(--jeopardy-cream);
+    font-family: var(--font-display-bold);
+    font-size: var(--fs-heading);
+    line-height: 0.9;
+    text-shadow: 4px 4px 0 var(--jeopardy-blue), 7px 7px 0 var(--jeopardy-pink);
+    text-transform: uppercase;
+  }
+
+  /* Icon Buttons & Score */
+  .icon-button,
+  .score-chip {
+    width: 64px;
+    height: 64px;
+    display: inline-grid;
+    place-items: center;
+    border: 3px solid var(--jeopardy-ink);
+    border-bottom-width: 7px;
+    border-radius: var(--radius-md);
+    background: var(--jeopardy-cyan);
+    color: var(--jeopardy-ink);
+    box-shadow: var(--shadow-button);
+  }
+
+  .menu-toggle span {
+    width: 30px;
+    height: 4px;
+    display: block;
+    background: var(--jeopardy-ink);
+    border-radius: var(--radius-pill);
+  }
+
+  .menu-toggle {
+    gap: 5px;
+  }
+
+  .score-chip {
+    width: 100%;
+    padding: 0 10px;
+    background: var(--jeopardy-yellow);
+    font-size: var(--fs-dollar);
+    font-weight: 900;
+  }
+
+  /* Ticker - Comedy Messages */
+  .ticker {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: var(--jeopardy-panel-deep);
+    border-bottom: 3px solid rgba(255, 255, 255, 0.18);
+  }
+
+  .ticker p {
+    min-width: 100%;
+    margin: 0;
+    padding: 0 var(--space-xl);
+    color: var(--jeopardy-yellow);
+    font-family: var(--font-ui);
+    font-size: var(--fs-ui);
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  /* Stage - Main Game Layout */
+  .stage {
+    display: grid;
+    grid-template-columns: minmax(230px, 280px) minmax(0, 1fr) minmax(190px, 260px);
+    gap: clamp(16px, 3vw, 34px);
+    align-items: stretch;
+    padding: clamp(18px, 4vw, 46px);
+  }
+
+  /* Panels */
+  .control-panel,
+  .host-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .host-panel {
+    justify-content: end;
+  }
+
+  /* Clue Area - Question Display */
+  .clue-area {
+    min-width: 0;
+    display: grid;
+    grid-template-rows: minmax(360px, 1fr) auto;
+    gap: 18px;
+  }
+
+  /* Clue Card - The Star Component */
+  .clue-card {
+    min-height: 360px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    row-gap: var(--space-lg);
+    align-items: center;
+    padding: clamp(20px, 4vw, 48px);
+    background: var(--gradient-clue-card);
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 10px solid #2c168f;
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-jeopardy);
+    position: relative;
+  }
+
+  .clue-card::after {
+    content: "";
+    position: absolute;
+    bottom: -58px;
+    left: 18%;
+    width: 0;
+    height: 0;
+    border: 30px solid transparent;
+    border-top-color: var(--jeopardy-blue-deep);
+    border-right: 0;
+  }
+
+  /* Clue Card States */
+  .clue-card.correct {
+    box-shadow: var(--shadow-jeopardy), 0 0 0 8px rgba(114, 228, 210, 0.55);
+    animation: resultCorrect var(--dur-result) var(--ease-out);
+  }
+
+  .clue-card.incorrect {
+    box-shadow: var(--shadow-jeopardy), 0 0 0 8px rgba(255, 37, 184, 0.45);
+    animation: resultIncorrect var(--dur-result) var(--ease-out);
+  }
+
+  .clue-card.peeked {
+    border-color: rgba(255, 246, 110, 0.75);
+  }
+
+  .clue-card.dealing {
+    animation: dealClue var(--dur-normal) var(--ease-out);
+  }
+
+  /* Typography */
+  .status-message,
+  .question-text,
+  .answer-text {
+    margin: 0;
+  }
+
+  .status-message {
+    min-height: 1.5em;
+    margin-top: 0;
+    color: var(--jeopardy-cyan);
+    font-family: var(--font-ui);
+    font-size: clamp(0.85rem, 1.8vw, 1rem);
+    font-weight: 800;
+    text-align: center;
+  }
+
+  .question-text {
+    place-self: center;
+    max-width: 900px;
+    color: var(--jeopardy-white);
+    font-family: var(--font-question);
+    font-size: var(--fs-question);
+    line-height: 1.2;
+    text-align: center;
+    padding-inline: 12px;
+  }
+
+  .answer-text {
+    margin-top: 0;
+    padding: 16px 18px;
+    color: var(--jeopardy-yellow);
+    background: rgba(0, 0, 0, 0.24);
+    border: 2px dashed rgba(255, 246, 110, 0.68);
+    border-radius: var(--radius-lg);
+    font-family: var(--font-ui);
+    font-size: clamp(1rem, 2vw, 1.35rem);
+    font-weight: 900;
+    text-align: center;
+  }
+
+  /* Answer Form */
+  .answer-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(120px, 190px);
+    gap: 12px;
+    padding: 16px;
+    background: rgba(20, 26, 32, 0.88);
+    border: 3px solid rgba(17, 19, 26, 0.9);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+  }
+
+  .answer-form input {
+    min-width: 0;
+    min-height: 58px;
+    padding: 0 18px;
+    border: 4px solid rgba(17, 19, 26, 0.82);
+    border-radius: var(--radius-md);
+    background: var(--jeopardy-cream);
+    color: var(--jeopardy-ink);
+    font-family: var(--font-question);
+    font-size: clamp(1.1rem, 2.4vw, 1.5rem);
+  }
+
+  .answer-form input:focus {
+    outline: none;
+    border-color: var(--jeopardy-cyan);
+    box-shadow: 0 0 0 3px rgba(114, 228, 210, 0.3);
+  }
+
+  /* Trebek Host Image - The Personality */
+  .trebek {
+    width: min(220px, 100%);
+    max-height: 310px;
+    object-fit: contain;
+    align-self: center;
+    filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.36));
+  }
+
+  /* Host Animations - The Character */
+  .trebek.host-correct {
+    animation: hostNod var(--dur-result) var(--ease-out);
+  }
+
+  .trebek.host-incorrect {
+    animation: hostShake var(--dur-result) var(--ease-out);
+  }
+
+  .trebek.host-peeked {
+    filter: hue-rotate(48deg) saturate(1.35) drop-shadow(0 10px 16px rgba(0, 0, 0, 0.36));
+  }
+
+  /* Core Animations - The Feel */
+  @keyframes dealClue {
+    from {
+      opacity: 0.66;
+      transform: translateY(10px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes resultCorrect {
+    0% {
+      background: var(--gradient-clue-card);
+    }
+    42% {
+      background: linear-gradient(180deg, #168b8a 0%, var(--jeopardy-blue-deep) 100%);
+    }
+    100% {
+      background: var(--gradient-clue-card);
+    }
+  }
+
+  @keyframes resultIncorrect {
+    0% {
+      background: var(--gradient-clue-card);
+    }
+    42% {
+      background: linear-gradient(180deg, #8b155f 0%, var(--jeopardy-blue-deep) 100%);
+    }
+    100% {
+      background: var(--gradient-clue-card);
+    }
+  }
+
+  @keyframes hostNod {
+    0%,
+    100% {
+      transform: translateY(0) rotate(0);
+    }
+    45% {
+      transform: translateY(-8px) rotate(-2deg);
+    }
+  }
+
+  @keyframes hostShake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-7px) rotate(-1deg);
+    }
+    75% {
+      transform: translateX(7px) rotate(1deg);
+    }
+  }
+
+  /* Responsive - Only Where Essential */
+  @media (max-width: 980px) {
+    .game-shell {
+      width: 100vw;
+      min-height: 100vh;
+      margin: 0;
+      border-left: 0;
+      border-right: 0;
+      border-radius: 0;
+    }
+
+    .stage {
+      grid-template-columns: 1fr;
+      padding: 16px;
+    }
+
+    .control-panel {
+      display: none;
+    }
+
+    .control-panel.open {
+      display: flex;
+    }
+
+    .host-panel {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      align-items: end;
+    }
+
+    .trebek {
+      max-height: 150px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .answer-form {
+      grid-template-columns: 1fr;
+    }
+
+    .clue-card {
+      min-height: 330px;
+      padding: 20px;
+    }
+
+    .question-text {
+      font-size: clamp(1.45rem, 8vw, 2.1rem);
+    }
+  }
+
+  /* Accessibility - Clean Approach */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}

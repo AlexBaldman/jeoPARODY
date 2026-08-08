@@ -16,11 +16,12 @@
  * @module core/GameEngine
  */
 
-import { eventBus } from '../utils/events.js';
+import { emitGameEvent, eventBus, GAME_EVENTS } from '../utils/events.js';
 import { getQuestion } from '../services/api/questionService.js';
 import { store } from '../state/store.js';
 import { compareAnswersDetailed } from '../utils/validators.js';
 import { ScoreCalculator } from './scoring.js';
+import { getCategoryTracker } from '../services/CategoryTracker.js';
 
 // Game constants
 export const GAME_CONFIG = {
@@ -67,7 +68,8 @@ export const createGameState = () => ({
     startTime: 0,
     userAnswer: '',
     showingAnswer: false,
-    timeElapsed: 0
+    timeElapsed: 0,
+    answerRevealed: false // Track if answer was revealed before answering
   },
   
   // Score tracking
@@ -87,7 +89,8 @@ export const createGameState = () => ({
     totalTime: 0,
     averageTime: 0,
     accuracy: 0,
-    achievements: new Set()
+    achievements: new Set(),
+    missedClueIds: [] // Track missed clues for review mode
   },
   
   // Performance tracking
@@ -113,6 +116,9 @@ export class GameEngine {
     
     // Game loop
     this.isRunning = false;
+    
+    // Category tracking for learning
+    this.categoryTracker = getCategoryTracker();
     
     // Event handlers
     this.setupEventHandlers();
@@ -170,16 +176,8 @@ export class GameEngine {
    * @param {number} deltaTime - Time since last update
    */
   update(deltaTime) {
-    switch (this.state.session.phase) {
-      case GAME_PHASES.QUESTION:
-        this.updateQuestionTimer(deltaTime);
-        break;
-      case GAME_PHASES.ANSWERING:
-        this.updateAnsweringPhase(deltaTime);
-        break;
-      case GAME_PHASES.RESULT:
-        this.updateResultPhase(deltaTime);
-        break;
+    if (this.state.session.phase === GAME_PHASES.QUESTION) {
+      this.updateQuestionTimer(deltaTime);
     }
   }
   
@@ -265,7 +263,7 @@ export class GameEngine {
     
     this.transitionPhase(GAME_PHASES.QUESTION);
     
-    this.eventBus.emit('question:loaded', {
+    emitGameEvent(GAME_EVENTS.QUESTION_LOADED, {
       question: questionData,
       difficulty: this.state.session.difficulty
     });
@@ -301,8 +299,18 @@ export class GameEngine {
     const isCorrect = validation.isCorrect;
     const timeElapsed = this.state.question.timeElapsed;
     
-    // Calculate score
-    const scoreData = this.calculateScore(isCorrect, timeElapsed, timedOut);
+    // Track missed clues for review mode
+    if (!isCorrect && question.id) {
+      this.trackMissedClue(question.id);
+    }
+    
+    // Track category performance for learning
+    if (question.category) {
+      this.categoryTracker.recordAnswer(question.category, isCorrect);
+    }
+    
+    // Calculate score with reveal state
+    const scoreData = this.calculateScore(isCorrect, timeElapsed, timedOut, this.state.question.answerRevealed);
     
     // Update statistics
     this.updateStatistics(isCorrect, timeElapsed, timedOut);
@@ -318,11 +326,13 @@ export class GameEngine {
     this.eventBus.emit('answer:evaluated', {
       userAnswer,
       correctAnswer: question.answer,
+      question,
       isCorrect,
       timedOut,
       score: scoreData,
       timeElapsed,
-      validation
+      validation,
+      answerRevealed: this.state.question.answerRevealed
     });
   }
   
@@ -378,9 +388,10 @@ export class GameEngine {
    * @param {boolean} isCorrect - Whether answer was correct
    * @param {number} timeElapsed - Time taken to answer
    * @param {boolean} timedOut - Whether answer timed out
+   * @param {boolean} answerRevealed - Whether answer was revealed before answering
    * @returns {Object} Score data
    */
-  calculateScore(isCorrect, timeElapsed, timedOut) {
+  calculateScore(isCorrect, timeElapsed, timedOut, answerRevealed = false) {
     const baseValue = this.getCurrentQuestionValue();
     const streak = isCorrect && !timedOut ? this.state.score.streak + 1 : 0;
     const score = ScoreCalculator.calculateRoundScore({
@@ -389,7 +400,7 @@ export class GameEngine {
       timeElapsed,
       streak,
       difficulty: this.getScoringDifficulty(),
-      peekUsed: false
+      peekUsed: answerRevealed // Pass reveal state as peekUsed
     });
 
     return {
@@ -483,6 +494,22 @@ export class GameEngine {
     this.state.stats.totalTime += timeElapsed;
     this.state.stats.averageTime = this.state.stats.totalTime / this.state.stats.questionsAnswered;
     this.state.stats.accuracy = this.state.stats.correctAnswers / this.state.stats.questionsAnswered;
+  }
+  
+  /**
+   * Track missed clue for review mode
+   * @param {string} clueId - Clue identifier
+   */
+  trackMissedClue(clueId) {
+    if (!this.state.stats.missedClueIds.includes(clueId)) {
+      this.state.stats.missedClueIds.push(clueId);
+      // Persist to localStorage for review mode
+      try {
+        localStorage.setItem('jeoparody_missed_clues', JSON.stringify(this.state.stats.missedClueIds));
+      } catch (error) {
+        console.warn('[GameEngine] Failed to save missed clues:', error);
+      }
+    }
   }
   
   /**
@@ -607,6 +634,13 @@ export class GameEngine {
     this.eventBus.on('question:request-new', () => this.handleNewQuestionRequest());
     this.eventBus.on('question:load', (data) => this.loadQuestion(data.question));
     this.eventBus.on('answer:submit', (data) => this.submitAnswer(data.answer));
+    
+    // Handle answer reveal - mark for scoring
+    this.eventBus.on('game:answer:revealed', () => {
+      if (this.state.question) {
+        this.state.question.answerRevealed = true;
+      }
+    });
   }
   
   /**

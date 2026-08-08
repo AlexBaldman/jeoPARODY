@@ -1,4 +1,4 @@
-import { eventBus } from '../../utils/events.js';
+import { eventBus, GAME_EVENTS } from '../../utils/events.js';
 import AIConfig from './config.js';
 import { rewriteWithPolicy } from './rewrite.js';
 import Providers from '../ai-providers.js';
@@ -14,7 +14,7 @@ function getCoreFacts(question) {
 
 export function installQuestionRewrite() {
 	// When a question is loaded, compute persona rewrite for display only
-	eventBus.on('game:question:loaded', async ({ question }) => {
+	eventBus.on(GAME_EVENTS.QUESTION_LOADED, async ({ question }) => {
 		try {
 			if (!question || !question.question) return;
 			const providerChain = [];
@@ -40,4 +40,3 @@ export function installQuestionRewrite() {
 }
 
 export default installQuestionRewrite;
-

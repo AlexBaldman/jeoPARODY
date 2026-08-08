@@ -2,7 +2,7 @@
 **Version:** 1.0.0 (High-End Engineering Edition)
 **Status:** Operational
 
-This is the operational lore companion to [MASTER_PLAN.md](MASTER_PLAN.md) and [docs/README.md](README.md). If the plan and the lore disagree, the plan wins.
+This is the operational lore companion to [PRODUCTION_REMEDIATION_PLAN_2026-05-26.md](PRODUCTION_REMEDIATION_PLAN_2026-05-26.md) and [docs/README.md](README.md). If the plan and the lore disagree, the plan wins.
 
 Shipyard is not just a repository; it is a **Project-Level Operating System**. It treats the codebase as the "Single Source of Truth" and coordinates a fleet of specialized AI agents (Human, Gemini, Codex) to build, optimize, and dominate.
 

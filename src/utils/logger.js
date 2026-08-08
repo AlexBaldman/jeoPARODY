@@ -48,9 +48,25 @@ export const logger = {
       safeConsole('log', ...args);
     }
   },
+  groupCollapsed: (...args) => {
+    if (originalConsole && originalConsole.groupCollapsed) {
+      originalConsole.groupCollapsed(...args);
+    } else if (originalConsole && originalConsole.group) {
+      originalConsole.group(...args);
+    } else {
+      safeConsole('log', ...args);
+    }
+  },
   groupEnd: () => {
     if (originalConsole && originalConsole.groupEnd) {
       originalConsole.groupEnd();
+    }
+  },
+  table: (...args) => {
+    if (originalConsole && originalConsole.table) {
+      originalConsole.table(...args);
+    } else {
+      safeConsole('log', ...args);
     }
   },
 };

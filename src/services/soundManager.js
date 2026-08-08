@@ -74,26 +74,41 @@ export class SoundManager {
     if (this.initialized) return true;
     
     try {
-      // Initialize audio context
+      // Initialize audio context only when explicitly called (user gesture)
       this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
       
-      if (this.audioContext.state === 'suspended') {
-        await this.audioContext.resume();
-      }
+      // Don't resume immediately - wait for actual user interaction
+      // This prevents blocking the app from becoming interactive
       
-      // Preload critical sounds
+      // Preload critical sounds (without requiring audio context resume)
       await this.preloadSounds(['correct', 'incorrect', 'click']);
       
       // Setup event listeners
       this.bindEvents();
       
       this.initialized = true;
-      console.log('[🔊] SoundManager initialized');
+      console.log('[🔊] SoundManager initialized (audio context ready, deferred resume)');
       return true;
       
     } catch (error) {
       console.warn('[🔊] Audio initialization failed:', error);
       return false;
+    }
+  }
+  
+  /**
+   * Ensure audio context is resumed (call on user interaction)
+   */
+  async ensureAudioContext() {
+    if (!this.audioContext) return;
+    
+    if (this.audioContext.state === 'suspended') {
+      try {
+        await this.audioContext.resume();
+        console.log('[🔊] Audio context resumed');
+      } catch (error) {
+        console.warn('[🔊] Failed to resume audio context:', error);
+      }
     }
   }
   
@@ -166,6 +181,9 @@ export class SoundManager {
     this.lastPlayTime = now;
     
     if (!this.initialized || this.muted) return;
+    
+    // Ensure audio context is resumed on first play (user interaction)
+    this.ensureAudioContext();
     
     const pool = this.audioPool.get(soundName);
     if (!pool) {

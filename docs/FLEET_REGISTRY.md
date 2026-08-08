@@ -1,6 +1,6 @@
 # 🚢 SHIPYARD: Comprehensive Fleet Registry
 
-This registry is a living map of roles and tools, not the canonical roadmap. For priorities and sequencing, start with [MASTER_PLAN.md](MASTER_PLAN.md) and [docs/README.md](README.md).
+This registry is a living map of roles and tools, not the canonical roadmap. For priorities and sequencing, start with [PRODUCTION_REMEDIATION_PLAN_2026-05-26.md](PRODUCTION_REMEDIATION_PLAN_2026-05-26.md) and [docs/README.md](README.md).
 
 This registry tracks the status, capabilities, and tools of all agents within the Shipyard Operating System.
 

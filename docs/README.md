@@ -8,27 +8,33 @@ This folder is split into a few kinds of documents:
 - Operational lore
 - Lightly ridiculous metaphor fuel
 
-If you only read one thing, read [MASTER_PLAN.md](MASTER_PLAN.md).
+If you only read one thing for implementation gates, read [PRODUCTION_REMEDIATION_PLAN_2026-05-26.md](PRODUCTION_REMEDIATION_PLAN_2026-05-26.md).
+
+If you are trying to understand the whole Jeopardish -> JeoPARODY convergence, read [SOURCE_MATERIAL_INDEX.md](SOURCE_MATERIAL_INDEX.md), [SALVAGE_REGISTER.md](SALVAGE_REGISTER.md), and [CARMACK_CONVERGENCE_REVIEW.md](CARMACK_CONVERGENCE_REVIEW.md).
 
 ## Current Health Snapshot
 
-Last local review: [REPO_REVIEW_2026-05-04.md](REPO_REVIEW_2026-05-04.md).
+Last full audit and local verification: 2026-05-26, consolidated into [PRODUCTION_REMEDIATION_PLAN_2026-05-26.md](PRODUCTION_REMEDIATION_PLAN_2026-05-26.md). [REPO_REVIEW_2026-05-04.md](REPO_REVIEW_2026-05-04.md) remains historical context.
 
 Current verification status:
 
-- `npm test`: passing.
+- `npm test -- --runInBand`: passing, 6 suites / 58 tests.
 - `npm run build`: passing.
-- `npm run lint`: passing with 41 warnings; `no-undef` is enforced as an error.
-- `npm run lint:css`: failing; tracked as CSS refactor debt.
-- `npm ci`: requires network access for ChromeDriver download.
-- `npm audit --audit-level=high`: failing with 18 advisories; handle deliberately rather than applying automatic fixes blindly.
+- `npm run lint`: passing.
+- `npm run lint:css`: passing.
+- `npm run test:runtime`: failing in both development and production preview paths because the application does not complete interactive startup.
+- Production preview asset delivery: failing because required question data is not currently packaged into `dist`.
+- `npm audit --json`: five moderate fixable transitive advisories remain; handle deliberately rather than applying automatic fixes blindly.
 
 ## At a Glance
 
 | Doc | Purpose | Status |
 |---|---|---|
-| [MASTER_PLAN.md](MASTER_PLAN.md) | Canonical roadmap and source of truth | Active |
-| [REPO_REVIEW_2026-05-04.md](REPO_REVIEW_2026-05-04.md) | Latest local repo review and verification notes | Active |
+| [PRODUCTION_REMEDIATION_PLAN_2026-05-26.md](PRODUCTION_REMEDIATION_PLAN_2026-05-26.md) | Canonical remediation roadmap and release gates | Active |
+| [SOURCE_MATERIAL_INDEX.md](SOURCE_MATERIAL_INDEX.md) | Dated map of JeoPARODY, Jeopardish, old docs, and supersession rules | Active |
+| [SALVAGE_REGISTER.md](SALVAGE_REGISTER.md) | Tracks what to mine from Jeopardish and how to rebuild it in JeoPARODY | Active |
+| [CARMACK_CONVERGENCE_REVIEW.md](CARMACK_CONVERGENCE_REVIEW.md) | Cofounder-style critique layer for tuning the game into a fast, funny learning machine | Active |
+| [REPO_REVIEW_2026-05-04.md](REPO_REVIEW_2026-05-04.md) | Earlier local repo review and verification notes | Historical |
 | [brainstorming.md](brainstorming.md) | Nautical naming map and metaphor rules | Active |
 | [EXPERIMENT_IDEA_LEDGER.md](EXPERIMENT_IDEA_LEDGER.md) | Good ideas mined from old branches | Active |
 | [MVP_SYSTEMS_AUDIT_2026-04-30.md](MVP_SYSTEMS_AUDIT_2026-04-30.md) | Systems audit and product direction | Historical |
@@ -44,13 +50,16 @@ Current verification status:
 
 ## Reading Order
 
-1. [MASTER_PLAN.md](MASTER_PLAN.md)
-2. [REPO_REVIEW_2026-05-04.md](REPO_REVIEW_2026-05-04.md)
-3. [brainstorming.md](brainstorming.md)
-4. [EXPERIMENT_IDEA_LEDGER.md](EXPERIMENT_IDEA_LEDGER.md)
-5. [MVP_SYSTEMS_AUDIT_2026-04-30.md](MVP_SYSTEMS_AUDIT_2026-04-30.md)
-6. [JEOPARDISH_MIGRATION_AUDIT_2026-05-01.md](JEOPARDISH_MIGRATION_AUDIT_2026-05-01.md)
-7. The implementation guides relevant to the subsystem you are touching
+1. [PRODUCTION_REMEDIATION_PLAN_2026-05-26.md](PRODUCTION_REMEDIATION_PLAN_2026-05-26.md)
+2. [SOURCE_MATERIAL_INDEX.md](SOURCE_MATERIAL_INDEX.md)
+3. [SALVAGE_REGISTER.md](SALVAGE_REGISTER.md)
+4. [CARMACK_CONVERGENCE_REVIEW.md](CARMACK_CONVERGENCE_REVIEW.md)
+5. [REPO_REVIEW_2026-05-04.md](REPO_REVIEW_2026-05-04.md) for historical context
+6. [brainstorming.md](brainstorming.md)
+7. [EXPERIMENT_IDEA_LEDGER.md](EXPERIMENT_IDEA_LEDGER.md)
+8. [MVP_SYSTEMS_AUDIT_2026-04-30.md](MVP_SYSTEMS_AUDIT_2026-04-30.md)
+9. [JEOPARDISH_MIGRATION_AUDIT_2026-05-01.md](JEOPARDISH_MIGRATION_AUDIT_2026-05-01.md)
+10. The implementation guides relevant to the subsystem you are touching
 
 ## Tone Guide
 

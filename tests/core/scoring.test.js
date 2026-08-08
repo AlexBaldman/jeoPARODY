@@ -1,5 +1,6 @@
 import { ScoreCalculator, ScoreTracker } from '@/core/scoring.js';
-import { GameEngine, createGameState } from '@/core/GameEngine.js';
+import { GAME_PHASES, GameEngine, createGameState } from '@/core/GameEngine.js';
+import { eventBus, GAME_EVENTS } from '@/utils/events.js';
 
 describe('ScoreCalculator', () => {
   test('calculates correct score with time and streak bonuses', () => {
@@ -205,5 +206,29 @@ describe('GameEngine scoring convergence', () => {
     expect(score.penalty).toBe(-200);
     expect(engine.state.score.current).toBe(0);
     expect(engine.state.score.streak).toBe(0);
+  });
+
+  test('publishes the canonical question-loaded event when a question enters the engine', () => {
+    const engine = createEngineWithQuestion();
+    const observed = [];
+    const unsubscribe = eventBus.on(GAME_EVENTS.QUESTION_LOADED, (event) => observed.push(event));
+    const question = { id: 'next-clue', question: 'Next?', answer: 'Yes', value: 200 };
+
+    engine.loadQuestion(question);
+    unsubscribe();
+
+    expect(observed).toHaveLength(1);
+    expect(observed[0]).toEqual(expect.objectContaining({
+      event: GAME_EVENTS.QUESTION_LOADED,
+      question,
+      difficulty: 'normal'
+    }));
+  });
+
+  test('keeps the settled result phase stable without per-frame result work', () => {
+    const engine = createEngineWithQuestion();
+    engine.state.session.phase = GAME_PHASES.RESULT;
+
+    expect(() => engine.update(16)).not.toThrow();
   });
 });

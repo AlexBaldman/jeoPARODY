@@ -1,0 +1,88 @@
+{
+  "welcome": [
+    "Welcome to Jeopardish! The trivia game that's almost as good as the real thing!",
+    "Get ready to test your knowledge in this comedic trivia adventure!",
+    "Welcome aboard! We promise this is more fun than watching paint dry!",
+    "Time to see if your brain is as smart as you think it is!",
+    "Ready to play? Your knowledge is about to be put to the test!"
+  ],
+  "positive": [
+    "Correctamundo! You're on fire! 🔥",
+    "Outstanding! Keep that brain working!",
+    "Brilliant answer! You're making this look easy!",
+    "Spot on! That was impressive!",
+    "Excellent! You're really in the zone!",
+    "Perfect! Your knowledge is showing!",
+    "Fantastic! That's how it's done!",
+    "Bravo! Another correct answer!"
+  ],
+  "negative": [
+    "Oops! Don't worry, even Einstein got things wrong sometimes!",
+    "Not quite right, but hey, that's what learning is for!",
+    "Close, but no cigar! Better luck next time!",
+    "Swing and a miss! But keep trying!",
+    "Incorrect, but we believe in you!",
+    "Not this time, but don't give up!",
+    "That's not it, but you're still awesome!",
+    "Wrong answer, but right attitude!"
+  ],
+  "streak": [
+    "You're on a roll! 🎲 Keep this streak alive!",
+    "Streak alert! Someone's showing off their big brain!",
+    "Hot streak! You're unstoppable!",
+    "Consecutive correct answers! The crowd goes wild!",
+    "Streak master! Are you cheating? (Just kidding!)",
+    "Multiple correct answers in a row! Impressive!",
+    "You're in the zone! This streak is amazing!",
+    "Streak champion! Keep those correct answers coming!"
+  ],
+  "random": [
+    "Fun fact: The human brain has about 86 billion neurons!",
+    "Did you know? Jeopardy! has been on air since 1964!",
+    "Trivia time: The word 'trivia' comes from Latin meaning 'three roads'!",
+    "Random thought: Knowledge is power, but trivia is fun!",
+    "Breaking news: You're doing great! Keep playing!",
+    "Science fact: Learning new things creates new neural pathways!",
+    "Game tip: The more you play, the smarter you get!",
+    "Reminder: There's no shame in getting an answer wrong!",
+    "Plot twist: Every wrong answer is a chance to learn something new!",
+    "Life lesson: Curiosity is the key to knowledge!",
+    "Game fact: This game has questions from all sorts of categories!",
+    "Pro tip: If you don't know the answer, make an educated guess!",
+    "Fun observation: Smart people play trivia games!",
+    "Daily reminder: You're braver than you believe and smarter than you seem!",
+    "Interesting note: The best way to learn is to have fun while doing it!"
+  ],
+  "encouragement": [
+    "Don't give up! Every expert was once a beginner!",
+    "Keep going! You're doing better than you think!",
+    "Stay positive! Learning is a journey, not a destination!",
+    "Chin up! Every question is a chance to learn something new!",
+    "Keep trying! Persistence is the key to success!",
+    "Don't worry! Even the smartest people get things wrong!",
+    "Stay curious! The best learners never stop asking questions!",
+    "Keep playing! Practice makes perfect!",
+    "Remember: It's not about being perfect, it's about having fun!",
+    "Keep that brain active! You're doing great!"
+  ],
+  "milestone": [
+    "Milestone reached! You've answered 10 questions!",
+    "Achievement unlocked! 25 questions completed!",
+    "Wow! You've tackled 50 questions like a champ!",
+    "Incredible! 100 questions answered!",
+    "Amazing dedication! You're a trivia warrior!",
+    "Persistence pays off! Look how far you've come!",
+    "Question master! Your dedication is inspiring!",
+    "Trivia enthusiast! You're on a learning adventure!"
+  ],
+  "time": [
+    "Tick tock! Time is ticking away!",
+    "Clock's running! Make your move!",
+    "Time waits for no one! What's your answer?",
+    "The seconds are counting down!",
+    "Time is of the essence! Think fast!",
+    "Racing against time! You've got this!",
+    "Time pressure! But don't panic!",
+    "The clock is your opponent! Beat it!"
+  ]
+}

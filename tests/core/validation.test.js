@@ -241,4 +241,38 @@ describe('legacy answerValidator compatibility wrapper', () => {
 
     expect(legacy).toMatchObject(canonical);
   });
+
+  test('detailed comparison exposes exact-match judgment metadata', () => {
+    const result = compareCanonicalAnswersDetailed(' What is THE Eiffel Tower?! ', 'Eiffel Tower');
+
+    expect(result).toMatchObject({
+      isCorrect: true,
+      reason: 'exact',
+      normalizedUserAnswer: 'eiffeltower',
+      normalizedCorrectAnswer: 'eiffeltower',
+      acceptedAnswer: 'eiffeltower',
+      judgmentLabel: 'exact-match'
+    });
+    expect(result.judgmentNotes).toMatch(/Matched after/i);
+  });
+
+  test('detailed comparison labels typo forgiveness with edit-distance data', () => {
+    const result = compareCanonicalAnswersDetailed('Copernicusz', 'Copernicus');
+
+    expect(result.isCorrect).toBe(true);
+    expect(result.reason).toBe('fuzzy');
+    expect(result.judgmentLabel).toBe('typo-forgiven');
+    expect(result.distance).toBe(1);
+    expect(result.threshold).toBeGreaterThanOrEqual(1);
+    expect(result.judgmentNotes).toMatch(/edit distance/i);
+  });
+
+  test('detailed comparison labels near misses without accepting tiny guesses', () => {
+    const result = compareCanonicalAnswersDetailed('cop', 'Copernicus');
+
+    expect(result.isCorrect).toBe(false);
+    expect(result.reason).toBe('mismatch');
+    expect(result.judgmentLabel).toBe('miss');
+    expect(result.confidence).toBeLessThan(0.65);
+  });
 });

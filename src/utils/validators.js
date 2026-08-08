@@ -108,6 +108,55 @@ function getAcceptedAnswerCandidates(answer) {
   return accepted;
 }
 
+function buildJudgmentLabel(result) {
+  if (result.isCorrect && result.reason === 'exact') return 'exact-match';
+  if (result.isCorrect && result.reason === 'variation') return 'accepted-variant';
+  if (result.isCorrect && result.reason === 'fuzzy') return 'typo-forgiven';
+  if (result.isCorrect && result.reason === 'similarity') return 'close-enough';
+  if (result.reason === 'empty') return 'empty-response';
+  if (result.confidence >= 0.65) return 'near-miss';
+  return 'miss';
+}
+
+function buildJudgmentNotes(result) {
+  if (result.reason === 'exact') {
+    return 'Matched after casing, punctuation, spacing, article, and Jeopardy prompt cleanup.';
+  }
+
+  if (result.reason === 'variation') {
+    return 'Accepted through a known variation such as plural, abbreviation, or numeric formatting.';
+  }
+
+  if (result.reason === 'fuzzy') {
+    return `Accepted with edit distance ${result.distance}/${result.threshold}. A typo got a pardon.`;
+  }
+
+  if (result.reason === 'similarity') {
+    return 'Accepted by similarity threshold after normalization.';
+  }
+
+  if (result.reason === 'empty') {
+    return 'No usable answer reached the judges.';
+  }
+
+  if (result.confidence >= 0.65) {
+    return 'Close enough to be educational, not close enough to move the score.';
+  }
+
+  return 'Did not match an accepted answer, known variation, edit-distance allowance, or similarity threshold.';
+}
+
+function withJudgmentProfile(result, userAnswer, correctAnswer) {
+  return {
+    ...result,
+    rawUserAnswer: String(userAnswer || ''),
+    rawCorrectAnswer: String(correctAnswer || ''),
+    acceptedAnswer: result.normalizedCorrectAnswer,
+    judgmentLabel: buildJudgmentLabel(result),
+    judgmentNotes: buildJudgmentNotes(result)
+  };
+}
+
 /**
  * Calculate Levenshtein edit distance.
  * @param {string} a - First string
@@ -152,7 +201,7 @@ export function compareAnswersDetailed(userAnswer, correctAnswer, threshold = RU
   const normalizedCorrectAnswer = acceptedAnswers[0] || cleanAnswer(correctAnswer);
 
   if (!userCompact || !normalizedCorrectAnswer) {
-    return {
+    return withJudgmentProfile({
       isCorrect: false,
       reason: 'empty',
       normalizedUserAnswer: userCompact,
@@ -161,12 +210,12 @@ export function compareAnswersDetailed(userAnswer, correctAnswer, threshold = RU
       distance: null,
       threshold: null,
       confidence: 0
-    };
+    }, userAnswer, correctAnswer);
   }
 
   for (const acceptedAnswer of acceptedAnswers) {
     if (userCompact === acceptedAnswer) {
-      return {
+      return withJudgmentProfile({
         isCorrect: true,
         reason: 'exact',
         normalizedUserAnswer: userCompact,
@@ -175,13 +224,13 @@ export function compareAnswersDetailed(userAnswer, correctAnswer, threshold = RU
         distance: 0,
         threshold: 0,
         confidence: 1
-      };
+      }, userAnswer, correctAnswer);
     }
   }
 
   for (const candidate of acceptedCandidates) {
     if (checkCommonVariations(normalizedUserAnswer, candidate.normalized)) {
-      return {
+      return withJudgmentProfile({
         isCorrect: true,
         reason: 'variation',
         normalizedUserAnswer: userCompact,
@@ -190,7 +239,7 @@ export function compareAnswersDetailed(userAnswer, correctAnswer, threshold = RU
         distance: 0,
         threshold: 0,
         confidence: 1
-      };
+      }, userAnswer, correctAnswer);
     }
   }
 
@@ -214,7 +263,7 @@ export function compareAnswersDetailed(userAnswer, correctAnswer, threshold = RU
   }
 
   if (bestMatch.distance <= bestMatch.threshold) {
-    return {
+    return withJudgmentProfile({
       isCorrect: true,
       reason: 'fuzzy',
       normalizedUserAnswer: userCompact,
@@ -223,11 +272,11 @@ export function compareAnswersDetailed(userAnswer, correctAnswer, threshold = RU
       distance: bestMatch.distance,
       threshold: bestMatch.threshold,
       confidence: Math.max(0, 1 - bestMatch.distance / Math.max(userCompact.length, bestMatch.answer.length))
-    };
+    }, userAnswer, correctAnswer);
   }
 
   const similarity = stringSimilarity(userCompact, bestMatch.answer);
-  return {
+  return withJudgmentProfile({
     isCorrect: similarity >= threshold,
     reason: similarity >= threshold ? 'similarity' : 'mismatch',
     normalizedUserAnswer: userCompact,
@@ -236,7 +285,7 @@ export function compareAnswersDetailed(userAnswer, correctAnswer, threshold = RU
     distance: bestMatch.distance,
     threshold: bestMatch.threshold,
     confidence: similarity
-  };
+  }, userAnswer, correctAnswer);
 }
 
 /**

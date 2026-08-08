@@ -21,6 +21,21 @@ const CONFIG = {
   CACHE_DURATION: 24 * 60 * 60 * 1000 // 24 hours
 };
 
+const DATA_RESPONSE_TYPES = {
+  json: ['application/json', 'text/json'],
+  csv: ['text/csv', 'application/csv', 'application/vnd.ms-excel', 'text/plain'],
+  tsv: ['text/tab-separated-values', 'text/plain', 'text/tsv']
+};
+
+const HTML_FALLBACK_MARKERS = [
+  '<!doctype html',
+  '<html',
+  '<head',
+  '<body',
+  'id="app"',
+  'type="module"'
+];
+
 // Local question storage
 let allQuestions = [];
 let questions = [];
@@ -119,6 +134,11 @@ export function getRandomCategory(minQuestions = 5) {
  */
 export async function getQuestion() {
   if (IS_DEV) console.log('🎯 getQuestion() called');
+  eventBus.emit('question:fetch:start', {
+    buffer: questions.length,
+    total: allQuestions.length,
+    initialized: isInitialized
+  });
   
   // Ensure we're initialized
   if (!isInitialized) {
@@ -126,7 +146,12 @@ export async function getQuestion() {
     const initSuccess = await initialize();
     if (!initSuccess) {
       console.error('❌ Failed to initialize question service');
-      return getErrorJoke();
+      const errorJoke = getErrorJoke();
+      eventBus.emit('question:fetch:error', {
+        reason: 'initialization-failed',
+        fallback: errorJoke
+      });
+      return errorJoke;
     }
   }
 
@@ -136,6 +161,12 @@ export async function getQuestion() {
   const localQuestion = getNextLocalQuestion();
   if (localQuestion) {
     if (IS_DEV) console.log('✅ Returning question from buffer:', localQuestion.category);
+    eventBus.emit('question:fetch:complete', {
+      source: 'buffer',
+      question: localQuestion,
+      buffer: questions.length,
+      total: allQuestions.length
+    });
     return localQuestion;
   }
 
@@ -146,6 +177,12 @@ export async function getQuestion() {
     const question = getNextLocalQuestion();
     if (question) {
       if (IS_DEV) console.log('✅ Returning question after reload:', question.category);
+      eventBus.emit('question:fetch:complete', {
+        source: 'reload',
+        question,
+        buffer: questions.length,
+        total: allQuestions.length
+      });
       return question;
     }
   }
@@ -156,6 +193,12 @@ export async function getQuestion() {
     const apiQuestion = await fetchQuestionFromAPI();
     if (apiQuestion) {
       if (IS_DEV) console.log('✅ Returning question from API:', apiQuestion.category);
+      eventBus.emit('question:fetch:complete', {
+        source: 'api',
+        question: apiQuestion,
+        buffer: questions.length,
+        total: allQuestions.length
+      });
       return apiQuestion;
     }
   }
@@ -164,6 +207,12 @@ export async function getQuestion() {
   if (IS_DEV) console.log('😅 All question sources failed, returning error joke');
   const errorJoke = getErrorJoke();
   if (IS_DEV) console.log('🎭 Error joke:', errorJoke);
+  eventBus.emit('question:fetch:error', {
+    reason: 'all-sources-failed',
+    fallback: errorJoke,
+    buffer: questions.length,
+    total: allQuestions.length
+  });
   return errorJoke;
 }
 
@@ -316,13 +365,10 @@ async function loadLocalQuestions() {
   
   let starterQuestions = [];
   try {
-    const starterRes = await fetch('assets/questions/starter-pack.json');
-    if (starterRes.ok) {
-      const starterData = await starterRes.json();
-      if (Array.isArray(starterData)) {
-        starterQuestions = starterData;
-        console.log(`⚡ Loaded starter pack with ${starterQuestions.length} questions`);
-      }
+    const starterData = await fetchJsonData('assets/questions/starter-pack.json');
+    starterQuestions = extractQuestionArray(starterData, 'assets/questions/starter-pack.json');
+    if (starterQuestions.length) {
+      console.log(`⚡ Loaded starter pack with ${starterQuestions.length} questions`);
     }
   } catch (_err) {
     console.log('ℹ️ No starter pack found, continuing with primary question sources');
@@ -332,20 +378,17 @@ async function loadLocalQuestions() {
   let data = null;
   let successPath = null;
   try {
-    const idxRes = await fetch('assets/questions/index.json');
-    if (idxRes.ok) {
-      const index = await idxRes.json();
-      loadedQuestionIndex = index;
-      const years = Object.keys(index.years || {});
-      const pick = years[Math.floor(Math.random() * years.length)];
-      if (pick) {
-        console.log(`🗂️ Loading shard for year: ${pick}`);
-        const shardRes = await fetch(`assets/questions/shards/${pick}.json`);
-        if (shardRes.ok) {
-          const shardData = await shardRes.json();
-          data = Array.isArray(shardData) ? shardData : shardData.questions || [];
-          successPath = `assets/questions/shards/${pick}.json`;
-        }
+    const index = await fetchJsonData('assets/questions/index.json');
+    loadedQuestionIndex = index;
+    const years = Object.keys(index.years || {});
+    const pick = years[Math.floor(Math.random() * years.length)];
+    if (pick) {
+      console.log(`🗂️ Loading shard for year: ${pick}`);
+      const shardPath = `assets/questions/shards/${pick}.json`;
+      const shardData = await fetchJsonData(shardPath);
+      data = extractQuestionArray(shardData, shardPath);
+      if (data.length) {
+        successPath = shardPath;
       }
     }
   } catch (_err) {
@@ -354,21 +397,18 @@ async function loadLocalQuestions() {
 
   try {
     if (!data) {
-      const manifestRes = await fetch('assets/questions/manifest.json');
-      if (manifestRes.ok) {
-        const manifest = await manifestRes.json();
-        loadedQuestionIndex = manifest;
-        const shards = Array.isArray(manifest.shards) ? manifest.shards : [];
-        const shard = shards[Math.floor(Math.random() * shards.length)];
+      const manifest = await fetchJsonData('assets/questions/manifest.json');
+      loadedQuestionIndex = manifest;
+      const shards = Array.isArray(manifest.shards) ? manifest.shards : [];
+      const shard = shards[Math.floor(Math.random() * shards.length)];
 
-        if (shard?.file) {
-          console.log(`🗂️ Loading manifest shard: ${shard.file}`);
-          const shardRes = await fetch(`assets/questions/${shard.file}`);
-          if (shardRes.ok) {
-            const shardData = await shardRes.json();
-            data = Array.isArray(shardData) ? shardData : shardData.questions || [];
-            successPath = `assets/questions/${shard.file}`;
-          }
+      if (shard?.file) {
+        console.log(`🗂️ Loading manifest shard: ${shard.file}`);
+        const shardPath = `assets/questions/${shard.file}`;
+        const shardData = await fetchJsonData(shardPath);
+        data = extractQuestionArray(shardData, shardPath);
+        if (data.length) {
+          successPath = shardPath;
         }
       }
     }
@@ -399,16 +439,16 @@ async function loadLocalQuestions() {
       if (response.ok) {
         // Determine file type and parse accordingly
         if (path.endsWith('.json')) {
-          data = await response.json();
+          data = await readJsonResponse(response, path);
         } else if (path.endsWith('.tsv')) {
-          const text = await response.text();
+          const text = await readTextDataResponse(response, path, 'tsv');
           data = parseTSV(text);
         } else if (path.endsWith('.csv')) {
-          const text = await response.text();
+          const text = await readTextDataResponse(response, path, 'csv');
           data = parseCSV(text);
         } else {
           // Try JSON as default
-          data = await response.json();
+          data = await readJsonResponse(response, path);
         }
         
         successPath = path;
@@ -439,16 +479,8 @@ async function loadLocalQuestions() {
     console.log(`📊 Parsing question data from ${successPath}...`);
     console.log(`📋 Data type: ${typeof data}, Is Array: ${Array.isArray(data)}`);
     
-    if (Array.isArray(data)) {
-      console.log(`✅ Loaded ${data.length.toLocaleString()} questions from ${successPath}`);
-    } else if (data.questions && Array.isArray(data.questions)) {
-      console.log('📦 Found questions in data.questions property');
-      data = data.questions;
-      console.log(`✅ Loaded ${data.length.toLocaleString()} questions from ${successPath}`);
-    } else {
-      console.error('❌ Invalid data structure:', data);
-      throw new Error('Invalid or empty question data');
-    }
+    data = extractQuestionArray(data, successPath);
+    console.log(`✅ Loaded ${data.length.toLocaleString()} candidate questions from ${successPath}`);
     
     // Sample first few questions to verify structure
     console.log('🔍 Sample questions:');
@@ -461,11 +493,27 @@ async function loadLocalQuestions() {
       });
     }
     
-    allQuestions = mergeQuestionLists(starterQuestions, data).map((question, index) => normalizeQuestionData(question, index));
+    const normalizedQuestions = mergeQuestionLists(starterQuestions, data)
+      .map((question, index) => normalizeQuestionData(question, index));
+    allQuestions = normalizedQuestions.filter(isPlayableQuestion);
+    const rejectedCount = normalizedQuestions.length - allQuestions.length;
+
+    if (rejectedCount > 0) {
+      console.warn(`🧹 Rejected ${rejectedCount.toLocaleString()} unplayable question records while loading ${successPath}`);
+    }
+
+    if (allQuestions.length === 0) {
+      throw new Error(`No playable questions found in ${successPath}`);
+    }
+
     lastLoadTime = Date.now();
     
     // Emit event for other parts of the app
-    eventBus.emit('questions:loaded', { count: allQuestions.length });
+    eventBus.emit('questions:loaded', {
+      count: allQuestions.length,
+      sourcePath: successPath,
+      rejectedCount
+    });
     console.log(`✅ Question service loaded successfully with ${allQuestions.length} questions`);
     
   } catch (error) {
@@ -511,14 +559,119 @@ function getNextLocalQuestion() {
   return normalizeQuestionData(question);
 }
 
+async function fetchJsonData(sourcePath) {
+  const response = await fetch(sourcePath);
+  if (!response.ok) {
+    throw new Error(`${sourcePath} returned ${response.status} ${response.statusText}`);
+  }
+
+  return readJsonResponse(response, sourcePath);
+}
+
+async function readJsonResponse(response, sourcePath) {
+  const text = await readTextDataResponse(response, sourcePath, 'json');
+
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    throw new Error(`${sourcePath} is not valid JSON: ${error.message}`);
+  }
+}
+
+async function readTextDataResponse(response, sourcePath, expectedType) {
+  assertDataResponse(response, sourcePath, expectedType);
+  const text = await response.text();
+
+  if (isLikelyHtml(text)) {
+    throw new Error(`${sourcePath} resolved to HTML instead of ${expectedType.toUpperCase()} data`);
+  }
+
+  return text;
+}
+
+function assertDataResponse(response, sourcePath, expectedType) {
+  if (!response.ok) {
+    throw new Error(`${sourcePath} returned ${response.status} ${response.statusText}`);
+  }
+
+  const contentType = response.headers.get('content-type')?.toLowerCase() || '';
+  if (!contentType) {
+    return;
+  }
+
+  if (contentType.includes('text/html')) {
+    throw new Error(`${sourcePath} returned text/html; likely a dev-server fallback`);
+  }
+
+  const allowedTypes = DATA_RESPONSE_TYPES[expectedType] || [];
+  const isAllowed = allowedTypes.some(type => contentType.includes(type));
+  if (!isAllowed) {
+    throw new Error(`${sourcePath} returned ${contentType}, expected ${expectedType.toUpperCase()} data`);
+  }
+}
+
+function isLikelyHtml(text) {
+  const sample = String(text || '').slice(0, 500).trim().toLowerCase();
+  return HTML_FALLBACK_MARKERS.some(marker => sample.includes(marker));
+}
+
+function extractQuestionArray(data, sourcePath = 'question source') {
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  if (data?.questions && Array.isArray(data.questions)) {
+    return data.questions;
+  }
+
+  throw new Error(`Invalid question data structure in ${sourcePath}`);
+}
+
+function isPlayableQuestion(question) {
+  return Boolean(
+    question
+      && String(question.category || '').trim()
+      && String(question.question || '').trim()
+      && String(question.answer || '').trim()
+      && Number.isFinite(Number(question.value))
+      && Number(question.value) >= 0
+  );
+}
+
+function assertTabularData(text, label) {
+  if (typeof text !== 'string' || !text.trim()) {
+    throw new Error(`${label} data is empty`);
+  }
+
+  if (isLikelyHtml(text)) {
+    throw new Error(`${label} parser received HTML instead of question data`);
+  }
+
+  if (text.trim().split('\n').length < 2) {
+    throw new Error(`${label} data must include a header and at least one row`);
+  }
+}
+
+function assertQuestionHeaders(headers, label) {
+  const normalizedHeaders = headers.map(header => header.trim().toLowerCase());
+  const hasPrompt = normalizedHeaders.some(header => ['question', 'clue'].includes(header));
+  const hasAnswer = normalizedHeaders.includes('answer');
+
+  if (!hasPrompt || !hasAnswer) {
+    throw new Error(`${label} data missing required question/answer headers`);
+  }
+}
+
 /**
  * Parse CSV format questions
  * @param {string} text - CSV text content
  * @returns {Array} Parsed questions
  */
 export function parseCSV(text) {
-  const lines = text.split('\n');
+  assertTabularData(text, 'CSV');
+  const lines = text.split('\n').filter(line => line.trim());
   const headers = lines[0].split(',');
+  assertQuestionHeaders(headers, 'CSV');
   return lines.slice(1).map(line => {
     const values = line.split(',');
     return headers.reduce((obj, header, index) => {
@@ -534,8 +687,10 @@ export function parseCSV(text) {
  * @returns {Array} Parsed questions
  */
 export function parseTSV(text) {
-  const lines = text.split('\n');
+  assertTabularData(text, 'TSV');
+  const lines = text.split('\n').filter(line => line.trim());
   const headers = lines[0].split('\t');
+  assertQuestionHeaders(headers, 'TSV');
   return lines.slice(1).map(line => {
     const values = line.split('\t');
     return headers.reduce((obj, header, index) => {
@@ -566,8 +721,8 @@ function createStableQuestionId(question, index = 0) {
     question.show_number,
     question.round,
     question.category?.title || question.category,
-    question.value,
-    question.question,
+    question.value ?? question.clue_value,
+    question.question || question.clue,
     index
   ];
 
@@ -596,14 +751,15 @@ function mergeQuestionLists(priorityQuestions, fallbackQuestions) {
  * @returns {Object} Normalized question
  */
 export function normalizeQuestionData(question, index = 0) {
-  const rawVal = question.value ?? 200;
+  const rawVal = question.value ?? question.clue_value ?? question.clueValue ?? 200;
+  const rawQuestion = question.question || question.clue || '';
   const numericValue = typeof rawVal === 'number'
     ? rawVal
     : Number(String(rawVal).replace(/[^0-9.-]/g, '')) || 0;
   return {
     id: createStableQuestionId(question, index),
     category: question.category?.title || question.category || 'General Knowledge',
-    question: question.question || question.clue || '',
+    question: cleanDisplayText(rawQuestion),
     answer: question.answer || '',
     value: numericValue,
     airdate: question.airdate || question.air_date || null,
@@ -613,8 +769,86 @@ export function normalizeQuestionData(question, index = 0) {
     season: question.season || 'Unknown',
     episode: question.episode || question.show_number || 'Unknown',
     round: question.round || 'Unknown',
-    showNumber: question.showNumber || question.show_number || null
+    showNumber: question.showNumber || question.show_number || null,
+    dailyDoubleValue: question.dailyDoubleValue || question.daily_double_value || null,
+    media: Array.isArray(question.media) ? question.media : extractQuestionMedia(rawQuestion)
   };
+}
+
+function extractQuestionMedia(value) {
+  const text = String(value || '');
+  const linkPattern = /<a\s+[^>]*href=["']([^"']+)["'][^>]*>(.*?)<\/a>/gi;
+  const bareUrlPattern = /(https?:\/\/[^\s"'<>]+\.(?:jpg|jpeg|png|gif|webp|svg|mp3|wav|ogg|m4a|mp4|webm|mov|wmv)(?:\?[^\s"'<>]*)?)/gi;
+  const media = [];
+  const seen = new Set();
+
+  const addMedia = (url, label = '') => {
+    const cleanUrl = decodeHtmlEntities(String(url || '').trim());
+    if (!cleanUrl || seen.has(cleanUrl)) return;
+
+    const type = detectMediaType(cleanUrl);
+    if (type === 'link') return;
+
+    seen.add(cleanUrl);
+    media.push({
+      type,
+      url: cleanUrl,
+      label: cleanDisplayText(label) || defaultMediaLabel(type, media.length + 1)
+    });
+  };
+
+  for (const match of text.matchAll(linkPattern)) {
+    addMedia(match[1], match[2]);
+  }
+
+  for (const match of text.matchAll(bareUrlPattern)) {
+    addMedia(match[1]);
+  }
+
+  return media;
+}
+
+function detectMediaType(url) {
+  const withoutQuery = String(url || '').split('?')[0].toLowerCase();
+  if (/\.(jpg|jpeg|png|gif|webp|svg)$/.test(withoutQuery)) return 'image';
+  if (/\.(mp3|wav|ogg|m4a)$/.test(withoutQuery)) return 'audio';
+  if (/\.(mp4|webm|mov|wmv)$/.test(withoutQuery)) return 'video';
+  return 'link';
+}
+
+function defaultMediaLabel(type, index) {
+  const labels = {
+    image: 'View Image',
+    audio: 'Play Audio',
+    video: 'Play Video'
+  };
+
+  return `${labels[type] || 'Open Media'} ${index}`;
+}
+
+function cleanDisplayText(value) {
+  let text = String(value || '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#0?39;|&apos;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (text.startsWith("'") && text.endsWith("'")) {
+    text = text.slice(1, -1).trim();
+  }
+
+  return text;
+}
+
+function decodeHtmlEntities(value) {
+  return String(value || '')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#0?39;|&apos;/g, "'")
+    .replace(/&nbsp;/g, ' ');
 }
 
 /**

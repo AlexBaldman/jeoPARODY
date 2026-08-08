@@ -118,6 +118,7 @@ export class HostSystem {
     this.currentMood = 'neutral';
     this.currentImageIndex = 0;
     this.currentImageUrl = '';
+    this.manualImageCycle = false;
     
     // Image management
     this.imageCache = new Map();
@@ -175,9 +176,19 @@ export class HostSystem {
 
     if (leftZone) {
       leftZone.addEventListener('click', () => this.previousImage());
+      leftZone.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        this.previousImage();
+      });
     }
     if (rightZone) {
       rightZone.addEventListener('click', () => this.nextImage());
+      rightZone.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        this.nextImage();
+      });
     }
   }
   
@@ -301,18 +312,38 @@ export class HostSystem {
     // Fallback to neutral if mood not found
     return moodImages || personality.moods.neutral || [];
   }
+
+  /**
+   * Get every image for the active host so manual arrows can audition skins.
+   */
+  getCyclableImages() {
+    const personality = this.getCurrentPersonality();
+    const images = Object.values(personality.moods || {}).flat();
+    return [...new Set(images)];
+  }
+
+  /**
+   * Get the image set for automatic mood updates or manual cycling.
+   */
+  getActiveImageSet() {
+    if (this.manualImageCycle) {
+      return this.getCyclableImages();
+    }
+
+    return this.getCurrentMoodImages();
+  }
   
   /**
    * Update host image based on current state
    */
   updateHostImage() {
-    const moodImages = this.getCurrentMoodImages();
-    if (!moodImages.length) return;
+    const images = this.getActiveImageSet();
+    if (!images.length) return;
     
     // Ensure index is valid
-    this.currentImageIndex = Math.max(0, Math.min(this.currentImageIndex, moodImages.length - 1));
+    this.currentImageIndex = Math.max(0, Math.min(this.currentImageIndex, images.length - 1));
     
-    const imageName = moodImages[this.currentImageIndex];
+    const imageName = images[this.currentImageIndex];
     const newImageUrl = `assets/images/trebek/${imageName}`;
     
     if (newImageUrl === this.currentImageUrl) return;
@@ -363,10 +394,11 @@ export class HostSystem {
    * Go to next image in current mood
    */
   nextImage() {
-    const moodImages = this.getCurrentMoodImages();
-    if (!moodImages.length) return;
+    this.manualImageCycle = true;
+    const images = this.getCyclableImages();
+    if (!images.length) return;
     
-    this.currentImageIndex = (this.currentImageIndex + 1) % moodImages.length;
+    this.currentImageIndex = (this.currentImageIndex + 1) % images.length;
     this.updateHostImage();
     
     // Play sound effect
@@ -382,11 +414,12 @@ export class HostSystem {
    * Go to previous image in current mood
    */
   previousImage() {
-    const moodImages = this.getCurrentMoodImages();
-    if (!moodImages.length) return;
+    this.manualImageCycle = true;
+    const images = this.getCyclableImages();
+    if (!images.length) return;
     
     this.currentImageIndex = this.currentImageIndex === 0 
-      ? moodImages.length - 1 
+      ? images.length - 1 
       : this.currentImageIndex - 1;
     
     this.updateHostImage();

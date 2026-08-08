@@ -1,12 +1,35 @@
 /* Design Tokens: colors, spacing, typography, radii, motion, z-index */
+/* Migrated from Jeopardish style.css with JeoPARODY token system integration */
 
 :root {
-  /* Colors */
+  /* Jeopardish Color Palette (Migrated) */
+  --jeopardy-ink: #11131a;
+  --jeopardy-panel: #222b32;
+  --jeopardy-panel-deep: #141a20;
+  --jeopardy-blue: #123b8d;
+  --jeopardy-blue-deep: #09246a;
+  --jeopardy-cyan: #72e4d2;
+  --jeopardy-pink: #ff25b8;
+  --jeopardy-yellow: #fff66e;
+  --jeopardy-cream: #fff9e6;
+  --jeopardy-white: #ffffff;
+  --jeopardy-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+
+  /* Jeopardish-inspired Gradients */
+  --gradient-jeopardy-bg: 
+    linear-gradient(135deg, rgba(255, 37, 184, 0.92), rgba(18, 59, 141, 0.2)),
+    radial-gradient(circle at 15% 20%, rgba(255, 246, 110, 0.24), transparent 24rem),
+    #ff25b8;
+  --gradient-game-shell: linear-gradient(180deg, #27313a 0 17%, #8cc5ef 17% 100%);
+  --gradient-clue-card: linear-gradient(180deg, var(--jeopardy-blue) 0%, var(--jeopardy-blue-deep) 100%);
+  --gradient-button: linear-gradient(180deg, #f8f0cd 0%, #e9db9c 100%);
+
+  /* Original JeoPARODY Colors (Preserved for compatibility) */
   --color-jeopardy-blue: #0033a0;
   --color-jeopardy-blue-2: #0a1d66;
   --color-gold: #ffd700;
   --color-gold-soft: #ffef9a;
-  --color-surface: #ffffff;
+  --color-surface: #fff;
   --color-surface-2: #f7f7fb;
   --color-text: #0b143a;
   --color-text-muted: #666b7a;
@@ -14,15 +37,26 @@
   --color-danger: #e74c3c;
   --color-warning: #f39c12;
 
+  /* Unified Color System (Jeopardish Palette + Compatibility) */
+  --color-primary: var(--jeopardy-blue);
+  --color-secondary: var(--jeopardy-pink);
+  --color-accent: var(--jeopardy-cyan);
+  --color-highlight: var(--jeopardy-yellow);
+  --color-text-main: var(--jeopardy-white);
+  --color-text-muted: var(--jeopardy-cream);
+  --color-bg-panel: var(--jeopardy-panel);
+  --color-bg-deep: var(--jeopardy-panel-deep);
+
   /* Default accent prior to variant selection */
-  --theme-accent: var(--color-jeopardy-blue);
+  --theme-accent: var(--color-primary);
 
   /* Backgrounds */
-  --bg-app: linear-gradient(180deg, #f6f9ff, #eef2ff);
-  --bg-panel: rgba(255, 255, 255, 0.96);
-  --bg-overlay: rgba(0, 0, 0, 0.85);
+  --bg-app: var(--gradient-jeopardy-bg);
+  --bg-panel: var(--jeopardy-panel);
+  --bg-deep: var(--jeopardy-panel-deep);
+  --bg-overlay: rgb(0 0 0 / 85%);
 
-  /* Spacing */
+  /* Spacing (Jeopardish scale + JeoPARODY tokens) */
   --space-2xs: 2px;
   --space-xs: 4px;
   --space-sm: 8px;
@@ -31,57 +65,79 @@
   --space-xl: 24px;
   --space-2xl: 32px;
   --space-3xl: 48px;
+  --space-4xl: 64px;
+  --space-5xl: 96px;
 
-  /* Typography */
-  --font-display: 'Korinna', Georgia, serif;
-  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Typography (Hybrid: Jeopardish bold display + JeoPARODY Korinna elegance + Pixel Art aesthetic) */
+  --font-display: Impact, Haettenschweiler, "Arial Narrow Bold", system-ui, sans-serif;
+  --font-display-elegant: 'Korinna', Impact, Haettenschweiler, "Arial Narrow Bold", system-ui, sans-serif;
+  --font-display-bold: 'KorinnaBold', 'Korinna', Impact, Haettenschweiler, "Arial Narrow Bold", system-ui, sans-serif;
+  --font-question: Georgia, "Times New Roman", serif;
+  --font-ui: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-body: -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, sans-serif;
+  --font-pixel: 'Courier New', monospace; /* For pixel art aesthetic fallback */
+  --font-host: 'Korinna', Georgia, serif; /* Host avatar/graphics */
+  --font-graphic: Impact, 'Korinna', system-ui, sans-serif; /* Graphic novel style */
+  
   --fs-base: clamp(14px, 2vw, 18px);
-  --fs-question: clamp(18px, 3vw, 28px);
-  --fs-heading: clamp(24px, 5vw, 48px);
-  --fs-dollar: clamp(20px, 4vw, 36px);
+  --fs-question: clamp(1.7rem, 4vw, 3rem);
+  --fs-heading: clamp(2.5rem, 8vw, 5.8rem);
+  --fs-ui: clamp(0.82rem, 2vw, 1rem);
+  --fs-dollar: clamp(1rem, 2vw, 1.45rem);
+  --fs-stats: clamp(1.45rem, 3vw, 2rem);
 
-  /* Radii */
+  /* Radii (Jeopardish rounded corners) */
   --radius-sm: 6px;
   --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-3xl: 30px;
   --radius-pill: 999px;
 
-  /* Shadows */
-  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.12);
-  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.18);
-  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.28);
+  /* Shadows (Jeopardish shadow system) */
+  --shadow-sm: 0 2px 6px rgb(0 0 0 / 12%);
+  --shadow-md: 0 6px 16px rgb(0 0 0 / 18%);
+  --shadow-lg: 0 12px 28px rgb(0 0 0 / 28%);
+  --shadow-jeopardy: var(--jeopardy-shadow);
+  --shadow-button: 0 4px 0 rgba(0, 0, 0, 0.16);
+  --shadow-card: 0 10px 24px rgba(0, 0, 0, 0.24);
 
-  /* Motion */
-  --dur-fast: 150ms;
-  --dur-normal: 280ms;
-  --dur-slow: 450ms;
+  /* Motion (Jeopardish animation timing) */
+  --dur-fast: 80ms;
+  --dur-normal: 260ms;
+  --dur-slow: 360ms;
+  --dur-result: 360ms;
   --ease-standard: cubic-bezier(0.2, 0.0, 0.2, 1);
+  --ease-out: ease-out;
 
-  /* Z-Index Ladder */
+  /* Z-Index Ladder (Jeopardish + JeoPARODY) */
   --z-base: 0;
+  --z-ticker: 10;
+  --z-panel: 20;
   --z-header: 30;
   --z-host: 40;
-  --z-footer: 50;
+  --z-scoreboard: 50;
+  --z-footer: 60;
   --z-overlay: 100;
   --z-modal-backdrop: 1000;
   --z-modal: 1010;
   --z-tooltip: 1100;
 }
 
-/* Dark mode adjustments (no inline style writes; toggle via data-theme-mode) */
+/* Dark mode adjustments (Jeopardish-inspired) */
 :root[data-theme-mode='dark'] {
-  --color-surface: #111827;
-  --color-surface-2: #0a0f1f;
-  --color-text: #f3f4f6;
-  --color-text-muted: #cbd5e1;
+  --color-surface: var(--jeopardy-panel-deep);
+  --color-surface-2: var(--jeopardy-panel);
+  --color-text: var(--jeopardy-white);
+  --color-text-muted: var(--jeopardy-cream);
   --bg-app: linear-gradient(180deg, #0a1929, #1e3c72);
-  --bg-panel: rgba(17, 24, 39, 0.96);
+  --bg-panel: var(--jeopardy-panel);
 }
 
 /* Theme variants (existing project uses html[data-theme]) */
 html[data-theme='jeopardy'] {
-  --theme-accent: var(--color-jeopardy-blue);
+  --theme-accent: var(--jeopardy-blue);
 }
 
 html[data-theme='retro'] {
@@ -89,17 +145,27 @@ html[data-theme='retro'] {
 }
 
 html[data-theme='comic'] {
-  --theme-accent: #ff2257;
+  --theme-accent: var(--jeopardy-pink);
 }
 
-/* Utility tokens mapping (optional aliases to existing CSS) */
+html[data-theme='arcade'] {
+  --theme-accent: var(--jeopardy-cyan);
+}
+
+/* Utility tokens mapping (Jeopardish colors) */
 :root {
-  --score-color: var(--color-gold);
-  --bubble-border: var(--color-gold);
+  --score-color: var(--jeopardy-yellow);
+  --bubble-border: var(--jeopardy-yellow);
+  --success-color: var(--jeopardy-cyan);
+  --error-color: var(--jeopardy-pink);
 }
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  :root { --dur-fast: 0ms; --dur-normal: 0ms; --dur-slow: 0ms; }
+  :root { 
+    --dur-fast: 0ms; 
+    --dur-normal: 0ms; 
+    --dur-slow: 0ms; 
+    --dur-result: 0ms;
+  }
 }
-
