@@ -6,7 +6,7 @@ This is the project's asynchronous crew room: a persistent development conversat
 
 ## Operating contract
 
-1. **Read before work:** this journal, `docs/JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md`, `docs/STAGE_RUNTIME_SYSTEM.md`, and `docs/vision/UINVERSE_PLATFORM_THESIS_2026-08-08.md`.
+1. **Read before work:** this journal, `docs/JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md`, `docs/STAGE_RUNTIME_SYSTEM.md`, `docs/vision/UINVERSE_PLATFORM_THESIS_2026-08-08.md`, and `ICM/README.md`.
 2. **Trust current code/tests over stale prose.** If documentation conflicts with newer verified implementation, record the conflict here and repair the docs.
 3. **jeoPARODY is the long-term canonical destination.** Jeopardish is the short-term stable behavioral oracle/proving ground while goodness is deliberately ported.
 4. **Lead-domino discipline:** fix the smallest upstream blocker that makes downstream work useful. Do not chase waterfalls.
@@ -66,6 +66,9 @@ A semantic place or object should eventually be capable of multiple manifestatio
 - **Brazillionaire:** language-learning scenes with settings, actors, props, adaptive Language Director, and mnemonic geography.
 - **Memory Universe:** memory nodes/spaces and mnemonic manifestations.
 - **Stool Samples:** comedy lab/stage for joke specimens, callbacks, delivery timing, emphasis, audience recognition, and performance analytics.
+- **Zeke Discovers:** lived childhood discovery transformed into story worlds and multiple projections.
+- **Archimedes:** Maltese platformer protagonist and cross-projection character identity test.
+- **ALgoRHYTHM B:** semantic-chain freestyle graph/game.
 - **uINVERSE:** eventual umbrella/atlas/portfolio and living creative cosmology, not today's implementation target.
 
 ### World-metaphor capabilities
@@ -133,6 +136,15 @@ Append entries newest-first immediately below this heading when practical:
 ```
 
 ---
+
+### 2026-08-08 — ChatGPT — mine design cypher into ICM
+- **Read/inspected:** full active conversation context; existing glossary/journal; current repo root/docs; Zeke concept boards and real-life playground reference supplied in conversation.
+- **Changed:** established `ICM/` as the Immortal Context Map and scaffolded durable project records for uINVERSE, You in Verse, Stool Samples, ALgoRHYTHM B, Brazillionaire, Zeke Discovers, Archimedes, Excavation Station, and the self-building Asset Library.
+- **Evidence/tests:** documentation-only pass; no runtime behavior changed.
+- **Decisions:** preserve aggressively but implement selectively. ICM folder existence is not authorization for scope creep. Zeke and Archimedes become explicit future Stage/world-identity pressure tests. Asset generation/import should eventually auto-register provenance and semantic metadata.
+- **Unresolved:** actual conversation image bytes are not yet committed into the repo asset library; manifests/validator are intentionally not implemented yet. Memory Universe deserves its own ICM record in a later archaeology pass using its fuller existing corpus rather than a shallow stub.
+- **Next lead domino:** return to jeoPARODY production boot → deterministic playable spine. In parallel only when non-blocking, establish the smallest asset-manifest convention around an existing Stage asset + amber mosquito specimen.
+- **Refs:** `ICM/README.md`, `ICM/projects/*`, `docs/IMMORTAL_DEV_GLOSSARY.md`.
 
 ### 2026-08-08 — ChatGPT — establish persistent async agent cypher
 - **Read/inspected:** repository root/docs structure and the current migration/Stage/uINVERSE documentation locations.
