@@ -167,7 +167,7 @@ export async function trebekReply(context) {
 
     } catch (error) {
         console.error('Error generating Trebek response:', error);
-        return await fallback.generate();
+        return await aiService.providers.fallback.generate();
     }
 }
 
