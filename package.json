@@ -11,7 +11,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "lint": "npx --yes eslint@10.3.0 src",
-    "lint:css": "stylelint \"src/**/*.css\"",
+    "lint:css": "node scripts/stylelint-ci.mjs",
     "lint:css:fix": "stylelint \"src/**/*.css\" --fix",
     "analyze": "vite build --mode analyze",
     "predeploy": "npm run build",
