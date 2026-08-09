@@ -137,6 +137,15 @@ Append entries newest-first immediately below this heading when practical:
 
 ---
 
+### 2026-08-09 15:58 ET — ChatGPT — audit and integrate current repo work
+- **Read/inspected:** current `main`, recent commits, GitHub Actions, open/diverged branches, production-readiness convergence work, Devin audit/refactor branches, AI-provider branch, CSS/UI branches, old Mac branches, and the Sprite Foundry ICM branch.
+- **Changed:** restored the blocking CI verification path on `main` through PR #29; added ESLint flat config and actionable Stylelint annotations; repaired undefined AI fallback and host-animation sound wiring; normalized token CSS; integrated the Sprite Foundry ICM corpus onto a fresh branch and registered it as `PRESSURE_TEST` rather than blindly inheriting `ACTIVE` status.
+- **Evidence/tests:** PR #29 passed JS lint, CSS lint, Jest tests, Vite build, accessibility step, and artifact upload; squash commit `0e39a9a` then passed the same full CI pipeline on `main`. GitHub Actions is the authoritative execution environment for this pass because the local sandbox could not resolve github.com for a clone.
+- **Decisions:** do not wholesale-merge heavily diverged branches. `cleanup/production-readiness`, Devin refactor work, `review/css-ui-fixes`, Mac branches, and the old AI integration branch are salvage quarries/oracles until individual behaviors are re-proved against current `main`. `fix/css-audit-fixes` is already fully behind main. Sprite Foundry is valuable context, but factory implementation remains gated by the canonical runtime/deterministic-spine work.
+- **Unresolved:** current CI proves lint/tests/build, not a real blocking browser playthrough; GitHub Actions also warns that checkout/setup-node v4 target deprecated Node 20 runtimes. Several historical branches contain useful features that still need capability-by-capability archaeology rather than merge-by-branch thinking.
+- **Next lead domino:** add a blocking deterministic browser smoke path that boots the production build and exercises one game spine; then use that proof harness to port the smallest Stage/runtime slice and selectively mine production-readiness/Jeopardish goodness.
+- **Refs:** `main@0e39a9a`, PR #29, `integrate/sprite-foundry-context`, `ICM/projects/sprite-foundry/*`.
+
 ### 2026-08-08 — ChatGPT — mine design cypher into ICM
 - **Read/inspected:** full active conversation context; existing glossary/journal; current repo root/docs; Zeke concept boards and real-life playground reference supplied in conversation.
 - **Changed:** established `ICM/` as the Immortal Context Map and scaffolded durable project records for uINVERSE, You in Verse, Stool Samples, ALgoRHYTHM B, Brazillionaire, Zeke Discovers, Archimedes, Excavation Station, and the self-building Asset Library.
