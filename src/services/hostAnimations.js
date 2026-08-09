@@ -1,3 +1,5 @@
+import { soundManager } from './soundManager.js';
+
 // Host Animation Manager
 class HostAnimationManager {
     constructor() {
@@ -11,57 +13,49 @@ class HostAnimationManager {
     }
 
     init() {
-        // Add disco ball element
+        if (!this.host || !this.gameContainer) {
+            console.warn('[HostAnimationManager] Host animation DOM is unavailable.');
+            return;
+        }
+
         this.discoBall = document.createElement('div');
         this.discoBall.className = 'disco-ball';
         this.gameContainer.appendChild(this.discoBall);
-        
-        // Set up event listeners
         this.setupEventListeners();
     }
-    
+
     setupEventListeners() {
-        // Open host animation modal when clicking the icon in title bar
         if (this.hostAnimationBtn) {
             this.hostAnimationBtn.addEventListener('click', () => {
                 this.openHostAnimationModal();
             });
         }
-        
-        // Close modal when clicking the close button
+
         const closeButtons = document.querySelectorAll('.close-modal');
         closeButtons.forEach(button => {
             button.addEventListener('click', (e) => {
                 const modal = e.target.closest('.modal');
-                if (modal) {
-                    this.closeModal(modal);
-                }
+                if (modal) this.closeModal(modal);
             });
         });
-        
-        // Set up animation trigger buttons
+
         const animationTriggers = document.querySelectorAll('.host-animation-trigger');
         animationTriggers.forEach(trigger => {
             trigger.addEventListener('click', (e) => {
                 const animation = e.target.dataset.animation;
-                if (animation) {
-                    this.triggerAnimation(animation);
-                }
+                if (animation) this.triggerAnimation(animation);
             });
         });
-        
-        // Set up host selection buttons
+
         const hostSelectButtons = document.querySelectorAll('.host-select-btn');
         hostSelectButtons.forEach(button => {
             button.addEventListener('click', (e) => {
                 const hostNumber = e.target.dataset.host;
-                if (hostNumber) {
-                    this.changeHost(hostNumber);
-                }
+                if (hostNumber) this.changeHost(hostNumber);
             });
         });
     }
-    
+
     openHostAnimationModal() {
         if (this.hostAnimationModal) {
             this.hostAnimationModal.style.display = 'block';
@@ -70,16 +64,16 @@ class HostAnimationManager {
             }, 10);
         }
     }
-    
+
     closeModal(modal) {
         modal.classList.remove('active');
         setTimeout(() => {
             modal.style.display = 'none';
         }, 300);
     }
-    
+
     triggerAnimation(animationType) {
-        switch(animationType) {
+        switch (animationType) {
             case 'happy':
                 this.playAnimation('stairs');
                 break;
@@ -94,11 +88,11 @@ class HostAnimationManager {
                 break;
         }
     }
-    
+
     changeHost(hostNumber) {
         const hostImage = document.getElementById('trebekImage');
         if (hostImage) {
-            switch(hostNumber) {
+            switch (hostNumber) {
                 case '1':
                     hostImage.src = 'assets/images/trebek/trebek-good-01.png';
                     break;
@@ -109,14 +103,11 @@ class HostAnimationManager {
                     hostImage.src = 'assets/images/trebek/trebek-good-03.png';
                     break;
             }
-            
-            // Update active button state
+
             const hostButtons = document.querySelectorAll('.host-select-btn');
             hostButtons.forEach(btn => {
                 btn.classList.remove('active');
-                if (btn.dataset.host === hostNumber) {
-                    btn.classList.add('active');
-                }
+                if (btn.dataset.host === hostNumber) btn.classList.add('active');
             });
         }
     }
@@ -144,7 +135,7 @@ class HostAnimationManager {
     }
 
     async hideLeft() {
-        soundManager.play('hostHide');
+        this.playSound('hostHide');
         this.host.style.transition = 'left 1.5s ease-in-out';
         this.host.style.left = '-15vw';
         await this.wait(1500);
@@ -152,52 +143,47 @@ class HostAnimationManager {
     }
 
     async duckAndScare() {
-        const exclamations = [
-            "BOO!",
-            "GOTCHA!",
-            "SURPRISE!",
-            "AH-HA!"
-        ];
-        
-        soundManager.play('hostHide');
+        const exclamations = ['BOO!', 'GOTCHA!', 'SURPRISE!', 'AH-HA!'];
+
+        this.playSound('hostHide');
         this.host.style.transition = 'bottom 1s ease-in-out';
         this.host.style.bottom = '-20vh';
         await this.wait(1000);
-        
-        soundManager.play('hostScare');
+
+        this.playSound('hostScare');
         this.host.style.bottom = '0';
         this.showExclamation(exclamations[Math.floor(Math.random() * exclamations.length)]);
     }
 
     async stairs() {
-        soundManager.play('stairs');
+        this.playSound('stairs');
         const steps = 5;
         const stepHeight = 20;
-        
+
         for (let i = 0; i < steps; i++) {
             this.host.style.bottom = `${-stepHeight * (i + 1)}px`;
             await this.wait(300);
             this.host.style.bottom = '0';
             await this.wait(300);
         }
-        
-        soundManager.play('hostPop');
+
+        this.playSound('hostPop');
         this.host.style.transform = 'scale(1.2)';
         await this.wait(200);
         this.host.style.transform = 'scale(1)';
     }
 
     async moonwalk() {
-        soundManager.play('discoStart');
+        this.playSound('discoStart');
         this.startDiscoMode();
-        
+
         this.host.style.transition = 'all 2s ease-in-out';
         this.host.style.transform = 'scaleX(-1)';
         this.host.style.left = '80vw';
-        
+
         await this.wait(2000);
-        
-        soundManager.play('discoEnd');
+
+        this.playSound('discoEnd');
         this.stopDiscoMode();
         this.host.style.transform = 'scaleX(1)';
         this.host.style.left = '2vw';
@@ -218,16 +204,23 @@ class HostAnimationManager {
         exclamation.className = 'host-exclamation';
         exclamation.textContent = text;
         this.host.appendChild(exclamation);
-        
+
         setTimeout(() => {
             exclamation.remove();
         }, 1000);
     }
 
     wait(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise(resolve => { setTimeout(resolve, ms); });
+    }
+
+    playSound(name) {
+        soundManager.play(name);
     }
 }
 
-// Create global host animation manager instance
-const hostAnimationManager = new HostAnimationManager(); 
+export const hostAnimationManager = new HostAnimationManager();
+
+if (typeof window !== 'undefined') {
+    window.hostAnimationManager = hostAnimationManager;
+}
