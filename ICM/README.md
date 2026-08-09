@@ -32,6 +32,7 @@ Statuses: `SEED`, `PRESSURE_TEST`, `PROTOTYPE`, `ACTIVE`, `CANONICAL`, `ARCHIVED
 | `archimedes` | SEED | Maltese protagonist/platformer and recurring cross-world character |
 | `excavation-station` | PRESSURE_TEST | project archaeology and recovery workflow |
 | `asset-library` | PRESSURE_TEST | first-class generated/imported asset registry and provenance pipeline |
+| `sprite-foundry` | PRESSURE_TEST | reproducible manifest-backed asset production machine shop |
 
 ## Cross-project architecture hypothesis
 
