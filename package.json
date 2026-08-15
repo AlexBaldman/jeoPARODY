@@ -20,7 +20,12 @@
     "mcp:chrome": "npx -y @modelcontextprotocol/server-chrome",
     "chrome:rdp": "powershell -ExecutionPolicy Bypass -File scripts/start-chrome-rdp.ps1",
     "snap": "node scripts/playwright-sample.mjs",
-    "purge:css": "purgecss --config purgecss.config.cjs --output dist/assets"
+    "purge:css": "purgecss --config purgecss.config.cjs --output dist/assets",
+    "trebek:inventory": "node scripts/catalog-trebek-audio.mjs",
+    "trebek:transcribe": "node scripts/transcribe-trebek-audio.mjs",
+    "trebek:index": "node scripts/index-trebek-audio.mjs",
+    "trebek:audit": "node scripts/audit-trebek-audio.mjs",
+    "trebek:scan": "npm run trebek:inventory && npm run trebek:transcribe && npm run trebek:index && npm run trebek:audit"
   },
   "dependencies": {
     "@google/genai": "^1.20.0",
