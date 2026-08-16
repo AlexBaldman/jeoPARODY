@@ -50,6 +50,11 @@ jobs:
           cat /tmp/jeoparody-preview.log
           exit 1
 
+      - name: Browser boot diagnostics
+        env:
+          BASE_URL: http://127.0.0.1:4173
+        run: node scripts/browser-boot-diagnostics.mjs
+
       - name: Blocking browser runtime check
         env:
           BASE_URL: http://127.0.0.1:4173
