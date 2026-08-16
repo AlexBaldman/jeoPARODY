@@ -1,0 +1,7 @@
+{
+  "schema": "jeoparody.question-index",
+  "version": 1,
+  "years": {},
+  "fallback": "questions.json",
+  "notes": "Lightweight production bootstrap index. Full historical shards remain preserved separately."
+}
