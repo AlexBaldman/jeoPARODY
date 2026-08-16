@@ -33,12 +33,44 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Install browser runtime test dependency
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Start production preview
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4173 > /tmp/jeoparody-preview.log 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4173/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/jeoparody-preview.log
+          exit 1
+
+      - name: Blocking browser runtime check
+        env:
+          BASE_URL: http://127.0.0.1:4173
+        run: npm run runtime:check
+
       - name: A11y Audit (axe-core)
-        run: npx axe dist/index.html --chromium --exit 0 --timeout 60000 --save ./axe-report.json || true
+        run: npx axe http://127.0.0.1:4173/ --chromium --exit 0 --timeout 60000 --save ./axe-report.json || true
+
+      - name: Upload runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-check-evidence
+          path: |
+            screenshots/runtime-check
+            axe-report.json
+            /tmp/jeoparody-preview.log
+          if-no-files-found: ignore
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist
-
