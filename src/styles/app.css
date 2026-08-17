@@ -18,6 +18,7 @@
 @import url('./components/speech-bubble.css') layer(components);
 @import url('./utilities.css') layer(utilities);
 @import url('./app-fixes.css') layer(utilities);          /* targeted fixes and component polish */
+@import url('./responsive-stage.css') layer(utilities);   /* final runtime geometry ownership */
 
 /* Scoreboard class alias to match component markup */
 .basketball-scoreboard,
