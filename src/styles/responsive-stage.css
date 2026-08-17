@@ -1,0 +1,23 @@
+@layer utilities {
+  /*
+   * Runtime stage ownership.
+   *
+   * The host is fixed-position, so it must not reserve horizontal layout
+   * space inside the gameplay stage. app-fixes.css still carries a legacy
+   * 160px/100px left padding that shifts the clue surface by exactly half
+   * that amount relative to the viewport.
+   */
+  .main-content-wrapper {
+    box-sizing: border-box;
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  @media (width <= 768px) {
+    .main-content-wrapper {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+}
