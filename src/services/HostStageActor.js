@@ -44,7 +44,7 @@ class HostStageActor {
     window.visualViewport?.addEventListener('resize', () => this.layout());
 
     if ('ResizeObserver' in window) {
-      this.resizeObserver = new ResizeObserver(() => this.layout());
+      this.resizeObserver = new window.ResizeObserver(() => this.layout());
       this.resizeObserver.observe(this.host);
       this.resizeObserver.observe(this.bubble);
       this.resizeObserver.observe(this.footer);
@@ -176,7 +176,9 @@ class HostStageActor {
   }
 
   wait(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => {
+      setTimeout(resolve, ms);
+    });
   }
 }
 
