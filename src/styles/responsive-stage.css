@@ -15,7 +15,7 @@
   body {
     box-sizing: border-box;
     overflow-x: hidden;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0);
   }
 
   /*
@@ -40,8 +40,8 @@
   .sticky-footer {
     box-sizing: border-box;
     min-height: var(--footer-stage-height);
-    height: calc(var(--footer-stage-height) + env(safe-area-inset-bottom, 0px)) !important;
-    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    height: calc(var(--footer-stage-height) + env(safe-area-inset-bottom, 0)) !important;
+    padding-bottom: env(safe-area-inset-bottom, 0) !important;
   }
 
   .host-container[data-stage-actor='host'],
@@ -104,8 +104,8 @@
     }
 
     .sticky-footer {
-      padding-left: max(10px, env(safe-area-inset-left, 0px)) !important;
-      padding-right: max(10px, env(safe-area-inset-right, 0px)) !important;
+      padding-left: max(10px, env(safe-area-inset-left, 0)) !important;
+      padding-right: max(10px, env(safe-area-inset-right, 0)) !important;
     }
   }
 
