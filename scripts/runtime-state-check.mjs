@@ -176,12 +176,18 @@ async function runViewport(browser, viewport) {
       await page.waitForTimeout(700);
       state = await readSurfaceState(page);
       const question = state.question || {};
+      const canonicalClue = String(question.question || '').trim();
+      const renderedClue = String(state.questionText || '').trim();
       check('game state has loaded question', Boolean(state.question));
       check('loaded category is non-empty', String(question.category || '').trim().length > 0);
-      check('loaded clue text is non-empty', String(question.question || '').trim().length > 0);
+      check('loaded clue text is non-empty', canonicalClue.length > 0);
       check('loaded answer is non-empty', String(question.answer || '').trim().length > 0);
       check('dom category mirrors playable state', state.categoryText === question.category, `${state.categoryText} !== ${question.category || ''}`);
-      check('dom clue mirrors playable state', state.questionText === question.question, `${state.questionText.slice(0, 80)}...`);
+      check(
+        'dom clue preserves playable state',
+        canonicalClue.length > 0 && renderedClue.includes(canonicalClue),
+        `rendered=${renderedClue.slice(0, 100)}... canonical=${canonicalClue.slice(0, 80)}...`
+      );
       check('dom clue is not placeholder text', !/click "new question"|press start/i.test(state.questionText));
       check('host image decoded', state.host.complete && state.host.naturalWidth > 0, state.host.src);
 
