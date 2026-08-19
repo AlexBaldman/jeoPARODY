@@ -23,6 +23,17 @@ Prove the contract with one real character pipeline:
 
 These two chunks are the next implementation targets. Everything below is future build-out.
 
+## Future source intake and reference processing
+- Multi-image source sets with explicit provenance per image.
+- Reference ranking, duplicate detection, and source-quality scoring.
+- Background-removal masks retained separately from rendered cutouts.
+- Manual correction hooks for masks, contours, anchors, and registration.
+- Orthographic/turnaround reference assembly.
+- Reference-board/contact-sheet generation.
+- OCR/metadata extraction where source material contains labels or notes.
+- Human approval checkpoints before generated likeness assets become canonical.
+- Rights/license/provenance metadata for externally sourced material.
+
 ## Future production machines
 - Body-part separator for modular head/body/limb/tail/prop layers.
 - Pose generator / Pose Mill for named canonical poses.
@@ -36,6 +47,17 @@ These two chunks are the next implementation targets. Everything below is future
 - Batch processing and replayable machine chains.
 - Caching of deterministic machine outputs.
 - Selective regeneration based on changed sources or machine versions.
+
+## Future art-direction capabilities
+- Shared style-guide profiles with explicit palette, silhouette, pixel-cluster, outline, exaggeration, and readability rules.
+- Character-specific style overrides that remain subordinate to the shared visual language.
+- Palette generation, reduction, swapping, and validation.
+- Expression libraries and reusable facial-state vocabularies.
+- Pose libraries and reusable motion archetypes.
+- Costume/accessory inheritance and compatibility rules.
+- Effect layers that remain separable from character masters.
+- Controlled 2D/2.5D/3D representation adapters using the same canonical identity.
+- Alternate-resolution and alternate-renderer outputs from one approved canonical asset family.
 
 ## Future asset graph and orchestration
 - Asset dependency graph answering: what made me, what do I depend on, where am I used, and what should regenerate if my source changes?
