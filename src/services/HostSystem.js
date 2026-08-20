@@ -239,30 +239,30 @@ export class HostSystem {
   }
 
   async animatePersonalityChange() {
-    if (!this.hostContainer) return;
-
-    this.hostContainer.style.transform = 'scale(0.9)';
-    this.hostContainer.style.transition = 'transform 0.5s ease-in-out';
-    await new Promise(resolve => setTimeout(resolve, 100));
-    this.updateHostImage();
-    this.hostContainer.style.transform = 'scale(1)';
-    setTimeout(() => { this.hostContainer.style.transition = ''; }, 500);
+    const stageActor = this.stageActor || getHostStageActor().init();
+    await stageActor.personalityChange(() => this.updateHostImage());
   }
 
   async triggerAnimation(animationType) {
     const stageActor = this.stageActor || getHostStageActor().init();
 
     if (animationType === 'pace') return stageActor.pace();
-    if (animationType === 'stairs') return stageActor.surprisePop();
+    if (animationType === 'stairs') return stageActor.fakeStairs();
 
     if (animationType === 'celebrate') {
-      stageActor.surprisePop();
-      return this.celebrationAnimation();
+      await Promise.all([
+        stageActor.surprisePop(),
+        this.celebrationAnimation()
+      ]);
+        return;
     }
 
     if (animationType === 'surprise') {
-      stageActor.surprisePop();
-      return this.surpriseAnimation();
+      await Promise.all([
+        stageActor.surprisePop(),
+        this.surpriseAnimation()
+      ]);
+        return;
     }
 
     if (animationType === 'duck') return stageActor.duckBehindRail();

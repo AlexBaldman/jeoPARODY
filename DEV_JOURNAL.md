@@ -137,6 +137,15 @@ Append entries newest-first immediately below this heading when practical:
 
 ---
 
+### 2026-08-20 — Codex — close responsive host-stage review findings
+- **Read/inspected:** PR #32 head and the latest CodeRabbit review threads for host-stage timing, personality-change geometry ownership, and the stairs dispatch.
+- **Changed:** moved personality-change scale timing into `HostStageActor`; made celebrate/surprise completion wait for both stage and mood work; added a reduced-motion-aware `fakeStairs()` beat and routed the stairs animation to it.
+- **Evidence/tests:** verified the patch against the current PR head and preserved the existing responsive/reduced-motion ownership boundaries; GitHub CI remains the execution proof after push.
+- **Decisions:** kept the fix confined to the two host owners; used composable `scale`/`translate` animation properties so personality and stairs beats do not overwrite stage movement transforms.
+- **Unresolved:** none within the three reviewed findings.
+- **Next lead domino:** confirm PR checks and protected desktop/iPhone runtime viewports remain green.
+- **Refs:** `work/footer-stage-host-motion-live4`, PR #32.
+
 ### 2026-08-09 15:58 ET — ChatGPT — audit and integrate current repo work
 - **Read/inspected:** current `main`, recent commits, GitHub Actions, open/diverged branches, production-readiness convergence work, Devin audit/refactor branches, AI-provider branch, CSS/UI branches, old Mac branches, and the Sprite Foundry ICM branch.
 - **Changed:** restored the blocking CI verification path on `main` through PR #29; added ESLint flat config and actionable Stylelint annotations; repaired undefined AI fallback and host-animation sound wiring; normalized token CSS; integrated the Sprite Foundry ICM corpus onto a fresh branch and registered it as `PRESSURE_TEST` rather than blindly inheriting `ACTIVE` status.

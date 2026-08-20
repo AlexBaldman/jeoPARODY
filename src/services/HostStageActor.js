@@ -117,6 +117,73 @@ class HostStageActor {
     requestAnimationFrame(tick);
   }
 
+  async personalityChange(updateImage) {
+    const applyImage = typeof updateImage === 'function' ? updateImage : () => {};
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+    if (!this.host || reducedMotion || typeof this.host.animate !== 'function') {
+      applyImage();
+      return;
+    }
+
+    const animation = this.host.animate([
+      { scale: 1 },
+      { scale: 0.9, offset: 1 / 6 },
+      { scale: 1 }
+    ], {
+      duration: 600,
+      easing: 'ease-in-out'
+    });
+
+    await this.wait(100);
+    applyImage();
+
+    try {
+      await animation.finished;
+    } catch (error) {
+      if (error.name !== 'AbortError') throw error;
+    }
+  }
+
+  async fakeStairs() {
+    if (this.isAnimating || !this.host) return;
+    this.isAnimating = true;
+    let animation;
+
+    try {
+      const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      if (reducedMotion || typeof this.host.animate !== 'function') {
+        await this.wait(this.options.beatMs);
+        return;
+      }
+
+      animation = this.host.animate([
+        { translate: '0 0' },
+        { translate: '0 18%', offset: 0.25 },
+        { translate: '0 18%', offset: 0.36 },
+        { translate: '0 42%', offset: 0.5 },
+        { translate: '0 42%', offset: 0.61 },
+        { translate: '0 70%', offset: 0.75 },
+        { translate: '0 70%', offset: 0.86 },
+        { translate: '0 110%' }
+      ], {
+        duration: 1400,
+        easing: 'ease-in-out',
+        fill: 'forwards'
+      });
+
+      this.trackTailDuring(1400);
+      await animation.finished;
+      await this.wait(this.options.beatMs);
+    } catch (error) {
+      if (error.name !== 'AbortError') throw error;
+    } finally {
+      animation?.cancel();
+      this.syncBubbleTail();
+      this.isAnimating = false;
+    }
+  }
+
   async pace() {
     if (this.isAnimating) return;
     this.isAnimating = true;
