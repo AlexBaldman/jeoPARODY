@@ -254,7 +254,8 @@ export class HostSystem {
         stageActor.surprisePop(),
         this.celebrationAnimation()
       ]);
-        return;
+      eventBus.emit('host:animation-complete', { type: 'celebrate' });
+      return;
     }
 
     if (animationType === 'surprise') {
@@ -262,7 +263,8 @@ export class HostSystem {
         stageActor.surprisePop(),
         this.surpriseAnimation()
       ]);
-        return;
+      eventBus.emit('host:animation-complete', { type: 'surprise' });
+      return;
     }
 
     if (animationType === 'duck') return stageActor.duckBehindRail();
@@ -278,7 +280,6 @@ export class HostSystem {
     await new Promise(resolve => setTimeout(resolve, 650));
     this.currentMood = originalMood;
     this.updateHostImage();
-    eventBus.emit('host:animation-complete', { type: 'celebrate' });
   }
 
   async thinkingAnimation() {
@@ -301,7 +302,6 @@ export class HostSystem {
     await new Promise(resolve => setTimeout(resolve, 700));
     this.currentMood = originalMood;
     this.updateHostImage();
-    eventBus.emit('host:animation-complete', { type: 'surprise' });
   }
 
   getResponse(context, data = {}) {
