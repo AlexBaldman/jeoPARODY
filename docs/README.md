@@ -20,10 +20,11 @@ If a canonical doc conflicts with verified runtime behavior, repair the doc in t
 | You are working on… | Read |
 |---|---|
 | Any code change | `../AGENTS.md` → latest `../DEV_JOURNAL.md` entry |
-| Runtime / ownership | `architecture/OVERVIEW.md` |
+| Main runtime / ownership | `architecture/OVERVIEW.md` |
 | Stage / host / responsive presentation | `architecture/STAGE.md` |
 | Host performance / rigging / lip sync | `architecture/HOST_PERFORMANCE.md` |
 | Named host comedy beats | `architecture/CHOREOGRAPHY_CATALOG.md` |
+| Needle Drop proving mode | `architecture/NEEDLE_DROP.md` |
 | Product priorities | `product/ROADMAP.md` |
 | Jeopardish → jeoPARODY convergence | `product/MIGRATION.md` |
 | Product/platform vision | `product/VISION.md` + relevant `../ICM/` record |
@@ -53,6 +54,7 @@ ARCHIVE
 
 - **canonical** — describes current accepted truth or contract.
 - **active** — live plan or working record expected to change frequently.
+- **proving** — implemented experiment whose architecture/product value is still being pressure-tested.
 - **reference** — focused lookup material; not broad project authority.
 - **pressure-test** — intentionally exploratory; useful for evaluating architecture.
 - **superseded** — replaced by a newer canonical source.
