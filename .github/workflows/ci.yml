@@ -27,6 +27,9 @@ jobs:
       - name: Lint CSS
         run: npm run lint:css
 
+      - name: Check documentation integrity
+        run: npm run docs:check
+
       - name: Test
         run: npm test -- --ci
 
