@@ -1,48 +1,85 @@
-# Contributing to jeoPARODY
+# Contributing to JeoPARODY
 
-This document provides guidelines for all contributors, human or AI, to ensure code quality, consistency, and alignment with the project's vision.
+JeoPARODY welcomes focused contributions from humans and AI agents. The project values small, understandable changes that preserve a green production spine.
 
-## Core Principles
-- **Clarity over Cleverness:** Write simple, readable code.
-- **Measure, Then Optimize:** Profile performance before refactoring for speed.
-- **One Event Vocabulary:** Use the canonical events defined in `src/utils/events.js` (e.g., `answer:submit`).
-- **Respect Accessibility:** Design for mobile-first, support keyboard navigation, respect `prefers-reduced-motion`, and use ARIA attributes.
+## Before changing anything
 
-## Project Structure & Module Organization
-- `src/` — app code
-  - `components/` (UI only), `core/` (game/engine logic; prefer pure functions), `state/`, `services/` (AI, audio, API), `utils/`, `styles/`.
-- `assets/` — images, fonts, audio, question data.
-- `tests/` — unit/integration roots; Jest looks in `**/__tests__` and `**/*.(spec|test).js`.
-- `docs/` — design notes (`ARCHITECTURE.md`, `UI_GUIDE.md`, `DATA.md`).
-- **Path Aliases:** Use Vite/Jest path aliases for clean imports (e.g., `import App from '@components/App.js'`).
+Read, in order:
 
-## Build, Test, and Development Commands
-- `npm run dev` — start Vite dev server on port 3000.
-- `npm run build` — production build to `dist/`.
-- `npm run preview` — serve built assets locally.
-- `npm test` — run all Jest tests.
-- `npm run lint` — lint all JS files in `src/`.
-- `npm run lint:css` — lint all CSS files in `src/`.
-- `node scripts/asset-check.js` — **run before committing** to verify asset references.
+1. `AGENTS.md`
+2. the newest relevant entry in `DEV_JOURNAL.md`
+3. `docs/README.md`
+4. only the canonical docs relevant to your slice
 
-## Coding Style & Naming Conventions
-- **Language:** Modern ES modules; 2‑space indent; semicolons on; single quotes.
-- **Naming:** `PascalCase` for classes/components, `camelCase` for variables/functions, `UPPER_SNAKE_CASE` for constants.
-- **CSS:** Use tokens from `src/styles/tokens.css`. Follow BEM-like naming (`.scoreboard`, `.scoreboard--basketball`).
-- **Structure:** Keep modules small and single-purpose.
+`AGENTS.md` is the universal operating contract. Tool-specific instruction files are compatibility pointers, not separate constitutions.
 
-## Testing Guidelines
-- **Framework:** Jest with `jsdom`.
-- **Behavior:** Mock all network calls and API services to keep tests fast and deterministic.
-- **Coverage:** Aim for ≥ 60% global coverage, with a focus on `core/` and `state/` logic.
+## Working rules
 
-## Commit & Pull Request Guidelines
-- **Commits:** Use an imperative subject line (e.g., `Fix: ...`, `Add: ...`).
-- **PRs:** Keep them focused on a single feature or bug. Provide a clear description and testing notes. All checks (`lint`, `test`) must pass.
+- **Follow the Beam.** Fix the highest-upstream verified blocker first.
+- **One owner per truth.** Do not introduce parallel state, animation, asset, or style authorities.
+- **Keep changes focused.** Prefer a small reversible PR with clear evidence.
+- **Bus the table.** Remove nearby trivial friction when safe and verifiable, without widening the mission.
+- **Preserve before pruning.** Inventory valuable assets, references, behavior, and provenance before retiring old branches/files.
+- **Respect accessibility.** Keyboard behavior, reduced motion, responsive layout, and readable presentation are release concerns.
+- **Never commit or expose provider secrets in browser storage, URLs, or source files.**
 
-## Security & Configuration
-- **Secrets:** Never commit API keys or other secrets.
-- **Configuration:** Use environment variables for local configuration. The AI host uses a dev proxy by default.
+## Development commands
 
-## AI Agent Instructions
-- AI agents should refer to **`Gemini.md`** for detailed, role-specific instructions and project context.
+```bash
+npm install
+npm run dev
+npm run lint
+npm run lint:css
+npm test -- --ci
+npm run build
+npm run runtime:check
+```
+
+Use the checks relevant to your change. Runtime-facing work should normally survive the full production spine. Documentation-only changes should pass `npm run docs:check` once that check is available, plus CI.
+
+## Code organization
+
+- `src/core/` — gameplay/domain logic.
+- `src/state/` — state infrastructure where still used.
+- `src/services/` — side effects and external concerns such as questions, host, audio, AI, media.
+- `src/components/` — UI components.
+- `src/styles/` — canonical CSS entrypoint/layers and responsive Stage styles.
+- `src/utils/` — shared utilities and semantic event bus.
+- `public/assets/` — production-delivered static assets/data.
+- `assets/` — source/reference assets where applicable; do not assume every asset here is runtime-delivered.
+- `docs/` — current knowledge map plus archive.
+- `ICM/` — durable ideas and pressure tests, not an implementation queue.
+
+See `docs/architecture/OVERVIEW.md` for current ownership.
+
+## Style
+
+- Modern ES modules.
+- Prefer readable, explicit code over clever compression.
+- Follow the existing formatter/style in the file you touch.
+- Use CSS tokens and the canonical style entrypoint rather than inventing another parallel hierarchy.
+- Use semantic events for decoupled communication where that is the established contract.
+
+## Tests and evidence
+
+Tests should be deterministic and should not require external AI/network services. For user-facing changes, production browser evidence matters: the runtime harness protects desktop and iPhone-class viewports and validates real packaged assets.
+
+If a change cannot be fully verified, state exactly what remains unverified in the PR and `DEV_JOURNAL.md` handoff.
+
+## Commits and pull requests
+
+Use clear imperative commit subjects and focused branches from current `main`. Explain:
+
+- what changed;
+- why this is the right owner/layer;
+- what evidence was run;
+- any intentionally deferred cleanup;
+- the next lead domino when relevant.
+
+Do not wholesale-merge heavily diverged historical branches when their useful behavior can be extracted cleanly.
+
+## Documentation
+
+Current documentation is organized by job in `docs/README.md`. When a decision changes, update the canonical owner and move stale material to archive rather than leaving competing sources of truth.
+
+Before finishing substantive work, leave a concise Cypher handoff in `DEV_JOURNAL.md`.
