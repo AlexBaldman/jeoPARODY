@@ -41,6 +41,7 @@ What it grows into:
 
 
 ## Current Capabilities (MVP)
+- **Needle Drop proving mode:** standalone progressive-audio play with deterministic scoring, synthesized original demo content, lineage reveals, content validation, and a swappable audio adapter. Open `/needle-drop.html`; see [`docs/NEEDLE_DROP_ARCHITECTURE.md`](docs/NEEDLE_DROP_ARCHITECTURE.md).
 - Jeopardy-style Q/A loop with clean scoring and validation
 - Modular architecture: `components`, `core`, `state`, `services`, `utils`, `styles`
 - AI host scaffolding with Gemini integration via proxy and graceful fallback lines
