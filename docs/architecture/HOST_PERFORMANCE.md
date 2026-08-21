@@ -41,7 +41,7 @@ Named beats are reusable capabilities, not one-off event-handler tricks. Current
 - chef's-kiss reaction;
 - reaction families for correct, wrong, streak, timeout, awkward pause, confusion, celebration, and conspiracy detour.
 
-See the preserved choreography catalog in `../HOST_STAGE_CHOREOGRAPHY.md` while it is being absorbed into this architecture.
+The growing named-beat vocabulary lives in `CHOREOGRAPHY_CATALOG.md`.
 
 ## Performance timeline
 
