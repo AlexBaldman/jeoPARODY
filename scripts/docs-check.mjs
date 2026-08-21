@@ -12,6 +12,7 @@ const REQUIRED = [
   'docs/architecture/STAGE.md',
   'docs/architecture/HOST_PERFORMANCE.md',
   'docs/architecture/CHOREOGRAPHY_CATALOG.md',
+  'docs/architecture/NEEDLE_DROP.md',
   'docs/product/VISION.md',
   'docs/product/ROADMAP.md',
   'docs/product/MIGRATION.md',
@@ -38,6 +39,7 @@ const RETIRED_ACTIVE_PATHS = [
   'docs/IMMORTAL_DEV_GLOSSARY.md',
   'docs/VISUAL_REGRESSION_MOBILE_2026-08-16.md',
   'docs/HOST_STAGE_CHOREOGRAPHY.md',
+  'docs/NEEDLE_DROP_ARCHITECTURE.md',
   'docs/MCP.md',
   'docs/vision/UINVERSE_PLATFORM_THESIS_2026-08-08.md'
 ];
