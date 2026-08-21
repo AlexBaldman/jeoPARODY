@@ -32,6 +32,8 @@ MINE JEOPARDISH DONOR BEHAVIOR IN VERTICAL SLICES
 NORMALIZE REMAINING STATE / EVENT / CSS OWNERSHIP
 ```
 
+Needle Drop runs as a **parallel bounded proving mode**, not a replacement for this cascade. It should pressure-test shared contracts without hijacking the main runtime roadmap.
+
 ## Now
 
 ### Documentation and collaboration
@@ -39,7 +41,8 @@ NORMALIZE REMAINING STATE / EVENT / CSS OWNERSHIP
 - one documentation map (`docs/README.md`);
 - current architecture/product/reference docs separated from archive;
 - stale tool-specific instructions reduced to compatibility pointers;
-- historical plans preserved without masquerading as current truth.
+- historical plans preserved without masquerading as current truth;
+- documentation structure and local references guarded by `npm run docs:check` in CI.
 
 ### Stage / mobile
 - keep protected desktop and iPhone runtime checks green;
@@ -53,6 +56,13 @@ NORMALIZE REMAINING STATE / EVENT / CSS OWNERSHIP
 - pressure-test a small timed performance-cue format;
 - begin layered/rigged-host experiments only when they improve real performances;
 - connect transcript/voice timing to a minimal viseme mouth system.
+
+### Needle Drop proving lane
+- keep `npm run needle-drop:validate` deterministic and green;
+- protect its isolated truth kernel instead of coupling it to main `GameEngine` internals;
+- use original/cleared audio content and explicit rights metadata;
+- test whether session recording, input gateways, exact audio scheduling, and semantic director events deserve shared primitives;
+- extract only contracts that make both Needle Drop and the main product simpler.
 
 ## Next
 
@@ -80,7 +90,7 @@ immutable source
 → runtime projection
 ```
 
-The Trebek audio archive is the first rich specimen. The same pattern should eventually support images, sprites, video, animations, props, and generated assets.
+The Trebek audio archive and Needle Drop's rights-gated content package are complementary specimens: one starts from historical source material, the other from deliberately cleared/original playable content.
 
 ## Later / pressure tests
 
