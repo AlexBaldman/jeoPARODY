@@ -9,8 +9,8 @@ Needle Drop is a composable JeoPARODY music-game mode. The proving build asks wh
 ## Decisions
 
 1. **One truth kernel.** `core/round.js` owns phases, scoring, authored answer acceptance, and transitions. It has no DOM, audio, timer, or storage dependency.
-2. **Content is executable data.** `core/content.js` provides a versioned episode manifest and validator. Original Web Audio sequences stand in for future cleared assets.
-3. **Audio is an adapter.** `SynthAudio` exposes `play(sequence, duration)` and `stop()`. A decoded-buffer implementation can replace it without teaching scoring about codecs.
+2. **Content is executable data.** `core/content.js` provides a versioned, immutable, rights-gated episode manifest and validator. Original Web Audio sequences stand in for future cleared assets.
+3. **Audio is an adapter.** `AudioRuntime` dispatches to the procedural synth or a decoded-buffer implementation that verifies SHA-256 integrity before decoding and schedules exact offset/duration windows.
 4. **Presentation consumes state.** `main.js` dispatches actions and emits `needle-drop:*` semantic events for future host, camera, analytics, haptics, and multiplayer directors.
 5. **The build stays independently playable.** `needle-drop.html` is a separate Vite entry point while the mode proves itself.
 
@@ -19,7 +19,9 @@ needle-drop.html
   └─ main.js                    composition root + semantic events
       ├─ core/round.js          deterministic truth kernel
       ├─ core/content.js        episode schema, validator, demo
-      ├─ services/synthAudio.js swappable audio implementation
+      ├─ services/audioRuntime.js implementation router
+      ├─ services/synthAudio.js procedural demo adapter
+      ├─ services/decodedBufferAudio.js integrity-checked asset adapter
       ├─ presentation/Waveform.js
       └─ styles.css
 ```
@@ -43,11 +45,10 @@ Production clues should add immutable asset/checksum, exact sample windows, loud
 
 ## Next adapters, in order
 
-1. `DecodedBufferAudio` for sample-accurate AudioBuffer playback.
-2. `EpisodeRepository` for bundled manifests, then signed remote packs.
-3. `SessionRecorder` for seed, content version, actions, calibration, and events.
-4. `InputGateway` for keyboard/local controls, then phone controllers.
-5. Director consumers for host performance, camera, stings, FX, accessibility, and analytics.
+1. `EpisodeRepository` for bundled manifests, then signed remote packs.
+2. `SessionRecorder` for seed, content version, actions, calibration, and events.
+3. `InputGateway` adapter for networked phone controllers; local four-player keyboard buzzing now proves the session contract.
+4. Director consumers for host performance, camera, stings, FX, accessibility, and analytics.
 
 ## Vertical-slice gate
 
