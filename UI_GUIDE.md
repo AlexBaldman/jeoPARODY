@@ -1,15 +1,9 @@
-# UI Guide
+# UI / Stage pointer
 
-Mobile-first. High contrast. Minimal motion by default.
+Current presentation guidance is split by responsibility:
 
-Components:
-- Header: language toggle, theme switch, host animation (💃), hamburger (menu).
-- Side menu: vertical dropdown (top-right), backdrop, focus trap, keyboard-close (Esc).
-- Scoreboard: peeks behind header, slides on update, neon pulse for changes, light/dark.
-- Profile: bottom-right slide-out with peek tab; matches scoreboard styling.
-- Host: bottom-left above footer; animations via event `host:animate`.
-- Ticker/plane: behind speech bubble; reduced-motion aware.
+- `docs/architecture/STAGE.md` — Stage composition, responsive behavior, host/scenery ownership.
+- `docs/architecture/HOST_PERFORMANCE.md` — host choreography and performance.
+- `docs/reference/CSS.md` — CSS/responsive implementation rules.
 
-Events:
-- Submit: `answer:submit` (canonical). Eval result: `answer:evaluated`.
-
+The historical fixed bottom-left host guidance in this file is superseded by the responsive Stage actor architecture.
