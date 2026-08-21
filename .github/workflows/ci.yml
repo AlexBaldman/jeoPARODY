@@ -30,6 +30,9 @@ jobs:
       - name: Check documentation integrity
         run: npm run docs:check
 
+      - name: Validate Needle Drop content
+        run: npm run needle-drop:validate
+
       - name: Test
         run: npm test -- --ci
 
