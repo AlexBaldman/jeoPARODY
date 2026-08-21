@@ -1,18 +1,11 @@
-# Architecture
+# Architecture pointer
 
-One state machine (GameEngine) + one event bus + simple DOM contract.
+The canonical runtime architecture now lives in:
 
-- Engine: `src/core/GameEngine.js` manages phases, scoring, evaluation.
-- Event Bus: `src/utils/events.js` decouples UI/engine.
-- UI: `index.html` + `src/main.js` wiring. Mobile-first components.
+- `docs/architecture/OVERVIEW.md`
+- `docs/architecture/STAGE.md`
+- `docs/architecture/HOST_PERFORMANCE.md`
 
-Principles:
-- Isolate engine state (do not pass app store state into engine).
-- Normalize events (canonical: `answer:submit`, `answer:evaluated`).
-- Keep rendering cheap (transform/opacity only).
-- Load only the data needed (question shards).
+Start with `AGENTS.md` and `docs/README.md` before choosing a subsystem document.
 
-Layers:
-- Services: sound, host, question service.
-- UI: header, scoreboard, profile, speech bubble, modes (splash, board, run-category).
-
+This root file remains only as a compatibility landmark for tools and contributors that expect `ARCHITECTURE.md` at repository root.
