@@ -1,17 +1,5 @@
-# Data Loading
+# Data reference pointer
 
-Goal: fast startup, small memory, flexible filtering.
+The canonical question/data loading reference is `docs/reference/DATA.md`.
 
-Monolith (default): `assets/questions/questions.json` (legacy).
-
-Sharded (preferred):
-- `assets/questions/index.json` → `{ years: { YYYY: count } }`
-- `assets/questions/shards/YYYY.json` → array of questions for that year.
-
-Generation:
-- `node scripts/shard-questions.js`
-
-Runtime:
-- Question service attempts to load `index.json` then a shard, falling back to the monolith if missing.
-- Full board generator `getRandomBoard({ date, year, month })` builds 6×5 board with value bucketing.
-
+Production paths and packaging have changed since the original version of this file. Use the canonical reference and current runtime/tests rather than historical `assets/questions/` assumptions.
