@@ -13,6 +13,7 @@
     "lint": "npx --yes eslint@10.3.0 src",
     "lint:css": "node scripts/stylelint-ci.mjs",
     "lint:css:fix": "stylelint \"src/**/*.css\" --fix",
+    "docs:check": "node scripts/docs-check.mjs",
     "analyze": "vite build --mode analyze",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
