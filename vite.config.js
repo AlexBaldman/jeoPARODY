@@ -27,6 +27,12 @@ export default defineConfig({
   plugins: [copyRuntimeAssets()],
   build: {
     outDir: 'dist',
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        needleDrop: resolve(__dirname, 'needle-drop.html'),
+      },
+    },
   },
   resolve: {
     alias: {

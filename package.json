@@ -26,7 +26,8 @@
     "trebek:transcribe": "node scripts/transcribe-trebek-audio.mjs",
     "trebek:index": "node scripts/index-trebek-audio.mjs",
     "trebek:audit": "node scripts/audit-trebek-audio.mjs",
-    "trebek:scan": "npm run trebek:inventory && npm run trebek:transcribe && npm run trebek:index && npm run trebek:audit"
+    "trebek:scan": "npm run trebek:inventory && npm run trebek:transcribe && npm run trebek:index && npm run trebek:audit",
+    "needle-drop:validate": "node scripts/validate-needle-drop-content.mjs"
   },
   "dependencies": {
     "@google/genai": "^1.20.0",
