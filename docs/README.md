@@ -22,7 +22,8 @@ If a canonical doc conflicts with verified runtime behavior, repair the doc in t
 | Any code change | `../AGENTS.md` → latest `../DEV_JOURNAL.md` entry |
 | Runtime / ownership | `architecture/OVERVIEW.md` |
 | Stage / host / responsive presentation | `architecture/STAGE.md` |
-| Host choreography / performance / lip sync | `architecture/HOST_PERFORMANCE.md` |
+| Host performance / rigging / lip sync | `architecture/HOST_PERFORMANCE.md` |
+| Named host comedy beats | `architecture/CHOREOGRAPHY_CATALOG.md` |
 | Product priorities | `product/ROADMAP.md` |
 | Jeopardish → jeoPARODY convergence | `product/MIGRATION.md` |
 | Product/platform vision | `product/VISION.md` + relevant `../ICM/` record |
@@ -30,6 +31,7 @@ If a canonical doc conflicts with verified runtime behavior, repair the doc in t
 | Question/data loading | `reference/DATA.md` |
 | AI providers / secrets boundary | `reference/AI.md` |
 | Trebek audio archive | `reference/TREBEK_AUDIO_ARCHIVE.md` |
+| Browser/MCP dev helpers | `reference/MCP.md` |
 | Shared project vocabulary | `reference/GLOSSARY.md` |
 | Historical plan/audit | `archive/README.md` |
 
