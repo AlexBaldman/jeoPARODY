@@ -11,6 +11,7 @@ const REQUIRED = [
   'docs/architecture/OVERVIEW.md',
   'docs/architecture/STAGE.md',
   'docs/architecture/HOST_PERFORMANCE.md',
+  'docs/architecture/CHOREOGRAPHY_CATALOG.md',
   'docs/product/VISION.md',
   'docs/product/ROADMAP.md',
   'docs/product/MIGRATION.md',
@@ -19,6 +20,7 @@ const REQUIRED = [
   'docs/reference/AI.md',
   'docs/reference/TREBEK_AUDIO_ARCHIVE.md',
   'docs/reference/GLOSSARY.md',
+  'docs/reference/MCP.md',
   'docs/archive/README.md',
   'ICM/README.md'
 ];
@@ -35,6 +37,8 @@ const RETIRED_ACTIVE_PATHS = [
   'docs/CSS.md',
   'docs/IMMORTAL_DEV_GLOSSARY.md',
   'docs/VISUAL_REGRESSION_MOBILE_2026-08-16.md',
+  'docs/HOST_STAGE_CHOREOGRAPHY.md',
+  'docs/MCP.md',
   'docs/vision/UINVERSE_PLATFORM_THESIS_2026-08-08.md'
 ];
 
@@ -97,12 +101,10 @@ function validateReferences(relativeFile) {
   const content = fs.readFileSync(absoluteFile, 'utf8');
   const candidates = new Set();
 
-  // Markdown links: [label](path/to/doc.md)
   for (const match of content.matchAll(/\[[^\]]*\]\(([^)]+\.md)(?:#[^)]+)?\)/g)) {
     candidates.add(match[1]);
   }
 
-  // Deliberately support the project's common concise style: `path/to/doc.md`.
   for (const match of content.matchAll(/`([^`\n]+\.md)`/g)) {
     candidates.add(match[1]);
   }
@@ -111,11 +113,12 @@ function validateReferences(relativeFile) {
     if (isExternal(candidate) || candidate.includes('*')) continue;
 
     const clean = candidate.split('#')[0].split('?')[0];
-    const resolved = clean.startsWith('/')
+    const relativeResolved = clean.startsWith('/')
       ? path.join(root, clean.slice(1))
       : path.resolve(path.dirname(absoluteFile), clean);
+    const rootResolved = path.resolve(root, clean.replace(/^\.\//, ''));
 
-    if (!fs.existsSync(resolved)) {
+    if (!fs.existsSync(relativeResolved) && !fs.existsSync(rootResolved)) {
       failures.push(`${relativeFile}: broken local doc reference -> ${candidate}`);
     }
   }
