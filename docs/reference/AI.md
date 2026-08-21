@@ -62,4 +62,6 @@ Provider adapters should remain swappable. Avoid exposing provider-specific conc
 
 ## Legacy warning
 
-`docs/AI_PROVIDER_SETUP.md`, `Gemini.md`, `WARP.md`, and some older code paths describe direct browser API-key workflows. Preserve them only as historical evidence while convergence removes those unsafe assumptions.
+The historical browser-key setup is preserved at `docs/archive/superseded/AI_PROVIDER_SETUP_legacy.md`. Root `Gemini.md` and `WARP.md` now point back to the canonical agent/documentation spine rather than repeating provider instructions.
+
+Some older code paths may still expose legacy key-injection assumptions. Treat those as convergence debt, not as supported architecture.
