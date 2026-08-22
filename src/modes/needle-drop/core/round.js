@@ -72,7 +72,7 @@ export function reduceRound(state, action, episode) {
   switch (action.type) {
     case 'PLAY_REVEAL': {
       const canPlay = [ROUND_PHASES.READY, ROUND_PHASES.ANSWERING].includes(state.phase)
-        && !state.activePlayerId;
+        && (!state.activePlayerId || state.players.length === 1);
       if (!canPlay) return state;
       return { ...state, phase: ROUND_PHASES.LISTENING, audioError: null };
     }
@@ -112,9 +112,10 @@ export function reduceRound(state, action, episode) {
 
     case 'MORE_AUDIO': {
       const heardCurrentReveal = state.listenedRevealIndex >= state.revealIndex;
+      const roomCanChoose = !state.activePlayerId || state.players.length === 1;
       const canBuy = state.phase === ROUND_PHASES.ANSWERING
         && heardCurrentReveal
-        && !state.activePlayerId
+        && roomCanChoose
         && state.revealIndex < clue.reveals.length - 1;
       if (!canBuy) return state;
 
@@ -184,9 +185,10 @@ export function reduceRound(state, action, episode) {
 
     case 'GIVE_UP': {
       const hasHeardAudio = state.listenedRevealIndex >= 0;
+      const roomCanChoose = !state.activePlayerId || state.players.length === 1;
       const canGiveUp = state.phase === ROUND_PHASES.ANSWERING
         && hasHeardAudio
-        && !state.activePlayerId;
+        && roomCanChoose;
       if (!canGiveUp) return state;
 
       const attempt = {

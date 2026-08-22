@@ -63,6 +63,18 @@ describe('Needle Drop truth kernel', () => {
     expect(state.result.points).toBe(750);
   });
 
+  test('keeps replay, longer audio, and surrender available during a solo answer turn', () => {
+    const heard = hearReveal(createInitialState(demoEpisode));
+    expect(heard.activePlayerId).toBe('player-1');
+    expect(reduceRound(heard, { type: 'PLAY_REVEAL' }, demoEpisode).phase).toBe(ROUND_PHASES.LISTENING);
+    expect(reduceRound(heard, { type: 'MORE_AUDIO' }, demoEpisode)).toMatchObject({
+      phase: ROUND_PHASES.READY,
+      revealIndex: 1,
+      activePlayerId: null,
+    });
+    expect(reduceRound(heard, { type: 'GIVE_UP' }, demoEpisode).phase).toBe(ROUND_PHASES.RESOLVED);
+  });
+
   test('opens a steal after a wrong multiplayer answer', () => {
     let state = hearReveal(createInitialState(demoEpisode, { playerCount: 4 }));
     state = reduceRound(state, { type: 'BUZZ', playerId: 'player-1' }, demoEpisode);
