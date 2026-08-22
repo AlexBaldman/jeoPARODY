@@ -21,6 +21,7 @@
     "chrome:rdp": "powershell -ExecutionPolicy Bypass -File scripts/start-chrome-rdp.ps1",
     "snap": "node scripts/playwright-sample.mjs",
     "runtime:check": "node scripts/runtime-state-check.mjs",
+    "needle-drop:runtime-check": "node scripts/needle-drop-runtime-check.mjs",
     "purge:css": "purgecss --config purgecss.config.cjs --output dist/assets",
     "trebek:inventory": "node scripts/catalog-trebek-audio.mjs",
     "trebek:transcribe": "node scripts/transcribe-trebek-audio.mjs",

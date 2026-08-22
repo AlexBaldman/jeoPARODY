@@ -60,8 +60,15 @@ jobs:
           BASE_URL: http://127.0.0.1:4173
         run: npm run runtime:check
 
+      - name: Needle Drop browser runtime check
+        env:
+          BASE_URL: http://127.0.0.1:4173
+        run: npm run needle-drop:runtime-check
+
       - name: A11y Audit (axe-core)
-        run: npx axe http://127.0.0.1:4173/ --chromium --exit 0 --timeout 60000 --save ./axe-report.json || true
+        run: |
+          npx axe http://127.0.0.1:4173/ --chromium --exit 0 --timeout 60000 --save ./axe-report.json || true
+          npx axe 'http://127.0.0.1:4173/needle-drop.html?players=4' --chromium --exit 0 --timeout 60000 --save ./axe-needle-drop-report.json || true
 
       - name: Upload runtime evidence
         if: always()
@@ -70,7 +77,9 @@ jobs:
           name: runtime-check-evidence
           path: |
             screenshots/runtime-check
+            screenshots/needle-drop-runtime
             axe-report.json
+            axe-needle-drop-report.json
             /tmp/jeoparody-preview.log
           if-no-files-found: ignore
 

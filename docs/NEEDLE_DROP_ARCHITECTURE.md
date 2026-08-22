@@ -1,4 +1,4 @@
-# Needle Drop — MVP architecture
+# Needle Drop — proving architecture
 
 **Lifecycle:** Proving  
 **Concept ID:** `game-mode.needle-drop`  
@@ -11,8 +11,10 @@ Needle Drop is a composable JeoPARODY music-game mode. The proving build asks wh
 1. **One truth kernel.** `core/round.js` owns phases, scoring, authored answer acceptance, and transitions. It has no DOM, audio, timer, or storage dependency.
 2. **Content is executable data.** `core/content.js` provides a versioned, immutable, rights-gated episode manifest and validator. Original Web Audio sequences stand in for future cleared assets.
 3. **Audio is an adapter.** `AudioRuntime` dispatches to the procedural synth or a decoded-buffer implementation that verifies SHA-256 integrity before decoding and schedules exact offset/duration windows.
-4. **Presentation consumes state.** `main.js` dispatches actions and emits `needle-drop:*` semantic events for future host, camera, analytics, haptics, and multiplayer directors.
+4. **Presentation consumes state.** `presentation/markup.js` turns serializable truth into escaped HTML. `main.js` stays the composition root, dispatches actions, manages focus/audio, and emits `needle-drop:*` semantic events for future host, camera, analytics, haptics, and multiplayer directors.
 5. **The build stays independently playable.** `needle-drop.html` is a separate Vite entry point while the mode proves itself.
+6. **A miss is gameplay, not a funeral.** Wrong solo answers unlock the next reveal; wrong party answers lock only that player for the current clip and open a steal. The reducer adjudicates every lockout.
+7. **Persistence is optional.** `ProfileStore` keeps a solo personal best, but storage failure never blocks a round. Scores are not national secrets, despite what the scoreboard implies.
 
 ```text
 needle-drop.html
@@ -22,7 +24,9 @@ needle-drop.html
       ├─ services/audioRuntime.js implementation router
       ├─ services/synthAudio.js procedural demo adapter
       ├─ services/decodedBufferAudio.js integrity-checked asset adapter
+      ├─ presentation/markup.js  escaped state-to-view boundary
       ├─ presentation/Waveform.js
+      ├─ services/profileStore.js optional local personal best
       └─ styles.css
 ```
 
@@ -30,14 +34,19 @@ needle-drop.html
 
 ```js
 {
-  phase, episodeId, clueIndex, revealIndex,
+  phase, episodeId, clueIndex, revealIndex, listenedRevealIndex,
   score, streak, correct,
-  attempts: [{ clueId, answer, accepted, revealIndex, points }],
+  players: [{ id, score, streak, correct, attempts }],
+  activePlayerId, blockedPlayerIds,
+  attempts: [{ clueId, playerId, answer, accepted, revealIndex, points }],
+  lastAttempt, audioError,
   result
 }
 ```
 
-Actions are serializable: `PLAY_REVEAL`, `REVEAL_FINISHED`, `MORE_AUDIO`, `SUBMIT_ANSWER`, `NEXT_CLUE`, and `RESTART`. Episode version plus action log provides deterministic truth replay.
+Actions are serializable: `PLAY_REVEAL`, `REVEAL_FINISHED`, `AUDIO_FAILED`, `BUZZ`, `MORE_AUDIO`, `SUBMIT_ANSWER`, `PASS`, `GIVE_UP`, `NEXT_CLUE`, and `RESTART`. Episode version plus action log provides deterministic truth replay.
+
+The important invariant is that `SUBMIT_ANSWER` and `MORE_AUDIO` are rejected until the current reveal has completed. In party mode, `blockedPlayerIds` resets when the room purchases a longer reveal. This gives every reveal its own fair buzz window without requiring timers or network clocks in the truth kernel.
 
 ## Production content extension
 

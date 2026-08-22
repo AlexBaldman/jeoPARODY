@@ -62,6 +62,7 @@ temp/
 # Testing
 /coverage
 /.nyc_output
+/screenshots/
 
 # Misc
 *.tgz
