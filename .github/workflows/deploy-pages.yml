@@ -27,10 +27,6 @@ jobs:
       - run: npm run needle-drop:validate
       - run: npm test -- --runInBand
       - run: npm run build
-      - name: Select GitHub Actions as the sole Pages source
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh api --method PUT "repos/${GITHUB_REPOSITORY}/pages" -f build_type=workflow
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
