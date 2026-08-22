@@ -131,15 +131,16 @@ function roundMarkup(state, episode, clue, reveal) {
   const canAnswer = state.phase === ROUND_PHASES.ANSWERING
     && activePlayer
     && !state.blockedPlayerIds.includes(activePlayer.id);
+  const roomCanChoose = !state.activePlayerId || state.players.length === 1;
   const canPlay = [ROUND_PHASES.READY, ROUND_PHASES.ANSWERING].includes(state.phase)
-    && !state.activePlayerId;
+    && roomCanChoose;
   const canBuy = state.phase === ROUND_PHASES.ANSWERING
     && heardCurrentReveal
-    && !state.activePlayerId
+    && roomCanChoose
     && state.revealIndex < clue.reveals.length - 1;
   const canGiveUp = state.phase === ROUND_PHASES.ANSWERING
     && state.listenedRevealIndex >= 0
-    && !state.activePlayerId;
+    && roomCanChoose;
   const nextReveal = clue.reveals[state.revealIndex + 1];
   const answerLabel = canAnswer
     ? `${activePlayer.name}'s answer`
