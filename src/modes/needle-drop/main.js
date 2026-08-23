@@ -3,11 +3,14 @@ import { demoEpisode, validateEpisode } from './core/content.js';
 import { playerForKey } from './core/party.js';
 import { createInitialState, reduceRound, ROUND_PHASES } from './core/round.js';
 import { createFreshSeed, createSessionEpisode, createSessionUrl } from './core/session.js';
+import { createShowEvent } from './core/showEvents.js';
 import { renderApp } from './presentation/markup.js';
+import { ShowDirector, SHOW_SCENES } from './presentation/showDirector.js';
 import { Waveform } from './presentation/Waveform.js';
 import { AudioRuntime } from './services/audioRuntime.js';
 import { ProfileStore } from './services/profileStore.js';
 import { SessionRecorder, sessionResultText } from './services/sessionRecorder.js';
+import { StingAudio } from './services/stingAudio.js';
 
 const errors = validateEpisode(demoEpisode);
 if (errors.length) throw new Error(`Needle Drop content invalid:\n${errors.join('\n')}`);
@@ -37,11 +40,18 @@ let playbackToken = 0;
 let isNewBest = false;
 let sessionSummary = null;
 let copyStatus = '';
+let performance = null;
 const sessionRecorder = new SessionRecorder();
+const stingAudio = new StingAudio({ enabled: profile.settings.showSound });
+const showDirector = new ShowDirector({
+  audio: stingAudio,
+  onPerformance: nextPerformance => { performance = nextPerformance; },
+});
 
-function emit(name, detail = {}) {
-  window.dispatchEvent(new CustomEvent(`needle-drop:${name}`, {
-    detail: { ...detail, state },
+function emitShowEvent(event) {
+  if (!event) return;
+  window.dispatchEvent(new CustomEvent('needle-drop:event', {
+    detail: { event, performance },
   }));
 }
 
@@ -49,6 +59,10 @@ function focusAfter(actionType) {
   window.queueMicrotask(() => {
     if (actionType === 'COPY_RESULT') {
       document.querySelector('[data-action="copy-result"]')?.focus();
+      return;
+    }
+    if (actionType === 'TOGGLE_SOUND') {
+      document.querySelector('[data-action="toggle-sound"]')?.focus();
       return;
     }
     if (state.phase === ROUND_PHASES.COMPLETE) {
@@ -84,6 +98,8 @@ function render(actionType) {
     sessionSummary,
     freshCrateUrl,
     copyStatus,
+    performance,
+    showSoundEnabled: profile.settings.showSound,
   });
 
   const canvas = document.querySelector('#waveform');
@@ -102,8 +118,9 @@ function dispatch(action) {
   const next = reduceRound(state, action, episode);
   if (next === previous) return false;
 
+  const showEvent = createShowEvent(action, previous, next, episode);
   state = next;
-  sessionRecorder.record(action, previous, next);
+  sessionRecorder.record(showEvent, previous, next);
   if (state.phase === ROUND_PHASES.COMPLETE && previous.phase !== ROUND_PHASES.COMPLETE) {
     sessionSummary = sessionRecorder.summarize(state, episode);
     if (state.players.length === 1) {
@@ -118,7 +135,8 @@ function dispatch(action) {
     copyStatus = '';
   }
 
-  emit(action.type.toLowerCase(), { action, previous });
+  showDirector.perform(showEvent, state, episode);
+  emitShowEvent(showEvent);
   render(action.type);
   return true;
 }
@@ -138,9 +156,22 @@ async function playCurrentReveal() {
   } catch (error) {
     if (token !== playbackToken) return;
     const message = error instanceof Error ? error.message : 'Unknown playback error';
-    emit('audio_error', { error: message, clueId: clue.id, revealIndex: state.revealIndex });
     dispatch({ type: 'AUDIO_FAILED', message });
   }
+}
+
+function toggleShowSound() {
+  const enabled = !profile.settings.showSound;
+  profile = profileStore.setShowSound(enabled);
+  stingAudio.setEnabled(enabled);
+  performance = {
+    scene: state.phase === ROUND_PHASES.COMPLETE ? SHOW_SCENES.WINNER : SHOW_SCENES.CLUE,
+    cue: null,
+    call: enabled
+      ? 'Show sound on. The tiny orchestra has been released on its own recognizance.'
+      : 'Show sound off. Captions remain on duty and have requested better chairs.',
+  };
+  render('TOGGLE_SOUND');
 }
 
 async function copySessionResult() {
@@ -170,6 +201,7 @@ async function copySessionResult() {
 function stopPlayback() {
   playbackToken += 1;
   audio.stop();
+  showDirector.dispose();
 }
 
 app.addEventListener('click', event => {
@@ -199,6 +231,9 @@ app.addEventListener('click', event => {
       break;
     case 'copy-result':
       copySessionResult();
+      break;
+    case 'toggle-sound':
+      toggleShowSound();
       break;
     default:
       break;

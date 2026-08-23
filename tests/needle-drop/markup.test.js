@@ -11,10 +11,23 @@ describe('Needle Drop presentation contract', () => {
     expect(markup).toContain('href="?players=3&amp;crate=full&amp;seed=original" aria-current="page"');
     expect(markup).toContain('Crate length');
     expect(markup).toContain('Full Crate');
+    expect(markup).toContain('aria-label="Show sound on"');
     expect(markup).toContain('Listen before answering');
     expect(markup).toContain('name="answer" autocomplete="off"');
     expect(markup).toContain('disabled');
     expect(markup).toContain('TRACK 1/8');
+  });
+
+  test('renders a captioned director performance and sound preference', () => {
+    const state = createInitialState(demoEpisode);
+    const markup = renderApp(state, demoEpisode, {
+      profile: { bestScores: {}, settings: { showSound: false } },
+      showSoundEnabled: false,
+      performance: { scene: 'WRONG', call: '<the booth objects>', cue: 'wrong' },
+    });
+    expect(markup).toContain('data-scene="WRONG"');
+    expect(markup).toContain('aria-label="Show sound off"');
+    expect(markup).toContain('&lt;the booth objects&gt;');
   });
 
   test('renders a quick-format finale receipt and rematch controls', () => {

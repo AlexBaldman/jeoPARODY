@@ -104,11 +104,26 @@ summary:focus-visible,
 }
 
 .show-header__score,
-.show-header__streak {
+.show-header__streak,
+.show-header__sound {
   display: grid;
   min-width: 130px;
   padding: 0.75rem 1.5rem;
   border-left: 1px solid #ffffff20;
+}
+
+.show-header__sound {
+  place-content: center;
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 0;
+  background: transparent;
+  color: #fff;
+  text-align: left;
+}
+
+.show-header__sound[aria-pressed="true"] strong {
+  color: var(--accent-2);
 }
 
 .show-header span {
@@ -472,6 +487,24 @@ summary:focus-visible,
   border-color: #ff6b78;
 }
 
+.director-call {
+  margin: 0.8rem 0 0;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid #ffffff14;
+  background: #090b1299;
+  color: #c8c3d0;
+  font: 600 0.68rem / 1.5 ui-monospace, monospace;
+}
+
+.stage[data-scene="CORRECT"] .clue-card,
+.stage[data-scene="WINNER"] .finale {
+  box-shadow: 0 28px 80px #0009, inset 0 0 0 1px var(--accent-2), 0 0 42px color-mix(in srgb, var(--accent-2), transparent 78%);
+}
+
+.stage[data-scene="WRONG"] .clue-card {
+  box-shadow: 0 28px 80px #0009, inset 0 0 0 1px #ff5b6966;
+}
+
 .miss-call {
   margin-top: 0.45rem;
   color: #ffc6cc;
@@ -823,6 +856,16 @@ footer {
     padding: 0 1rem;
   }
 
+  .show-header__sound {
+    min-width: 78px;
+    padding: 0.75rem;
+    text-align: center;
+  }
+
+  .show-header__sound span {
+    display: none;
+  }
+
   .show-header__streak {
     display: none;
   }
@@ -910,7 +953,8 @@ footer {
 
 @media (width <= 440px) {
   .show-header__universe {
-    font-size: 0.65rem;
+    padding: 0 0.65rem;
+    font-size: 0.58rem;
   }
 
   .marquee h1 {

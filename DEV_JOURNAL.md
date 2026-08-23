@@ -137,6 +137,15 @@ Append entries newest-first immediately below this heading when practical:
 
 ---
 
+### 2026-08-23 — Codex — prove the Needle Drop Show Director boundary
+- **Read/inspected:** the 1.3 deterministic session loop; canonical Stage, host choreography, architecture, ICM, and platform doctrine; profile, recorder, renderer, audio, and browser contracts; and desktop/mobile/finale capture evidence.
+- **Changed:** introduced a sanitized semantic show-event map after accepted reducer transitions; added a deterministic `ShowDirector` that emits restrained captioned host calls and semantic scene requests; added short original procedural stings behind an independent persistent show-sound preference; moved the local session recorder onto the same privacy-safe event spine; and taught the renderer/runtime checks to prove wrong, steal, finale, mute, and reload behavior.
+- **Evidence/tests:** 78/78 repository tests; focused Director/event/audio/profile/markup coverage; zero Needle Drop lint errors; zero CSS lint findings; eight-clue rights validation; production Vite build; and blocking browser runs for desktop four-player steal, 390px mobile, show-sound persistence, and complete Quick Hit finale.
+- **Decisions:** `core/round.js` remains the only gameplay-truth owner. Events contain bounded facts, never typed answers or mutable state. Comedy spends only the host channel in this slice. Every sound cue has visible caption parity, and Web Audio failure cannot block play.
+- **Unresolved:** GitHub Pages still has a repository-level legacy branch publisher enabled; after merge the canonical Actions deploy must finish last until an owner selects **Settings → Pages → Source: GitHub Actions**.
+- **Next lead domino:** attach one small visual Stage consumer—podium reaction or camera emphasis—to the proven semantic scene request, then blind-test room comprehension before considering phone `InputGateway` calibration.
+- **Refs:** `feat/needle-drop-show-director`, `docs/NEEDLE_DROP_SHOW_DIRECTOR_2026-08-23.md`.
+
 ### 2026-08-23 — Codex — make Needle Drop replayable and measurable
 - **Read/inspected:** the deployed 1.2 Needle Drop loop, reducer/presentation/audio/profile boundaries, browser runtime contract, second-pass roadmap, canonical migration doctrine, and mobile/desktop visual evidence.
 - **Changed:** added deterministic Quick Hit / Side A / Full Crate session projections; safe seed/query normalization; same-crate and fresh-crate flows; format-aware personal-best migration; a local-only semantic `SessionRecorder`; finale receipts and copyable result text; expanded responsive presentation; and a complete three-record browser run.

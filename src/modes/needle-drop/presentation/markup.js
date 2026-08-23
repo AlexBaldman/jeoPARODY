@@ -57,7 +57,8 @@ function playersMarkup(state) {
   </section>`;
 }
 
-function hostMessage(state, clue) {
+function hostMessage(state, clue, performance) {
+  if (performance?.call) return performance.call;
   if (state.audioError) return `Audio hiccup: ${state.audioError}`;
   if (state.phase === ROUND_PHASES.READY) {
     return state.revealIndex === 0
@@ -109,7 +110,13 @@ function lineageMarkup(clue) {
   <blockquote class="liner-note">“${escapeHtml(clue.linerNote)}”</blockquote>`;
 }
 
-function resultMarkup(state, episode, clue) {
+function directorCallMarkup(performance) {
+  return performance?.call
+    ? `<p class="director-call">HOST BOOTH: ${escapeHtml(performance.call)}</p>`
+    : '';
+}
+
+function resultMarkup(state, episode, clue, options) {
   const accepted = state.result.accepted;
   const player = state.players.find(item => item.id === state.result.playerId);
   const attemptCount = state.attempts.filter(attempt => attempt.clueId === clue.id && !attempt.gaveUp).length;
@@ -126,14 +133,15 @@ function resultMarkup(state, episode, clue) {
       <h2 id="result-heading" tabindex="-1">${escapeHtml(clue.title)}</h2>
       <p>${escapeHtml(clue.artist)}</p>
       <strong>${escapeHtml(scoreLine)}</strong>
+      ${directorCallMarkup(options.performance)}
     </section>
     ${lineageMarkup(clue)}
     <button type="button" class="next" data-action="next">${state.clueIndex === episode.clues.length - 1 ? 'Close the crate' : 'Next record'} →</button>
   </section>`;
 }
 
-function roundMarkup(state, episode, clue, reveal) {
-  if (state.phase === ROUND_PHASES.RESOLVED) return resultMarkup(state, episode, clue);
+function roundMarkup(state, episode, clue, reveal, options) {
+  if (state.phase === ROUND_PHASES.RESOLVED) return resultMarkup(state, episode, clue, options);
 
   const heardCurrentReveal = state.listenedRevealIndex >= state.revealIndex;
   const activePlayer = state.players.find(player => player.id === state.activePlayerId);
@@ -169,7 +177,7 @@ function roundMarkup(state, episode, clue, reveal) {
         <span>${escapeHtml(item.label)}</span><strong>${item.duration}s</strong><small>${item.points} pts</small>
       </div>`).join('')}
     </div>
-    <p class="host-call ${state.audioError ? 'host-call--error' : ''}" role="status" aria-live="polite">${escapeHtml(hostMessage(state, clue))}</p>
+    <p class="host-call ${state.audioError ? 'host-call--error' : ''}" role="status" aria-live="polite">${escapeHtml(hostMessage(state, clue, options.performance))}</p>
     ${missMarkup(state)}
     <form id="answer-form" class="answer">
       <label for="answer">${escapeHtml(answerLabel)}</label>
@@ -218,6 +226,7 @@ function finaleMarkup(state, episode, profile, isNewBest, options) {
   return `<section class="finale">
     <p class="eyebrow">CRATE CLOSED</p>
     <h2 id="finale-heading" tabindex="-1">${escapeHtml(title)}</h2>
+    ${directorCallMarkup(options.performance)}
     <p>${escapeHtml(options.session.formatLabel)} · crate <code>${escapeHtml(options.session.seed)}</code></p>
     <p>${formatPoints(state.score)} room points. The waveform has declined to comment.</p>
     ${state.players.length === 1 ? `<p class="personal-best ${isNewBest ? 'is-new' : ''}">${isNewBest ? 'NEW FORMAT BEST' : 'FORMAT BEST'} <strong>${formatPoints(formatBest)}</strong></p>` : ''}
@@ -250,11 +259,12 @@ export function renderApp(state, episode, options = {}) {
     : { label: 'STREAK', value: state.players[0]?.streak || 0 };
   const body = complete
     ? finaleMarkup(state, episode, profile, isNewBest, { ...options, session })
-    : roundMarkup(state, episode, clue, reveal);
+    : roundMarkup(state, episode, clue, reveal, options);
 
-  return `<main id="game" class="stage" data-phase="${state.phase}" data-reveal-index="${state.revealIndex}" style="--accent:${clue?.palette?.[0] || '#ff3f81'};--accent-2:${clue?.palette?.[1] || '#00d7d7'}">
+  return `<main id="game" class="stage" data-phase="${state.phase}" data-scene="${escapeHtml(options.performance?.scene || 'CLUE')}" data-reveal-index="${state.revealIndex}" style="--accent:${clue?.palette?.[0] || '#ff3f81'};--accent-2:${clue?.palette?.[1] || '#00d7d7'}">
     <header class="show-header">
       <a href="./" class="show-header__universe">JEO<span>PARODY</span> / MUSIC DISTRICT</a>
+      <button type="button" class="show-header__sound" data-action="toggle-sound" aria-pressed="${options.showSoundEnabled !== false}" aria-label="Show sound ${options.showSoundEnabled !== false ? 'on' : 'off'}"><span>SHOW SOUND</span><strong>${options.showSoundEnabled !== false ? 'ON' : 'OFF'}</strong></button>
       <div class="show-header__score"><span>${isParty ? 'ROOM TOTAL' : 'SCORE'}</span><strong>${formatPoints(state.score)}</strong></div>
       <div class="show-header__streak"><span>${secondaryMetric.label}</span><strong>${secondaryMetric.value}</strong></div>
     </header>

@@ -4,6 +4,7 @@ const EMPTY_PROFILE = Object.freeze({
   bestScore: 0,
   completedRuns: 0,
   bestScores: Object.freeze({}),
+  settings: Object.freeze({ showSound: true }),
 });
 
 export class ProfileStore {
@@ -28,7 +29,12 @@ export class ProfileStore {
       );
       if (!Object.keys(bestScores).length && bestScore) bestScores.full = bestScore;
 
-      return { bestScore, completedRuns: Math.max(0, Number(value.completedRuns) || 0), bestScores };
+      return {
+        bestScore,
+        completedRuns: Math.max(0, Number(value.completedRuns) || 0),
+        bestScores,
+        settings: { showSound: value.settings?.showSound !== false },
+      };
     } catch {
       return { ...EMPTY_PROFILE };
     }
@@ -45,14 +51,25 @@ export class ProfileStore {
         ...current.bestScores,
         [safeFormat]: Math.max(current.bestScores[safeFormat] || 0, safeScore),
       },
+      settings: current.settings,
     };
 
+    this.write(next);
+    return next;
+  }
+
+  setShowSound(showSound) {
+    const current = this.read();
+    const next = { ...current, settings: { ...current.settings, showSound: Boolean(showSound) } };
+    this.write(next);
+    return next;
+  }
+
+  write(profile) {
     try {
-      this.storage?.setItem(STORAGE_KEY, JSON.stringify(next));
+      this.storage?.setItem(STORAGE_KEY, JSON.stringify(profile));
     } catch {
       // Storage can be unavailable in private or embedded contexts. The game remains playable.
     }
-
-    return next;
   }
 }
