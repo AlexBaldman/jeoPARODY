@@ -1,12 +1,15 @@
+import { SHOW_EVENTS } from '../core/showEvents.js';
+
 const roundTo = (value, precision = 1) => Number(value.toFixed(precision));
 
-function safeAction(action, next) {
+function safeEvent(event) {
   return {
-    type: action.type,
-    clueIndex: next.clueIndex,
-    revealIndex: next.revealIndex,
-    playerId: action.playerId || next.lastAttempt?.playerId || null,
-    accepted: action.type === 'SUBMIT_ANSWER' ? Boolean(next.lastAttempt?.accepted) : undefined,
+    type: event.type,
+    clueId: event.clueId,
+    clueIndex: event.clueIndex,
+    revealIndex: event.revealIndex,
+    playerId: event.playerId || null,
+    isSteal: Boolean(event.isSteal),
   };
 }
 
@@ -22,17 +25,16 @@ export class SessionRecorder {
     this.events = [];
   }
 
-  record(action, previous, next) {
-    if (action.type === 'RESTART') {
+  record(event, previous, next) {
+    if (!event) return;
+    if (event.type === SHOW_EVENTS.SESSION_RESTARTED) {
       this.reset();
       return;
     }
 
     this.events.push({
-      ...safeAction(action, next),
+      ...safeEvent(event),
       elapsedMs: Math.max(0, this.now() - this.startedAt),
-      replay: action.type === 'PLAY_REVEAL'
-        && previous.listenedRevealIndex >= previous.revealIndex,
     });
 
     if (next.phase === 'complete' && previous.phase !== 'complete') this.endedAt = this.now();
@@ -61,9 +63,9 @@ export class SessionRecorder {
       clueCount: episode.clues.length,
       firstDropHits: accepted.filter(attempt => attempt.revealIndex === 0).length,
       guesses: guesses.length,
-      replays: this.events.filter(event => event.replay).length,
-      revealsBought: this.events.filter(event => event.type === 'MORE_AUDIO').length,
-      buzzes: this.events.filter(event => event.type === 'BUZZ').length,
+      replays: this.events.filter(event => event.type === SHOW_EVENTS.REVEAL_REPLAYED).length,
+      revealsBought: this.events.filter(event => event.type === SHOW_EVENTS.REVEAL_PURCHASED).length,
+      buzzes: this.events.filter(event => event.type === SHOW_EVENTS.BUZZ).length,
       steals,
       averageReveal: roundTo(revealDepth),
       durationSeconds: Math.max(0, Math.round((finishedAt - this.startedAt) / 1000)),

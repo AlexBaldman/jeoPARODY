@@ -16,6 +16,7 @@ Needle Drop is a composable JeoPARODY music-game mode. The proving build asks wh
 6. **A miss is gameplay, not a funeral.** Wrong solo answers unlock the next reveal; wrong party answers lock only that player for the current clip and open a steal. The reducer adjudicates every lockout.
 7. **Persistence is optional.** `ProfileStore` keeps a solo personal best, but storage failure never blocks a round. Scores are not national secrets, despite what the scoreboard implies.
 8. **Sessions are projections, not new truth.** `core/session.js` deterministically selects a cleared clue order from format + seed. `SessionRecorder` observes accepted transitions, redacts typed answers, and computes a local finale receipt without changing reducer state or sending telemetry.
+9. **The show is a semantic consumer.** `core/showEvents.js` converts accepted reducer transitions into sanitized facts. `ShowDirector` maps those facts to deterministic, captioned performances while `StingAudio` realizes optional procedural cues. Neither may mutate round truth.
 
 ```text
 needle-drop.html
@@ -23,13 +24,16 @@ needle-drop.html
       ├─ core/round.js          deterministic truth kernel
       ├─ core/content.js        episode schema, validator, demo
       ├─ core/session.js        deterministic format + seed projection
+      ├─ core/showEvents.js     sanitized semantic event boundary
       ├─ services/audioRuntime.js implementation router
       ├─ services/synthAudio.js procedural demo adapter
       ├─ services/decodedBufferAudio.js integrity-checked asset adapter
       ├─ presentation/markup.js  escaped state-to-view boundary
+      ├─ presentation/showDirector.js deterministic host/stage direction
       ├─ presentation/Waveform.js
       ├─ services/profileStore.js optional local personal best
       ├─ services/sessionRecorder.js privacy-first semantic receipt
+      ├─ services/stingAudio.js optional procedural cue adapter
       └─ styles.css
 ```
 
@@ -47,7 +51,7 @@ needle-drop.html
 }
 ```
 
-Actions are serializable: `PLAY_REVEAL`, `REVEAL_FINISHED`, `AUDIO_FAILED`, `BUZZ`, `MORE_AUDIO`, `SUBMIT_ANSWER`, `PASS`, `GIVE_UP`, `NEXT_CLUE`, and `RESTART`. Episode version plus action log provides deterministic truth replay.
+Actions are serializable: `PLAY_REVEAL`, `REVEAL_FINISHED`, `AUDIO_FAILED`, `BUZZ`, `MORE_AUDIO`, `SUBMIT_ANSWER`, `PASS`, `GIVE_UP`, `NEXT_CLUE`, and `RESTART`. Episode version plus action log provides deterministic truth replay. Presentation receives sanitized `REVEAL_STARTED`, `REVEAL_READY`, `BUZZ`, `CORRECT`, `WRONG`, `ROUND_TRANSITION`, and `WINNER`-class events rather than raw answer text or mutable reducer state.
 
 The important invariant is that `SUBMIT_ANSWER` and `MORE_AUDIO` are rejected until the current reveal has completed. In party mode, `blockedPlayerIds` resets when the room purchases a longer reveal. This gives every reveal its own fair buzz window without requiring timers or network clocks in the truth kernel.
 

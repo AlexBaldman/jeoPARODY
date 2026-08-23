@@ -14,6 +14,7 @@ async function stateSnapshot(page) {
     const answer = document.querySelector('#answer');
     const more = document.querySelector('[data-action="more"]');
     const play = document.querySelector('[data-action="play"]');
+    const sound = document.querySelector('[data-action="toggle-sound"]');
     const game = document.querySelector('#game');
     return {
       phase: game?.dataset.phase,
@@ -21,6 +22,8 @@ async function stateSnapshot(page) {
       answerDisabled: Boolean(answer?.disabled),
       moreDisabled: Boolean(more?.disabled),
       playDisabled: Boolean(play?.disabled),
+      scene: game?.dataset.scene,
+      showSound: sound?.getAttribute('aria-pressed'),
       horizontalOverflow: document.documentElement.scrollWidth > window.innerWidth + 2,
     };
   });
@@ -57,6 +60,7 @@ async function runPartyFlow(browser) {
   await page.getByRole('button', { name: 'Lock it' }).click();
   await page.waitForSelector('[data-player-id="player-1"].is-blocked');
   assert((await page.locator('#game').getAttribute('data-phase')) === 'answering', 'wrong answer must keep the steal window open');
+  assert((await page.locator('#game').getAttribute('data-scene')) === 'WRONG', 'wrong answer must request the WRONG show scene');
 
   await page.keyboard.press('2');
   await page.waitForSelector('[data-player-id="player-2"].is-active');
@@ -65,6 +69,8 @@ async function runPartyFlow(browser) {
   await page.waitForSelector('#game[data-phase="resolved"]');
   assert(await page.getByRole('heading', { name: 'Rubber Duck Funk' }).isVisible(), 'correct steal must reveal the record');
   assert((await page.locator('[data-player-id="player-2"] .players__score').textContent()).trim() === '1,000', 'steal winner must receive the points');
+  assert((await page.locator('#game').getAttribute('data-scene')) === 'CORRECT', 'correct steal must request the CORRECT show scene');
+  assert((await page.locator('.director-call').textContent()).includes('Player 2'), 'correct steal must receive a captioned host performance');
 
   await page.screenshot({ path: path.join(OUT_DIR, 'party-steal-result.png'), fullPage: true });
   assert(runtimeErrors.length === 0, `browser emitted runtime errors: ${runtimeErrors.join(' | ')}`);
@@ -80,6 +86,7 @@ async function runMobileLayout(browser) {
   await page.waitForSelector('#game[data-phase="ready"]');
   const snapshot = await stateSnapshot(page);
   assert(!snapshot.horizontalOverflow, 'mobile layout must not overflow horizontally');
+  assert(snapshot.showSound === 'true', 'show sound control must remain available on mobile');
   assert(await page.getByText('How to play').isVisible(), 'mobile onboarding must remain discoverable');
   assert(await page.getByRole('link', { name: '4P' }).getAttribute('aria-current') === 'page', 'active player count must be announced');
   await page.screenshot({ path: path.join(OUT_DIR, 'mobile-ready.png'), fullPage: true });
@@ -99,6 +106,12 @@ async function runQuickCrate(browser) {
   await page.waitForSelector('#game[data-phase="ready"]');
   assert(await page.getByRole('link', { name: /Quick Hit/ }).getAttribute('aria-current') === 'page', 'quick crate must be selected');
   assert((await page.locator('.clue-card__meta').textContent()).includes('TRACK 1/3'), 'quick crate must contain three tracks');
+  const soundControl = page.getByRole('button', { name: 'Show sound on' });
+  await soundControl.click();
+  assert(await page.getByRole('button', { name: 'Show sound off' }).getAttribute('aria-pressed') === 'false', 'show sound must be independently mutable');
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.waitForSelector('#game[data-phase="ready"]');
+  assert(await page.getByRole('button', { name: 'Show sound off' }).getAttribute('aria-pressed') === 'false', 'show sound preference must persist');
 
   for (const answer of ['Rubber Duck Funk', 'Midnight Pager', 'Municipal Cowbell']) {
     await page.getByRole('button', { name: /Drop the needle/ }).click();
@@ -110,6 +123,7 @@ async function runQuickCrate(browser) {
   }
 
   await page.waitForSelector('#game[data-phase="complete"]');
+  assert((await page.locator('#game').getAttribute('data-scene')) === 'WINNER', 'completed crate must request the WINNER show scene');
   assert(await page.getByText('SESSION RECEIPT').isVisible(), 'completed crate must expose its session receipt');
   assert(await page.getByRole('button', { name: 'Rematch same crate' }).isVisible(), 'finale must offer a deterministic rematch');
   assert(await page.getByRole('link', { name: /Fresh crate/ }).isVisible(), 'finale must offer a new seed');

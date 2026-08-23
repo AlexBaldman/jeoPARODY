@@ -8,6 +8,7 @@ import {
   seededShuffle,
 } from '../../src/modes/needle-drop/core/session.js';
 import { createInitialState } from '../../src/modes/needle-drop/core/round.js';
+import { createShowEvent } from '../../src/modes/needle-drop/core/showEvents.js';
 import { SessionRecorder, sessionResultText } from '../../src/modes/needle-drop/services/sessionRecorder.js';
 
 describe('Needle Drop session layer', () => {
@@ -40,7 +41,7 @@ describe('Needle Drop session layer', () => {
     const previous = createInitialState(episode);
     const listening = { ...previous, phase: 'listening' };
     time = 1250;
-    recorder.record({ type: 'PLAY_REVEAL' }, previous, listening);
+    recorder.record(createShowEvent({ type: 'PLAY_REVEAL' }, previous, listening, episode), previous, listening);
     const state = {
       ...listening,
       phase: 'complete',
@@ -50,7 +51,7 @@ describe('Needle Drop session layer', () => {
       players: [{ ...listening.players[0], score: 1000, correct: 1 }],
     };
     time = 3000;
-    recorder.record({ type: 'NEXT_CLUE' }, listening, state);
+    recorder.record(createShowEvent({ type: 'NEXT_CLUE' }, listening, state, episode), listening, state);
     const summary = recorder.summarize(state, episode);
     expect(summary).toMatchObject({ completed: true, correct: 1, clueCount: 3, firstDropHits: 1, durationSeconds: 2 });
     expect(sessionResultText(state, episode, summary)).toContain('Crate crate-42');
