@@ -15,18 +15,21 @@ Needle Drop is a composable JeoPARODY music-game mode. The proving build asks wh
 5. **The build stays independently playable.** `needle-drop.html` is a separate Vite entry point while the mode proves itself.
 6. **A miss is gameplay, not a funeral.** Wrong solo answers unlock the next reveal; wrong party answers lock only that player for the current clip and open a steal. The reducer adjudicates every lockout.
 7. **Persistence is optional.** `ProfileStore` keeps a solo personal best, but storage failure never blocks a round. Scores are not national secrets, despite what the scoreboard implies.
+8. **Sessions are projections, not new truth.** `core/session.js` deterministically selects a cleared clue order from format + seed. `SessionRecorder` observes accepted transitions, redacts typed answers, and computes a local finale receipt without changing reducer state or sending telemetry.
 
 ```text
 needle-drop.html
   └─ main.js                    composition root + semantic events
       ├─ core/round.js          deterministic truth kernel
       ├─ core/content.js        episode schema, validator, demo
+      ├─ core/session.js        deterministic format + seed projection
       ├─ services/audioRuntime.js implementation router
       ├─ services/synthAudio.js procedural demo adapter
       ├─ services/decodedBufferAudio.js integrity-checked asset adapter
       ├─ presentation/markup.js  escaped state-to-view boundary
       ├─ presentation/Waveform.js
       ├─ services/profileStore.js optional local personal best
+      ├─ services/sessionRecorder.js privacy-first semantic receipt
       └─ styles.css
 ```
 

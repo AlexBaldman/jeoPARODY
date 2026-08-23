@@ -176,6 +176,45 @@ summary:focus-visible,
   color: #07110f;
 }
 
+.crate-formats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45rem;
+  width: min(560px, 100%);
+  margin: 0.65rem auto 0;
+}
+
+.crate-formats a {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #ffffff18;
+  border-radius: 8px;
+  background: #090b1280;
+  color: #aaa6b3;
+  text-decoration: none;
+}
+
+.crate-formats strong {
+  color: #e8e1d4;
+  font: 700 0.68rem ui-monospace, monospace;
+}
+
+.crate-formats small {
+  color: #777482;
+  font: 500 0.58rem ui-monospace, monospace;
+}
+
+.crate-formats a:hover,
+.crate-formats a:focus-visible,
+.crate-formats a[aria-current="page"] {
+  border-color: var(--accent-2);
+}
+
+.crate-formats a[aria-current="page"] {
+  box-shadow: inset 0 -3px var(--accent-2);
+}
+
 .rules {
   width: min(620px, 100%);
   margin: 0.9rem auto 0;
@@ -689,8 +728,78 @@ summary:focus-visible,
   font: 800 1rem ui-monospace, monospace;
 }
 
-.finale button {
-  margin: 2rem auto 0;
+.session-receipt {
+  width: min(700px, 100%);
+  margin: 1.6rem auto 0;
+  padding: 1.1rem;
+  border: 1px dashed #ffffff2e;
+  background: #090b12;
+}
+
+.session-receipt dl {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin: 0.8rem 0;
+}
+
+.session-receipt dl div {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.65rem;
+  border: 1px solid #ffffff12;
+}
+
+.session-receipt dt,
+.session-receipt > p:last-child {
+  color: #777482;
+  font: 500 0.6rem / 1.4 ui-monospace, monospace;
+}
+
+.session-receipt dd {
+  margin: 0;
+  color: var(--accent-2);
+  font: 800 1.25rem ui-monospace, monospace;
+}
+
+.finale__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-top: 1.5rem;
+}
+
+.finale__actions button,
+.finale__actions a {
+  display: grid;
+  place-items: center;
+  min-height: 50px;
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid #ffffff20;
+  border-radius: 8px;
+  background: var(--accent-2);
+  color: #06100f;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.finale__actions .button--quiet {
+  background: transparent;
+  color: #aaa6b3;
+}
+
+.copy-status {
+  min-height: 1.2rem;
+  color: #aaa6b3;
+  font: 500 0.65rem ui-monospace, monospace;
+}
+
+.copy-field {
+  position: fixed;
+  top: -100vh;
+  left: -100vw;
 }
 
 footer {
@@ -740,6 +849,15 @@ footer {
     gap: 0.55rem;
   }
 
+  .crate-formats {
+    grid-template-columns: 1fr;
+  }
+
+  .crate-formats a {
+    grid-template-columns: 1fr auto;
+    text-align: left;
+  }
+
   .players {
     grid-template-columns: 1fr 1fr;
   }
@@ -774,6 +892,10 @@ footer {
 
   .standings small {
     display: none;
+  }
+
+  .session-receipt dl {
+    grid-template-columns: 1fr 1fr;
   }
 
   footer {
