@@ -2,10 +2,12 @@ import './styles.css';
 import { demoEpisode, validateEpisode } from './core/content.js';
 import { playerForKey } from './core/party.js';
 import { createInitialState, reduceRound, ROUND_PHASES } from './core/round.js';
+import { createFreshSeed, createSessionEpisode, createSessionUrl } from './core/session.js';
 import { renderApp } from './presentation/markup.js';
 import { Waveform } from './presentation/Waveform.js';
 import { AudioRuntime } from './services/audioRuntime.js';
 import { ProfileStore } from './services/profileStore.js';
+import { SessionRecorder, sessionResultText } from './services/sessionRecorder.js';
 
 const errors = validateEpisode(demoEpisode);
 if (errors.length) throw new Error(`Needle Drop content invalid:\n${errors.join('\n')}`);
@@ -15,13 +17,27 @@ if (!app) throw new Error('Needle Drop mount point is missing. The crate cannot 
 
 const audio = new AudioRuntime();
 const profileStore = new ProfileStore();
-const requestedPlayers = new URLSearchParams(window.location.search).get('players');
+const params = new URLSearchParams(window.location.search);
+const requestedPlayers = params.get('players');
+const episode = createSessionEpisode(demoEpisode, {
+  formatId: params.get('crate'),
+  seed: params.get('seed'),
+});
+const session = episode.session;
+const freshCrateUrl = createSessionUrl({
+  playerCount: requestedPlayers,
+  formatId: session.formatId,
+  seed: createFreshSeed(),
+});
 
-let state = createInitialState(demoEpisode, { playerCount: requestedPlayers });
+let state = createInitialState(episode, { playerCount: requestedPlayers });
 let profile = profileStore.read();
 let waveform;
 let playbackToken = 0;
 let isNewBest = false;
+let sessionSummary = null;
+let copyStatus = '';
+const sessionRecorder = new SessionRecorder();
 
 function emit(name, detail = {}) {
   window.dispatchEvent(new CustomEvent(`needle-drop:${name}`, {
@@ -31,6 +47,10 @@ function emit(name, detail = {}) {
 
 function focusAfter(actionType) {
   window.queueMicrotask(() => {
+    if (actionType === 'COPY_RESULT') {
+      document.querySelector('[data-action="copy-result"]')?.focus();
+      return;
+    }
     if (state.phase === ROUND_PHASES.COMPLETE) {
       document.querySelector('#finale-heading')?.focus();
       return;
@@ -57,7 +77,14 @@ function focusAfter(actionType) {
 
 function render(actionType) {
   waveform?.destroy();
-  app.innerHTML = renderApp(state, demoEpisode, { profile, isNewBest });
+  app.innerHTML = renderApp(state, episode, {
+    profile,
+    isNewBest,
+    session,
+    sessionSummary,
+    freshCrateUrl,
+    copyStatus,
+  });
 
   const canvas = document.querySelector('#waveform');
   if (canvas) {
@@ -72,18 +99,24 @@ function render(actionType) {
 
 function dispatch(action) {
   const previous = state;
-  const next = reduceRound(state, action, demoEpisode);
+  const next = reduceRound(state, action, episode);
   if (next === previous) return false;
 
   state = next;
+  sessionRecorder.record(action, previous, next);
   if (state.phase === ROUND_PHASES.COMPLETE && previous.phase !== ROUND_PHASES.COMPLETE) {
+    sessionSummary = sessionRecorder.summarize(state, episode);
     if (state.players.length === 1) {
-      const previousBest = profile.bestScore;
-      profile = profileStore.recordCompletedScore(state.score);
+      const previousBest = profile.bestScores?.[session.formatId] || 0;
+      profile = profileStore.recordCompletedScore(state.score, session.formatId);
       isNewBest = state.score > previousBest;
     }
   }
-  if (action.type === 'RESTART') isNewBest = false;
+  if (action.type === 'RESTART') {
+    isNewBest = false;
+    sessionSummary = null;
+    copyStatus = '';
+  }
 
   emit(action.type.toLowerCase(), { action, previous });
   render(action.type);
@@ -93,7 +126,7 @@ function dispatch(action) {
 async function playCurrentReveal() {
   if (!dispatch({ type: 'PLAY_REVEAL' })) return;
 
-  const clue = demoEpisode.clues[state.clueIndex];
+  const clue = episode.clues[state.clueIndex];
   const reveal = clue.reveals[state.revealIndex];
   const token = ++playbackToken;
   waveform?.animate(reveal.duration * 1000);
@@ -108,6 +141,30 @@ async function playCurrentReveal() {
     emit('audio_error', { error: message, clueId: clue.id, revealIndex: state.revealIndex });
     dispatch({ type: 'AUDIO_FAILED', message });
   }
+}
+
+async function copySessionResult() {
+  if (!sessionSummary) return;
+  const text = sessionResultText(state, episode, sessionSummary);
+
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const field = document.createElement('textarea');
+      field.value = text;
+      field.setAttribute('readonly', '');
+      field.className = 'copy-field';
+      document.body.append(field);
+      field.select();
+      document.execCommand('copy');
+      field.remove();
+    }
+    copyStatus = 'Result copied. The clipboard now knows too much.';
+  } catch {
+    copyStatus = 'Copy blocked. The clipboard has retained counsel.';
+  }
+  render('COPY_RESULT');
 }
 
 function stopPlayback() {
@@ -139,6 +196,9 @@ app.addEventListener('click', event => {
     case 'restart':
       stopPlayback();
       dispatch({ type: 'RESTART' });
+      break;
+    case 'copy-result':
+      copySessionResult();
       break;
     default:
       break;

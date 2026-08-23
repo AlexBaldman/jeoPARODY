@@ -1,5 +1,6 @@
 import { rankPlayers } from '../core/party.js';
 import { ROUND_PHASES } from '../core/round.js';
+import { CRATE_FORMATS, createSessionUrl } from '../core/session.js';
 
 export function escapeHtml(value = '') {
   return String(value)
@@ -12,9 +13,17 @@ export function escapeHtml(value = '') {
 
 const formatPoints = value => Number(value || 0).toLocaleString();
 
-function playerCountMarkup(count) {
+function playerCountMarkup(count, session) {
   return `<nav class="player-count" aria-label="Player count">
-    ${[1, 2, 3, 4].map(value => `<a href="?players=${value}" ${value === count ? 'aria-current="page"' : ''}>${value}P</a>`).join('')}
+    ${[1, 2, 3, 4].map(value => `<a href="${escapeHtml(createSessionUrl({ playerCount: value, formatId: session.formatId, seed: session.seed }))}" ${value === count ? 'aria-current="page"' : ''}>${value}P</a>`).join('')}
+  </nav>`;
+}
+
+function crateFormatsMarkup(playerCount, session) {
+  return `<nav class="crate-formats" aria-label="Crate length">
+    ${CRATE_FORMATS.map(format => `<a href="${escapeHtml(createSessionUrl({ playerCount, formatId: format.id, seed: session.seed }))}" ${format.id === session.formatId ? 'aria-current="page"' : ''}>
+      <strong>${escapeHtml(format.label)}</strong><small>${escapeHtml(format.description)}</small>
+    </a>`).join('')}
   </nav>`;
 }
 
@@ -178,7 +187,25 @@ function roundMarkup(state, episode, clue, reveal) {
   </section>`;
 }
 
-function finaleMarkup(state, episode, profile, isNewBest) {
+function receiptMarkup(summary) {
+  if (!summary) return '';
+  return `<section class="session-receipt" aria-labelledby="receipt-heading">
+    <p class="eyebrow" id="receipt-heading">SESSION RECEIPT</p>
+    <dl>
+      <div><dt>First-drop hits</dt><dd>${summary.firstDropHits}</dd></div>
+      <div><dt>Guesses</dt><dd>${summary.guesses}</dd></div>
+      <div><dt>Replays</dt><dd>${summary.replays}</dd></div>
+      <div><dt>More audio</dt><dd>${summary.revealsBought}</dd></div>
+      ${summary.buzzes ? `<div><dt>Buzzes</dt><dd>${summary.buzzes}</dd></div>` : ''}
+      ${summary.steals ? `<div><dt>Steals</dt><dd>${summary.steals}</dd></div>` : ''}
+      <div><dt>Avg. reveal</dt><dd>${summary.averageReveal}</dd></div>
+      <div><dt>Elapsed</dt><dd>${summary.durationSeconds}s</dd></div>
+    </dl>
+    <p>No telemetry left this device. Even the spies had to play locally.</p>
+  </section>`;
+}
+
+function finaleMarkup(state, episode, profile, isNewBest, options) {
   const ranked = rankPlayers(state.players);
   const topScore = ranked[0]?.score || 0;
   const winners = ranked.filter(player => player.score === topScore);
@@ -186,19 +213,33 @@ function finaleMarkup(state, episode, profile, isNewBest) {
     ? `${state.correct}/${episode.clues.length} identified`
     : (winners.length > 1 ? 'A crate-sharing tie' : `${winners[0].name} wins the crate`);
 
+  const formatBest = profile.bestScores?.[options.session.formatId] || 0;
+
   return `<section class="finale">
     <p class="eyebrow">CRATE CLOSED</p>
     <h2 id="finale-heading" tabindex="-1">${escapeHtml(title)}</h2>
+    <p>${escapeHtml(options.session.formatLabel)} · crate <code>${escapeHtml(options.session.seed)}</code></p>
     <p>${formatPoints(state.score)} room points. The waveform has declined to comment.</p>
-    ${state.players.length === 1 ? `<p class="personal-best ${isNewBest ? 'is-new' : ''}">${isNewBest ? 'NEW PERSONAL BEST' : 'PERSONAL BEST'} <strong>${formatPoints(profile.bestScore)}</strong></p>` : ''}
+    ${state.players.length === 1 ? `<p class="personal-best ${isNewBest ? 'is-new' : ''}">${isNewBest ? 'NEW FORMAT BEST' : 'FORMAT BEST'} <strong>${formatPoints(formatBest)}</strong></p>` : ''}
     <ol class="standings" aria-label="Final standings">
       ${ranked.map((player, index) => `<li style="--player:${player.color}"><span>${index + 1}</span><strong>${escapeHtml(player.name)}</strong><small>${player.correct} correct</small><b>${formatPoints(player.score)}</b></li>`).join('')}
     </ol>
-    <button type="button" data-action="restart">Spin it again</button>
+    ${receiptMarkup(options.sessionSummary)}
+    <div class="finale__actions">
+      <button type="button" data-action="restart">Rematch same crate</button>
+      <a href="${escapeHtml(options.freshCrateUrl)}">Fresh crate →</a>
+      <button type="button" class="button--quiet" data-action="copy-result">Copy result</button>
+    </div>
+    <p class="copy-status" role="status" aria-live="polite">${escapeHtml(options.copyStatus)}</p>
   </section>`;
 }
 
-export function renderApp(state, episode, { profile, isNewBest = false } = {}) {
+export function renderApp(state, episode, options = {}) {
+  const {
+    profile = { bestScores: {} },
+    isNewBest = false,
+    session = episode.session || { formatId: 'full', formatLabel: 'Full Crate', seed: 'original' },
+  } = options;
   const clue = episode.clues[state.clueIndex];
   const reveal = clue?.reveals[state.revealIndex];
   const complete = state.phase === ROUND_PHASES.COMPLETE;
@@ -208,7 +249,7 @@ export function renderApp(state, episode, { profile, isNewBest = false } = {}) {
     ? { label: 'LEAD', value: formatPoints(ranked[0]?.score) }
     : { label: 'STREAK', value: state.players[0]?.streak || 0 };
   const body = complete
-    ? finaleMarkup(state, episode, profile, isNewBest)
+    ? finaleMarkup(state, episode, profile, isNewBest, { ...options, session })
     : roundMarkup(state, episode, clue, reveal);
 
   return `<main id="game" class="stage" data-phase="${state.phase}" data-reveal-index="${state.revealIndex}" style="--accent:${clue?.palette?.[0] || '#ff3f81'};--accent-2:${clue?.palette?.[1] || '#00d7d7'}">
@@ -221,7 +262,8 @@ export function renderApp(state, episode, { profile, isNewBest = false } = {}) {
       <span>PROJECT CRATE EXPECTATIONS</span>
       <h1>NEEDLE DROP</h1>
       <p>Musical archaeology conducted at an unsafe volume.</p>
-      ${playerCountMarkup(state.players.length)}
+      ${playerCountMarkup(state.players.length, session)}
+      ${crateFormatsMarkup(state.players.length, session)}
       ${rulesMarkup(isParty)}
     </section>
     ${playersMarkup(state)}

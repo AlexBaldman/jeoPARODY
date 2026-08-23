@@ -27,7 +27,7 @@ const synth = sequence => ({ kind: 'synth', sequence });
 
 export const demoEpisode = Object.freeze({
   schemaVersion: 1,
-  packageVersion: '1.2.0',
+  packageVersion: '1.3.0',
   id: 'nd-demo-001',
   title: 'The Unlicensed Basement Tapes',
   description: 'Eight original musical families. No catalog lawyers were awakened.',

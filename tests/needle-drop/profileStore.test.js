@@ -12,12 +12,29 @@ function createStorage(initialValue) {
 describe('Needle Drop local profile', () => {
   test('keeps the highest completed solo score', () => {
     const store = new ProfileStore(createStorage());
-    expect(store.recordCompletedScore(2200)).toEqual({ bestScore: 2200, completedRuns: 1 });
-    expect(store.recordCompletedScore(1800)).toEqual({ bestScore: 2200, completedRuns: 2 });
+    expect(store.recordCompletedScore(2200, 'quick')).toEqual({
+      bestScore: 2200,
+      completedRuns: 1,
+      bestScores: { quick: 2200 },
+    });
+    expect(store.recordCompletedScore(1800, 'quick')).toEqual({
+      bestScore: 2200,
+      completedRuns: 2,
+      bestScores: { quick: 2200 },
+    });
   });
 
   test('recovers from malformed storage', () => {
     const store = new ProfileStore(createStorage('{definitely not json'));
-    expect(store.read()).toEqual({ bestScore: 0, completedRuns: 0 });
+    expect(store.read()).toEqual({ bestScore: 0, completedRuns: 0, bestScores: {} });
+  });
+
+  test('migrates the 1.2 best score into the full-crate format', () => {
+    const store = new ProfileStore(createStorage(JSON.stringify({ bestScore: 4200, completedRuns: 3 })));
+    expect(store.read()).toEqual({
+      bestScore: 4200,
+      completedRuns: 3,
+      bestScores: { full: 4200 },
+    });
   });
 });

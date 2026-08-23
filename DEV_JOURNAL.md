@@ -137,6 +137,15 @@ Append entries newest-first immediately below this heading when practical:
 
 ---
 
+### 2026-08-23 — Codex — make Needle Drop replayable and measurable
+- **Read/inspected:** the deployed 1.2 Needle Drop loop, reducer/presentation/audio/profile boundaries, browser runtime contract, second-pass roadmap, canonical migration doctrine, and mobile/desktop visual evidence.
+- **Changed:** added deterministic Quick Hit / Side A / Full Crate session projections; safe seed/query normalization; same-crate and fresh-crate flows; format-aware personal-best migration; a local-only semantic `SessionRecorder`; finale receipts and copyable result text; expanded responsive presentation; and a complete three-record browser run.
+- **Evidence/tests:** 70/70 repository tests; 30/30 Needle Drop tests; zero Needle Drop lint errors; zero CSS lint findings; eight-clue rights validation; production Vite build; desktop 4P steal, 390px mobile, and complete Quick Hit browser flows.
+- **Decisions:** `core/round.js` remains the only gameplay-truth owner. A session is a deterministic projection of a cleared immutable package. The recorder observes accepted transitions, stores no typed answers, and sends nothing off-device.
+- **Unresolved:** GitHub Pages still has a repository-level legacy branch publisher enabled; after merge the canonical Actions deploy must finish last until an owner selects **Settings → Pages → Source: GitHub Actions**.
+- **Next lead domino:** run blind Quick Hit and Side A sessions, then use observed dispute/room-reaction evidence to choose between a host/sting director and the phone `InputGateway` calibration slice.
+- **Refs:** `feat/needle-drop-third-pass`, `docs/NEEDLE_DROP_THIRD_PASS_2026-08-23.md`.
+
 ### 2026-08-20 — Codex — close responsive host-stage review findings
 - **Read/inspected:** PR #32 head and the latest CodeRabbit review threads for host-stage timing, personality-change geometry ownership, and the stairs dispatch.
 - **Changed:** moved personality-change scale timing into `HostStageActor`; made celebrate/surprise completion wait for both stage and mood work; added a reduced-motion-aware `fakeStairs()` beat and routed the stairs animation to it.

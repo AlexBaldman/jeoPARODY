@@ -87,12 +87,44 @@ async function runMobileLayout(browser) {
   await page.close();
 }
 
+async function runQuickCrate(browser) {
+  const page = await browser.newPage({ viewport: { width: 1024, height: 900 } });
+  const runtimeErrors = [];
+  page.on('pageerror', error => runtimeErrors.push(error.message));
+  page.on('console', message => {
+    if (message.type() === 'error') runtimeErrors.push(message.text());
+  });
+
+  await page.goto(`${BASE_URL}/needle-drop.html?players=1&crate=quick&seed=original`, { waitUntil: 'domcontentloaded' });
+  await page.waitForSelector('#game[data-phase="ready"]');
+  assert(await page.getByRole('link', { name: /Quick Hit/ }).getAttribute('aria-current') === 'page', 'quick crate must be selected');
+  assert((await page.locator('.clue-card__meta').textContent()).includes('TRACK 1/3'), 'quick crate must contain three tracks');
+
+  for (const answer of ['Rubber Duck Funk', 'Midnight Pager', 'Municipal Cowbell']) {
+    await page.getByRole('button', { name: /Drop the needle/ }).click();
+    await page.waitForSelector('#game[data-phase="answering"]');
+    await page.locator('#answer').fill(answer);
+    await page.getByRole('button', { name: 'Lock it' }).click();
+    await page.waitForSelector('#game[data-phase="resolved"]');
+    await page.getByRole('button', { name: /Next record|Close the crate/ }).click();
+  }
+
+  await page.waitForSelector('#game[data-phase="complete"]');
+  assert(await page.getByText('SESSION RECEIPT').isVisible(), 'completed crate must expose its session receipt');
+  assert(await page.getByRole('button', { name: 'Rematch same crate' }).isVisible(), 'finale must offer a deterministic rematch');
+  assert(await page.getByRole('link', { name: /Fresh crate/ }).isVisible(), 'finale must offer a new seed');
+  await page.screenshot({ path: path.join(OUT_DIR, 'quick-crate-finale.png'), fullPage: true });
+  assert(runtimeErrors.length === 0, `quick crate emitted runtime errors: ${runtimeErrors.join(' | ')}`);
+  await page.close();
+}
+
 async function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   const browser = await chromium.launch({ headless: true });
   try {
     await runPartyFlow(browser);
     await runMobileLayout(browser);
+    await runQuickCrate(browser);
     console.log(`Needle Drop runtime check passed. Evidence: ${OUT_DIR}`);
   } finally {
     await browser.close();
