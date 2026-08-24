@@ -46,7 +46,7 @@ function readyLobby() {
 }
 
 describe('HeadToHeadHost authority', () => {
-  test('loads one shared clue and adjudicates both submissions', async () => {
+  test('keeps adjudication private until both players submit', async () => {
     const gateway = new FakeGateway();
     const host = new HeadToHeadHost({
       roomId: 'room-1',
@@ -69,6 +69,13 @@ describe('HeadToHeadHost authority', () => {
       type: 'SUBMIT_ANSWER',
       payload: { answer: 'Jupiter' },
     });
+
+    const firstSubmission = gateway.published.at(-1);
+    expect(firstSubmission.round.submittedPlayerIds).toEqual(['host']);
+    expect(firstSubmission.round.outcomes).toEqual({});
+    expect(firstSubmission.players.find(player => player.id === 'host').score).toBe(0);
+    expect(JSON.stringify(firstSubmission)).not.toContain('Jupiter');
+
     await host.handleCommand({
       id: 'c3',
       actorId: 'guest',
@@ -81,6 +88,7 @@ describe('HeadToHeadHost authority', () => {
     expect(final.round.answerReveal).toBe('Jupiter');
     expect(final.round.outcomes.host.isCorrect).toBe(true);
     expect(final.round.outcomes.guest.isCorrect).toBe(false);
+    expect(final.players.find(player => player.id === 'host').score).toBe(400);
     expect(JSON.stringify(final)).not.toContain('"answer":"Jupiter"');
     expect(gateway.processed).toEqual(['c1', 'c2', 'c3']);
   });

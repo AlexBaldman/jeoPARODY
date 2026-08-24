@@ -16,8 +16,9 @@ service cloud.firestore {
         && request.resource.data.hostId == request.auth.uid
         && request.resource.data.state.hostId == request.auth.uid;
 
-      // Room IDs are unguessable UUIDs; join-code discovery is separately gated by auth.
-      allow read: if signedIn();
+      // Exact room documents are readable to authenticated players with the unguessable UUID.
+      allow get: if signedIn();
+      allow list: if false;
 
       // v1 authority is the host client. Guests can only submit commands.
       allow update, delete: if signedIn()
@@ -46,7 +47,8 @@ service cloud.firestore {
     }
 
     match /multiplayerRoomCodes/{code} {
-      allow read: if signedIn();
+      allow get: if signedIn();
+      allow list: if false;
 
       allow create: if signedIn()
         && request.resource.data.hostId == request.auth.uid;

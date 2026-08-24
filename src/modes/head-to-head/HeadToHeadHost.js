@@ -2,10 +2,10 @@ import {
   addPlayer,
   canStartMatch,
   finishMatch,
-  hasEveryOutcome,
+  hasEverySubmission,
   MATCH_PHASES,
   openRound,
-  recordOutcome,
+  recordSubmission,
   revealRound,
   setPlayerReady,
 } from './core/match.js';
@@ -123,6 +123,7 @@ export class HeadToHeadHost {
       roundIndex: state.roundIndex + 1,
       questionId: publicQuestion.id,
       answer: String(question.answer),
+      outcomes: {},
     });
 
     return openRound(state, publicQuestion);
@@ -130,21 +131,29 @@ export class HeadToHeadHost {
 
   async #submitAnswer(state, playerId, answer) {
     if (state.phase !== MATCH_PHASES.PLAYING || !state.round) return state;
-    if (state.round.outcomes[playerId]) return state;
+    if (state.round.submittedPlayerIds.includes(playerId)) return state;
 
     const secret = await this.gateway.getHostSecret(this.roomId);
     if (!secret || secret.roundIndex !== state.roundIndex) {
       throw new Error('Host answer secret is unavailable for this round.');
     }
 
-    let next = recordOutcome(state, {
-      playerId,
-      isCorrect: isAnswerAccepted(answer, secret.answer),
-      points: state.round.question.value,
-    });
+    const outcomes = { ...(secret.outcomes || {}) };
+    if (!outcomes[playerId]) {
+      const isCorrect = isAnswerAccepted(answer, secret.answer);
+      outcomes[playerId] = {
+        isCorrect,
+        points: isCorrect ? state.round.question.value : 0,
+      };
+      await this.gateway.setHostSecret(this.roomId, {
+        ...secret,
+        outcomes,
+      });
+    }
 
-    if (hasEveryOutcome(next)) {
-      next = revealRound(next, secret.answer);
+    let next = recordSubmission(state, playerId);
+    if (hasEverySubmission(next)) {
+      next = revealRound(next, secret.answer, outcomes);
     }
 
     return next;

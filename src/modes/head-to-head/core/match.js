@@ -109,6 +109,7 @@ export function openRound(state, question) {
       category: question.category || 'General Knowledge',
       value: question.value,
     },
+    submittedPlayerIds: [],
     outcomes: {},
     answerReveal: null,
   };
@@ -116,44 +117,50 @@ export function openRound(state, question) {
   return next;
 }
 
-export function recordOutcome(state, {
-  playerId,
-  isCorrect,
-  points,
-}) {
+export function recordSubmission(state, playerId) {
   if (state.phase !== MATCH_PHASES.PLAYING || !state.round) return state;
   requirePlayer(state, playerId);
-  if (state.round.outcomes[playerId]) return state;
+  if (state.round.submittedPlayerIds.includes(playerId)) return state;
 
   const next = clone(state);
-  const awarded = isCorrect ? Math.max(0, Number(points) || 0) : 0;
-  next.round.outcomes[playerId] = {
-    isCorrect: Boolean(isCorrect),
-    points: awarded,
-  };
-
-  if (awarded > 0) {
-    const player = next.players.find(item => item.id === playerId);
-    player.score += awarded;
-  }
-
+  next.round.submittedPlayerIds.push(playerId);
   next.revision += 1;
   return next;
 }
 
-export function hasEveryOutcome(state) {
+export function hasEverySubmission(state) {
   if (!state.round) return false;
   return state.players.length === MAX_PLAYERS
-    && state.players.every(player => Boolean(state.round.outcomes[player.id]));
+    && state.players.every(player => state.round.submittedPlayerIds.includes(player.id));
 }
 
-export function revealRound(state, answerReveal) {
-  if (state.phase !== MATCH_PHASES.PLAYING || !hasEveryOutcome(state)) {
+export function revealRound(state, answerReveal, outcomes) {
+  if (state.phase !== MATCH_PHASES.PLAYING || !hasEverySubmission(state)) {
     throw new Error('Round cannot be revealed until both players have answered.');
   }
 
   const next = clone(state);
+  const publicOutcomes = {};
+
+  for (const player of next.players) {
+    const outcome = outcomes?.[player.id];
+    if (!outcome) {
+      throw new Error('Round outcome is missing for a submitted player.');
+    }
+
+    const points = outcome.isCorrect
+      ? Math.max(0, Number(outcome.points) || 0)
+      : 0;
+
+    publicOutcomes[player.id] = {
+      isCorrect: Boolean(outcome.isCorrect),
+      points,
+    };
+    player.score += points;
+  }
+
   next.phase = MATCH_PHASES.ROUND_RESULT;
+  next.round.outcomes = publicOutcomes;
   next.round.answerReveal = String(answerReveal || '');
   next.revision += 1;
   return next;

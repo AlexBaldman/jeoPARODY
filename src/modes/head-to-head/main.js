@@ -222,7 +222,7 @@ function renderLobby() {
 }
 
 function renderPlaying() {
-  const outcome = roomState.round.outcomes[localPlayer.id];
+  const hasSubmitted = roomState.round.submittedPlayerIds.includes(localPlayer.id);
   return `
     <section class="h2h-room-card">
       <div class="h2h-round-meta">
@@ -237,7 +237,7 @@ function renderPlaying() {
         ${escapeHtml(roomState.round.question.prompt)}
       </article>
 
-      ${outcome ? `
+      ${hasSubmitted ? `
         <div class="h2h-waiting">Answer locked. Waiting for your opponent.</div>
       ` : `
         <form id="answer-form" class="h2h-answer-form">
