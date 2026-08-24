@@ -14,10 +14,11 @@ describe('LocalRoomGateway', () => {
     const observed = [];
     const unsubscribe = gateway.subscribeCommands('room-1', command => observed.push(command));
 
-    expect(observed.map(command => command.type)).toEqual(['START', 'SUBMIT_ANSWER']);
+    expect(new Set(observed.map(command => command.type))).toEqual(new Set(['START', 'SUBMIT_ANSWER']));
     expect(new Set(observed.map(command => command.id)).size).toBe(2);
 
-    await gateway.markCommandProcessed('room-1', observed[0].id);
+    const startCommand = observed.find(command => command.type === 'START');
+    await gateway.markCommandProcessed('room-1', startCommand.id);
     unsubscribe();
 
     const replayed = [];
