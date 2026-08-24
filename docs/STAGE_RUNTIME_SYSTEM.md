@@ -1,178 +1,261 @@
-# JeoPARODY Stage Runtime System — Donor / R&D Handoff
+# JeoPARODY Stage Runtime System
 
-**Canonical implementation target:** `AlexBaldman/Jeopardish`
-**This repository:** `AlexBaldman/jeoPARODY` — donor/R&D/reference material
+**Status:** CANONICAL ARCHITECTURE  
+**Repository:** `AlexBaldman/jeoPARODY`
 
-> Implementation agents: do not treat this repository as a second canonical runtime. Mine it for behavior, fixtures, assets, visual ideas and product requirements, then implement through the current canonical owners in `AlexBaldman/Jeopardish`.
+> Historical note: JeoPARODY previously went through a donor/canonical-repository convergence period. [`JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md`](JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md) preserves that history. Current implementation work belongs in this repository unless a newer canonical routing document explicitly says otherwise.
 
 ## North star
 
-**JeoPARODY is a programmable game-show studio.** The game engine produces semantic facts/events. Director systems interpret those facts dramatically. The Stage renders the shared television show. Player devices can provide private/control surfaces.
+**JeoPARODY is a programmable game-show studio.** Game/mode domains produce semantic truth. Director systems interpret that truth dramatically. Stage renders the shared show.
 
 ```text
-                    ┌─────────────────────┐
-                    │     ROOM STATE      │
-                    │ players / scores    │
-                    │ round / clue / mode │
-                    └──────────┬──────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │   GAME DIRECTOR     │
-                    │ decides presentation│
-                    └──────┬────────┬─────┘
-                           │        │
-             ┌─────────────▼─┐    ┌─▼──────────────┐
-             │     STAGE     │    │ PLAYER DEVICES │
-             │ TV / projector│    │ phones/browser │
-             └───────────────┘    └────────────────┘
+MODE / GAME STATE
+      ↓
+semantic facts + events
+      ↓
+SHOW / PERFORMANCE DIRECTORS
+      ↓
+STAGE PROJECTION
+      ├── shared browser / TV / projector
+      ├── host + contestants + board
+      ├── camera / audio / FX
+      └── bounded comedy / environmental life
 ```
 
-Canonical conceptual direction:
+Stage is **presentation infrastructure**, not a second gameplay engine.
+
+It may decide *how* `PLAYER_WRONG` looks. It may not decide whether the player was wrong.
+
+## Ownership boundary
+
+Stage and its directors may own local presentation state such as:
+
+- active scene or shot;
+- camera framing;
+- host performance selection;
+- animation/FX lifecycle;
+- audience reaction;
+- temporary set dressing;
+- presentation timing and cancellation.
+
+They may not independently own:
+
+- scores;
+- active clue/content truth;
+- answer correctness;
+- canonical round progression;
+- multiplayer membership;
+- private competitive answers.
+
+The authoritative domain publishes facts. Stage consumes them.
+
+## Conceptual flow
 
 ```text
-GameController
-    ↓
-GameEngine / EventBus
-    ↓
-semantic game events
-    ↓
-GameDirector
-    ├── HostPerformanceDirector
-    ├── StageDirector
-    ├── CameraDirector
-    ├── AudioDirector
-    └── FXDirector
+Game / Mode Domain
+      ↓
+semantic event
+      ↓
+Game / Show Director
+      ├── HostPerformanceDirector
+      ├── StageDirector
+      ├── CameraDirector
+      ├── AudioDirector
+      └── FXDirector
+      ↓
+Stage
 ```
 
-The presentation layer must never become a second owner of scoring, clue truth, answer state, progression or canonical room state.
+Not every named director must become a class or subsystem. These are responsibility boundaries first. Extract code only when repeated behavior earns it.
 
-## Stage scene vocabulary
+## Scene vocabulary
 
-Potential reusable scenes:
+Useful reusable scene concepts include:
 
-```js
-const stageScenes = {
-  INTRO: {},
-  CATEGORY_REVEAL: {},
-  BOARD: {},
-  CLUE: {},
-  BUZZ: {},
-  PLAYER_ANSWER: {},
-  CORRECT: {},
-  WRONG: {},
-  CHAOS_WAGER: {},
-  ROUND_TRANSITION: {},
-  FINAL_JEOPARODY: {},
-  WINNER: {},
-  CREDITS: {},
-};
+```text
+INTRO
+CATEGORY_REVEAL
+BOARD
+CLUE
+PLAYER_INPUT
+PLAYER_ANSWER
+CORRECT
+WRONG
+ROUND_TRANSITION
+WINNER
+CREDITS
 ```
 
-Conceptual Stage layers:
+Individual modes can add their own semantic scenes rather than forcing every game through trivia vocabulary.
+
+For example, Needle Drop has listening/reveal/session beats that can still project through the same general Stage grammar without pretending an audio-identification round is a Jeopardy clue.
+
+## Stage layers
+
+A Stage projection can be thought of as:
 
 ```text
 SET
 ├── Environment
-├── Game Board
+├── Game Surface / Board
 ├── Host
 ├── Contestants
-├── Podiums
+├── Podiums / Player Identity
 ├── Audience
 ├── Screens
 ├── Props
 ├── Camera
 ├── Lighting
+├── Audio
 ├── FX
 └── Comedy Layer
 ```
 
-Example semantic reaction:
+These are composable presentation layers, not mandatory DOM containers.
+
+## Semantic reaction example
 
 ```text
 PLAYER_WRONG
-    ↓
+     ↓
 StageDirector
-    ├─ contestant reaction
-    ├─ host reaction
-    ├─ camera punch-in
-    ├─ podium animation
-    ├─ audience response
-    ├─ optional comedy ticker
-    └─ optional environmental gag
+     ├─ contestant reaction
+     ├─ host response
+     ├─ camera beat
+     ├─ podium animation
+     ├─ audience response
+     └─ optional bounded environmental gag
 ```
+
+The key word is **reaction**. The semantic fact already exists before Stage sees it.
+
+## Current consumers and pressure tests
+
+### Main trivia game
+
+The original game spine remains the richest Stage consumer: host behavior, board/clue presentation, scoreboards, reactions, media, and show transitions.
+
+### Needle Drop
+
+Needle Drop has already pressure-tested a related direction through semantic show events, Show Director behavior, host-booth performances, and procedural stings. That work is valuable because it proves Stage concepts can survive outside the original trivia loop.
+
+Canonical Needle Drop detail: [`NEEDLE_DROP_ARCHITECTURE.md`](NEEDLE_DROP_ARCHITECTURE.md).
+
+### Head-to-Head
+
+Head-to-Head currently prioritizes deterministic multiplayer truth over theatrical projection. Its public match state is a future candidate for:
+
+- shared-screen score/clue projection;
+- spectator mode;
+- remote controllers;
+- contestant reaction staging;
+- multiplayer winner/rematch presentation.
+
+Do not couple Stage directly to Firebase or room transport. Stage should consume public game facts regardless of whether they came from a local gateway, Firebase, or a later authoritative server.
+
+Canonical multiplayer detail: [`HEAD_TO_HEAD_MULTIPLAYER_2026-08-24.md`](HEAD_TO_HEAD_MULTIPLAYER_2026-08-24.md).
 
 ## Host performance
 
-The canonical runtime already has/targets HostPacks, HostAvatarPack, `HostPerformanceDirector`, and semantic motion primitives. Host concepts include Xander Trefleck, Vera Static and Professor O.O.
+Host performance is one Stage concern, not Stage itself.
 
-Useful donor semantic vocabulary includes thinking, excited, disappointed, celebrating, talking, waving, confused, pointing, nodding and shaking. Preserve useful beats as fixtures/tests; do not revive global DOM lookup, unmanaged timers, random animation ownership or legacy event glue.
+The useful abstraction is semantic motion/performance vocabulary such as:
 
-## Player avatars and identity
+```text
+thinking
+excited
+disappointed
+celebrating
+talking
+waving
+confused
+pointing
+nodding
+shaking
+```
 
-Player identity should inhabit the show via podiums, scoreboards, reaction cutaways, winner screens and stage cameos. The broader desired pipeline is `player photo/input → standardized illustrated/pixel avatar → reusable stage asset`, subject to privacy, rights and asset policies.
+Specific hosts and HostPacks can map these intentions into their own animation/voice/presentation assets.
 
-## Couch Party / shared display
+Rules:
 
-The Stage should support a TV/projector as the public game-show surface while phones/browser devices act as controllers.
+- semantic intent first, implementation-specific animation second;
+- cancellable/teardown-safe performance lifecycles;
+- reduced-motion support;
+- no unmanaged timers or global DOM ownership;
+- no host effect may mutate game truth.
 
-Phones may handle buzzing, answer entry, wagers, voting, power-ups/sabotage where allowed, private information, drawing/alternate input and confidence controls. Room/game state remains canonical.
+## Player identity and shared display
 
-## Studio as comedy character
+Stage should eventually support the public game-show surface while player devices act as private/control surfaces.
 
-Historical stage ideas included a fax machine, skeleton, raccoon, backward-facing camera, sleeping boom operator, audience signs, dangling studio light, wrong-channel monitor, mis-aimed confetti cannon, 404-glitching wheel, blinking chicken, repo truck and fishbowl bubbles.
+```text
+PUBLIC STAGE                PLAYER DEVICE
+TV / projector              phone / browser
+scores                       private input
+host + board                 buzz / answer
+public reveal                wager / choice
+shared reactions             private information
+```
 
-Treat these as optional event-driven environmental assets/gags rather than permanent noise.
+This is especially relevant to Couch Party and future phone-controller play.
 
-Keep conceptual humor budgets separated across clue/content, host performance, camera, physical/environmental and lore/background comedy. Do not fire every comedy channel at once.
+Any future input abstraction should remain separate from game rules. A controller reports intent; the domain/authority determines whether that intent is legal.
 
-The donor `comedyTicker` is behavioral reference material. The canonical replacement should be localized, cancellable, deterministic/seedable where useful, reduced-motion safe, disposable and unable to obscure gameplay.
+## Studio comedy as a bounded system
+
+The studio itself can be a recurring comedy character through environmental assets and event-driven gags: broken hardware, background crew, absurd props, wrong-channel monitors, signs, confetti failures, animals, glitches, and callbacks.
+
+Do not turn this into permanent visual noise.
+
+A useful humor budget separates:
+
+```text
+content / clue humor
+host performance
+camera/editing humor
+physical/environmental humor
+lore/background callbacks
+```
+
+One beat can use several layers when escalation earns it, but the default should preserve clarity and gameplay readability.
 
 ## Visual direction
 
-The historical target is a wide 16:9 game-show composition with retro pixel/VHS vocabulary: limited-color/pixel treatment, dithering, neon/VHS glow, scanlines, RGB separation, podiums, studio hardware, host/contestants, audience infrastructure and animated environmental details.
+The established Stage vocabulary favors a wide game-show composition with retro/pixel/VHS ingredients: controlled palettes, pixel treatment, scanlines/glow where useful, podiums, studio hardware, host/contestants, audience infrastructure, screens, and animated environmental details.
 
-These are theme/art-direction ingredients, not immutable runtime requirements. Alternate Stage sets/themes should be possible without changing game truth.
+These are art-direction ingredients rather than runtime invariants. Alternate sets/themes should be able to change without changing domain truth.
 
-## Donor mining rules
+## Implementation sequence
 
-When inspecting this repository, classify findings as:
+Continue to earn Stage through vertical slices rather than building the entire television industry in one folder:
 
-- **KEEP:** canonical implementation already wins; donor supplies behavior/tests/ideas.
-- **PORT:** isolated donor behavior can safely adapt behind a canonical boundary.
-- **REBUILD:** preserve requirement/behavior but implement through current canonical owners.
-- **ARCHIVE:** historical/research value only.
+1. semantic event → presentation reaction;
+2. clear scene lifecycle + teardown;
+3. host / camera / audio reactions for a few high-value events;
+4. pressure-test across Main Game and Needle Drop;
+5. add Head-to-Head/shared-display projection after real cloud multiplayer is proven;
+6. extract only repeated director/projection primitives;
+7. add richer audience/props/environmental comedy once readability remains stable.
 
-Hard constraints:
+## Hard constraints
 
-1. no wholesale merge of this repo's runtime/store/component architecture;
-2. no browser-stored AI secrets;
-3. no parallel global game state owner;
-4. no compatibility bridge that perpetuates legacy event/state ownership;
-5. no presentation effect may mutate canonical score/clue/round truth;
-6. subscriptions, timers, animations and media effects require teardown/cancellation;
-7. accessibility, reduced motion, localization, privacy and asset provenance remain release gates.
+1. No presentation layer becomes a parallel score/clue/round owner.
+2. No Stage module reaches into Firebase/network implementation details.
+3. No effect depends on browser-stored privileged secrets.
+4. Timers, subscriptions, media, and animations require cancellation/teardown.
+5. Accessibility, reduced motion, localization, privacy, and asset provenance remain release concerns.
+6. Multi-client projections consume public truth only.
+7. Historical donor material may be mined for behavior and assets, but current implementation follows this repo's canonical owners.
+8. Shared abstractions are earned through multiple real consumers, not architecture enthusiasm.
 
-## Suggested canonical implementation sequence
+## Canonical routing
 
-1. Stage shell + scene lifecycle.
-2. Semantic event → director adapter.
-3. Intro/clue/correct/wrong/round-transition/winner vertical slice.
-4. `HostPerformanceDirector` integration.
-5. Camera + contestant/podium reactions.
-6. Audience/screens/props/environmental life and bounded comedy.
-7. Shared-screen Couch Party integration.
+- Runtime architecture: [`../ARCHITECTURE.md`](../ARCHITECTURE.md)
+- Documentation router: [`README.md`](README.md)
+- Current priorities: [`MASTER_PLAN.md`](MASTER_PLAN.md)
+- Needle Drop: [`NEEDLE_DROP_ARCHITECTURE.md`](NEEDLE_DROP_ARCHITECTURE.md)
+- Head-to-Head: [`HEAD_TO_HEAD_MULTIPLAYER_2026-08-24.md`](HEAD_TO_HEAD_MULTIPLAYER_2026-08-24.md)
+- Historical repository convergence: [`JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md`](JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md)
 
-## Instructions for another AI agent
-
-Before changing code:
-
-1. switch to/read `AlexBaldman/Jeopardish` as the canonical implementation repository;
-2. read `docs/architecture/STAGE_RUNTIME_SYSTEM.md` there;
-3. read its convergence README, registry and donor deep-mine documentation;
-4. inspect canonical event bus, HostPerformanceDirector/HostPacks, audio, input, episode/round, media, localization and visual fixtures;
-5. search this donor repo for stage/studio/camera/audience/podium/host/comedy code/assets and extract only useful behaviors/fixtures;
-6. propose the smallest vertical slice proving semantic event → director → Stage;
-7. implement against existing canonical contracts rather than forcing an imagined API;
-8. add deterministic tests/visual fixtures as the system expands.
-
-A stable Stage Runtime can later support alternate sets, hosts, podiums, audience packs, camera packages, FX packs, seasonal studios, props, cosmetics and future show formats without rewriting the trivia engine.
+A stable Stage Runtime should let JeoPARODY swap sets, hosts, podiums, camera packages, audio/FX packages, seasonal studios, and future show formats without rewriting the underlying game domains. That is the leverage worth preserving.
