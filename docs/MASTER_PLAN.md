@@ -8,7 +8,7 @@ JeoPARODY is the canonical proving ground for a larger family of playful learnin
 
 ## 1. Current proven baseline
 
-`main` reached multiplayer milestone commit `46d8f78` on 2026-08-24 through PR #42.
+Head-to-Head multiplayer reached milestone commit `46d8f78` through PR #42. Documentation was re-routed and immortalized through PR #43 (`a3b4c18`), and the GitHub Pages workflow became Firebase-ready plus exact-live-SHA self-verifying through PR #45 (`32b702c`).
 
 The repository now has blocking automated proof for:
 
@@ -27,39 +27,92 @@ Head-to-Head also established reusable seams for guest identity, room discovery,
 
 **Important distinction:** the multiplayer architecture is merged and locally/cloud-adapter proven, but real cross-device Firebase multiplayer is not production-certified until the Firebase project is activated and a phone ↔ laptop session passes the same reconnect expectations.
 
-## 2. One owner per truth
+## 2. Project metabolism: keep the control plane small and trustworthy
+
+Before accelerating feature work, JeoPARODY needs a reliable operating layer so future work does not depend on archaeology.
+
+The intended shape is:
+
+```text
+SMALL TRUSTED CONTROL PLANE
+README / AGENTS / docs router / master plan / architecture / journal
+        ↓
+machine-readable canonical owner registry
+        ↓
+blocking docs + deployment doctrine checks
+        ↓
+LARGE PRESERVED ARCHIVE
+milestones / audits / migration history / experiments / research
+```
+
+The goal is **not** to reorganize every historical Markdown file. Historical material is useful evidence. The goal is to make it obvious which documents own current truth and to make accidental drift fail CI.
+
+Canonical documentation routing lives in `docs/README.md`; machine ownership is registered in `docs/canonical-docs.json`.
+
+## 3. One owner per truth
 
 This file must not become another encyclopedia. Route detailed questions to the document that owns them.
 
 | Domain | Canonical owner |
 |---|---|
+| Repository entrypoint / current playable surfaces | `README.md` |
+| Agent operating rules | `AGENTS.md` |
+| Documentation routing / roles | `docs/README.md` |
 | Current priorities / next lead domino | `docs/MASTER_PLAN.md` |
+| Runtime architecture / ownership boundaries | `ARCHITECTURE.md` |
 | Chronological engineering handoffs and evidence | `DEV_JOURNAL.md` |
 | Head-to-Head multiplayer architecture / security / deployment | `docs/HEAD_TO_HEAD_MULTIPLAYER_2026-08-24.md` |
 | Head-to-Head shipped milestone snapshot | `docs/MULTIPLAYER_FOUNDATION_MILESTONE_2026-08-24.md` |
-| Needle Drop gameplay architecture | `docs/NEEDLE_DROP_ARCHITECTURE.md` and dated follow-on docs |
+| Needle Drop gameplay architecture | `docs/NEEDLE_DROP_ARCHITECTURE.md` |
 | Stage runtime and projection boundary | `docs/STAGE_RUNTIME_SYSTEM.md` |
-| Canonical migration doctrine | `docs/JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md` |
+| Historical canonical-repository convergence | `docs/JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md` |
 | Durable cross-project concept routing | `ICM/README.md` + `ICM/projects/*` |
 | Shared vocabulary | `docs/IMMORTAL_DEV_GLOSSARY.md` |
 
 When reality changes, update the smallest owner of that truth and leave a `DEV_JOURNAL.md` handoff. Do not spray the same mutable status across six documents.
 
-## 3. Lead-domino queue
+## 4. Lead-domino queue
 
-### Domino 0 — verify the post-merge production deploy
+### Domino 0 — finish the project-metabolism contract
 
-The GitHub Pages Actions workflow is triggered by pushes to `main`. Confirm the canonical Actions publisher completes after the multiplayer merge and that the live build contains the new Head-to-Head entrypoint.
+This is the immediate upstream cleanup slice tracked by issue #47.
 
-If the repository still has the historical branch-based Pages publisher enabled, switch the repository Pages source to **GitHub Actions** so there is one deployment owner.
+The target is deliberately modest:
 
-### Domino 1 — activate real Firebase multiplayer
+- a concise documentation router;
+- a machine-readable owner registry;
+- blocking `docs:check` / `deployment:check` / `project:check` contracts;
+- repaired mandatory architecture and Stage docs;
+- removal of the executable legacy `gh-pages` publishing path;
+- current agent doctrine that routes through canonical owners;
+- no mass historical-document reshuffle.
 
-Do this before adding more multiplayer features.
+This matters because every downstream feature becomes cheaper when future humans/agents can answer “what owns this?” in seconds.
+
+### Domino 1 — prove the canonical Pages publisher
+
+The source-controlled publisher is `.github/workflows/deploy-pages.yml`, which now stamps the build SHA and verifies the exact public commit after deployment.
+
+One repository-level setting remains owner-controlled: **Settings → Pages → Source must be GitHub Actions**. Issue #46 tracks this gate.
+
+Once that source is correct, the workflow itself should prove:
+
+```text
+root page live
++ Needle Drop live
++ Head-to-Head live
++ build-meta.gitSha === triggering github.sha
+```
+
+Do not restore a branch-based deployment script or second publisher.
+
+### Domino 2 — activate real Firebase multiplayer
+
+Issue #44 owns this product proof. Do it before adding more multiplayer features.
 
 1. Select or create the real Firebase project.
 2. Enable Firebase Anonymous Auth.
-3. Supply production `VITE_FIREBASE_*` web configuration.
+3. Supply production `VITE_FIREBASE_*` web configuration as repository Actions variables.
 4. Deploy `firestore.rules` and `firestore.indexes.json`.
 5. Confirm TTL configuration is accepted.
 6. Run a real phone ↔ laptop Head-to-Head match.
@@ -69,9 +122,9 @@ Do this before adding more multiplayer features.
 
 Do **not** add presence/heartbeat infrastructure until real-device evidence says it solves a user-visible problem.
 
-### Domino 2 — promote Head-to-Head into the main experience
+### Domino 3 — promote Head-to-Head into the main experience
 
-Only after Domino 1 passes:
+Only after Domino 2 passes:
 
 - add the mode to the main menu / mode-select surface;
 - make room creation and invite sharing discoverable;
@@ -79,11 +132,11 @@ Only after Domino 1 passes:
 - preserve guest-first entry with no account ceremony;
 - keep ranked/profile systems out of the critical path.
 
-### Domino 3 — earn the reusable multiplayer kernel with a second consumer
+### Domino 4 — earn the reusable multiplayer kernel with a second consumer
 
 Do not extract a grand universal multiplayer framework merely because one mode exists.
 
-Use a second concrete consumer, likely a remote/controller or multiplayer slice for Needle Drop, to pressure-test the existing seams. Extract only the concepts that survive both modes, such as:
+Use a second concrete consumer, likely a remote/controller or multiplayer slice for Needle Drop, to pressure-test the existing seams. Extract only the concepts that survive both modes:
 
 ```text
 Identity
@@ -99,16 +152,16 @@ Lifecycle
 
 The resulting abstraction should preserve swappable transports and allow authority to move server-side without rewriting game-domain logic.
 
-### Domino 4 — trusted authority before competitive stakes
+### Domino 5 — trusted authority before competitive stakes
 
 The current host-authoritative model is appropriate for casual proving play. Before public rankings, prizes, wagers, or meaningful competitive ladders:
 
 - move adjudication to a trusted server / Cloud Function / authoritative service;
 - retain the serializable command vocabulary where possible;
 - add latency-aware timing only when a real buzzer mechanic requires it;
-- calibrate phone/controller input through the planned `InputGateway` rather than coupling networking directly to game rules.
+- calibrate phone/controller input through an earned input abstraction rather than coupling networking directly to game rules.
 
-## 4. Architectural guardrails
+## 5. Architectural guardrails
 
 1. **Game/domain truth stays deterministic.** UI and Stage render facts; they do not invent them.
 2. **Transport is replaceable.** Firebase is an implementation, not the game architecture.
@@ -120,8 +173,10 @@ The current host-authoritative model is appropriate for casual proving play. Bef
 8. **Server authority precedes meaningful stakes.** Host authority is a proving seam, not a permanent anti-cheat strategy.
 9. **Source-controlled infrastructure.** Rules, indexes, lifecycle policy, tests, and deployment behavior belong in the repository.
 10. **One owner per truth.** Prefer links to duplication.
+11. **Docs are executable doctrine.** Canonical ownership and deployment assumptions should fail CI when they drift.
+12. **Preserve history without routing through it.** A dated migration/audit document may remain accurate history without being current instructions.
 
-## 5. Definition of done for a substantive slice
+## 6. Definition of done for a substantive slice
 
 A feature is not finished because it works once on a developer machine.
 
@@ -129,6 +184,7 @@ A substantive slice should normally leave behind:
 
 ```text
 IMPLEMENTATION
++ project doctrine checks
 + deterministic/unit proof
 + blocking browser proof where relevant
 + security/rules proof where relevant
@@ -142,7 +198,7 @@ IMPLEMENTATION
 
 Failures discovered by CI are product knowledge. Convert them into durable tests rather than merely fixing the symptom.
 
-## 6. Current strategic shape
+## 7. Current strategic shape
 
 ```text
 JeoPARODY domain/game modes
@@ -170,21 +226,21 @@ multiple clients / projections
 
 These two axes should meet through explicit semantic boundaries, not through a giant manager object that knows everything and eventually demands its own parking space.
 
-## 7. Later, after the current dominos
+## 8. Later, after the current dominos
 
 Candidates remain intentionally unordered until evidence promotes them:
 
 - optional “save my record” account-linking flow after meaningful play;
 - rematches, friends, match receipts, and persistent stats;
-- calibrated buzzer / phone `InputGateway`;
+- calibrated buzzer / phone input abstraction;
 - spectators and audience participation;
 - team play and tournaments;
 - richer Stage reactions driven by semantic match events;
 - cross-mode reusable multiplayer package;
 - broader uINVERSE pressure tests only after JeoPARODY earns the underlying contracts.
 
-## 8. Operating principle
+## 9. Operating principle
 
 Build the smallest upstream capability that makes several downstream ideas easier, prove it in a real vertical slice, capture the lesson, then move to the next constraint.
 
-The current constraint is not “more multiplayer features.” It is **proving the merged multiplayer substrate on real cloud infrastructure and two real devices**.
+**Right now the upstream constraint is project metabolism: make current truth cheap to find and hard to accidentally contradict.** Once that contract is green, the next product constraint is the real Firebase/two-device proof, not another multiplayer feature.

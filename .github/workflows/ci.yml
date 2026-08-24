@@ -21,6 +21,9 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: Project doctrine contract
+        run: npm run project:check
+
       - name: Lint JS
         run: npm run lint
 
