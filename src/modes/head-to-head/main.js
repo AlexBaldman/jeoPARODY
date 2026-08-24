@@ -2,6 +2,11 @@ import './styles.css';
 import questionService from '../../services/api/questionService.js';
 import { createRoomGateway } from '../../services/multiplayer/createRoomGateway.js';
 import { generateRoomCode, normalizeRoomCode } from '../../services/multiplayer/roomCode.js';
+import {
+  clearRoomSession,
+  loadRoomSession,
+  saveRoomSession,
+} from '../../services/multiplayer/roomSession.js';
 import { createMatchState, MATCH_PHASES } from './core/match.js';
 import { HeadToHeadHost } from './HeadToHeadHost.js';
 
@@ -45,7 +50,36 @@ function escapeHtml(value = '') {
     .replaceAll("'", '&#039;');
 }
 
+function requestedJoinCode() {
+  return normalizeRoomCode(new URLSearchParams(window.location.search).get('join') || '');
+}
+
+function requestedRoomId() {
+  return new URLSearchParams(window.location.search).get('room');
+}
+
+function updateRoomUrl(id) {
+  const url = new URL(window.location.href);
+  url.searchParams.delete('join');
+  url.searchParams.set('room', id);
+  if (gateway.kind === 'local') {
+    url.searchParams.set('transport', 'local');
+  } else {
+    url.searchParams.delete('transport');
+  }
+  window.history.replaceState({}, '', url);
+}
+
+function buildInviteUrl() {
+  const url = new URL('head-to-head.html', window.location.href);
+  url.search = '';
+  url.searchParams.set('join', roomState.joinCode);
+  if (gateway.kind === 'local') url.searchParams.set('transport', 'local');
+  return url.toString();
+}
+
 function renderEntry() {
+  const joinCode = requestedJoinCode();
   root.innerHTML = `
     <main class="h2h-shell">
       <a class="h2h-back" href="./">← JeoPARODY</a>
@@ -70,12 +104,12 @@ function renderEntry() {
 
         <form id="join-room-form" class="h2h-panel">
           <span class="h2h-panel-number">02</span>
-          <h2>Join match</h2>
+          <h2>${joinCode ? 'Your invitation awaits' : 'Join match'}</h2>
           <label>Nickname
-            <input name="nickname" maxlength="28" autocomplete="nickname" required placeholder="Contestant 2">
+            <input name="nickname" maxlength="28" autocomplete="nickname" required placeholder="Contestant 2" ${joinCode ? 'autofocus' : ''}>
           </label>
           <label>Room code
-            <input name="code" maxlength="8" autocapitalize="characters" spellcheck="false" required placeholder="B7K9P">
+            <input name="code" maxlength="8" autocapitalize="characters" spellcheck="false" required placeholder="B7K9P" value="${escapeHtml(joinCode)}">
           </label>
           <button class="h2h-primary" type="submit">Join room</button>
         </form>
@@ -139,6 +173,22 @@ async function joinRoom(event) {
   });
 }
 
+function leaveUnavailableRoom() {
+  clearRoomSession();
+  roomState = null;
+  roomId = null;
+  unsubscribeRoom?.();
+  unsubscribeRoom = null;
+  hostController?.stop();
+  hostController = null;
+
+  const url = new URL(window.location.href);
+  url.searchParams.delete('room');
+  window.history.replaceState({}, '', url);
+  renderEntry();
+  setStatus('That room is no longer available. Create or join another match.', 'error');
+}
+
 async function enterRoom(id, initialState = null) {
   roomId = id;
   roomState = initialState;
@@ -146,13 +196,18 @@ async function enterRoom(id, initialState = null) {
   hostController?.stop();
   hostController = null;
   setStatus('');
+  updateRoomUrl(id);
+  saveRoomSession({ roomId: id, player: localPlayer, transport: gateway.kind });
 
   unsubscribeRoom = gateway.subscribeRoom(roomId, (state, error) => {
     if (error) {
       setStatus(error.message, 'error');
       return;
     }
-    if (!state) return;
+    if (!state) {
+      leaveUnavailableRoom();
+      return;
+    }
 
     roomState = state;
     if (localPlayer?.id === state.hostId) {
@@ -173,6 +228,25 @@ async function enterRoom(id, initialState = null) {
 
     renderRoom();
   });
+}
+
+async function restoreRoomSession() {
+  const targetRoomId = requestedRoomId();
+  if (!targetRoomId) return false;
+
+  const session = loadRoomSession();
+  if (!session || session.roomId !== targetRoomId) return false;
+  if (session.transport && session.transport !== gateway.kind) return false;
+
+  const restoredPlayer = await gateway.ensurePlayer(session.player.nickname);
+  if (restoredPlayer.id !== session.player.id) {
+    clearRoomSession();
+    return false;
+  }
+
+  localPlayer = restoredPlayer;
+  await enterRoom(targetRoomId);
+  return true;
 }
 
 function renderScores() {
@@ -208,6 +282,7 @@ function renderLobby() {
       </div>
 
       <div class="h2h-actions">
+        <button class="h2h-secondary" data-copy-invite type="button">Copy invite link</button>
         <button class="h2h-secondary" data-ready type="button">
           ${me?.ready ? 'Unready' : 'Ready up'}
         </button>
@@ -342,6 +417,12 @@ function bindRoomActions() {
     setTimeout(() => renderRoom(), 700);
   });
 
+  root.querySelector('[data-copy-invite]')?.addEventListener('click', async event => {
+    await navigator.clipboard?.writeText(buildInviteUrl());
+    event.currentTarget.textContent = 'Invite copied';
+    setTimeout(() => renderRoom(), 900);
+  });
+
   root.querySelector('[data-ready]')?.addEventListener('click', async () => {
     const me = playerById(localPlayer.id);
     await send('SET_READY', { ready: !me.ready });
@@ -372,6 +453,7 @@ async function boot() {
   try {
     gateway = await createRoomGateway();
     await questionService.initialize();
+    if (await restoreRoomSession()) return;
     renderEntry();
   } catch (error) {
     console.error(error);
