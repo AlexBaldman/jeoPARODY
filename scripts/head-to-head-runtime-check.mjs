@@ -2,8 +2,16 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { chromium } from 'playwright';
 
-const BASE_URL = process.env.BASE_URL || 'http://127.0.0.1:4173';
-const OUT_DIR = path.resolve('screenshots/head-to-head-runtime');
+const BASE_URL = (process.env.BASE_URL || 'http://127.0.0.1:4173').replace(/\/$/, '');
+const TRANSPORT = process.env.H2H_TRANSPORT || 'local';
+const OUT_DIR = path.resolve(
+  process.env.H2H_EVIDENCE_DIR || 'screenshots/head-to-head-runtime',
+);
+
+const supportedTransports = new Set(['local', 'auto']);
+if (!supportedTransports.has(TRANSPORT)) {
+  throw new Error(`H2H_TRANSPORT must be one of ${[...supportedTransports].join(', ')}, received ${TRANSPORT}`);
+}
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -14,6 +22,17 @@ function watchRuntime(page, label, errors) {
   page.on('console', message => {
     if (message.type() === 'error') errors.push(`${label}: ${message.text()}`);
   });
+}
+
+function headToHeadUrl(params = {}) {
+  const url = new URL(`${BASE_URL}/head-to-head.html`);
+  if (TRANSPORT === 'local') url.searchParams.set('transport', 'local');
+  for (const [name, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null && value !== '') {
+      url.searchParams.set(name, value);
+    }
+  }
+  return url.toString();
 }
 
 async function captureFailure(page, name) {
@@ -27,18 +46,25 @@ async function captureFailure(page, name) {
 async function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext();
-  const host = await context.newPage();
-  const guest = await context.newPage();
+
+  // LocalRoomGateway intentionally coordinates tabs through shared browser storage.
+  // Cloud certification must instead use isolated contexts so Anonymous Auth creates
+  // two genuinely independent users. If the production site silently falls back to
+  // LocalRoomGateway, those contexts cannot discover each other's room and the smoke
+  // test fails rather than producing a false-positive multiplayer certification.
+  const hostContext = await browser.newContext();
+  const guestContext = TRANSPORT === 'local'
+    ? hostContext
+    : await browser.newContext();
+  const host = await hostContext.newPage();
+  const guest = await guestContext.newPage();
   const runtimeErrors = [];
 
   watchRuntime(host, 'host', runtimeErrors);
   watchRuntime(guest, 'guest', runtimeErrors);
 
   try {
-    const localUrl = `${BASE_URL}/head-to-head.html?transport=local`;
-
-    await host.goto(localUrl, { waitUntil: 'domcontentloaded' });
+    await host.goto(headToHeadUrl(), { waitUntil: 'domcontentloaded' });
     await host.waitForSelector('#create-room-form');
     await host.locator('#create-room-form input[name="nickname"]').fill('Runtime Host');
     await host.getByRole('button', { name: 'Create room' }).click();
@@ -49,7 +75,7 @@ async function main() {
     assert(host.url().includes('room='), 'active room URL must carry a reconnect target');
     assert(await host.getByRole('button', { name: 'Copy invite link' }).isVisible(), 'lobby must expose an invite-link action');
 
-    await guest.goto(`${localUrl}&join=${roomCode}`, { waitUntil: 'domcontentloaded' });
+    await guest.goto(headToHeadUrl({ join: roomCode }), { waitUntil: 'domcontentloaded' });
     await guest.waitForSelector('#join-room-form');
     assert(
       await guest.locator('#join-room-form input[name="code"]').inputValue() === roomCode,
@@ -84,7 +110,7 @@ async function main() {
     await host.waitForSelector('.h2h-waiting');
     assert(!(await host.locator('.h2h-reveal').count()), 'first submission must not reveal adjudication');
 
-    // Hard reconnect test: the authority tab refreshes after accepting one answer.
+    // Hard reconnect test: the authority client refreshes after accepting one answer.
     await host.reload({ waitUntil: 'domcontentloaded' });
     await host.waitForSelector('.h2h-waiting');
     assert(await host.getByText('Runtime Guest').isVisible(), 'host refresh must restore room membership');
@@ -116,7 +142,9 @@ async function main() {
     await guest.screenshot({ path: path.join(OUT_DIR, 'guest-round-result.png'), fullPage: true });
 
     assert(runtimeErrors.length === 0, `browser emitted runtime errors: ${runtimeErrors.join(' | ')}`);
-    console.log(`Head-to-head runtime check passed with host + guest reconnect. Room ${roomCode}. Evidence: ${OUT_DIR}`);
+    console.log(
+      `Head-to-head ${TRANSPORT} runtime check passed with host + guest reconnect. Room ${roomCode}. Evidence: ${OUT_DIR}`,
+    );
   } catch (error) {
     await captureFailure(host, 'host-failure');
     await captureFailure(guest, 'guest-failure');
