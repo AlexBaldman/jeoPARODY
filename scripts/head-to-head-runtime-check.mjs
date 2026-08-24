@@ -16,6 +16,14 @@ function watchRuntime(page, label, errors) {
   });
 }
 
+async function captureFailure(page, name) {
+  try {
+    await page.screenshot({ path: path.join(OUT_DIR, `${name}.png`), fullPage: true });
+  } catch {
+    // Preserve the original runtime failure if screenshot capture also fails.
+  }
+}
+
 async function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   const browser = await chromium.launch({ headless: true });
@@ -38,11 +46,16 @@ async function main() {
 
     const roomCode = (await host.locator('[data-copy-code]').textContent()).trim();
     assert(/^[A-Z0-9]{5}$/.test(roomCode), `room code must be five readable characters, received ${roomCode}`);
+    assert(host.url().includes('room='), 'active room URL must carry a reconnect target');
+    assert(await host.getByRole('button', { name: 'Copy invite link' }).isVisible(), 'lobby must expose an invite-link action');
 
-    await guest.goto(localUrl, { waitUntil: 'domcontentloaded' });
+    await guest.goto(`${localUrl}&join=${roomCode}`, { waitUntil: 'domcontentloaded' });
     await guest.waitForSelector('#join-room-form');
+    assert(
+      await guest.locator('#join-room-form input[name="code"]').inputValue() === roomCode,
+      'invite URL must prefill the room code',
+    );
     await guest.locator('#join-room-form input[name="nickname"]').fill('Runtime Guest');
-    await guest.locator('#join-room-form input[name="code"]').fill(roomCode);
     await guest.getByRole('button', { name: 'Join room' }).click();
 
     await host.waitForFunction(() => document.querySelectorAll('.h2h-player').length === 2);
@@ -67,8 +80,17 @@ async function main() {
     assert(hostClue === guestClue, 'both players must receive exactly the same clue');
 
     await host.locator('#answer').fill('definitely wrong runtime host');
-    await guest.locator('#answer').fill('definitely wrong runtime guest');
     await host.getByRole('button', { name: 'Lock it' }).click();
+    await host.waitForSelector('.h2h-waiting');
+    assert(!(await host.locator('.h2h-reveal').count()), 'first submission must not reveal adjudication');
+
+    // Hard reconnect test: the authority tab refreshes after accepting one answer.
+    await host.reload({ waitUntil: 'domcontentloaded' });
+    await host.waitForSelector('.h2h-waiting');
+    assert(await host.getByText('Runtime Guest').isVisible(), 'host refresh must restore room membership');
+    assert((await host.locator('.h2h-clue').textContent()).trim() === hostClue, 'host refresh must restore the same active clue');
+
+    await guest.locator('#answer').fill('definitely wrong runtime guest');
     await guest.getByRole('button', { name: 'Lock it' }).click();
 
     await host.waitForSelector('.h2h-reveal h2');
@@ -82,11 +104,23 @@ async function main() {
     const guestScores = await guest.locator('.h2h-score').allTextContents();
     assert(JSON.stringify(hostScores) === JSON.stringify(guestScores), 'scoreboard must converge across both clients');
 
+    // Guest refresh must project the already-resolved truth instead of returning to entry.
+    await guest.reload({ waitUntil: 'domcontentloaded' });
+    await guest.waitForSelector('.h2h-reveal h2');
+    assert(
+      (await guest.locator('.h2h-reveal h2').textContent()).trim() === hostReveal,
+      'guest refresh must restore the revealed round',
+    );
+
     await host.screenshot({ path: path.join(OUT_DIR, 'host-round-result.png'), fullPage: true });
     await guest.screenshot({ path: path.join(OUT_DIR, 'guest-round-result.png'), fullPage: true });
 
     assert(runtimeErrors.length === 0, `browser emitted runtime errors: ${runtimeErrors.join(' | ')}`);
-    console.log(`Head-to-head runtime check passed. Room ${roomCode}. Evidence: ${OUT_DIR}`);
+    console.log(`Head-to-head runtime check passed with host + guest reconnect. Room ${roomCode}. Evidence: ${OUT_DIR}`);
+  } catch (error) {
+    await captureFailure(host, 'host-failure');
+    await captureFailure(guest, 'guest-failure');
+    throw error;
   } finally {
     await browser.close();
   }
