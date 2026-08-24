@@ -1,0 +1,58 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isRoomHost(roomId) {
+      return signedIn()
+        && get(/databases/$(database)/documents/multiplayerRooms/$(roomId)).data.hostId == request.auth.uid;
+    }
+
+    match /multiplayerRooms/{roomId} {
+      allow create: if signedIn()
+        && request.resource.data.hostId == request.auth.uid
+        && request.resource.data.state.hostId == request.auth.uid;
+
+      // Room IDs are unguessable UUIDs; join-code discovery is separately gated by auth.
+      allow read: if signedIn();
+
+      // v1 authority is the host client. Guests can only submit commands.
+      allow update, delete: if signedIn()
+        && resource.data.hostId == request.auth.uid
+        && request.resource.data.hostId == resource.data.hostId;
+
+      match /commands/{commandId} {
+        allow create: if signedIn()
+          && request.resource.data.actorId == request.auth.uid
+          && request.resource.data.processedAt == null;
+
+        allow read: if signedIn()
+          && (resource.data.actorId == request.auth.uid || isRoomHost(roomId));
+
+        allow update: if isRoomHost(roomId)
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['processedAt', 'processedBy'])
+          && request.resource.data.actorId == resource.data.actorId;
+
+        allow delete: if false;
+      }
+
+      match /private/{documentId} {
+        allow read, write: if isRoomHost(roomId);
+      }
+    }
+
+    match /multiplayerRoomCodes/{code} {
+      allow read: if signedIn();
+
+      allow create: if signedIn()
+        && request.resource.data.hostId == request.auth.uid;
+
+      allow update, delete: if signedIn()
+        && resource.data.hostId == request.auth.uid;
+    }
+  }
+}
