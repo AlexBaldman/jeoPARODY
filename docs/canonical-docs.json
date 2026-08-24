@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "repository": "AlexBaldman/jeoPARODY",
+  "documents": [
+    {
+      "domain": "repository-entrypoint",
+      "path": "README.md",
+      "role": "canonical"
+    },
+    {
+      "domain": "agent-operating-rules",
+      "path": "AGENTS.md",
+      "role": "canonical"
+    },
+    {
+      "domain": "runtime-architecture",
+      "path": "ARCHITECTURE.md",
+      "role": "canonical"
+    },
+    {
+      "domain": "documentation-routing",
+      "path": "docs/README.md",
+      "role": "canonical"
+    },
+    {
+      "domain": "current-priorities",
+      "path": "docs/MASTER_PLAN.md",
+      "role": "canonical"
+    },
+    {
+      "domain": "engineering-handoffs",
+      "path": "DEV_JOURNAL.md",
+      "role": "canonical"
+    },
+    {
+      "domain": "cross-project-context",
+      "path": "ICM/README.md",
+      "role": "canonical"
+    },
+    {
+      "domain": "shared-vocabulary",
+      "path": "docs/IMMORTAL_DEV_GLOSSARY.md",
+      "role": "canonical"
+    },
+    {
+      "domain": "head-to-head-multiplayer",
+      "path": "docs/HEAD_TO_HEAD_MULTIPLAYER_2026-08-24.md",
+      "role": "canonical"
+    },
+    {
+      "domain": "needle-drop",
+      "path": "docs/NEEDLE_DROP_ARCHITECTURE.md",
+      "role": "canonical"
+    },
+    {
+      "domain": "stage-runtime",
+      "path": "docs/STAGE_RUNTIME_SYSTEM.md",
+      "role": "canonical",
+      "forbiddenPhrases": [
+        "**Canonical implementation target:** `AlexBaldman/Jeopardish`",
+        "This repository: `AlexBaldman/jeoPARODY` — donor/R&D/reference material"
+      ]
+    },
+    {
+      "domain": "canonical-migration-history",
+      "path": "docs/JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md",
+      "role": "reference"
+    },
+    {
+      "domain": "multiplayer-foundation-2026-08-24",
+      "path": "docs/MULTIPLAYER_FOUNDATION_MILESTONE_2026-08-24.md",
+      "role": "milestone"
+    }
+  ]
+}
