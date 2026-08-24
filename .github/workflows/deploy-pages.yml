@@ -17,6 +17,16 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # Firebase's web configuration is client-visible configuration, not an
+      # authorization secret. Store these as repository Actions variables.
+      # When they are absent, Head-to-Head deliberately builds in local proving mode.
+      VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+      VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+      VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+      VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+      VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+      VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -26,7 +36,53 @@ jobs:
       - run: npm ci
       - run: npm run needle-drop:validate
       - run: npm test -- --runInBand
+
+      - name: Report multiplayer deployment mode
+        shell: bash
+        run: |
+          required=(
+            VITE_FIREBASE_API_KEY
+            VITE_FIREBASE_AUTH_DOMAIN
+            VITE_FIREBASE_PROJECT_ID
+            VITE_FIREBASE_APP_ID
+          )
+          missing=()
+          for name in "${required[@]}"; do
+            if [[ -z "${!name:-}" ]]; then
+              missing+=("$name")
+            fi
+          done
+
+          if (( ${#missing[@]} == 0 )); then
+            echo "Firebase multiplayer configuration detected; Pages will build the cloud transport."
+          else
+            echo "::notice::Firebase multiplayer configuration is incomplete; Head-to-Head will build in local proving mode. Missing repository variables: ${missing[*]}"
+          fi
+
       - run: npm run build
+
+      - name: Stamp immutable build metadata
+        env:
+          BUILD_SHA: ${{ github.sha }}
+          BUILD_REF: ${{ github.ref }}
+          BUILD_RUN_ID: ${{ github.run_id }}
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+
+          const metadata = {
+            gitSha: process.env.BUILD_SHA,
+            gitRef: process.env.BUILD_REF,
+            workflowRunId: process.env.BUILD_RUN_ID,
+            builtAt: new Date().toISOString(),
+          };
+
+          fs.writeFileSync(
+            'dist/build-meta.json',
+            `${JSON.stringify(metadata, null, 2)}\n`,
+          );
+          NODE
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
@@ -38,7 +94,64 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+
+  verify-live:
+    name: verify-live-pages
+    runs-on: ubuntu-latest
+    needs: deploy
+    env:
+      PAGE_URL: ${{ needs.deploy.outputs.page_url }}
+      EXPECTED_SHA: ${{ github.sha }}
+    steps:
+      - name: Verify published entrypoints and exact commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="${PAGE_URL%/}"
+
+          fetch() {
+            local path="$1"
+            local output="$2"
+            curl \
+              --fail \
+              --silent \
+              --show-error \
+              --location \
+              --retry 12 \
+              --retry-delay 5 \
+              --retry-all-errors \
+              --max-time 30 \
+              "$base/$path?verify=$EXPECTED_SHA" \
+              --output "$output"
+          }
+
+          fetch "" /tmp/jeoparody-root.html
+          fetch "needle-drop.html" /tmp/jeoparody-needle-drop.html
+          fetch "head-to-head.html" /tmp/jeoparody-head-to-head.html
+          fetch "build-meta.json" /tmp/jeoparody-build-meta.json
+
+          grep -q '<html' /tmp/jeoparody-root.html
+          grep -q 'head-to-head-app' /tmp/jeoparody-head-to-head.html
+
+          EXPECTED_SHA="$EXPECTED_SHA" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+
+          const metadata = JSON.parse(
+            fs.readFileSync('/tmp/jeoparody-build-meta.json', 'utf8'),
+          );
+
+          if (metadata.gitSha !== process.env.EXPECTED_SHA) {
+            console.error(
+              `Pages commit mismatch: expected ${process.env.EXPECTED_SHA}, received ${metadata.gitSha}`,
+            );
+            process.exit(1);
+          }
+
+          console.log(`Verified live Pages commit ${metadata.gitSha}.`);
+          NODE
