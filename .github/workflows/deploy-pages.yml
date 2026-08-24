@@ -17,6 +17,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      firebase_configured: ${{ steps.multiplayer_mode.outputs.firebase_configured }}
     env:
       # Firebase's web configuration is client-visible configuration, not an
       # authorization secret. Store these as repository Actions variables.
@@ -38,6 +40,7 @@ jobs:
       - run: npm test -- --runInBand
 
       - name: Report multiplayer deployment mode
+        id: multiplayer_mode
         shell: bash
         run: |
           required=(
@@ -54,8 +57,10 @@ jobs:
           done
 
           if (( ${#missing[@]} == 0 )); then
+            echo "firebase_configured=true" >> "$GITHUB_OUTPUT"
             echo "Firebase multiplayer configuration detected; Pages will build the cloud transport."
           else
+            echo "firebase_configured=false" >> "$GITHUB_OUTPUT"
             echo "::notice::Firebase multiplayer configuration is incomplete; Head-to-Head will build in local proving mode. Missing repository variables: ${missing[*]}"
           fi
 
@@ -66,6 +71,7 @@ jobs:
           BUILD_SHA: ${{ github.sha }}
           BUILD_REF: ${{ github.ref }}
           BUILD_RUN_ID: ${{ github.run_id }}
+          FIREBASE_CONFIGURED: ${{ steps.multiplayer_mode.outputs.firebase_configured }}
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -74,6 +80,7 @@ jobs:
             gitSha: process.env.BUILD_SHA,
             gitRef: process.env.BUILD_REF,
             workflowRunId: process.env.BUILD_RUN_ID,
+            multiplayerTransport: process.env.FIREBASE_CONFIGURED === 'true' ? 'firebase' : 'local',
             builtAt: new Date().toISOString(),
           };
 
@@ -104,10 +111,11 @@ jobs:
   verify-live:
     name: verify-live-pages
     runs-on: ubuntu-latest
-    needs: deploy
+    needs: [build, deploy]
     env:
       PAGE_URL: ${{ needs.deploy.outputs.page_url }}
       EXPECTED_SHA: ${{ github.sha }}
+      EXPECTED_MULTIPLAYER_TRANSPORT: ${{ needs.build.outputs.firebase_configured == 'true' && 'firebase' || 'local' }}
     steps:
       - name: Verify published entrypoints and exact commit
         shell: bash
@@ -139,7 +147,7 @@ jobs:
           grep -q '<html' /tmp/jeoparody-root.html
           grep -q 'head-to-head-app' /tmp/jeoparody-head-to-head.html
 
-          EXPECTED_SHA="$EXPECTED_SHA" node --input-type=module <<'NODE'
+          EXPECTED_SHA="$EXPECTED_SHA" EXPECTED_MULTIPLAYER_TRANSPORT="$EXPECTED_MULTIPLAYER_TRANSPORT" node --input-type=module <<'NODE'
           import fs from 'node:fs';
 
           const metadata = JSON.parse(
@@ -153,5 +161,45 @@ jobs:
             process.exit(1);
           }
 
-          console.log(`Verified live Pages commit ${metadata.gitSha}.`);
+          if (metadata.multiplayerTransport !== process.env.EXPECTED_MULTIPLAYER_TRANSPORT) {
+            console.error(
+              `Pages multiplayer mode mismatch: expected ${process.env.EXPECTED_MULTIPLAYER_TRANSPORT}, received ${metadata.multiplayerTransport}`,
+            );
+            process.exit(1);
+          }
+
+          console.log(
+            `Verified live Pages commit ${metadata.gitSha} with ${metadata.multiplayerTransport} multiplayer transport.`,
+          );
           NODE
+
+  verify-firebase-cloud:
+    name: verify-firebase-cloud-multiplayer
+    runs-on: ubuntu-latest
+    needs: [build, deploy, verify-live]
+    if: needs.build.outputs.firebase_configured == 'true'
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Install browser runtime dependency
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Prove live Firebase room + independent-user reconnect
+        env:
+          BASE_URL: ${{ needs.deploy.outputs.page_url }}
+          H2H_TRANSPORT: auto
+          H2H_EVIDENCE_DIR: screenshots/head-to-head-cloud
+        run: node scripts/head-to-head-runtime-check.mjs
+      - name: Upload cloud multiplayer evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: head-to-head-cloud-evidence
+          path: screenshots/head-to-head-cloud
+          if-no-files-found: ignore
