@@ -8,10 +8,11 @@ JeoPARODY is the canonical proving ground for a larger family of playful learnin
 
 ## 1. Current proven baseline
 
-Head-to-Head multiplayer reached milestone commit `46d8f78` through PR #42. Documentation was re-routed and immortalized through PR #43 (`a3b4c18`), and the GitHub Pages workflow became Firebase-ready plus exact-live-SHA self-verifying through PR #45 (`32b702c`).
+Head-to-Head multiplayer reached milestone commit `46d8f78` through PR #42. Documentation was re-routed through PR #43 (`a3b4c18`), the Pages workflow became Firebase-ready and exact-live-SHA self-verifying through PR #45 (`32b702c`), and the project-metabolism contract merged through PR #49 as `6443a8c`.
 
 The repository now has blocking automated proof for:
 
+- documentation/deployment doctrine via `npm run project:check`;
 - production Vite build;
 - unit/integration tests;
 - browser boot and deterministic main-game runtime;
@@ -23,15 +24,13 @@ The repository now has blocking automated proof for:
 - Firestore Security Rules through the local emulator, including hostile-client cases;
 - accessibility audits and captured runtime evidence.
 
-Head-to-Head also established reusable seams for guest identity, room discovery, invitations, durable commands, authority, private/public state, reconnect, lifecycle expiry, transport adapters, and security policy.
+The canonical GitHub Pages publisher is now proven. `Deploy GitHub Pages` run `32754954244` deployed merge commit `6443a8cb9ef4c6db89aa02cf3b07badc00d0295e`; its live verification fetched the root, Needle Drop, Head-to-Head and `build-meta.json`, then proved the public `gitSha` exactly matched that commit. Issue #46 is complete.
 
-**Important distinction:** the multiplayer architecture is merged and locally/cloud-adapter proven, but real cross-device Firebase multiplayer is not production-certified until the Firebase project is activated and a phone ↔ laptop session passes the same reconnect expectations.
+**Current cloud boundary:** the same deployment run also proved that the production `VITE_FIREBASE_*` Actions variables are currently absent, so the live Head-to-Head build is intentionally using local proving mode. Real Firebase multiplayer is therefore the sole current lead domino.
 
-## 2. Project metabolism: keep the control plane small and trustworthy
+## 2. Project metabolism: completed upstream contract
 
-Before accelerating feature work, JeoPARODY needs a reliable operating layer so future work does not depend on archaeology.
-
-The intended shape is:
+JeoPARODY now uses a small trusted control plane rather than asking every future human/agent to infer current truth from a large archive.
 
 ```text
 SMALL TRUSTED CONTROL PLANE
@@ -45,9 +44,7 @@ LARGE PRESERVED ARCHIVE
 milestones / audits / migration history / experiments / research
 ```
 
-The goal is **not** to reorganize every historical Markdown file. Historical material is useful evidence. The goal is to make it obvious which documents own current truth and to make accidental drift fail CI.
-
-Canonical documentation routing lives in `docs/README.md`; machine ownership is registered in `docs/canonical-docs.json`.
+Canonical documentation routing lives in `docs/README.md`; machine ownership is registered in `docs/canonical-docs.json`. Historical material remains searchable evidence but does not outrank registered current owners.
 
 ## 3. One owner per truth
 
@@ -73,58 +70,73 @@ When reality changes, update the smallest owner of that truth and leave a `DEV_J
 
 ## 4. Lead-domino queue
 
-### Domino 0 — finish the project-metabolism contract
+### Domino 0 — activate and automatically certify real Firebase multiplayer
 
-This is the immediate upstream cleanup slice tracked by issue #47.
+Issue #44 owns the current product proof. Do this before adding more multiplayer features.
 
-The target is deliberately modest:
-
-- a concise documentation router;
-- a machine-readable owner registry;
-- blocking `docs:check` / `deployment:check` / `project:check` contracts;
-- repaired mandatory architecture and Stage docs;
-- removal of the executable legacy `gh-pages` publishing path;
-- current agent doctrine that routes through canonical owners;
-- no mass historical-document reshuffle.
-
-This matters because every downstream feature becomes cheaper when future humans/agents can answer “what owns this?” in seconds.
-
-### Domino 1 — prove the canonical Pages publisher
-
-The source-controlled publisher is `.github/workflows/deploy-pages.yml`, which now stamps the build SHA and verifies the exact public commit after deployment.
-
-One repository-level setting remains owner-controlled: **Settings → Pages → Source must be GitHub Actions**. Issue #46 tracks this gate.
-
-Once that source is correct, the workflow itself should prove:
+Current evidence is explicit: the latest production Pages build reported these required repository Actions variables as missing:
 
 ```text
-root page live
-+ Needle Drop live
-+ Head-to-Head live
-+ build-meta.gitSha === triggering github.sha
+VITE_FIREBASE_API_KEY
+VITE_FIREBASE_AUTH_DOMAIN
+VITE_FIREBASE_PROJECT_ID
+VITE_FIREBASE_APP_ID
 ```
 
-Do not restore a branch-based deployment script or second publisher.
+`VITE_FIREBASE_STORAGE_BUCKET` and `VITE_FIREBASE_MESSAGING_SENDER_ID` are also supported when supplied by the selected Firebase web app.
 
-### Domino 2 — activate real Firebase multiplayer
+Activation sequence:
 
-Issue #44 owns this product proof. Do it before adding more multiplayer features.
-
-1. Select or create the real Firebase project.
+1. Select or create the production Firebase project.
 2. Enable Firebase Anonymous Auth.
-3. Supply production `VITE_FIREBASE_*` web configuration as repository Actions variables.
-4. Deploy `firestore.rules` and `firestore.indexes.json`.
-5. Confirm TTL configuration is accepted.
-6. Run a real phone ↔ laptop Head-to-Head match.
-7. Refresh the host after its first answer and prove recovery.
-8. Refresh the challenger after reveal and prove recovery.
-9. Observe actual backgrounding, sleep, Wi-Fi switching, and disconnect behavior.
+3. Add the Firebase web configuration as repository Actions variables.
+4. Deploy `firestore.rules` and `firestore.indexes.json`; confirm TTL field policies are accepted.
+5. Trigger the canonical Pages deployment.
 
-Do **not** add presence/heartbeat infrastructure until real-device evidence says it solves a user-visible problem.
+The Pages workflow should not merely notice configuration. Once Firebase configuration is present, production deployment is expected to certify the cloud path automatically:
 
-### Domino 3 — promote Head-to-Head into the main experience
+```text
+Firebase variables present
+        ↓
+Pages build stamps multiplayerTransport = firebase
+        ↓
+exact live SHA + transport metadata proof
+        ↓
+two isolated browser contexts
+        ↓
+independent Anonymous Auth users
+        ↓
+create / join / ready / same clue
+        ↓
+host submits + refreshes
+        ↓
+guest submits + reveal converges
+        ↓
+guest refreshes resolved round
+        ↓
+cloud evidence artifact
+```
 
-Only after Domino 2 passes:
+Using isolated contexts is deliberate. A silent fallback to `LocalRoomGateway` cannot pass because the two contexts do not share local browser storage.
+
+### Domino 1 — physical phone ↔ laptop proof
+
+Automated production cloud certification removes most deployment uncertainty, but it does not simulate mobile OS backgrounding, network changes, sleep, or actual device/browser behavior.
+
+After Domino 0 passes:
+
+- host from one physical device;
+- challenger from another;
+- complete at least one five-clue match;
+- refresh the host after its first submission;
+- refresh the challenger after reveal;
+- background/foreground the phone;
+- briefly interrupt or switch networking if practical;
+- record any user-visible reconnect failure before inventing a heartbeat/presence subsystem.
+
+### Domino 2 — promote Head-to-Head into the main experience
+
+Only after real cloud + physical-device proof:
 
 - add the mode to the main menu / mode-select surface;
 - make room creation and invite sharing discoverable;
@@ -132,7 +144,7 @@ Only after Domino 2 passes:
 - preserve guest-first entry with no account ceremony;
 - keep ranked/profile systems out of the critical path.
 
-### Domino 4 — earn the reusable multiplayer kernel with a second consumer
+### Domino 3 — earn the reusable multiplayer kernel with a second consumer
 
 Do not extract a grand universal multiplayer framework merely because one mode exists.
 
@@ -152,7 +164,7 @@ Lifecycle
 
 The resulting abstraction should preserve swappable transports and allow authority to move server-side without rewriting game-domain logic.
 
-### Domino 5 — trusted authority before competitive stakes
+### Domino 4 — trusted authority before competitive stakes
 
 The current host-authoritative model is appropriate for casual proving play. Before public rankings, prizes, wagers, or meaningful competitive ladders:
 
@@ -175,6 +187,7 @@ The current host-authoritative model is appropriate for casual proving play. Bef
 10. **One owner per truth.** Prefer links to duplication.
 11. **Docs are executable doctrine.** Canonical ownership and deployment assumptions should fail CI when they drift.
 12. **Preserve history without routing through it.** A dated migration/audit document may remain accurate history without being current instructions.
+13. **Production claims require production proof.** Build-time Firebase configuration is not enough; a live cloud room must pass independent-user runtime certification.
 
 ## 6. Definition of done for a substantive slice
 
@@ -243,4 +256,4 @@ Candidates remain intentionally unordered until evidence promotes them:
 
 Build the smallest upstream capability that makes several downstream ideas easier, prove it in a real vertical slice, capture the lesson, then move to the next constraint.
 
-**Right now the upstream constraint is project metabolism: make current truth cheap to find and hard to accidentally contradict.** Once that contract is green, the next product constraint is the real Firebase/two-device proof, not another multiplayer feature.
+**Right now the only upstream product constraint is real Firebase activation and cloud proof.** Pages publishing and project metabolism are proven. Do not add another multiplayer feature until Firebase room creation, independent-user reconnect, and physical-device behavior have earned the next move.
