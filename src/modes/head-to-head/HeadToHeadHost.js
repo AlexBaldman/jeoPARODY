@@ -131,6 +131,7 @@ export class HeadToHeadHost {
 
   async #submitAnswer(state, playerId, answer) {
     if (state.phase !== MATCH_PHASES.PLAYING || !state.round) return state;
+    if (!state.players.some(player => player.id === playerId)) return state;
     if (state.round.submittedPlayerIds.includes(playerId)) return state;
 
     const secret = await this.gateway.getHostSecret(this.roomId);
