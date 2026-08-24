@@ -1,8 +1,9 @@
 :root {
   color-scheme: dark;
+
   --h2h-bg: #090816;
-  --h2h-panel: rgba(18, 16, 42, 0.92);
-  --h2h-line: rgba(162, 132, 255, 0.34);
+  --h2h-panel: rgb(18 16 42 / 92%);
+  --h2h-line: rgb(162 132 255 / 34%);
   --h2h-text: #f8f5ff;
   --h2h-muted: #a8a1bd;
   --h2h-accent: #d9ff4f;
@@ -16,8 +17,8 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 15% 10%, rgba(123, 74, 255, 0.2), transparent 28rem),
-    radial-gradient(circle at 80% 75%, rgba(255, 79, 216, 0.14), transparent 30rem),
+    radial-gradient(circle at 15% 10%, rgb(123 74 255 / 20%), transparent 28rem),
+    radial-gradient(circle at 80% 75%, rgb(255 79 216 / 14%), transparent 30rem),
     var(--h2h-bg);
   color: var(--h2h-text);
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -100,7 +101,7 @@ h1 {
   border: 1px solid var(--h2h-line);
   border-radius: 24px;
   background: var(--h2h-panel);
-  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.32);
+  box-shadow: 0 28px 80px rgb(0 0 0 / 32%);
 }
 
 .h2h-panel { padding: 28px; }
@@ -122,7 +123,7 @@ input {
   border: 1px solid var(--h2h-line);
   border-radius: 13px;
   outline: none;
-  background: rgba(4, 3, 14, 0.7);
+  background: rgb(4 3 14 / 70%);
   color: var(--h2h-text);
   padding: 14px 15px;
   text-transform: none;
@@ -130,7 +131,7 @@ input {
 
 input:focus {
   border-color: var(--h2h-blue);
-  box-shadow: 0 0 0 3px rgba(90, 215, 255, 0.12);
+  box-shadow: 0 0 0 3px rgb(90 215 255 / 12%);
 }
 
 .h2h-primary,
@@ -149,7 +150,7 @@ input:focus {
 
 .h2h-primary:disabled {
   cursor: not-allowed;
-  opacity: 0.35;
+  opacity: 35%;
 }
 
 .h2h-secondary {
@@ -163,7 +164,7 @@ input:focus {
   border-left: 3px solid var(--h2h-hot);
   padding: 12px 16px;
   color: var(--h2h-muted);
-  background: rgba(255, 79, 216, 0.06);
+  background: rgb(255 79 216 / 6%);
 }
 
 .h2h-room-card {
@@ -214,7 +215,7 @@ input:focus {
   padding: 16px;
 }
 
-.h2h-player.is-you { border-color: rgba(217, 255, 79, 0.6); }
+.h2h-player.is-you { border-color: rgb(217 255 79 / 60%); }
 .h2h-player strong { display: block; font-size: 1.15rem; }
 .h2h-player-label { margin-bottom: 2px; font-size: 0.62rem; }
 
@@ -250,13 +251,13 @@ input:focus {
   margin: 24px 0;
   border-radius: 18px;
   background: linear-gradient(145deg, #111e74, #08134e);
-  box-shadow: inset 0 0 0 1px rgba(118, 151, 255, 0.35);
+  box-shadow: inset 0 0 0 1px rgb(118 151 255 / 35%);
   padding: clamp(30px, 7vw, 70px);
   font-family: Georgia, serif;
   font-size: clamp(1.4rem, 4vw, 2.4rem);
   line-height: 1.25;
   text-align: center;
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  text-shadow: 0 2px 0 rgb(0 0 0 / 35%);
 }
 
 .h2h-answer-form > div {
@@ -269,7 +270,7 @@ input:focus {
   margin: 30px 0 20px;
   padding: 22px;
   border-radius: 16px;
-  background: rgba(217, 255, 79, 0.07);
+  background: rgb(217 255 79 / 7%);
   text-align: center;
 }
 
@@ -311,7 +312,7 @@ input:focus {
   z-index: 10;
   max-width: min(440px, calc(100% - 32px));
   border-radius: 12px;
-  background: rgba(10, 8, 25, 0.94);
+  background: rgb(10 8 25 / 94%);
   color: var(--h2h-muted);
   padding: 10px 13px;
   pointer-events: none;
@@ -320,7 +321,7 @@ input:focus {
 #head-to-head-status:empty { display: none; }
 #head-to-head-status[data-kind="error"] { color: #ff9dbd; }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .h2h-shell { width: min(100% - 20px, 1040px); padding-top: 20px; }
 
   .h2h-hero,
