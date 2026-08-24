@@ -5,7 +5,8 @@
     {
       "domain": "repository-entrypoint",
       "path": "README.md",
-      "role": "canonical"
+      "role": "canonical",
+      "checkLinks": true
     },
     {
       "domain": "agent-operating-rules",
@@ -32,7 +33,12 @@
     {
       "domain": "engineering-handoffs",
       "path": "DEV_JOURNAL.md",
-      "role": "canonical"
+      "role": "canonical",
+      "checkLinks": true,
+      "forbiddenPhrases": [
+        "Jeopardish is the short-term stable behavioral oracle/proving ground",
+        "Jeopardish (working behavioral oracle)"
+      ]
     },
     {
       "domain": "cross-project-context",
