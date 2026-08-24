@@ -1,0 +1,162 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function roomData(roomId) {
+      return get(/databases/$(database)/documents/multiplayerRooms/$(roomId)).data;
+    }
+
+    function isRoomHost(roomId) {
+      return signedIn() && roomData(roomId).hostId == request.auth.uid;
+    }
+
+    function roomIsActive(roomId) {
+      return signedIn() && roomData(roomId).expiresAt > request.time;
+    }
+
+    function commandFieldsValid() {
+      let data = request.resource.data;
+      return data.keys().hasAll([
+          'actorId', 'type', 'payload', 'createdAt', 'processedAt', 'expiresAt'
+        ])
+        && data.keys().hasOnly([
+          'actorId', 'type', 'payload', 'createdAt', 'processedAt', 'expiresAt'
+        ])
+        && data.actorId is string
+        && data.type is string
+        && data.payload is map
+        && data.createdAt is timestamp
+        && data.processedAt == null
+        && data.expiresAt is timestamp
+        && data.expiresAt > request.time;
+    }
+
+    function commandPayloadValid() {
+      let data = request.resource.data;
+      let payload = data.payload;
+      let type = data.type;
+
+      return (
+        type == 'JOIN'
+        && payload.keys().hasAll(['player'])
+        && payload.keys().hasOnly(['player'])
+        && payload.player is map
+        && payload.player.keys().hasAll(['id', 'nickname'])
+        && payload.player.keys().hasOnly(['id', 'nickname'])
+        && payload.player.id is string
+        && payload.player.nickname is string
+        && payload.player.nickname.size() > 0
+        && payload.player.nickname.size() <= 28
+      ) || (
+        type == 'SET_READY'
+        && payload.keys().hasAll(['ready'])
+        && payload.keys().hasOnly(['ready'])
+        && payload.ready is bool
+      ) || (
+        type == 'SUBMIT_ANSWER'
+        && payload.keys().hasAll(['answer'])
+        && payload.keys().hasOnly(['answer'])
+        && payload.answer is string
+        && payload.answer.size() > 0
+        && payload.answer.size() <= 200
+      ) || (
+        (type == 'START' || type == 'NEXT_ROUND')
+        && payload.keys().size() == 0
+      );
+    }
+
+    function commandActorAllowed(roomId) {
+      let room = roomData(roomId);
+      let type = request.resource.data.type;
+
+      return (
+        type == 'JOIN'
+        && room.state.players.size() < 2
+        && request.resource.data.payload.player.id == request.auth.uid
+      ) || (
+        room.memberIds.hasAny([request.auth.uid])
+        && (type == 'SET_READY' || type == 'SUBMIT_ANSWER')
+      ) || (
+        room.hostId == request.auth.uid
+        && (type == 'START' || type == 'NEXT_ROUND')
+      );
+    }
+
+    match /multiplayerRooms/{roomId} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasAll([
+          'hostId', 'memberIds', 'joinCode', 'state', 'createdAt', 'updatedAt', 'expiresAt'
+        ])
+        && request.resource.data.hostId == request.auth.uid
+        && request.resource.data.state.hostId == request.auth.uid
+        && request.resource.data.memberIds == [request.auth.uid]
+        && request.resource.data.expiresAt is timestamp
+        && request.resource.data.expiresAt > request.time;
+
+      // Exact UUID reads only. Collection discovery stays closed.
+      allow get: if signedIn() && resource.data.expiresAt > request.time;
+      allow list: if false;
+
+      // v1 authority is the host client. Guests submit commands only.
+      allow update: if signedIn()
+        && resource.data.hostId == request.auth.uid
+        && request.resource.data.hostId == resource.data.hostId
+        && request.resource.data.memberIds is list
+        && request.resource.data.memberIds.size() <= 2
+        && request.resource.data.memberIds.hasAny([request.auth.uid])
+        && request.resource.data.expiresAt == resource.data.expiresAt;
+
+      allow delete: if signedIn() && resource.data.hostId == request.auth.uid;
+
+      match /commands/{commandId} {
+        allow create: if roomIsActive(roomId)
+          && commandFieldsValid()
+          && request.resource.data.actorId == request.auth.uid
+          && commandPayloadValid()
+          && commandActorAllowed(roomId);
+
+        allow read: if roomIsActive(roomId)
+          && (resource.data.actorId == request.auth.uid || isRoomHost(roomId));
+
+        allow update: if isRoomHost(roomId)
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['processedAt', 'processedBy'])
+          && request.resource.data.actorId == resource.data.actorId;
+
+        allow delete: if false;
+      }
+
+      match /hostSecrets/{documentId} {
+        allow read, write: if roomIsActive(roomId) && isRoomHost(roomId);
+      }
+    }
+
+    match /multiplayerRoomCodes/{code} {
+      allow get: if signedIn() && resource.data.expiresAt > request.time;
+      allow list: if false;
+
+      allow create: if signedIn()
+        && request.resource.data.hostId == request.auth.uid
+        && request.resource.data.roomId is string
+        && request.resource.data.expiresAt is timestamp
+        && request.resource.data.expiresAt > request.time;
+
+      allow update: if signedIn()
+        && request.resource.data.hostId == request.auth.uid
+        && request.resource.data.roomId is string
+        && request.resource.data.expiresAt is timestamp
+        && request.resource.data.expiresAt > request.time
+        && (
+          resource.data.hostId == request.auth.uid
+          || resource.data.expiresAt <= request.time
+        );
+
+      allow delete: if signedIn()
+        && resource.data.hostId == request.auth.uid;
+    }
+  }
+}

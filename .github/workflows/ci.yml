@@ -33,6 +33,17 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Setup Java for Firestore emulator
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Firestore multiplayer security rules
+        run: |
+          npm install --no-save --package-lock=false @firebase/rules-unit-testing@4.0.1
+          npx --yes firebase-tools@15.28.1 emulators:exec --only firestore --project demo-jeoparody-rules "node scripts/firestore-rules-check.mjs"
+
       - name: Install browser runtime test dependency
         run: |
           npm install --no-save --package-lock=false playwright@1.55.0
@@ -65,10 +76,16 @@ jobs:
           BASE_URL: http://127.0.0.1:4173
         run: npm run needle-drop:runtime-check
 
+      - name: Head-to-head browser runtime check
+        env:
+          BASE_URL: http://127.0.0.1:4173
+        run: node scripts/head-to-head-runtime-check.mjs
+
       - name: A11y Audit (axe-core)
         run: |
           npx axe http://127.0.0.1:4173/ --chromium --exit 0 --timeout 60000 --save ./axe-report.json || true
           npx axe 'http://127.0.0.1:4173/needle-drop.html?players=4' --chromium --exit 0 --timeout 60000 --save ./axe-needle-drop-report.json || true
+          npx axe 'http://127.0.0.1:4173/head-to-head.html?transport=local' --chromium --exit 0 --timeout 60000 --save ./axe-head-to-head-report.json || true
 
       - name: Upload runtime evidence
         if: always()
@@ -78,9 +95,12 @@ jobs:
           path: |
             screenshots/runtime-check
             screenshots/needle-drop-runtime
+            screenshots/head-to-head-runtime
             axe-report.json
             axe-needle-drop-report.json
+            axe-head-to-head-report.json
             /tmp/jeoparody-preview.log
+            firestore-debug.log
           if-no-files-found: ignore
 
       - name: Upload Build Artifact

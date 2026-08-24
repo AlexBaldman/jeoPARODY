@@ -31,6 +31,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         needleDrop: resolve(__dirname, 'needle-drop.html'),
+        headToHead: resolve(__dirname, 'head-to-head.html'),
       },
     },
   },
