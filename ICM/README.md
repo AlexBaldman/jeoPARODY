@@ -19,10 +19,13 @@ Statuses: `SEED`, `PRESSURE_TEST`, `PROTOTYPE`, `ACTIVE`, `CANONICAL`, `ARCHIVED
 
 **Rule:** preserve aggressively; implement selectively. A folder existing here does not authorize scope creep.
 
+For the repository's active canonical project, an ICM record may be a **routing node rather than a duplicate encyclopedia**. Detailed mutable engineering truth stays with its specialized canonical documents.
+
 ## Registry
 
 | Project | Status | Purpose |
 |---|---|---|
+| `jeoparody` | CANONICAL | active proving ground for deterministic game modes, Stage boundaries, and reusable multiplayer architecture |
 | `uinverse` | PRESSURE_TEST | umbrella atlas/portfolio/world architecture |
 | `you-in-verse` | SEED | freestyle/rhyme notebook + semantic performance graph |
 | `stool-samples` | SEED | comedy specimen laboratory and delivery algorithm |
@@ -48,7 +51,25 @@ STAGE
 book | pixel | 2D | 3D | audio | notebook | game | portfolio
 ```
 
-jeoPARODY is where Stage earns these abstractions. These projects are pressure tests, not excuses to build a universal engine prematurely.
+jeoPARODY is where Stage and shared infrastructure earn abstractions. The other projects are pressure tests, not excuses to build a universal engine prematurely.
+
+A second architectural axis is now being earned through multiplayer work:
+
+```text
+IDENTITY
+   ↓
+ROOM / SESSION
+   ↓
+DURABLE INTENT
+   ↓
+AUTHORITY
+   ↓
+PUBLIC DETERMINISTIC STATE
+   ↓
+CLIENTS / PROJECTIONS
+```
+
+The 2026-08-24 Head-to-Head milestone proved these concepts in one real mode. They should not become a universal package until a second consumer proves which boundaries are genuinely shared.
 
 ## Conversation mine — 2026-08-08
 
