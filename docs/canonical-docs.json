@@ -15,12 +15,14 @@
     {
       "domain": "runtime-architecture",
       "path": "ARCHITECTURE.md",
-      "role": "canonical"
+      "role": "canonical",
+      "checkLinks": true
     },
     {
       "domain": "documentation-routing",
       "path": "docs/README.md",
-      "role": "canonical"
+      "role": "canonical",
+      "checkLinks": true
     },
     {
       "domain": "current-priorities",
@@ -56,6 +58,7 @@
       "domain": "stage-runtime",
       "path": "docs/STAGE_RUNTIME_SYSTEM.md",
       "role": "canonical",
+      "checkLinks": true,
       "forbiddenPhrases": [
         "**Canonical implementation target:** `AlexBaldman/Jeopardish`",
         "This repository: `AlexBaldman/jeoPARODY` — donor/R&D/reference material"
