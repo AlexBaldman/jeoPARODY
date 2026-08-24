@@ -34,10 +34,10 @@ export class LocalRoomGateway {
     const cleanNickname = String(nickname || '').trim().slice(0, 28);
     if (!cleanNickname) throw new Error('Enter a nickname.');
 
-    let id = sessionStorage.getItem(PLAYER_KEY);
+    let id = globalThis.sessionStorage.getItem(PLAYER_KEY);
     if (!id) {
       id = makeId('local-player');
-      sessionStorage.setItem(PLAYER_KEY, id);
+      globalThis.sessionStorage.setItem(PLAYER_KEY, id);
     }
     return { id, nickname: cleanNickname };
   }
@@ -152,8 +152,8 @@ export class LocalRoomGateway {
   }
 
   #channel(roomId) {
-    return typeof BroadcastChannel === 'function'
-      ? new BroadcastChannel(`jeoparody:h2h:${roomId}`)
+    return typeof globalThis.BroadcastChannel === 'function'
+      ? new globalThis.BroadcastChannel(`jeoparody:h2h:${roomId}`)
       : null;
   }
 
