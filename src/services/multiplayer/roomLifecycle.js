@@ -5,6 +5,10 @@ export function createExpiresAtMs(now = Date.now()) {
 }
 
 export function isExpired(expiresAtMs, now = Date.now()) {
+  if (expiresAtMs === null || expiresAtMs === undefined || expiresAtMs === '') {
+    return false;
+  }
+
   const value = Number(expiresAtMs);
   return Number.isFinite(value) && value <= Number(now);
 }
