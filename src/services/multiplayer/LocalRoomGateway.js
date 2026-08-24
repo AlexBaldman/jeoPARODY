@@ -1,8 +1,10 @@
+import { createExpiresAtMs, isExpired } from './roomLifecycle.js';
 import { normalizeRoomCode } from './roomCode.js';
 
 const ROOM_PREFIX = 'jeoparody:h2h:room:';
+const ROOM_META_PREFIX = 'jeoparody:h2h:room-meta:';
 const CODE_PREFIX = 'jeoparody:h2h:code:';
-const COMMAND_PREFIX = 'jeoparody:h2h:commands:';
+const COMMAND_PREFIX = 'jeoparody:h2h:command:';
 const SECRET_PREFIX = 'jeoparody:h2h:secret:';
 const PLAYER_KEY = 'jeoparody:h2h:session-player-id';
 
@@ -14,7 +16,7 @@ function makeId(prefix) {
 
 function readJson(key, fallback) {
   try {
-    const parsed = JSON.parse(localStorage.getItem(key));
+    const parsed = JSON.parse(globalThis.localStorage.getItem(key));
     return parsed ?? fallback;
   } catch {
     return fallback;
@@ -22,7 +24,32 @@ function readJson(key, fallback) {
 }
 
 function writeJson(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
+  globalThis.localStorage.setItem(key, JSON.stringify(value));
+}
+
+function commandPrefix(roomId) {
+  return `${COMMAND_PREFIX}${roomId}:`;
+}
+
+function commandKey(roomId, commandId) {
+  return `${commandPrefix(roomId)}${commandId}`;
+}
+
+function readCommands(roomId) {
+  const prefix = commandPrefix(roomId);
+  const commands = [];
+
+  for (let index = 0; index < globalThis.localStorage.length; index += 1) {
+    const key = globalThis.localStorage.key(index);
+    if (!key?.startsWith(prefix)) continue;
+    const command = readJson(key, null);
+    if (command) commands.push(command);
+  }
+
+  return commands.sort((left, right) => (
+    Number(left.createdAt) - Number(right.createdAt)
+    || String(left.id).localeCompare(String(right.id))
+  ));
 }
 
 export class LocalRoomGateway {
@@ -45,29 +72,50 @@ export class LocalRoomGateway {
   async createRoom(state) {
     const code = normalizeRoomCode(state.joinCode);
     const codeKey = `${CODE_PREFIX}${code}`;
-    if (localStorage.getItem(codeKey)) {
-      const error = new Error('Room code collision. Try again.');
-      error.code = 'ROOM_CODE_COLLISION';
-      throw error;
+    const existing = readJson(codeKey, globalThis.localStorage.getItem(codeKey));
+
+    if (existing) {
+      const existingExpiry = typeof existing === 'object' ? existing.expiresAtMs : null;
+      if (!isExpired(existingExpiry)) {
+        const error = new Error('Room code collision. Try again.');
+        error.code = 'ROOM_CODE_COLLISION';
+        throw error;
+      }
     }
 
+    const expiresAtMs = createExpiresAtMs();
     writeJson(`${ROOM_PREFIX}${state.roomId}`, state);
-    localStorage.setItem(codeKey, state.roomId);
+    writeJson(`${ROOM_META_PREFIX}${state.roomId}`, { expiresAtMs });
+    writeJson(codeKey, { roomId: state.roomId, expiresAtMs });
     this.#broadcast(state.roomId, { type: 'room', state });
   }
 
   async resolveRoom(joinCode) {
-    const roomId = localStorage.getItem(`${CODE_PREFIX}${normalizeRoomCode(joinCode)}`);
-    if (!roomId) throw new Error('That room code is not available in this browser.');
+    const codeKey = `${CODE_PREFIX}${normalizeRoomCode(joinCode)}`;
+    const raw = globalThis.localStorage.getItem(codeKey);
+    if (!raw) throw new Error('That room code is not available in this browser.');
+
+    const record = readJson(codeKey, raw);
+    const roomId = typeof record === 'string' ? record : record?.roomId;
+    const expiresAtMs = typeof record === 'object' ? record?.expiresAtMs : null;
+
+    if (!roomId || isExpired(expiresAtMs)) {
+      globalThis.localStorage.removeItem(codeKey);
+      throw new Error('That room has expired. Create a new match.');
+    }
     return roomId;
   }
 
   subscribeRoom(roomId, handler) {
     const key = `${ROOM_PREFIX}${roomId}`;
+    const metaKey = `${ROOM_META_PREFIX}${roomId}`;
     const channel = this.#channel(roomId);
-    const emitCurrent = () => handler(readJson(key, null));
+    const emitCurrent = () => {
+      const meta = readJson(metaKey, null);
+      handler(meta && isExpired(meta.expiresAtMs) ? null : readJson(key, null));
+    };
     const onStorage = event => {
-      if (event.key === key) emitCurrent();
+      if (event.key === key || event.key === metaKey) emitCurrent();
     };
     const onMessage = event => {
       if (event.data?.type === 'room') handler(event.data.state);
@@ -85,23 +133,20 @@ export class LocalRoomGateway {
   }
 
   subscribeCommands(roomId, handler) {
-    const key = `${COMMAND_PREFIX}${roomId}`;
+    const prefix = commandPrefix(roomId);
     const channel = this.#channel(roomId);
     const seen = new Set();
-    const scan = () => {
-      const commands = readJson(key, []);
-      commands.forEach(command => {
-        if (!command.processedAt && !seen.has(command.id)) {
-          seen.add(command.id);
-          handler(command);
-        }
-      });
+    const accept = command => {
+      if (!command || command.processedAt || seen.has(command.id)) return;
+      seen.add(command.id);
+      handler(command);
     };
+    const scan = () => readCommands(roomId).forEach(accept);
     const onStorage = event => {
-      if (event.key === key) scan();
+      if (event.key?.startsWith(prefix)) scan();
     };
     const onMessage = event => {
-      if (event.data?.type === 'command') scan();
+      if (event.data?.type === 'command') accept(event.data.command);
     };
 
     scan();
@@ -116,26 +161,24 @@ export class LocalRoomGateway {
   }
 
   async sendCommand(roomId, command) {
-    const key = `${COMMAND_PREFIX}${roomId}`;
-    const commands = readJson(key, []);
+    const id = makeId('cmd');
     const record = {
       ...command,
-      id: makeId('cmd'),
+      id,
       createdAt: Date.now(),
       processedAt: null,
     };
-    commands.push(record);
-    writeJson(key, commands.slice(-100));
-    this.#broadcast(roomId, { type: 'command', id: record.id });
-    return record.id;
+    writeJson(commandKey(roomId, id), record);
+    this.#broadcast(roomId, { type: 'command', command: record });
+    return id;
   }
 
   async markCommandProcessed(roomId, commandId) {
-    const key = `${COMMAND_PREFIX}${roomId}`;
-    const commands = readJson(key, []);
-    const record = commands.find(command => command.id === commandId);
-    if (record) record.processedAt = Date.now();
-    writeJson(key, commands);
+    const key = commandKey(roomId, commandId);
+    const record = readJson(key, null);
+    if (!record) return;
+    record.processedAt = Date.now();
+    writeJson(key, record);
   }
 
   async publishRoom(roomId, state) {
@@ -144,11 +187,16 @@ export class LocalRoomGateway {
   }
 
   async setHostSecret(roomId, secret) {
-    writeJson(`${SECRET_PREFIX}${roomId}`, secret);
+    const meta = readJson(`${ROOM_META_PREFIX}${roomId}`, null);
+    writeJson(`${SECRET_PREFIX}${roomId}`, {
+      ...secret,
+      expiresAtMs: meta?.expiresAtMs || createExpiresAtMs(),
+    });
   }
 
   async getHostSecret(roomId) {
-    return readJson(`${SECRET_PREFIX}${roomId}`, null);
+    const secret = readJson(`${SECRET_PREFIX}${roomId}`, null);
+    return secret && !isExpired(secret.expiresAtMs) ? secret : null;
   }
 
   #channel(roomId) {
