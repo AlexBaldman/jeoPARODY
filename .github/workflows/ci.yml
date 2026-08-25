@@ -30,6 +30,9 @@ jobs:
       - name: Project doctrine contract
         run: npm run project:check
 
+      - name: Source reachability inventory
+        run: npm run source:reachability
+
       - name: Lint JS
         run: npm run lint
 
