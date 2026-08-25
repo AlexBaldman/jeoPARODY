@@ -2,262 +2,190 @@
 
 **Status:** CANONICAL ROUTING DOCUMENT  
 **Updated:** 2026-08-25  
-**Rule:** this file owns priorities and routing. Specialized architecture documents own their detailed domains.
+**Rule:** this file owns current priorities and routing. Specialized documents own their domains.
 
-JeoPARODY is the canonical proving ground for a larger family of playful learning, game-show, Stage, multiplayer, and eventually cross-world systems. The project should earn abstractions through working vertical slices rather than designing a universal engine in advance.
+JeoPARODY is the canonical proving ground for playful learning, game-show presentation, Stage systems, and multiplayer. Earn abstractions through working vertical slices. Do not design the universal engine in advance because software already has enough monuments to optimism.
 
 ## 1. Current proven baseline
 
-Head-to-Head multiplayer reached milestone commit `46d8f78` through PR #42. Documentation was re-routed through PR #43 (`a3b4c18`), the Pages workflow became Firebase-ready and exact-live-SHA self-verifying through PR #45 (`32b702c`), and the project-metabolism contract merged through PR #49 as `6443a8c`.
+The important upstream sequence is now:
 
-The repository now has blocking automated proof for:
+| Slice | Proof |
+|---|---|
+| Head-to-Head reconnect-safe foundation | PR #42 / `46d8f78` |
+| Documentation milestone + routing | PR #43 / `a3b4c18` |
+| Firebase-ready, exact-live-SHA Pages deployment | PR #45 / `32b702c` |
+| Self-checking docs/deployment doctrine | PR #49 / `6443a8c` |
+| Shared canonical answer judge | PR #61 / `c3f8a24` |
+| Explicit Main scoring + slim GameEngine | PR #62 / `31e9a27` |
+| Alternate game stack retired | PR #63 / `ac7b3ab` |
+| Shadow state + obsolete host stack retired | PR #64 / `e3617a0` |
+| Node 24 CI/Pages modernization | PR #65 / `adc8834` |
 
-- documentation/deployment doctrine via `npm run project:check`;
-- production Vite build;
-- unit/integration tests;
-- browser boot and deterministic main-game runtime;
-- Needle Drop runtime;
-- Head-to-Head two-tab create/join/ready/play/reveal flow;
-- host refresh after submitting and continued adjudication after reconnect;
-- challenger refresh after reveal;
-- converged clues, reveals, and scores across both clients;
-- Firestore Security Rules through the local emulator, including hostile-client cases;
-- accessibility audits and captured runtime evidence.
+The blocking proof wall covers project doctrine/security, source reachability, JS/CSS lint, unit/integration tests, production build, Firestore Security Rules, browser boot, Main Game runtime, Needle Drop runtime, Head-to-Head host/guest reconnect, accessibility audits, and captured runtime evidence.
 
-The canonical GitHub Pages publisher is now proven. `Deploy GitHub Pages` run `32754954244` deployed merge commit `6443a8cb9ef4c6db89aa02cf3b07badc00d0295e`; its live verification fetched the root, Needle Drop, Head-to-Head and `build-meta.json`, then proved the public `gitSha` exactly matched that commit. Issue #46 is complete.
+The canonical Pages publisher is GitHub Actions and has already been proven through exact-live-SHA verification. The deployment workflow stamps `build-meta.json`, verifies the public commit/transport, and conditionally runs independent-user Firebase cloud certification when Firebase configuration exists.
 
-**Current cloud boundary:** the same deployment run also proved that the production `VITE_FIREBASE_*` Actions variables are currently absent, so the live Head-to-Head build is intentionally using local proving mode. Real Firebase multiplayer is therefore the sole current lead domino.
+**Current cloud boundary:** the production `VITE_FIREBASE_*` repository variables were last proven absent, so the deployed Head-to-Head path remains intentionally in local proving mode until issue #44 activates Firebase.
 
-**Current security baseline:** dependency/security triage reduced the installed graph from roughly 742 packages / 32 advisories / 3 critical to 630 packages / 16 advisories / **0 critical** on the verified PR head. CI now blocks both production-only and full-graph critical advisories. AI provider service credentials are server-side-only doctrine, guarded by `npm run security:check`; Firebase web configuration remains intentionally client-visible.
+**Current security baseline:** production dependencies have zero known vulnerabilities under the blocking production audit; the full development graph has no critical advisories. Provider service credentials stay server-side. Firebase web configuration is intentionally client-visible configuration, not a secret.
 
-## 2. Project metabolism: completed upstream contract
+## 2. Convergence 2.0 is complete
 
-JeoPARODY now uses a small trusted control plane rather than asking every future human/agent to infer current truth from a large archive.
+Issue #60 was a bounded interruption before Firebase, not a new eternal phase of civilization.
+
+It delivered:
 
 ```text
-SMALL TRUSTED CONTROL PLANE
-README / AGENTS / docs router / master plan / architecture / journal
+ONE shared correctness kernel
         ↓
-machine-readable canonical owner registry
+explicit mode scoring ownership
         ↓
-blocking docs + deployment doctrine checks
+smaller Main Game domain owner
         ↓
-LARGE PRESERVED ARCHIVE
-milestones / audits / migration history / experiments / research
+retired alternate game + validator architecture
+        ↓
+retired shadow state + obsolete host architecture
+        ↓
+classified remaining dormant/reference source
+        ↓
+Node 24 proof wall
 ```
 
-Canonical documentation routing lives in `docs/README.md`; machine ownership is registered in `docs/canonical-docs.json`. Historical material remains searchable evidence but does not outrank registered current owners.
+PRs #63 and #64 alone removed roughly **5,764 lines** of duplicate architecture while the full proof wall remained green.
+
+The completed capability/disposition record is [`CONVERGENCE_2_CAPABILITY_MATRIX_2026-08-25.md`](CONVERGENCE_2_CAPABILITY_MATRIX_2026-08-25.md). Episode, Study/learning ledger, HostPack/HostPerformanceDirector, media preflight and localization remain valuable **focused follow-ups**, not blockers to the current product proof.
+
+Do not start another cleanup campaign merely because source reachability still reports intentionally dormant tooling/reference files. Issue #58 owns later repository archaeology.
 
 ## 3. One owner per truth
 
-This file must not become another encyclopedia. Route detailed questions to the document that owns them.
-
-| Domain | Canonical owner |
+| Domain | Owner |
 |---|---|
-| Repository entrypoint / current playable surfaces | `README.md` |
+| Repository entrypoint / playable surfaces | `README.md` |
 | Agent operating rules | `AGENTS.md` |
 | Documentation routing / roles | `docs/README.md` |
 | Current priorities / next lead domino | `docs/MASTER_PLAN.md` |
 | Runtime architecture / ownership boundaries | `ARCHITECTURE.md` |
-| Chronological engineering handoffs and evidence | `DEV_JOURNAL.md` |
-| Head-to-Head multiplayer architecture / security / deployment | `docs/HEAD_TO_HEAD_MULTIPLAYER_2026-08-24.md` |
-| Head-to-Head shipped milestone snapshot | `docs/MULTIPLAYER_FOUNDATION_MILESTONE_2026-08-24.md` |
-| Needle Drop gameplay architecture | `docs/NEEDLE_DROP_ARCHITECTURE.md` |
-| Stage runtime and projection boundary | `docs/STAGE_RUNTIME_SYSTEM.md` |
-| AI provider credentials / proxy boundary | `docs/AI_PROVIDER_SETUP.md` |
-| Historical canonical-repository convergence | `docs/JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md` |
-| Durable cross-project concept routing | `ICM/README.md` + `ICM/projects/*` |
+| Chronological engineering handoffs | `DEV_JOURNAL.md` |
+| Head-to-Head multiplayer | `docs/HEAD_TO_HEAD_MULTIPLAYER_2026-08-24.md` |
+| Needle Drop | `docs/NEEDLE_DROP_ARCHITECTURE.md` |
+| Stage / presentation boundary | `docs/STAGE_RUNTIME_SYSTEM.md` |
+| AI provider credential boundary | `docs/AI_PROVIDER_SETUP.md` |
+| Completed Convergence 2.0 record | `docs/CONVERGENCE_2_CAPABILITY_MATRIX_2026-08-25.md` |
+| Cross-project concepts | `ICM/README.md` + `ICM/projects/*` |
 | Shared vocabulary | `docs/IMMORTAL_DEV_GLOSSARY.md` |
 
-When reality changes, update the smallest owner of that truth and leave a `DEV_JOURNAL.md` handoff. Do not spray the same mutable status across six documents.
+Links beat copies. When reality changes, update the smallest owner and leave a journal handoff.
 
-## 4. Lead-domino queue
+## 4. Current lead domino: Firebase #44
 
-### Domino 0 — activate and automatically certify real Firebase multiplayer
+**Activate and automatically certify real Firebase Head-to-Head multiplayer.** No more multiplayer features before this proof.
 
-Issue #44 owns the current product proof. Do this before adding more multiplayer features.
-
-Current evidence is explicit: the latest production Pages build reported these required repository Actions variables as missing:
+Required production web configuration:
 
 ```text
 VITE_FIREBASE_API_KEY
 VITE_FIREBASE_AUTH_DOMAIN
 VITE_FIREBASE_PROJECT_ID
 VITE_FIREBASE_APP_ID
+VITE_FIREBASE_STORAGE_BUCKET
+VITE_FIREBASE_MESSAGING_SENDER_ID
 ```
 
-`VITE_FIREBASE_STORAGE_BUCKET` and `VITE_FIREBASE_MESSAGING_SENDER_ID` are also supported when supplied by the selected Firebase web app.
+Execution order:
 
-Activation sequence:
-
-1. Select or create the production Firebase project.
-2. Enable Firebase Anonymous Auth.
-3. Add the Firebase web configuration as repository Actions variables.
-4. Deploy `firestore.rules` and `firestore.indexes.json`; confirm TTL field policies are accepted.
+1. Select/create the production Firebase project.
+2. Enable Firebase Anonymous Authentication.
+3. Add the web configuration as repository Actions variables.
+4. Deploy `firestore.rules` and `firestore.indexes.json`; confirm TTL policy acceptance.
 5. Trigger the canonical Pages deployment.
+6. Require the deployment to report `multiplayerTransport = firebase` and pass independent-user cloud runtime certification.
 
-The Pages workflow should not merely notice configuration. Once Firebase configuration is present, production deployment is expected to certify the cloud path automatically:
+The automated cloud proof uses isolated browser contexts so a silent fallback to `LocalRoomGateway` cannot counterfeit success.
 
-```text
-Firebase variables present
-        ↓
-Pages build stamps multiplayerTransport = firebase
-        ↓
-exact live SHA + transport metadata proof
-        ↓
-two isolated browser contexts
-        ↓
-independent Anonymous Auth users
-        ↓
-create / join / ready / same clue
-        ↓
-host submits + refreshes
-        ↓
-guest submits + reveal converges
-        ↓
-guest refreshes resolved round
-        ↓
-cloud evidence artifact
-```
-
-Using isolated contexts is deliberate. A silent fallback to `LocalRoomGateway` cannot pass because the two contexts do not share local browser storage.
+## 5. After automated Firebase proof
 
 ### Domino 1 — physical phone ↔ laptop proof
 
-Automated production cloud certification removes most deployment uncertainty, but it does not simulate mobile OS backgrounding, network changes, sleep, or actual device/browser behavior.
+Complete a five-clue match on two real devices. Refresh host after first submission, refresh challenger after reveal, background/foreground the phone, and interrupt networking briefly if practical. Measure actual reconnect pain before inventing presence/heartbeat infrastructure.
 
-After Domino 0 passes:
+### Domino 2 — promote Head-to-Head
 
-- host from one physical device;
-- challenger from another;
-- complete at least one five-clue match;
-- refresh the host after its first submission;
-- refresh the challenger after reveal;
-- background/foreground the phone;
-- briefly interrupt or switch networking if practical;
-- record any user-visible reconnect failure before inventing a heartbeat/presence subsystem.
+Add discoverable Main Menu entry/invite flow and explicit network recovery copy. Preserve guest-first entry. No mandatory account ceremony.
 
-### Domino 2 — promote Head-to-Head into the main experience
+### Domino 3 — earn the multiplayer kernel
 
-Only after real cloud + physical-device proof:
+Use a second real consumer, likely Needle Drop remote/multiplayer, before extracting shared multiplayer infrastructure. Extract only concepts proven across both consumers: identity, room/session, invite, command, public state/event, authority, reconnect, transport, lifecycle.
 
-- add the mode to the main menu / mode-select surface;
-- make room creation and invite sharing discoverable;
-- add explicit retry/recovery copy for network failures;
-- preserve guest-first entry with no account ceremony;
-- keep ranked/profile systems out of the critical path.
+### Domino 4 — trusted authority before stakes
 
-### Domino 3 — earn the reusable multiplayer kernel with a second consumer
+Move adjudication server-side before rankings, prizes, wagers or meaningful competitive ladders. Add latency-aware buzzer/input mechanics only when that product actually exists.
 
-Do not extract a grand universal multiplayer framework merely because one mode exists.
+## 6. Guardrails
 
-Use a second concrete consumer, likely a remote/controller or multiplayer slice for Needle Drop, to pressure-test the existing seams. Extract only the concepts that survive both modes:
+1. **Domain truth is deterministic.** UI and Stage render facts; they do not create them.
+2. **Correctness has one kernel.** Main Game and Head-to-Head share `answerJudge` behavior.
+3. **Scoring is explicitly mode-owned.** Shared correctness does not require one universal scoring system.
+4. **Transport is replaceable.** Firebase is an adapter, not the architecture.
+5. **Guest identity is enough until persistence creates user value.**
+6. **No premature presence system.** Observe real failures first.
+7. **No premature universal engine.** A second consumer earns extraction.
+8. **Private competitive answers remain private until reveal.**
+9. **Server authority precedes meaningful stakes.**
+10. **Infrastructure and doctrine stay source-controlled and CI-checked.**
+11. **Provider service credentials stay server-side.**
+12. **Production claims require production proof.** Build-time configuration alone does not count.
+13. **Preserve history without routing through it.**
+14. **Repository gardening has a stop condition.** A dormant file is not automatically product debt.
 
-```text
-Identity
-Room / Session
-Invite / Discovery
-Command
-Event / Public State
-Authority
-Reconnect
-Transport
-Lifecycle
-```
-
-The resulting abstraction should preserve swappable transports and allow authority to move server-side without rewriting game-domain logic.
-
-### Domino 4 — trusted authority before competitive stakes
-
-The current host-authoritative model is appropriate for casual proving play. Before public rankings, prizes, wagers, or meaningful competitive ladders:
-
-- move adjudication to a trusted server / Cloud Function / authoritative service;
-- retain the serializable command vocabulary where possible;
-- add latency-aware timing only when a real buzzer mechanic requires it;
-- calibrate phone/controller input through an earned input abstraction rather than coupling networking directly to game rules.
-
-## 5. Architectural guardrails
-
-1. **Game/domain truth stays deterministic.** UI and Stage render facts; they do not invent them.
-2. **Transport is replaceable.** Firebase is an implementation, not the game architecture.
-3. **Guest identity is enough until persistence creates value.** Do not build full login/password flows ahead of need.
-4. **Accounts are an upgrade path.** A completed guest session should later be claimable/linkable to a persistent profile.
-5. **No premature presence system.** Measure real disconnect pain first.
-6. **No premature universal engine.** A second consumer earns extraction.
-7. **Raw answers/private adjudication stay private until reveal.** Preserve the security boundary across transports.
-8. **Server authority precedes meaningful stakes.** Host authority is a proving seam, not a permanent anti-cheat strategy.
-9. **Source-controlled infrastructure.** Rules, indexes, lifecycle policy, tests, and deployment behavior belong in the repository.
-10. **Provider service credentials stay server-side.** Browser code may consume public Firebase web configuration, but Gemini/Claude-style bearer credentials never belong in source, URL parameters, client-visible Vite variables, or browser storage.
-11. **One owner per truth.** Prefer links to duplication.
-12. **Docs are executable doctrine.** Canonical ownership and deployment assumptions should fail CI when they drift.
-13. **Preserve history without routing through it.** A dated migration/audit document may remain accurate history without being current instructions.
-14. **Production claims require production proof.** Build-time Firebase configuration is not enough; a live cloud room must pass independent-user runtime certification.
-
-## 6. Definition of done for a substantive slice
-
-A feature is not finished because it works once on a developer machine.
-
-A substantive slice should normally leave behind:
+## 7. Definition of done for a substantive slice
 
 ```text
-IMPLEMENTATION
-+ project doctrine checks
-+ deterministic/unit proof
-+ blocking browser proof where relevant
-+ security/rules proof where relevant
-+ accessibility check
-+ runtime evidence
-+ canonical architecture/status update
+implementation
++ doctrine/security checks
++ deterministic tests
++ browser proof where relevant
++ rules/security proof where relevant
++ accessibility evidence
++ canonical owner update
 + DEV_JOURNAL handoff
 + focused branch / PR / commit history
-+ post-merge deployment verification when user-facing
++ post-merge deployment proof for user-facing changes
 ```
 
-Failures discovered by CI are product knowledge. Convert them into durable tests rather than merely fixing the symptom.
+Failures discovered by CI are product knowledge. Convert them into durable evidence rather than merely fixing the symptom.
 
-## 7. Current strategic shape
+## 8. Strategic shape
 
 ```text
-JeoPARODY domain/game modes
+Main / mode domain truth
         ↓
 semantic commands + events
         ↓
-Experience / Show Director
+Host / Show Director / Stage
         ↓
-Stage / projection
+presentation
 
 and, orthogonally:
 
-player identity
-        ↓
+identity
+  ↓
 room/session
-        ↓
+  ↓
 durable intent
-        ↓
+  ↓
 authority
-        ↓
-public deterministic truth
-        ↓
+  ↓
+public deterministic state
+  ↓
 multiple clients / projections
 ```
 
-These two axes should meet through explicit semantic boundaries, not through a giant manager object that knows everything and eventually demands its own parking space.
-
-## 8. Later, after the current dominos
-
-Candidates remain intentionally unordered until evidence promotes them:
-
-- optional “save my record” account-linking flow after meaningful play;
-- rematches, friends, match receipts, and persistent stats;
-- calibrated buzzer / phone input abstraction;
-- spectators and audience participation;
-- team play and tournaments;
-- richer Stage reactions driven by semantic match events;
-- cross-mode reusable multiplayer package;
-- broader uINVERSE pressure tests only after JeoPARODY earns the underlying contracts.
+These axes meet through explicit semantic boundaries, not a giant manager object that knows everything and eventually applies for municipal status.
 
 ## 9. Operating principle
 
-Build the smallest upstream capability that makes several downstream ideas easier, prove it in a real vertical slice, capture the lesson, then move to the next constraint.
+Build the smallest upstream capability that makes several downstream ideas easier, prove it in a real vertical slice, capture the lesson, then move to the next actual constraint.
 
-**Right now the only upstream product constraint is real Firebase activation and cloud proof.** Pages publishing and project metabolism are proven. Do not add another multiplayer feature until Firebase room creation, independent-user reconnect, and physical-device behavior have earned the next move.
+**The actual constraint is Firebase #44. Convergence 2.0 is closed. Resume product proof.**
