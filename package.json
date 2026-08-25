@@ -17,6 +17,7 @@
     "deployment:check": "node scripts/check-deployment-contract.mjs",
     "security:check": "node scripts/check-security-contract.mjs",
     "project:check": "npm run docs:check && npm run deployment:check && npm run security:check",
+    "source:reachability": "node scripts/audit-source-reachability.mjs",
     "analyze": "vite build --mode analyze",
     "mcp:browser": "npx -y @modelcontextprotocol/server-browser",
     "mcp:chrome": "npx -y @modelcontextprotocol/server-chrome",
