@@ -307,6 +307,15 @@ export class GameEngine {
     return structuredClone(this.state);
   }
 
+  // Transitional compatibility for the dev HUD. Performance sampling no longer
+  // lives inside domain state or drives a 60 FPS loop.
+  getPerformanceStats() {
+    return {
+      running: this.isRunning,
+      questionTimerActive: this.questionTimeoutId != null,
+    };
+  }
+
   setupEventHandlers() {
     this.eventBus.on('game:start', (options) => this.startGame(options));
     this.eventBus.on('game:pause', () => this.pauseGame());
@@ -319,6 +328,7 @@ export class GameEngine {
   pauseGame() {
     if (this.state.session.phase !== GAME_PHASES.QUESTION) return;
 
+    this.state.question.timeElapsed = Math.max(0, this.now() - this.state.question.startTime);
     this.clearQuestionTimeout();
     this.state.session.isPaused = true;
     this.transitionPhase(GAME_PHASES.PAUSED);
@@ -329,6 +339,7 @@ export class GameEngine {
     if (!this.state.session.isPaused) return;
 
     this.state.session.isPaused = false;
+    this.state.question.startTime = this.now() - this.state.question.timeElapsed;
     this.transitionPhase(GAME_PHASES.QUESTION);
     const remaining = Math.max(0, GAME_CONFIG.TIME_LIMIT - this.state.question.timeElapsed);
     this.questionTimeoutId = this.scheduleTimeout(() => this.handleTimeUp(), remaining);
