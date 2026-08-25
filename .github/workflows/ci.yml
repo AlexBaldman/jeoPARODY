@@ -31,6 +31,10 @@ jobs:
           npm ls @grpc/grpc-js protobufjs websocket-driver jws ws gaxios uuid --omit=dev || true
           exit "$audit_status"
 
+      - name: Full dependency critical audit (triage)
+        continue-on-error: true
+        run: npm audit --audit-level=critical
+
       - name: Project doctrine contract
         run: npm run project:check
 
