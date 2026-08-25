@@ -304,7 +304,7 @@ export class GameEngine {
   }
 
   getState() {
-    return structuredClone(this.state);
+    return JSON.parse(JSON.stringify(this.state));
   }
 
   // Transitional compatibility for the dev HUD. Performance sampling no longer
