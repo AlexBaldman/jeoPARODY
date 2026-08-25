@@ -1,12 +1,12 @@
 # JeoPARODY Documentation Router
 
-This directory is a **routing layer, not a second project database**. The goal is to make the current truth easy to find while preserving useful history without letting old documents silently become current architecture again.
+This directory is a **routing layer, not a second project database**. Make current truth easy to find while preserving history without letting old documents quietly become architecture again.
 
 ## The rule
 
 **One owner per truth. Links beat copies.**
 
-If a fact changes, update the smallest document that owns that fact and link to it from broader documents. Do not repeat mutable status in several plans, READMEs, handoffs, and audits.
+If a fact changes, update the smallest document that owns it and link to that owner from broader documents. Do not repeat mutable status across six plans because apparently Markdown can also develop distributed-consensus problems.
 
 ## Start here
 
@@ -18,51 +18,55 @@ If a fact changes, update the smallest document that owns that fact and link to 
 | Current priorities / next lead domino | [`MASTER_PLAN.md`](MASTER_PLAN.md) |
 | Chronological engineering handoff | [`../DEV_JOURNAL.md`](../DEV_JOURNAL.md) |
 | Durable cross-project concepts | [`../ICM/README.md`](../ICM/README.md) |
-| Shared project vocabulary | [`IMMORTAL_DEV_GLOSSARY.md`](IMMORTAL_DEV_GLOSSARY.md) |
+| Shared vocabulary | [`IMMORTAL_DEV_GLOSSARY.md`](IMMORTAL_DEV_GLOSSARY.md) |
 | Head-to-Head multiplayer | [`HEAD_TO_HEAD_MULTIPLAYER_2026-08-24.md`](HEAD_TO_HEAD_MULTIPLAYER_2026-08-24.md) |
 | Needle Drop | [`NEEDLE_DROP_ARCHITECTURE.md`](NEEDLE_DROP_ARCHITECTURE.md) |
 | Stage / show projection runtime | [`STAGE_RUNTIME_SYSTEM.md`](STAGE_RUNTIME_SYSTEM.md) |
 | AI-provider credentials and proxy boundary | [`AI_PROVIDER_SETUP.md`](AI_PROVIDER_SETUP.md) |
+| Completed Convergence 2.0 dispositions | [`CONVERGENCE_2_CAPABILITY_MATRIX_2026-08-25.md`](CONVERGENCE_2_CAPABILITY_MATRIX_2026-08-25.md) |
 | Canonical-repository migration history | [`JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md`](JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md) |
 
-The machine-readable version of this map is [`canonical-docs.json`](canonical-docs.json). `npm run docs:check` verifies that registered owners exist and that their local Markdown links resolve.
+The machine-readable version of this map is [`canonical-docs.json`](canonical-docs.json). `npm run docs:check` verifies registered owners/files and selected local links.
 
 ## Document roles
 
 ### CANONICAL
 
-Owns a current domain and may change as reality changes. There must be only one canonical owner for a domain.
+Owns a current mutable domain. There must be only one canonical owner for a domain.
 
-Examples: `MASTER_PLAN.md`, `ARCHITECTURE.md`, the Head-to-Head architecture document.
+Examples: `MASTER_PLAN.md`, `ARCHITECTURE.md`, Head-to-Head architecture.
 
 ### MILESTONE
 
-An immutable or mostly immutable snapshot of what was proven at a meaningful point in time. New reality should be recorded in a new milestone or the current canonical owner, not by rewriting history.
+A mostly immutable snapshot of a shipped proof or completed bounded campaign. New reality belongs in a current canonical owner or a new milestone, not by rewriting the old proof into something it was not.
 
-Example: [`MULTIPLAYER_FOUNDATION_MILESTONE_2026-08-24.md`](MULTIPLAYER_FOUNDATION_MILESTONE_2026-08-24.md).
+Examples:
+
+- [`MULTIPLAYER_FOUNDATION_MILESTONE_2026-08-24.md`](MULTIPLAYER_FOUNDATION_MILESTONE_2026-08-24.md)
+- [`CONVERGENCE_2_CAPABILITY_MATRIX_2026-08-25.md`](CONVERGENCE_2_CAPABILITY_MATRIX_2026-08-25.md)
 
 ### REFERENCE
 
-Useful specialized guidance, research, audits, implementation notes, or historical context. A reference document does **not** outrank a canonical owner when they disagree.
+Useful specialized guidance, research, audits, donor behavior, or historical implementation notes. Reference material does **not** outrank a canonical owner.
 
 ### HISTORY
 
-Preserved provenance. Historical material may contain superseded repository names, architecture, plans, or assumptions. Preserve it when useful, but do not route implementation agents through it as current truth.
+Preserved provenance. It may contain superseded repository names, architecture or plans. Preserve useful archaeology without routing current implementation through it.
 
 ## How to add documentation
 
 Before creating another Markdown file:
 
-1. Ask whether an existing canonical owner should simply be updated.
-2. If the new document owns a durable current domain, add it to `canonical-docs.json` with a unique domain.
-3. If it records a shipped proof or dated decision, make its milestone/reference status explicit.
-4. Link outward instead of duplicating current status.
+1. Ask whether an existing canonical owner should simply change.
+2. If the new document owns a durable current domain, register one unique domain in `canonical-docs.json`.
+3. If it records a completed proof/decision, mark it milestone/reference explicitly.
+4. Link instead of duplicating mutable status.
 5. Run `npm run docs:check`.
-6. For substantive work, leave a `DEV_JOURNAL.md` handoff.
+6. For substantive work, add a dated handoff under `DEV_JOURNAL.d/`.
 
 ## Cleanup doctrine
 
-Do **not** reorganize the whole docs tree merely because it looks untidy. Old audits and dated implementation notes can remain useful evidence. Cleanup should happen in this order:
+Do **not** reorganize the whole docs tree because it looks untidy. Cleanup order is:
 
 ```text
 identify current owner
@@ -71,15 +75,23 @@ repair contradictions
         ↓
 add routing / machine checks
         ↓
-understand inbound links + provenance
+understand provenance + inbound links
         ↓
-archive or retire obsolete documents deliberately
+archive or retire deliberately
+        ↓
+STOP when current work is no longer blocked
 ```
 
-A smaller number of trustworthy entrypoints is more valuable than a perfectly categorized graveyard.
+A small number of trustworthy entrypoints is more valuable than a perfectly alphabetized graveyard.
+
+## Current project boundary
+
+Convergence 2.0 is complete. Its milestone records the answer/scoring convergence, GameEngine simplification, retired duplicate architecture and disposition of remaining dormant/reference files.
+
+The product lead domino is again **Firebase activation and real cloud proof, issue #44**. Future repository hygiene belongs to issue #58 and must not preempt product work merely because an import graph contains unused candidates.
 
 ## Deployment truth
 
-The canonical static-site publisher is `.github/workflows/deploy-pages.yml` using GitHub Pages Actions. Do not add a second branch-based publisher or restore a `package.json` deploy script that writes to `gh-pages`.
+The canonical static-site publisher is `.github/workflows/deploy-pages.yml` using GitHub Pages Actions on the Node 24 workflow baseline. Do not add a second branch publisher or restore a `package.json` deploy script that writes to `gh-pages`.
 
-GitHub Pages Actions is now proven as the active publisher through an exact-live-SHA verification against the public site. Firebase cloud activation remains a separate concern tracked by issue #44; the deployment workflow records whether a release is using local or Firebase multiplayer transport and only runs cloud multiplayer certification when Firebase configuration is present.
+GitHub Pages Actions has been proven as the active publisher through exact-live-SHA verification. Firebase activation is separate: the workflow records whether a release uses local or Firebase multiplayer transport and only runs cloud multiplayer certification when Firebase configuration is present.
