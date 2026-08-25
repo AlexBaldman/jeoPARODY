@@ -43,7 +43,9 @@ if (!fs.existsSync(pagesWorkflowPath)) {
   const pagesWorkflow = fs.readFileSync(pagesWorkflowPath, 'utf8');
   const requiredMarkers = [
     'actions/upload-pages-artifact@v4',
-    'actions/deploy-pages@v4',
+    'actions/deploy-pages@v5',
+    'actions/setup-node@v7',
+    'node-version: 24',
     'verify-live-pages',
     'build-meta.json',
     'github.sha',
@@ -61,4 +63,4 @@ if (failed) {
   process.exit(1);
 }
 
-console.log('deployment-contract: GitHub Pages Actions is the only source-controlled publisher.');
+console.log('deployment-contract: GitHub Pages Actions is the only source-controlled publisher and runs on the Node 24 deployment baseline.');
