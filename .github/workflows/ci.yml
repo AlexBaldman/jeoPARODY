@@ -22,7 +22,14 @@ jobs:
         run: npm ci
 
       - name: Production dependency critical audit
-        run: npm audit --omit=dev --audit-level=critical
+        shell: bash
+        run: |
+          set +e
+          npm audit --omit=dev --audit-level=critical
+          audit_status=$?
+          echo "--- production dependency paths for current advisories ---"
+          npm ls @grpc/grpc-js protobufjs websocket-driver jws ws gaxios uuid --omit=dev || true
+          exit "$audit_status"
 
       - name: Project doctrine contract
         run: npm run project:check
