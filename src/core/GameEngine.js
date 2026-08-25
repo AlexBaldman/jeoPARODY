@@ -20,6 +20,7 @@ import { eventBus } from '../utils/events.js';
 import { ACTION_TYPES } from '../state/actions.js';
 import { getQuestion } from '../services/api/questionService.js';
 import { store } from '../state/store.js';
+import { compareAnswers } from './answerJudge.js';
 
 // Game constants
 export const GAME_CONFIG = {
@@ -336,67 +337,13 @@ export class GameEngine {
   }
   
   /**
-   * Check if answer is correct using fuzzy matching
+   * Check correctness through the canonical deterministic answer judge.
    * @param {string} userAnswer - User's answer
    * @param {string} correctAnswer - Correct answer
    * @returns {boolean} Whether answer is correct
    */
   checkAnswer(userAnswer, correctAnswer) {
-    if (!userAnswer || !correctAnswer) return false;
-    
-    // Normalize both answers
-    const normalize = (str) =>
-      str.toLowerCase()
-         .trim()
-         .replace(/[^a-z0-9\s]/g, '')
-         .replace(/\s+/g, ' ');
-    
-    const normalizedUser = normalize(userAnswer);
-    const normalizedCorrect = normalize(correctAnswer);
-    
-    // Exact match
-    if (normalizedUser === normalizedCorrect) return true;
-    
-    // Fuzzy matching for partial credit
-    const similarity = this.calculateSimilarity(normalizedUser, normalizedCorrect);
-    return similarity >= 0.8; // 80% similarity threshold
-  }
-  
-  /**
-   * Calculate string similarity using Levenshtein distance
-   * @param {string} str1 - First string
-   * @param {string} str2 - Second string
-   * @returns {number} Similarity score (0-1)
-   */
-  calculateSimilarity(str1, str2) {
-    const matrix = [];
-    
-    for (let i = 0; i <= str2.length; i++) {
-      matrix[i] = [i];
-    }
-    
-    for (let j = 0; j <= str1.length; j++) {
-      matrix[0][j] = j;
-    }
-    
-    for (let i = 1; i <= str2.length; i++) {
-      for (let j = 1; j <= str1.length; j++) {
-        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-          matrix[i][j] = matrix[i - 1][j - 1];
-        } else {
-          matrix[i][j] = Math.min(
-            matrix[i - 1][j - 1] + 1,
-            matrix[i][j - 1] + 1,
-            matrix[i - 1][j] + 1
-          );
-        }
-      }
-    }
-    
-    const distance = matrix[str2.length][str1.length];
-    const maxLength = Math.max(str1.length, str2.length);
-    
-    return maxLength === 0 ? 1 : 1 - (distance / maxLength);
+    return compareAnswers(userAnswer, correctAnswer);
   }
   
   /**
