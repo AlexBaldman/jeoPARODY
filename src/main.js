@@ -51,8 +51,8 @@ async function initializeApp() {
   console.info('[🎮] Initializing JeoPARODY...');
   
   try {
-    // Inject API keys via URL params (dev only)
-    injectKeysFromURL();
+    // Apply non-secret development preferences from URL params.
+    applyDevPreferencesFromURL();
     // 1. Initialize core systems
     await initializeCoreServices();
 
@@ -212,34 +212,45 @@ function setupServiceIntegration() {
   });
 }
 
-function injectKeysFromURL() {
+function applyDevPreferencesFromURL() {
   try {
     const url = new URL(window.location.href);
-    const ai = url.searchParams.get('ai');
-    const geminiKey = url.searchParams.get('gemini_key') || url.searchParams.get('key');
-    const claudeKey = url.searchParams.get('claude_key');
     const providerOrder = url.searchParams.get('provider_order');
     const personaId = url.searchParams.get('persona');
     const enableLocal = url.searchParams.get('local_model');
+    const ai = url.searchParams.get('ai');
+    const legacySecretParams = ['gemini_key', 'claude_key', 'key'];
 
     let mutated = false;
-    if (geminiKey) { localStorage.setItem('gemini_api_key', geminiKey); mutated = true; }
-    if (claudeKey) { localStorage.setItem('claude_api_key', claudeKey); mutated = true; }
-    if (providerOrder) { AIConfig.providerOrder = providerOrder.split(','); mutated = true; }
-    if (personaId) { AIConfig.personaId = personaId; mutated = true; }
-    if (enableLocal != null) { AIConfig.featureFlags = { useLocalModel: enableLocal === '1' || enableLocal === 'true' }; mutated = true; }
-    if (ai) { mutated = true; }
+    for (const param of legacySecretParams) {
+      if (url.searchParams.has(param)) {
+        url.searchParams.delete(param);
+        mutated = true;
+      }
+    }
+
+    if (providerOrder) {
+      AIConfig.providerOrder = providerOrder.split(',').map(value => value.trim()).filter(Boolean);
+      mutated = true;
+    }
+    if (personaId) {
+      AIConfig.personaId = personaId;
+      mutated = true;
+    }
+    if (enableLocal != null) {
+      AIConfig.featureFlags = { useLocalModel: enableLocal === '1' || enableLocal === 'true' };
+      mutated = true;
+    }
+    if (ai) mutated = true;
+
+    for (const param of ['provider_order', 'persona', 'local_model', 'ai']) {
+      url.searchParams.delete(param);
+    }
+
     if (mutated) {
-      url.searchParams.delete('gemini_key');
-      url.searchParams.delete('claude_key');
-      url.searchParams.delete('key');
-      url.searchParams.delete('provider_order');
-      url.searchParams.delete('persona');
-      url.searchParams.delete('local_model');
-      url.searchParams.delete('ai');
       window.history.replaceState({}, document.title, url.toString());
     }
-  } catch (_) { /* ignore */ }
+  } catch (_) { /* ignore malformed development URLs */ }
 }
 
 /**

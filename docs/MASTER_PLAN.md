@@ -1,7 +1,7 @@
 # JeoPARODY Master Plan
 
 **Status:** CANONICAL ROUTING DOCUMENT  
-**Updated:** 2026-08-24  
+**Updated:** 2026-08-25  
 **Rule:** this file owns priorities and routing. Specialized architecture documents own their detailed domains.
 
 JeoPARODY is the canonical proving ground for a larger family of playful learning, game-show, Stage, multiplayer, and eventually cross-world systems. The project should earn abstractions through working vertical slices rather than designing a universal engine in advance.
@@ -27,6 +27,8 @@ The repository now has blocking automated proof for:
 The canonical GitHub Pages publisher is now proven. `Deploy GitHub Pages` run `32754954244` deployed merge commit `6443a8cb9ef4c6db89aa02cf3b07badc00d0295e`; its live verification fetched the root, Needle Drop, Head-to-Head and `build-meta.json`, then proved the public `gitSha` exactly matched that commit. Issue #46 is complete.
 
 **Current cloud boundary:** the same deployment run also proved that the production `VITE_FIREBASE_*` Actions variables are currently absent, so the live Head-to-Head build is intentionally using local proving mode. Real Firebase multiplayer is therefore the sole current lead domino.
+
+**Current security baseline:** dependency/security triage reduced the installed graph from roughly 742 packages / 32 advisories / 3 critical to 630 packages / 16 advisories / **0 critical** on the verified PR head. CI now blocks both production-only and full-graph critical advisories. AI provider service credentials are server-side-only doctrine, guarded by `npm run security:check`; Firebase web configuration remains intentionally client-visible.
 
 ## 2. Project metabolism: completed upstream contract
 
@@ -62,6 +64,7 @@ This file must not become another encyclopedia. Route detailed questions to the 
 | Head-to-Head shipped milestone snapshot | `docs/MULTIPLAYER_FOUNDATION_MILESTONE_2026-08-24.md` |
 | Needle Drop gameplay architecture | `docs/NEEDLE_DROP_ARCHITECTURE.md` |
 | Stage runtime and projection boundary | `docs/STAGE_RUNTIME_SYSTEM.md` |
+| AI provider credentials / proxy boundary | `docs/AI_PROVIDER_SETUP.md` |
 | Historical canonical-repository convergence | `docs/JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md` |
 | Durable cross-project concept routing | `ICM/README.md` + `ICM/projects/*` |
 | Shared vocabulary | `docs/IMMORTAL_DEV_GLOSSARY.md` |
@@ -184,10 +187,11 @@ The current host-authoritative model is appropriate for casual proving play. Bef
 7. **Raw answers/private adjudication stay private until reveal.** Preserve the security boundary across transports.
 8. **Server authority precedes meaningful stakes.** Host authority is a proving seam, not a permanent anti-cheat strategy.
 9. **Source-controlled infrastructure.** Rules, indexes, lifecycle policy, tests, and deployment behavior belong in the repository.
-10. **One owner per truth.** Prefer links to duplication.
-11. **Docs are executable doctrine.** Canonical ownership and deployment assumptions should fail CI when they drift.
-12. **Preserve history without routing through it.** A dated migration/audit document may remain accurate history without being current instructions.
-13. **Production claims require production proof.** Build-time Firebase configuration is not enough; a live cloud room must pass independent-user runtime certification.
+10. **Provider service credentials stay server-side.** Browser code may consume public Firebase web configuration, but Gemini/Claude-style bearer credentials never belong in source, URL parameters, client-visible Vite variables, or browser storage.
+11. **One owner per truth.** Prefer links to duplication.
+12. **Docs are executable doctrine.** Canonical ownership and deployment assumptions should fail CI when they drift.
+13. **Preserve history without routing through it.** A dated migration/audit document may remain accurate history without being current instructions.
+14. **Production claims require production proof.** Build-time Firebase configuration is not enough; a live cloud room must pass independent-user runtime certification.
 
 ## 6. Definition of done for a substantive slice
 
