@@ -1,67 +1,105 @@
 # AI Provider Setup Guide
 
-This guide provides step-by-step instructions for configuring AI providers for the JeoPARODY host. We prioritize free-tier options to allow for easy development and testing.
+**Role:** reference for AI-provider configuration.  
+**Security rule:** provider credentials stay server-side. Do not commit them, embed them in Vite client variables, or store them in browser `localStorage`.
 
-The AI host system is designed to be modular. You can configure one or more providers, and the system will use the one that is available, falling back to witty, pre-canned responses if no AI provider is configured.
+JeoPARODY's host dialogue is intentionally resilient: if no remote AI provider is available, the application falls back to local/prewritten behavior rather than blocking gameplay.
 
-## Configuration Priority
-1.  **Proxy Server (Default):** The application will first try to connect to a local proxy server. This is the recommended approach for team development.
-2.  **Direct API Key:** If the proxy is not found, the application will look for an API key stored in the browser's `localStorage`. This is a great option for solo development.
+## Current architecture
 
----
+```text
+browser
+  ↓ prompt / bounded context
+GeminiProvider
+  ↓ HTTPS
+server-side proxy: /api/gemini/*
+  ↓ secret credential
+Gemini API
+```
 
-## Option 1: Google Gemini (Recommended)
+The browser never needs the Gemini provider secret. `src/services/ai/gemini.js` probes `/api/gemini/health` and sends generation requests to `/api/gemini/generate` only when that proxy reports itself ready.
 
-Google provides a generous free tier for its Gemini API, which is perfect for this project.
+The Claude provider is currently a disabled placeholder. It should not be enabled until an equivalent server-side credential boundary exists.
 
-### Step 1: Get your API Key
+## Local development without a remote provider
 
-1.  **Go to Google AI Studio:** Navigate to [https://ai.google.dev/](https://ai.google.dev/).
-2.  **Create an API Key:** In the top left, click the "**Get API key**" button. You may need to sign in with your Google account and create a new project.
-3.  **Copy your key:** A new API key will be generated for you. Copy this key and store it somewhere safe. It will look something like `AIzaSy...`.
+No credential is required to work on the game.
 
-### Step 2: Configure JeoPARODY to use the Key
+- The normal fallback/local provider keeps the host functional.
+- The existing mock toggle can be used for deterministic development behavior:
 
-This is the easiest way to get started for local development.
+```javascript
+localStorage.setItem('use_mock_ai', '1');
+```
 
-1.  **Run JeoPARODY:** Start the application locally (`npm run dev`).
-2.  **Open Browser Console:** Open your browser's developer tools and go to the Console.
-3.  **Set the API Key in localStorage:** Paste and run the following command, replacing `YOUR_GEMINI_API_KEY` with the key you just copied:
-    ```javascript
-    localStorage.setItem('gemini_api_key', 'YOUR_GEMINI_API_KEY');
-    ```
-4.  **Refresh the page.** The application will now detect the key and start making calls to the Gemini API for the host's dialogue.
+Refresh after setting the toggle. Remove it with:
 
----
+```javascript
+localStorage.removeItem('use_mock_ai');
+```
 
-## Option 2: Anthropic Claude
+This toggle stores only a harmless feature preference, not a secret.
 
-Anthropic's Claude is another powerful model. While it doesn't have a persistent free *tier* for its API in the same way as Gemini, it often provides **free credits** for new developers.
+## Configuring Gemini through a proxy
 
-### Step 1: Get your API Key
+The proxy implementation may live in a trusted backend, serverless function, or other server-side service. Whatever implementation is chosen should expose the contract expected by the browser:
 
-1.  **Create an Anthropic Account:** Go to [https://www.anthropic.com/](https://www.anthropic.com/) and sign up for a developer account.
-2.  **Check for Free Credits:** In your account dashboard, you should see your starting balance of free credits (e.g., $5.00). This is enough for thousands of requests.
-3.  **Generate an API Key:** Navigate to the API Keys section of your dashboard and create a new key.
-4.  **Copy your key.**
+### `GET /api/gemini/health`
 
-### Step 2: Configure JeoPARODY to use the Key
+Example response:
 
-The process is similar to Gemini, but you'll use a different `localStorage` variable.
+```json
+{
+  "status": "ok",
+  "apiKeyConfigured": true
+}
+```
 
-1.  **Run JeoPARODY:** Start the application locally (`npm run dev`).
-2.  **Open Browser Console:** Open your browser's developer tools and go to the Console.
-3.  **Set the API Key in localStorage:** Paste and run the following command, replacing `YOUR_CLAUDE_API_KEY` with your key:
-    ```javascript
-    localStorage.setItem('claude_api_key', 'YOUR_CLAUDE_API_KEY');
-    ```
-4.  **Refresh the page.** If you have both Gemini and Claude keys set, the system may prioritize one over the other (this behavior will be defined in `src/services/ai.js`).
+### `POST /api/gemini/generate`
 
----
+Request body:
 
-## Verifying the Setup
+```json
+{
+  "prompt": "...",
+  "temperature": 0.6,
+  "maxTokens": 120,
+  "seed": 123
+}
+```
 
-You'll know the AI host is working if:
--   The host's dialogue is dynamic and context-aware (e.g., it comments on your answers).
--   You do **not** see fallback lines like "That's a response, alright."
--   You can see network requests being made to the respective AI provider in the "Network" tab of your browser's developer tools.
+Example response:
+
+```json
+{
+  "text": "..."
+}
+```
+
+The provider credential belongs in that service's secret/configuration store. Never return it to the browser.
+
+## Production boundary
+
+GitHub Pages is a static publisher. It does not itself provide `/api/gemini/*` server functions. Until a trusted external/serverless proxy is configured, production JeoPARODY should treat remote AI dialogue as optional and rely on fallback/local behavior.
+
+That is preferable to shipping a Gemini or Claude credential inside the static site.
+
+## Firebase configuration is different
+
+The `VITE_FIREBASE_*` values used by Head-to-Head are Firebase **web configuration**, which is intentionally client-visible. Authorization is enforced with Firebase Authentication and Firestore Security Rules.
+
+AI provider credentials are bearer-style service credentials and must remain private.
+
+Do not apply the Firebase-web-config mental model to Gemini, Claude, or other paid/provider API secrets.
+
+## Credential incident rule
+
+If a provider credential is ever committed or published:
+
+1. revoke or rotate it immediately;
+2. remove it from the current tree;
+3. search for additional copies;
+4. record the incident/remediation without reposting the credential;
+5. consider Git-history cleanup as defense in depth, but do not mistake history rewriting for credential rotation.
+
+A deleted secret that still works is still a secret somebody else can use. Computers remain annoyingly literal about this.
