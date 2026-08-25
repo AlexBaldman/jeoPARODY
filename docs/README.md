@@ -22,6 +22,7 @@ If a fact changes, update the smallest document that owns that fact and link to 
 | Head-to-Head multiplayer | [`HEAD_TO_HEAD_MULTIPLAYER_2026-08-24.md`](HEAD_TO_HEAD_MULTIPLAYER_2026-08-24.md) |
 | Needle Drop | [`NEEDLE_DROP_ARCHITECTURE.md`](NEEDLE_DROP_ARCHITECTURE.md) |
 | Stage / show projection runtime | [`STAGE_RUNTIME_SYSTEM.md`](STAGE_RUNTIME_SYSTEM.md) |
+| AI-provider credentials and proxy boundary | [`AI_PROVIDER_SETUP.md`](AI_PROVIDER_SETUP.md) |
 | Canonical-repository migration history | [`JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md`](JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md) |
 
 The machine-readable version of this map is [`canonical-docs.json`](canonical-docs.json). `npm run docs:check` verifies that registered owners exist and that their local Markdown links resolve.
@@ -81,4 +82,4 @@ A smaller number of trustworthy entrypoints is more valuable than a perfectly ca
 
 The canonical static-site publisher is `.github/workflows/deploy-pages.yml` using GitHub Pages Actions. Do not add a second branch-based publisher or restore a `package.json` deploy script that writes to `gh-pages`.
 
-Repository-level Pages **Source** must be set to **GitHub Actions**. Issue #46 tracks that owner-side setting and live proof. Firebase cloud activation is a separate concern tracked by issue #44.
+GitHub Pages Actions is now proven as the active publisher through an exact-live-SHA verification against the public site. Firebase cloud activation remains a separate concern tracked by issue #44; the deployment workflow records whether a release is using local or Firebase multiplayer transport and only runs cloud multiplayer certification when Firebase configuration is present.
