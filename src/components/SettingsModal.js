@@ -11,7 +11,7 @@ export default class SettingsModal extends Modal {
 		const flags = AIConfig.featureFlags;
 		const container = createElement('div', { className: 'modal-body' });
 		container.appendChild(this.sectionProvider());
-		container.appendChild(this.sectionKeys());
+		container.appendChild(this.sectionCredentialBoundary());
 		container.appendChild(this.sectionFlags(flags));
 		container.appendChild(this.sectionDeterminism());
 		container.appendChild(this.sectionTest());
@@ -34,31 +34,15 @@ export default class SettingsModal extends Modal {
 		return wrap;
 	}
 
-	sectionKeys() {
+	sectionCredentialBoundary() {
 		const wrap = document.createElement('div');
 		wrap.innerHTML = `
-			<h3 style="margin:0.5rem 0">API Keys</h3>
-			<label>Gemini <input id="gemini-key" type="password" style="width:100%" value="${localStorage.getItem('gemini_api_key') || ''}"></label>
-			<label style="margin-top:6px;display:block">Claude <input id="claude-key" type="password" style="width:100%" value="${localStorage.getItem('claude_api_key') || ''}"></label>
-			<div style="margin-top:6px;display:flex;gap:8px;justify-content:flex-end">
-				<button id="save-keys">Save</button>
-				<button id="clear-keys">Clear</button>
-			</div>
+			<h3 style="margin:0.5rem 0">Remote providers</h3>
+			<p style="margin:0">
+				Provider credentials are configured server-side. This browser does not store Gemini or Claude API keys.
+			</p>
+			<small>Without a trusted provider proxy, JeoPARODY uses its local/fallback host behavior.</small>
 		`;
-		setTimeout(() => {
-			wrap.querySelector('#save-keys')?.addEventListener('click', () => {
-				const g = wrap.querySelector('#gemini-key').value.trim();
-				const c = wrap.querySelector('#claude-key').value.trim();
-				if (g) localStorage.setItem('gemini_api_key', g);
-				if (c) localStorage.setItem('claude_api_key', c);
-			});
-			wrap.querySelector('#clear-keys')?.addEventListener('click', () => {
-				localStorage.removeItem('gemini_api_key');
-				localStorage.removeItem('claude_api_key');
-				wrap.querySelector('#gemini-key').value = '';
-				wrap.querySelector('#claude-key').value = '';
-			});
-		}, 0);
 		return wrap;
 	}
 
@@ -124,4 +108,3 @@ export default class SettingsModal extends Modal {
 		return wrap;
 	}
 }
-
