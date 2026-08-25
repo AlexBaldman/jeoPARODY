@@ -71,6 +71,11 @@
       ]
     },
     {
+      "domain": "ai-provider-security",
+      "path": "docs/AI_PROVIDER_SETUP.md",
+      "role": "canonical"
+    },
+    {
       "domain": "canonical-migration-history",
       "path": "docs/JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md",
       "role": "reference"
