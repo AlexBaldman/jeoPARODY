@@ -1,0 +1,9 @@
+# 2026-08-25 06:10 ET — ChatGPT — close Convergence 2.0
+
+- **Read/inspected:** issue #60 stop condition; issue #58 hygiene scope; exact PR #65 Node 24 CI/run logs; final source-reachability inventory; current master plan, docs router, canonical-doc registry and Convergence 2 capability matrix.
+- **Changed:** converted the Convergence 2 matrix from active work to a completed milestone; recorded PRs #61–#65 and the final 14-file dormant/hygiene inventory; rewrote the master plan around the now-proven baseline and restored Firebase #44 as the sole product lead domino; updated the docs router and machine registry to route the completed milestone.
+- **Evidence/tests:** PR #65 exact-head run `32834765144` passed 20 suites / 75 tests plus doctrine, reachability, lint, build, Firestore rules, Main Game, Needle Drop, H2H reconnect, accessibility and artifacts on Node 24. Reachability reported 50/62 source files reachable and 14 candidates, now classified rather than blindly deleted.
+- **Decisions:** Convergence 2.0 is complete when this docs closure is green/merged. Episode, Study/learning ledger, HostPack/HostPerformanceDirector, media preflight and localization remain focused follow-ups, not current blockers. Future archaeology stays in issue #58. Do not start another broad cleanup before Firebase proof absent a concrete blocker.
+- **Unresolved:** exact-head CI/merge for this docs-only closure; issue #60 should then close completed; issue #58 needs the final reachability update; Firebase #44 still requires production Firebase project/auth/config/rules/indexes/physical-device proof.
+- **Next lead domino:** issue #44, activate and automatically certify real Firebase Head-to-Head multiplayer.
+- **Refs:** branch `docs/close-convergence-2`; base `main@adc8834`; convergence PRs #61–#65.
