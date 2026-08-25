@@ -28,7 +28,8 @@
     {
       "domain": "current-priorities",
       "path": "docs/MASTER_PLAN.md",
-      "role": "canonical"
+      "role": "canonical",
+      "checkLinks": true
     },
     {
       "domain": "engineering-handoffs",
@@ -83,6 +84,11 @@
     {
       "domain": "multiplayer-foundation-2026-08-24",
       "path": "docs/MULTIPLAYER_FOUNDATION_MILESTONE_2026-08-24.md",
+      "role": "milestone"
+    },
+    {
+      "domain": "convergence-2-2026-08-25",
+      "path": "docs/CONVERGENCE_2_CAPABILITY_MATRIX_2026-08-25.md",
       "role": "milestone"
     }
   ]
