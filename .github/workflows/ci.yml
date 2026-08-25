@@ -106,11 +106,11 @@ jobs:
           BASE_URL: http://127.0.0.1:4173
         run: node scripts/head-to-head-runtime-check.mjs
 
-      - name: A11y Audit (axe-core)
+      - name: A11y Audit (axe-core through Playwright)
         run: |
-          npx axe http://127.0.0.1:4173/ --chromium --exit 0 --timeout 60000 --save ./axe-report.json || true
-          npx axe 'http://127.0.0.1:4173/needle-drop.html?players=4' --chromium --exit 0 --timeout 60000 --save ./axe-needle-drop-report.json || true
-          npx axe 'http://127.0.0.1:4173/head-to-head.html?transport=local' --chromium --exit 0 --timeout 60000 --save ./axe-head-to-head-report.json || true
+          node scripts/axe-audit.mjs http://127.0.0.1:4173/ axe-report.json
+          node scripts/axe-audit.mjs 'http://127.0.0.1:4173/needle-drop.html?players=4' axe-needle-drop-report.json
+          node scripts/axe-audit.mjs 'http://127.0.0.1:4173/head-to-head.html?transport=local' axe-head-to-head-report.json
 
       - name: Upload runtime evidence
         if: always()
