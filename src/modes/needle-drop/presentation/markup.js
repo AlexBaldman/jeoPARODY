@@ -27,18 +27,18 @@ function crateFormatsMarkup(playerCount, session) {
   </nav>`;
 }
 
-function rulesMarkup(isParty) {
-  return `<details class="rules">
-    <summary>How to play <span>three steps, zero liner notes required</span></summary>
-    <ol>
-      <li><strong>Listen.</strong> Start with a ruthless 0.25-second fragment.</li>
-      <li><strong>${isParty ? 'Buzz.' : 'Name it.'}</strong> ${isParty ? 'First eligible number key owns the mic.' : 'Lock a title after the clip ends.'}</li>
-      <li><strong>Choose.</strong> Guess, replay free, or buy more audio for fewer points.</li>
-    </ol>
+function gameOptionsMarkup(playerCount, session) {
+  return `<details class="game-options">
+    <summary>Change game <span>${playerCount} player${playerCount === 1 ? '' : 's'} · ${escapeHtml(session.formatLabel)}</span></summary>
+    <div>
+      <p>Players</p>${playerCountMarkup(playerCount, session)}
+      <p>Round length</p>${crateFormatsMarkup(playerCount, session)}
+    </div>
   </details>`;
 }
 
 function playersMarkup(state) {
+  if (state.players.length === 1) return '';
   return `<section class="players" aria-label="Players">
     ${state.players.map(player => {
       const isActive = state.activePlayerId === player.id;
@@ -58,27 +58,28 @@ function playersMarkup(state) {
 }
 
 function hostMessage(state, clue, performance) {
-  if (performance?.call) return performance.call;
   if (state.audioError) return `Audio hiccup: ${state.audioError}`;
   if (state.phase === ROUND_PHASES.READY) {
     return state.revealIndex === 0
-      ? `Needle armed. Hear ${clue.reveals[0].duration} seconds, then make history or a small mistake.`
-      : `${clue.reveals[state.revealIndex].duration}-second reveal ready. The points have become less emotionally available.`;
+      ? `Press play. You will hear ${clue.reveals[0].duration} second of a famous melody.`
+      : `${clue.reveals[state.revealIndex].duration}-second clip ready for ${clue.reveals[state.revealIndex].points} points.`;
   }
-  if (state.phase === ROUND_PHASES.LISTENING) return 'Ears up. Shazam has been asked to leave the building.';
+  if (state.phase === ROUND_PHASES.LISTENING) return 'Listen closely…';
   if (state.phase !== ROUND_PHASES.ANSWERING) return '';
 
   const activePlayer = state.players.find(player => player.id === state.activePlayerId);
-  if (activePlayer) return `${activePlayer.name} owns the mic. Lock an answer.`;
+  if (activePlayer) return state.players.length > 1
+    ? `${activePlayer.name} owns the mic. Choose the title.`
+    : 'Choose the title.';
 
   const allBlocked = state.blockedPlayerIds.length === state.players.length;
   if (allBlocked) {
     return state.revealIndex < clue.reveals.length - 1
-      ? 'Nobody got it. Buy more audio to put every player back in the hunt.'
-      : 'The full alibi fooled the room. Reveal the answer when dignity permits.';
+      ? 'Nobody got it. Play a longer clip to put everyone back in.'
+      : 'Nobody got it. Reveal the answer.';
   }
-  if (state.players.length > 1) return 'Buzzers open. First eligible number key owns the mic.';
-  return 'Name that suspicious noise. Spelling is judged by humans, which is already too much power.';
+  if (state.players.length > 1) return 'Buzzers open. Press your number key to answer.';
+  return performance?.call || 'Choose the title.';
 }
 
 function missMarkup(state) {
@@ -89,20 +90,23 @@ function missMarkup(state) {
     return `<p class="miss-call" role="status"><strong>${escapeHtml(subject)}</strong> passed the mic. Steal window open.</p>`;
   }
   const answer = state.lastAttempt.answer ? ` “${escapeHtml(state.lastAttempt.answer)}”` : '';
+  const nextStep = state.players.length > 1
+    ? 'Steal window open.'
+    : 'Try a longer clip or reveal the answer.';
 
-  return `<p class="miss-call" role="status"><strong>${escapeHtml(subject)}:</strong>${answer} is not on the label. Steal window open.</p>`;
+  return `<p class="miss-call" role="status"><strong>${escapeHtml(subject)}:</strong>${answer} is incorrect. ${nextStep}</p>`;
 }
 
 function lineageMarkup(clue) {
   return `<div class="lineage" aria-label="Sample lineage">
     <article>
-      <span>ORIGINAL SOURCE</span>
+      <span>ORIGINAL COMPOSITION</span>
       <strong>${escapeHtml(clue.source.title)}</strong>
       <small>${escapeHtml(clue.source.artist)} · ${clue.source.year}</small>
     </article>
     <div class="lineage__arrow" aria-hidden="true">➜<small>${clue.transformation.map(escapeHtml).join(' · ')}</small></div>
     <article>
-      <span>THE FLIP</span>
+      <span>HOUSE-BAND FLIP</span>
       <strong>${escapeHtml(clue.title)}</strong>
       <small>${escapeHtml(clue.artist)}</small>
     </article>
@@ -136,7 +140,7 @@ function resultMarkup(state, episode, clue, options) {
       ${directorCallMarkup(options.performance)}
     </section>
     ${lineageMarkup(clue)}
-    <button type="button" class="next" data-action="next">${state.clueIndex === episode.clues.length - 1 ? 'Close the crate' : 'Next record'} →</button>
+    <button type="button" class="next" data-action="next">${state.clueIndex === episode.clues.length - 1 ? 'Finish round' : 'Next song'} →</button>
   </section>`;
 }
 
@@ -159,18 +163,19 @@ function roundMarkup(state, episode, clue, reveal, options) {
     && state.listenedRevealIndex >= 0
     && roomCanChoose;
   const nextReveal = clue.reveals[state.revealIndex + 1];
-  const answerLabel = canAnswer
-    ? `${activePlayer.name}'s answer`
-    : (state.phase === ROUND_PHASES.READY ? 'Listen before answering' : 'Buzz to claim the mic');
   const playLabel = state.phase === ROUND_PHASES.LISTENING
     ? 'Listening…'
-    : (heardCurrentReveal ? `↻ Replay ${reveal.duration}s` : '▶ Drop the needle');
+    : (heardCurrentReveal ? `↻ Replay ${reveal.duration}-second clip` : `▶ Play ${reveal.duration}-second clip`);
+  const choicePrompt = state.phase === ROUND_PHASES.READY
+    ? 'Choices unlock after the clip'
+    : (state.players.length > 1 && !activePlayer ? 'Buzz to unlock your choices' : 'Pick one');
 
   return `<section class="clue-card">
     <div class="clue-card__progress" style="--progress:${((state.clueIndex + 1) / episode.clues.length) * 100}%" aria-hidden="true"></div>
-    <div class="clue-card__meta"><span>TRACK ${state.clueIndex + 1}/${episode.clues.length}</span><span>${escapeHtml(clue.category)}</span></div>
+    <div class="clue-card__meta"><span>SONG ${state.clueIndex + 1} OF ${episode.clues.length}</span><span>${escapeHtml(clue.category)}</span></div>
     <h2>${escapeHtml(clue.prompt)}</h2>
     <div class="turntable" aria-hidden="true"><div class="record ${state.phase === ROUND_PHASES.LISTENING ? 'record--spinning' : ''}"><i></i></div><div class="tonearm"></div></div>
+    <button type="button" class="listen-control" data-action="play" ${canPlay ? '' : 'disabled'}>${escapeHtml(playLabel)}<small>${reveal.points} points available</small></button>
     <canvas id="waveform" class="waveform" role="img" aria-label="Stylized audio waveform showing playback progress"></canvas>
     <div class="reveal-meter" aria-label="Audio reveal ladder">
       ${clue.reveals.map((item, index) => `<div class="${index === state.revealIndex ? 'is-current' : ''} ${index < state.revealIndex ? 'is-spent' : ''} ${index <= state.listenedRevealIndex ? 'is-heard' : ''}">
@@ -179,18 +184,14 @@ function roundMarkup(state, episode, clue, reveal, options) {
     </div>
     <p class="host-call ${state.audioError ? 'host-call--error' : ''}" role="status" aria-live="polite">${escapeHtml(hostMessage(state, clue, options.performance))}</p>
     ${missMarkup(state)}
-    <form id="answer-form" class="answer">
-      <label for="answer">${escapeHtml(answerLabel)}</label>
-      <div>
-        <input id="answer" name="answer" autocomplete="off" placeholder="Name that suspicious noise…" ${canAnswer ? '' : 'disabled'} />
-        <button type="submit" ${canAnswer ? '' : 'disabled'}>Lock it</button>
-      </div>
-      ${state.players.length > 1 ? `<button type="button" class="answer__pass" data-action="pass" ${canAnswer ? '' : 'disabled'}>Pass mic · open the steal</button>` : ''}
-    </form>
-    <div class="controls">
-      <button type="button" class="button--needle" data-action="play" ${canPlay ? '' : 'disabled'}>${escapeHtml(playLabel)}</button>
-      <button type="button" data-action="more" ${canBuy ? '' : 'disabled'}>Buy more audio <small>${nextReveal ? `−${reveal.points - nextReveal.points} potential` : 'full clip reached'}</small></button>
-      <button type="button" class="button--quiet" data-action="give-up" ${canGiveUp ? '' : 'disabled'}>Reveal answer <small>the crate keeps no secrets</small></button>
+    <fieldset class="choice-grid" ${canAnswer ? '' : 'disabled'}>
+      <legend>${escapeHtml(choicePrompt)}</legend>
+      ${clue.choices.map((choice, index) => `<button type="button" data-action="answer" data-answer="${escapeHtml(choice)}" ${canAnswer ? '' : 'disabled'}><span>${String.fromCharCode(65 + index)}</span>${escapeHtml(choice)}</button>`).join('')}
+    </fieldset>
+    <div class="round-options">
+      <button type="button" data-action="more" ${canBuy ? '' : 'disabled'}>${nextReveal ? `Hear ${nextReveal.duration} seconds` : 'Full clip reached'}<small>${nextReveal ? `${nextReveal.points} points available` : ''}</small></button>
+      <button type="button" class="button--quiet" data-action="give-up" ${canGiveUp ? '' : 'disabled'}>Show answer</button>
+      ${state.players.length > 1 ? `<button type="button" class="button--quiet" data-action="pass" ${canAnswer ? '' : 'disabled'}>Pass mic</button>` : ''}
     </div>
   </section>`;
 }
@@ -218,16 +219,16 @@ function finaleMarkup(state, episode, profile, isNewBest, options) {
   const topScore = ranked[0]?.score || 0;
   const winners = ranked.filter(player => player.score === topScore);
   const title = state.players.length === 1
-    ? `${state.correct}/${episode.clues.length} identified`
-    : (winners.length > 1 ? 'A crate-sharing tie' : `${winners[0].name} wins the crate`);
+    ? `${state.correct}/${episode.clues.length} songs identified`
+    : (winners.length > 1 ? 'The round ends in a tie' : `${winners[0].name} wins`);
 
   const formatBest = profile.bestScores?.[options.session.formatId] || 0;
 
   return `<section class="finale">
-    <p class="eyebrow">CRATE CLOSED</p>
+    <p class="eyebrow">ROUND COMPLETE</p>
     <h2 id="finale-heading" tabindex="-1">${escapeHtml(title)}</h2>
     ${directorCallMarkup(options.performance)}
-    <p>${escapeHtml(options.session.formatLabel)} · crate <code>${escapeHtml(options.session.seed)}</code></p>
+    <p>${escapeHtml(options.session.formatLabel)}</p>
     <p>${formatPoints(state.score)} room points. The waveform has declined to comment.</p>
     ${state.players.length === 1 ? `<p class="personal-best ${isNewBest ? 'is-new' : ''}">${isNewBest ? 'NEW FORMAT BEST' : 'FORMAT BEST'} <strong>${formatPoints(formatBest)}</strong></p>` : ''}
     <ol class="standings" aria-label="Final standings">
@@ -235,8 +236,8 @@ function finaleMarkup(state, episode, profile, isNewBest, options) {
     </ol>
     ${receiptMarkup(options.sessionSummary)}
     <div class="finale__actions">
-      <button type="button" data-action="restart">Rematch same crate</button>
-      <a href="${escapeHtml(options.freshCrateUrl)}">Fresh crate →</a>
+      <button type="button" data-action="restart">Play again</button>
+      <a href="${escapeHtml(options.freshCrateUrl)}">New mix →</a>
       <button type="button" class="button--quiet" data-action="copy-result">Copy result</button>
     </div>
     <p class="copy-status" role="status" aria-live="polite">${escapeHtml(options.copyStatus)}</p>
@@ -247,7 +248,7 @@ export function renderApp(state, episode, options = {}) {
   const {
     profile = { bestScores: {} },
     isNewBest = false,
-    session = episode.session || { formatId: 'full', formatLabel: 'Full Crate', seed: 'original' },
+    session = episode.session || { formatId: 'quick', formatLabel: 'Quick Hit', seed: 'original' },
   } = options;
   const clue = episode.clues[state.clueIndex];
   const reveal = clue?.reveals[state.revealIndex];
@@ -271,13 +272,12 @@ export function renderApp(state, episode, options = {}) {
     <section class="marquee">
       <span>PROJECT CRATE EXPECTATIONS</span>
       <h1>NEEDLE DROP</h1>
-      <p>Musical archaeology conducted at an unsafe volume.</p>
-      ${playerCountMarkup(state.players.length, session)}
-      ${crateFormatsMarkup(state.players.length, session)}
-      ${rulesMarkup(isParty)}
+      <p class="marquee__promise">Hear a tiny clip. Name the song.</p>
+      <p class="marquee__steps" aria-label="How to play">Play clip <b>→</b> choose title <b>→</b> reveal the musical DNA</p>
+      ${gameOptionsMarkup(state.players.length, session)}
     </section>
     ${playersMarkup(state)}
     ${body}
-    <footer><span>All demo music is procedurally synthesized and original.</span><span>Audio truth before audio swagger.</span></footer>
+    <footer><span>Public-domain compositions · original procedural performances.</span><span>No mystery titles. No psychic paperwork.</span></footer>
   </main>`;
 }

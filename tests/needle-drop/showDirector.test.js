@@ -36,7 +36,7 @@ describe('Needle Drop semantic show direction', () => {
     state = transition(state, { type: 'BUZZ', playerId: 'player-1' }, episode).next;
     state = transition(state, { type: 'SUBMIT_ANSWER', answer: 'wrong' }, episode).next;
     state = transition(state, { type: 'BUZZ', playerId: 'player-2' }, episode).next;
-    const { next, event } = transition(state, { type: 'SUBMIT_ANSWER', answer: 'Rubber Duck Funk' }, episode);
+    const { next, event } = transition(state, { type: 'SUBMIT_ANSWER', answer: 'Ode to Joy' }, episode);
     const first = performanceForEvent(event, next, episode);
     const second = performanceForEvent(event, next, episode);
     expect(event).toMatchObject({ type: SHOW_EVENTS.CORRECT, playerId: 'player-2', isSteal: true });

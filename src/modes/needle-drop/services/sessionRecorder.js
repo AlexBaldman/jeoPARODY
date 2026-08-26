@@ -80,10 +80,10 @@ export function sessionResultText(state, episode, summary) {
     : Math.max(...state.players.map(player => player.score));
   const lines = [
     `NEEDLE DROP — ${session.formatLabel || 'Crate'}`,
-    `${summary.correct}/${summary.clueCount} records · ${score.toLocaleString()} pts`,
+    `${summary.correct}/${summary.clueCount} songs · ${score.toLocaleString()} pts`,
     `${summary.firstDropHits} first-drop hits · ${summary.replays} replays · ${summary.revealsBought} reveals bought`,
   ];
   if (state.players.length > 1) lines.push(`${summary.steals} steals · ${summary.buzzes} buzzes`);
-  lines.push(`Crate ${session.seed || 'original'} · Project Crate Expectations`);
+  lines.push(`Mix ${session.seed || 'original'} · Project Crate Expectations`);
   return lines.join('\n');
 }

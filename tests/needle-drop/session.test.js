@@ -28,7 +28,7 @@ describe('Needle Drop session layer', () => {
   });
 
   test('normalizes hostile query values and creates stable session links', () => {
-    expect(normalizeCrateFormat('the-entire-record-store').id).toBe('full');
+    expect(normalizeCrateFormat('the-entire-record-store').id).toBe('quick');
     expect(normalizeSeed('  DROP TABLE<script>  ')).toBe('droptablescript');
     expect(createSessionUrl({ playerCount: 9, formatId: 'quick', seed: 'A B' })).toBe('?players=4&crate=quick&seed=ab');
     expect(createFreshSeed(0.5)).toHaveLength(7);
@@ -54,7 +54,7 @@ describe('Needle Drop session layer', () => {
     recorder.record(createShowEvent({ type: 'NEXT_CLUE' }, listening, state, episode), listening, state);
     const summary = recorder.summarize(state, episode);
     expect(summary).toMatchObject({ completed: true, correct: 1, clueCount: 3, firstDropHits: 1, durationSeconds: 2 });
-    expect(sessionResultText(state, episode, summary)).toContain('Crate crate-42');
+    expect(sessionResultText(state, episode, summary)).toContain('Mix crate-42');
     expect(recorder.events.some(event => Object.hasOwn(event, 'answer'))).toBe(false);
   });
 });

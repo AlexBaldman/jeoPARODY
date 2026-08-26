@@ -20,7 +20,7 @@ describe('Needle Drop truth kernel', () => {
   });
 
   test('accepts only authored aliases', () => {
-    expect(isAcceptedAnswer('The Rubber Duck Funk!', demoEpisode.clues[0].acceptedAnswers)).toBe(true);
+    expect(isAcceptedAnswer('The Ode to Joy!', demoEpisode.clues[0].acceptedAnswers)).toBe(true);
     expect(isAcceptedAnswer('something vaguely funky', demoEpisode.clues[0].acceptedAnswers)).toBe(false);
   });
 
@@ -31,13 +31,13 @@ describe('Needle Drop truth kernel', () => {
 
   test('requires the current reveal to be heard before answering or buying audio', () => {
     const state = createInitialState(demoEpisode);
-    expect(reduceRound(state, { type: 'SUBMIT_ANSWER', answer: 'Rubber Duck' }, demoEpisode)).toBe(state);
+    expect(reduceRound(state, { type: 'SUBMIT_ANSWER', answer: 'Ode to Joy' }, demoEpisode)).toBe(state);
     expect(reduceRound(state, { type: 'MORE_AUDIO' }, demoEpisode)).toBe(state);
   });
 
   test('runs a deterministic correct-answer transition', () => {
     let state = hearReveal(createInitialState(demoEpisode));
-    state = reduceRound(state, { type: 'SUBMIT_ANSWER', answer: 'Rubber Duck' }, demoEpisode);
+    state = reduceRound(state, { type: 'SUBMIT_ANSWER', answer: 'Ode to Joy' }, demoEpisode);
     expect(state).toMatchObject({
       phase: ROUND_PHASES.RESOLVED,
       score: 1000,
@@ -59,7 +59,7 @@ describe('Needle Drop truth kernel', () => {
     expect(state.blockedPlayerIds).toEqual([]);
 
     state = hearReveal(state);
-    state = reduceRound(state, { type: 'SUBMIT_ANSWER', answer: 'Rubber Duck Funk' }, demoEpisode);
+    state = reduceRound(state, { type: 'SUBMIT_ANSWER', answer: 'Ode to Joy' }, demoEpisode);
     expect(state.result.points).toBe(750);
   });
 
@@ -83,7 +83,7 @@ describe('Needle Drop truth kernel', () => {
     expect(state.blockedPlayerIds).toContain('player-1');
 
     state = reduceRound(state, { type: 'BUZZ', playerId: 'player-2' }, demoEpisode);
-    state = reduceRound(state, { type: 'SUBMIT_ANSWER', answer: 'Rubber Duck Funk' }, demoEpisode);
+    state = reduceRound(state, { type: 'SUBMIT_ANSWER', answer: 'Ode to Joy' }, demoEpisode);
     expect(state.phase).toBe(ROUND_PHASES.RESOLVED);
     expect(state.players[1]).toMatchObject({ score: 1000, correct: 1 });
     expect(state.players[0]).toMatchObject({ score: 0, streak: 0, attempts: 1 });
@@ -135,6 +135,8 @@ describe('Needle Drop truth kernel', () => {
   test('ships a larger valid demo crate', () => {
     expect(validateEpisode(demoEpisode)).toEqual([]);
     expect(demoEpisode.clues).toHaveLength(8);
+    expect(demoEpisode.clues.every(clue => clue.choices.length === 4)).toBe(true);
+    expect(demoEpisode.clues.every(clue => clue.rights.basis.includes('public-domain'))).toBe(true);
   });
 
   test('blocks an expired rights package', () => {
