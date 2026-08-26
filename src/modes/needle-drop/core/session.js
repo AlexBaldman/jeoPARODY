@@ -4,7 +4,7 @@ export const CRATE_FORMATS = Object.freeze([
   Object.freeze({ id: 'full', label: 'Full Crate', clueCount: 8, description: 'all eight records' }),
 ]);
 
-export const DEFAULT_CRATE_FORMAT = 'full';
+export const DEFAULT_CRATE_FORMAT = 'quick';
 export const ORIGINAL_CRATE_SEED = 'original';
 
 export function normalizeCrateFormat(value) {

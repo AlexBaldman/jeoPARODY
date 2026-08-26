@@ -74,7 +74,7 @@ function focusAfter(actionType) {
       return;
     }
     if (state.activePlayerId) {
-      document.querySelector('#answer')?.focus();
+      document.querySelector('[data-action="answer"]:not(:disabled)')?.focus();
       return;
     }
     if (['MORE_AUDIO', 'NEXT_CLUE', 'RESTART', 'AUDIO_FAILED'].includes(actionType)) {
@@ -235,16 +235,12 @@ app.addEventListener('click', event => {
     case 'toggle-sound':
       toggleShowSound();
       break;
+    case 'answer':
+      dispatch({ type: 'SUBMIT_ANSWER', answer: control.dataset.answer });
+      break;
     default:
       break;
   }
-});
-
-app.addEventListener('submit', event => {
-  if (event.target.id !== 'answer-form') return;
-  event.preventDefault();
-  const answer = new FormData(event.target).get('answer');
-  if (String(answer).trim()) dispatch({ type: 'SUBMIT_ANSWER', answer });
 });
 
 window.addEventListener('keydown', event => {

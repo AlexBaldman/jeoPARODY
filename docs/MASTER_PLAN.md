@@ -30,6 +30,10 @@ The canonical Pages publisher is GitHub Actions and has already been proven thro
 
 **Current security baseline:** production dependencies have zero known vulnerabilities under the blocking production audit; the full development graph has no critical advisories. Provider service credentials stay server-side. Firebase web configuration is intentionally client-visible configuration, not a secret.
 
+### Bounded user-directed product correction — Needle Drop doorway
+
+The 2026-08-26 first-time-player audit found that Needle Drop's technically proven loop asked players to identify invented titles, buried the primary action below setup, and described the premise indirectly. A focused product correction replaces the default crate with recognizable public-domain compositions in original performances, four authored choices, a plain-language promise, compact setup disclosure, and an above-the-fold listen action. This is a bounded repair to an already-public proving mode; after production browser proof, priority returns to Firebase #44.
+
 ## 2. Convergence 2.0 is complete
 
 Issue #60 was a bounded interruption before Firebase, not a new eternal phase of civilization.

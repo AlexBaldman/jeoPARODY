@@ -40,11 +40,11 @@ const LINES = Object.freeze({
     () => 'Answer revealed. The room and the record have agreed to see other people.',
   ],
   winner: [
-    name => `${name} wins the crate. Please remain calm while the confetti files a permit.`,
-    name => `${name} takes the crate. Accounting has been asked to stop dancing.`,
+    name => `${name} wins the round. Please remain calm while the confetti files a permit.`,
+    name => `${name} takes it. Accounting has been asked to stop dancing.`,
   ],
   tie: [
-    () => 'The crate declares a tie. Shared custody begins every other weekend.',
+    () => 'The round declares a tie. Shared custody begins every other weekend.',
     () => 'A tie. The trophy has been advised to remain emotionally neutral.',
   ],
 });
@@ -95,7 +95,7 @@ export function performanceForEvent(event, state, episode) {
     case SHOW_EVENTS.CLUE_REVEALED:
       return { scene: SHOW_SCENES.WRONG, cue: 'reveal-answer', call: line('giveUp', key) };
     case SHOW_EVENTS.ROUND_TRANSITION:
-      return { scene: SHOW_SCENES.ROUND_TRANSITION, cue: 'transition', call: 'Next record. The turntable denies any pattern of misconduct.' };
+      return { scene: SHOW_SCENES.ROUND_TRANSITION, cue: 'transition', call: 'Next song. The turntable denies any pattern of misconduct.' };
     case SHOW_EVENTS.WINNER: {
       const ranked = rankPlayers(state.players);
       const winners = ranked.filter(player => player.score === ranked[0]?.score);
