@@ -1,6 +1,5 @@
 # Factory workspaces
 
-One job: route repeatable transformations. Only workflows that have a real run and review gate belong here.
+One job: route repeatable transformations. A workflow may be designed here before proof, but it becomes a proven factory only after a real run reaches its review gate.
 
-Current proof: [`excavation/`](./excavation/).
-
+Current design: [`excavation/`](./excavation/).
