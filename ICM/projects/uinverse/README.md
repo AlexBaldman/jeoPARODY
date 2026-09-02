@@ -6,9 +6,10 @@ Umbrella creative universe, atlas, portfolio, project archaeology interface, sha
 
 ## Canonical reading path
 
-1. [`CHAT_NOTES_LEDGER_2026-08-09.md`](./CHAT_NOTES_LEDGER_2026-08-09.md) — consolidated durable uINVERSE/meINVERSE notes recovered across ChatGPT conversations through 2026-08-09.
-2. [`../../../docs/vision/UINVERSE_PLATFORM_THESIS_2026-08-08.md`](../../../docs/vision/UINVERSE_PLATFORM_THESIS_2026-08-08.md) — deeper platform thesis, semantic world model, projections, world packs, mythology, project archaeology, and Stage boundary.
-3. [`../../README.md`](../../README.md) — Immortal Context Map conventions and project-context routing.
+1. [`../../../uINVERSE/README.md`](../../../uINVERSE/README.md) — non-destructive architecture proof for Atlas + Factory + World + Showcase.
+2. [`CHAT_NOTES_LEDGER_2026-08-09.md`](./CHAT_NOTES_LEDGER_2026-08-09.md) — consolidated durable uINVERSE/meINVERSE notes recovered across ChatGPT conversations through 2026-08-09.
+3. [`../../../docs/vision/UINVERSE_PLATFORM_THESIS_2026-08-08.md`](../../../docs/vision/UINVERSE_PLATFORM_THESIS_2026-08-08.md) — deeper platform thesis, semantic world model, projections, world packs, mythology, project archaeology, and Stage boundary.
+4. [`../../README.md`](../../README.md) — legacy Immortal Context Map conventions and project-context routing.
 
 **Capture rule:** future durable uINVERSE ideas should be moved from chat into Git-tracked context as Inbox → Ledger → Canonical → Archive, preserving provenance and links when ideas evolve.
 

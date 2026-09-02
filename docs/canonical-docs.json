@@ -47,6 +47,12 @@
       "role": "canonical"
     },
     {
+      "domain": "uinverse-architecture-proof",
+      "path": "uINVERSE/README.md",
+      "role": "reference",
+      "checkLinks": true
+    },
+    {
       "domain": "shared-vocabulary",
       "path": "docs/IMMORTAL_DEV_GLOSSARY.md",
       "role": "canonical"

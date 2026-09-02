@@ -18,6 +18,7 @@ If a fact changes, update the smallest document that owns it and link to that ow
 | Current priorities / next lead domino | [`MASTER_PLAN.md`](MASTER_PLAN.md) |
 | Chronological engineering handoff | [`../DEV_JOURNAL.md`](../DEV_JOURNAL.md) |
 | Durable cross-project concepts | [`../ICM/README.md`](../ICM/README.md) |
+| Proposed uINVERSE Atlas and workflow architecture | [`../uINVERSE/README.md`](../uINVERSE/README.md) |
 | Shared vocabulary | [`IMMORTAL_DEV_GLOSSARY.md`](IMMORTAL_DEV_GLOSSARY.md) |
 | Head-to-Head multiplayer | [`HEAD_TO_HEAD_MULTIPLAYER_2026-08-24.md`](HEAD_TO_HEAD_MULTIPLAYER_2026-08-24.md) |
 | Needle Drop | [`NEEDLE_DROP_ARCHITECTURE.md`](NEEDLE_DROP_ARCHITECTURE.md) |
