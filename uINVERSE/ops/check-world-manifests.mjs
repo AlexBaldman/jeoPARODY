@@ -28,6 +28,10 @@ for (const entry of fs.readdirSync(worldsRoot, { withFileTypes: true })) {
   }
 
   const location = `${entry.name}/world.json`;
+  if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) {
+    errors.push(`${location}: manifest root must be a JSON object`);
+    continue;
+  }
   if (typeof manifest.id !== 'string' || !idPattern.test(manifest.id)) {
     errors.push(`${location}: id must be a kebab-case string`);
     continue;
