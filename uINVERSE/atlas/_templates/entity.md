@@ -1,13 +1,13 @@
 ---
 id: replace-me
 name: Replace Me
-type: concept
+type: system
 status: exploring
 summary: Replace with one durable sentence.
-source: chat-or-file-reference
+source: precise-chat-file-or-excavation-reference
 uses: []
 related_to: []
-promotion: {"portfolio": true, "showcase": true, "reusable": false}
+promotion: {"portfolio": false, "showcase": false, "reusable": false}
 ---
 
 # Replace Me
@@ -16,3 +16,4 @@ promotion: {"portfolio": true, "showcase": true, "reusable": false}
 
 State only durable identity and decisions here. Put raw brainstorming in provenance or the excavation run.
 
+Promotion flags stay false until the review gate explicitly approves them.
