@@ -72,7 +72,7 @@ export function parseFrontmatter(source, displayPath = 'record') {
   if (!match) throw new Error(`${displayPath}: no frontmatter`);
 
   const lines = match[1].split(/\r?\n/);
-  const record = {};
+  const record = Object.create(null);
 
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
