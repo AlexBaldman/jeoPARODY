@@ -56,7 +56,7 @@
       "type": "world",
       "status": "exploring",
       "summary": "Physics-and-invention platformer starring Archie and built to reuse character, animation, learning, and simulation capabilities.",
-      "source": "cross-chat-memory-2026-08",
+      "source": "cross-chat-memory-2026-08-08",
       "uses": [
         "archie",
         "character-factory",
@@ -237,7 +237,7 @@
       "type": "world",
       "status": "proving",
       "summary": "Retro trivia and game-show experience that contributed donor behavior and architecture to the canonical jeoPARODY proving ground.",
-      "source": "cross-chat-memory-and-repository-migration",
+      "source": "docs/JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md",
       "uses": [
         "trivia-engine",
         "stage-runtime",
