@@ -1,0 +1,836 @@
+{
+  "generated": true,
+  "schemaVersion": 1,
+  "nodeCount": 23,
+  "edgeCount": 70,
+  "warnings": [],
+  "nodes": [
+    {
+      "id": "animus-system",
+      "name": "Animus System",
+      "type": "system",
+      "status": "exploring",
+      "summary": "Persistent character-linked symbolic creatures whose forms and abilities respond to identity, bonds, choices, and cross-world state.",
+      "source": "cross-chat-memory-2026-08-23",
+      "uses": [
+        "memorization-station"
+      ],
+      "related_to": [
+        "archie",
+        "character-factory"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/system/animus-system.md"
+    },
+    {
+      "id": "archie",
+      "name": "Archie",
+      "type": "character",
+      "status": "planned",
+      "summary": "Tiny shaggy white overconfident dog whose chaotic intuition turns physics mistakes into unexpectedly useful solutions.",
+      "source": "cross-chat-memory-2026-08-08",
+      "appears_in": [
+        "archimedes-adventures",
+        "jeoparody"
+      ],
+      "uses": [
+        "character-factory"
+      ],
+      "related_to": [
+        "animus-system"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/character/archie.md"
+    },
+    {
+      "id": "archimedes-adventures",
+      "name": "Archimedes Adventures",
+      "type": "world",
+      "status": "exploring",
+      "summary": "Physics-and-invention platformer starring Archie and built to reuse character, animation, learning, and simulation capabilities.",
+      "source": "cross-chat-memory-2026-08-08",
+      "uses": [
+        "archie",
+        "character-factory",
+        "physics-system",
+        "sprite-foundry",
+        "semantic-events"
+      ],
+      "related_to": [
+        "uinverse",
+        "memorization-station"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": false
+      },
+      "path": "atlas/entities/world/archimedes-adventures.md"
+    },
+    {
+      "id": "asset-factory",
+      "name": "Asset Factory",
+      "type": "factory",
+      "status": "proving",
+      "summary": "Composable machine shop that ingests, normalizes, catalogs, transforms, validates, and publishes reusable assets.",
+      "source": "cross-chat-memory-2026-08-08",
+      "produces": [
+        "game-assets"
+      ],
+      "depends_on": [
+        "asset-schema"
+      ],
+      "related_to": [
+        "sprite-foundry",
+        "character-factory"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/factory/asset-factory.md"
+    },
+    {
+      "id": "asset-schema",
+      "name": "Asset Schema",
+      "type": "capability",
+      "status": "planned",
+      "summary": "Stable manifest contract for identity, dimensions, provenance, variants, attachment points, materials, and representations.",
+      "source": "cross-chat-memory-2026-08",
+      "related_to": [
+        "asset-factory",
+        "fabrication-station"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/capability/asset-schema.md"
+    },
+    {
+      "id": "atlas-schema",
+      "name": "Atlas Schema",
+      "type": "capability",
+      "status": "proving",
+      "summary": "Typed record and relationship contract that makes creative canon queryable, linkable, and graph-compilable.",
+      "source": "uINVERSE/atlas/_meta/entity-schema.md",
+      "produces": [
+        "living-project-graph"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/capability/atlas-schema.md"
+    },
+    {
+      "id": "character-factory",
+      "name": "Character Factory",
+      "type": "factory",
+      "status": "planned",
+      "summary": "Reusable character pipeline for canonical identity, morphology, wardrobe, rigs, animation, and multiple embodiments.",
+      "source": "cross-chat-memory-2026-08",
+      "produces": [
+        "game-assets"
+      ],
+      "depends_on": [
+        "asset-schema"
+      ],
+      "related_to": [
+        "sprite-foundry",
+        "animus-system"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/factory/character-factory.md"
+    },
+    {
+      "id": "city-workers",
+      "name": "City Workers",
+      "type": "system",
+      "status": "planned",
+      "summary": "Playfully named, precisely scoped automated maintenance crews for validation, repair, indexing, provenance, and project hygiene.",
+      "source": "cross-chat-memory-2026-08-09",
+      "uses": [
+        "living-project-graph"
+      ],
+      "related_to": [
+        "uinverse"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/system/city-workers.md"
+    },
+    {
+      "id": "fabrication-station",
+      "name": "Fabrication Station",
+      "type": "station",
+      "status": "exploring",
+      "summary": "Portal joining dimensionally aware digital objects to fabrication-safe geometry, validation, preview, and physical output.",
+      "source": "cross-chat-memory-2026-08-09",
+      "related_to": [
+        "uinverse",
+        "asset-schema"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/station/fabrication-station.md"
+    },
+    {
+      "id": "game-assets",
+      "name": "Game Assets",
+      "type": "asset",
+      "status": "active",
+      "summary": "Canonically identified visual, audio, animation, object, and metadata outputs that may serve multiple worlds.",
+      "source": "ICM/projects/asset-library/README.md",
+      "depends_on": [
+        "asset-schema"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/asset/game-assets.md"
+    },
+    {
+      "id": "gamification-station",
+      "name": "Gamification Station",
+      "type": "station",
+      "status": "exploring",
+      "summary": "Curated graph portal into reusable game mechanics, progression systems, and the worlds that consume them.",
+      "source": "cross-chat-memory-2026-08-19",
+      "related_to": [
+        "uinverse",
+        "memorization-station"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/station/gamification-station.md"
+    },
+    {
+      "id": "jeopardish",
+      "name": "Jeopardish",
+      "type": "world",
+      "status": "proving",
+      "summary": "Retro trivia and game-show experience that contributed donor behavior and architecture to the canonical jeoPARODY proving ground.",
+      "source": "docs/JEOPARODY_CANONICAL_MIGRATION_STRATEGY_2026-08-08.md",
+      "uses": [
+        "trivia-engine",
+        "stage-runtime",
+        "sprite-foundry"
+      ],
+      "related_to": [
+        "jeoparody",
+        "uinverse"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": false
+      },
+      "path": "atlas/entities/world/jeopardish.md"
+    },
+    {
+      "id": "jeoparody",
+      "name": "jeoPARODY",
+      "type": "world",
+      "status": "active",
+      "summary": "Active proving ground for deterministic game modes, Stage boundaries, and reusable presentation architecture.",
+      "source": "ICM/projects/jeoparody/README.md",
+      "uses": [
+        "semantic-events",
+        "stage-runtime",
+        "trivia-engine",
+        "sprite-foundry"
+      ],
+      "proves": [
+        "stage-runtime",
+        "semantic-events"
+      ],
+      "related_to": [
+        "uinverse",
+        "jeopardish"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": false
+      },
+      "path": "atlas/entities/world/jeoparody.md"
+    },
+    {
+      "id": "living-project-graph",
+      "name": "Living Project Graph",
+      "type": "system",
+      "status": "proving",
+      "summary": "Derived graph of projects, entities, dependencies, history, bottlenecks, and opportunities compiled from canonical files.",
+      "source": "cross-chat-memory-2026-06-13",
+      "depends_on": [
+        "atlas-schema"
+      ],
+      "produces": [
+        "showcase"
+      ],
+      "related_to": [
+        "city-workers"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/system/living-project-graph.md"
+    },
+    {
+      "id": "memorization-station",
+      "name": "Memorization Station",
+      "type": "station",
+      "status": "planned",
+      "summary": "Portal connecting the 00–99 PAO deck, memory graph, flashcards, learning engine, and foundational Animus cohort.",
+      "source": "cross-chat-memory-2026-08",
+      "related_to": [
+        "animus-system",
+        "gamification-station"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/station/memorization-station.md"
+    },
+    {
+      "id": "physics-system",
+      "name": "Physics System",
+      "type": "system",
+      "status": "exploring",
+      "summary": "Swappable simulation capability shared by sports, trajectories, educational visualizations, puzzles, and world interactions.",
+      "source": "cross-chat-memory-2026-08-09",
+      "related_to": [
+        "archimedes-adventures",
+        "fabrication-station"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/system/physics-system.md"
+    },
+    {
+      "id": "proven-abstraction",
+      "name": "Proven Abstraction",
+      "type": "principle",
+      "status": "active",
+      "summary": "Extract reusable infrastructure after repeated real use demonstrates a stable boundary and measurable reduction in work.",
+      "source": "architecture-roundtable-2026-09-02",
+      "related_to": [
+        "uinverse"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/principle/proven-abstraction.md"
+    },
+    {
+      "id": "semantic-events",
+      "name": "Semantic Events",
+      "type": "system",
+      "status": "proving",
+      "summary": "Domain-owned facts that presentation layers can project without taking ownership of gameplay truth.",
+      "source": "docs/STAGE_RUNTIME_SYSTEM.md",
+      "related_to": [
+        "stage-runtime"
+      ],
+      "proves": [],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/system/semantic-events.md"
+    },
+    {
+      "id": "showcase",
+      "name": "Showcase",
+      "type": "system",
+      "status": "planned",
+      "summary": "Derived publishing layer that turns graph relationships and provenance into portfolio, website, GitHub, social, and in-world views.",
+      "source": "architecture-roundtable-2026-09-02",
+      "depends_on": [
+        "living-project-graph"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/system/showcase.md"
+    },
+    {
+      "id": "sprite-foundry",
+      "name": "Sprite Foundry",
+      "type": "factory",
+      "status": "proving",
+      "summary": "Manifest-backed production line that turns source art into normalized, reusable, production-ready sprite assets.",
+      "source": "ICM/projects/sprite-foundry/README.md",
+      "produces": [
+        "game-assets"
+      ],
+      "depends_on": [
+        "asset-schema"
+      ],
+      "related_to": [
+        "character-factory",
+        "asset-factory"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/factory/sprite-foundry.md"
+    },
+    {
+      "id": "stage-runtime",
+      "name": "Stage Runtime",
+      "type": "system",
+      "status": "proving",
+      "summary": "Projection and performance boundary for actors, cameras, motion, audio, effects, and bounded environmental comedy.",
+      "source": "docs/STAGE_RUNTIME_SYSTEM.md",
+      "depends_on": [
+        "semantic-events"
+      ],
+      "related_to": [
+        "jeoparody"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/system/stage-runtime.md"
+    },
+    {
+      "id": "trivia-engine",
+      "name": "Trivia Engine",
+      "type": "system",
+      "status": "active",
+      "summary": "Domain machinery for clues, answers, judging, scoring, rounds, and deterministic trivia state.",
+      "source": "ARCHITECTURE.md",
+      "related_to": [
+        "jeoparody",
+        "semantic-events"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/system/trivia-engine.md"
+    },
+    {
+      "id": "uinverse",
+      "name": "uINVERSE",
+      "type": "world",
+      "status": "proving",
+      "summary": "Umbrella creative universe whose experiences are arrangements of reusable systems and whose graph doubles as a portfolio.",
+      "source": "ICM/projects/uinverse/README.md",
+      "uses": [
+        "living-project-graph",
+        "semantic-events",
+        "asset-factory",
+        "showcase"
+      ],
+      "related_to": [
+        "gamification-station",
+        "memorization-station",
+        "fabrication-station"
+      ],
+      "promotion": {
+        "portfolio": true,
+        "showcase": true,
+        "reusable": true
+      },
+      "path": "atlas/entities/world/uinverse.md"
+    }
+  ],
+  "edges": [
+    {
+      "source": "animus-system",
+      "relation": "related_to",
+      "target": "archie"
+    },
+    {
+      "source": "animus-system",
+      "relation": "related_to",
+      "target": "character-factory"
+    },
+    {
+      "source": "animus-system",
+      "relation": "uses",
+      "target": "memorization-station"
+    },
+    {
+      "source": "archie",
+      "relation": "appears_in",
+      "target": "archimedes-adventures"
+    },
+    {
+      "source": "archie",
+      "relation": "appears_in",
+      "target": "jeoparody"
+    },
+    {
+      "source": "archie",
+      "relation": "related_to",
+      "target": "animus-system"
+    },
+    {
+      "source": "archie",
+      "relation": "uses",
+      "target": "character-factory"
+    },
+    {
+      "source": "archimedes-adventures",
+      "relation": "related_to",
+      "target": "memorization-station"
+    },
+    {
+      "source": "archimedes-adventures",
+      "relation": "related_to",
+      "target": "uinverse"
+    },
+    {
+      "source": "archimedes-adventures",
+      "relation": "uses",
+      "target": "archie"
+    },
+    {
+      "source": "archimedes-adventures",
+      "relation": "uses",
+      "target": "character-factory"
+    },
+    {
+      "source": "archimedes-adventures",
+      "relation": "uses",
+      "target": "physics-system"
+    },
+    {
+      "source": "archimedes-adventures",
+      "relation": "uses",
+      "target": "semantic-events"
+    },
+    {
+      "source": "archimedes-adventures",
+      "relation": "uses",
+      "target": "sprite-foundry"
+    },
+    {
+      "source": "asset-factory",
+      "relation": "depends_on",
+      "target": "asset-schema"
+    },
+    {
+      "source": "asset-factory",
+      "relation": "produces",
+      "target": "game-assets"
+    },
+    {
+      "source": "asset-factory",
+      "relation": "related_to",
+      "target": "character-factory"
+    },
+    {
+      "source": "asset-factory",
+      "relation": "related_to",
+      "target": "sprite-foundry"
+    },
+    {
+      "source": "asset-schema",
+      "relation": "related_to",
+      "target": "asset-factory"
+    },
+    {
+      "source": "asset-schema",
+      "relation": "related_to",
+      "target": "fabrication-station"
+    },
+    {
+      "source": "atlas-schema",
+      "relation": "produces",
+      "target": "living-project-graph"
+    },
+    {
+      "source": "character-factory",
+      "relation": "depends_on",
+      "target": "asset-schema"
+    },
+    {
+      "source": "character-factory",
+      "relation": "produces",
+      "target": "game-assets"
+    },
+    {
+      "source": "character-factory",
+      "relation": "related_to",
+      "target": "animus-system"
+    },
+    {
+      "source": "character-factory",
+      "relation": "related_to",
+      "target": "sprite-foundry"
+    },
+    {
+      "source": "city-workers",
+      "relation": "related_to",
+      "target": "uinverse"
+    },
+    {
+      "source": "city-workers",
+      "relation": "uses",
+      "target": "living-project-graph"
+    },
+    {
+      "source": "fabrication-station",
+      "relation": "related_to",
+      "target": "asset-schema"
+    },
+    {
+      "source": "fabrication-station",
+      "relation": "related_to",
+      "target": "uinverse"
+    },
+    {
+      "source": "game-assets",
+      "relation": "depends_on",
+      "target": "asset-schema"
+    },
+    {
+      "source": "gamification-station",
+      "relation": "related_to",
+      "target": "memorization-station"
+    },
+    {
+      "source": "gamification-station",
+      "relation": "related_to",
+      "target": "uinverse"
+    },
+    {
+      "source": "jeopardish",
+      "relation": "related_to",
+      "target": "jeoparody"
+    },
+    {
+      "source": "jeopardish",
+      "relation": "related_to",
+      "target": "uinverse"
+    },
+    {
+      "source": "jeopardish",
+      "relation": "uses",
+      "target": "sprite-foundry"
+    },
+    {
+      "source": "jeopardish",
+      "relation": "uses",
+      "target": "stage-runtime"
+    },
+    {
+      "source": "jeopardish",
+      "relation": "uses",
+      "target": "trivia-engine"
+    },
+    {
+      "source": "jeoparody",
+      "relation": "proves",
+      "target": "semantic-events"
+    },
+    {
+      "source": "jeoparody",
+      "relation": "proves",
+      "target": "stage-runtime"
+    },
+    {
+      "source": "jeoparody",
+      "relation": "related_to",
+      "target": "jeopardish"
+    },
+    {
+      "source": "jeoparody",
+      "relation": "related_to",
+      "target": "uinverse"
+    },
+    {
+      "source": "jeoparody",
+      "relation": "uses",
+      "target": "semantic-events"
+    },
+    {
+      "source": "jeoparody",
+      "relation": "uses",
+      "target": "sprite-foundry"
+    },
+    {
+      "source": "jeoparody",
+      "relation": "uses",
+      "target": "stage-runtime"
+    },
+    {
+      "source": "jeoparody",
+      "relation": "uses",
+      "target": "trivia-engine"
+    },
+    {
+      "source": "living-project-graph",
+      "relation": "depends_on",
+      "target": "atlas-schema"
+    },
+    {
+      "source": "living-project-graph",
+      "relation": "produces",
+      "target": "showcase"
+    },
+    {
+      "source": "living-project-graph",
+      "relation": "related_to",
+      "target": "city-workers"
+    },
+    {
+      "source": "memorization-station",
+      "relation": "related_to",
+      "target": "animus-system"
+    },
+    {
+      "source": "memorization-station",
+      "relation": "related_to",
+      "target": "gamification-station"
+    },
+    {
+      "source": "physics-system",
+      "relation": "related_to",
+      "target": "archimedes-adventures"
+    },
+    {
+      "source": "physics-system",
+      "relation": "related_to",
+      "target": "fabrication-station"
+    },
+    {
+      "source": "proven-abstraction",
+      "relation": "related_to",
+      "target": "uinverse"
+    },
+    {
+      "source": "semantic-events",
+      "relation": "related_to",
+      "target": "stage-runtime"
+    },
+    {
+      "source": "showcase",
+      "relation": "depends_on",
+      "target": "living-project-graph"
+    },
+    {
+      "source": "sprite-foundry",
+      "relation": "depends_on",
+      "target": "asset-schema"
+    },
+    {
+      "source": "sprite-foundry",
+      "relation": "produces",
+      "target": "game-assets"
+    },
+    {
+      "source": "sprite-foundry",
+      "relation": "related_to",
+      "target": "asset-factory"
+    },
+    {
+      "source": "sprite-foundry",
+      "relation": "related_to",
+      "target": "character-factory"
+    },
+    {
+      "source": "stage-runtime",
+      "relation": "depends_on",
+      "target": "semantic-events"
+    },
+    {
+      "source": "stage-runtime",
+      "relation": "related_to",
+      "target": "jeoparody"
+    },
+    {
+      "source": "trivia-engine",
+      "relation": "related_to",
+      "target": "jeoparody"
+    },
+    {
+      "source": "trivia-engine",
+      "relation": "related_to",
+      "target": "semantic-events"
+    },
+    {
+      "source": "uinverse",
+      "relation": "related_to",
+      "target": "fabrication-station"
+    },
+    {
+      "source": "uinverse",
+      "relation": "related_to",
+      "target": "gamification-station"
+    },
+    {
+      "source": "uinverse",
+      "relation": "related_to",
+      "target": "memorization-station"
+    },
+    {
+      "source": "uinverse",
+      "relation": "uses",
+      "target": "asset-factory"
+    },
+    {
+      "source": "uinverse",
+      "relation": "uses",
+      "target": "living-project-graph"
+    },
+    {
+      "source": "uinverse",
+      "relation": "uses",
+      "target": "semantic-events"
+    },
+    {
+      "source": "uinverse",
+      "relation": "uses",
+      "target": "showcase"
+    }
+  ]
+}

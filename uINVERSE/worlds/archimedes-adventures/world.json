@@ -1,0 +1,5 @@
+{
+  "id": "archimedes-adventures",
+  "characters": ["archie"],
+  "uses": ["character-factory", "physics-system", "sprite-foundry", "semantic-events"]
+}

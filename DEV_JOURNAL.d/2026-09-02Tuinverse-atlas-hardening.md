@@ -1,0 +1,9 @@
+# 2026-09-02 — Atlas hardening proof
+
+- **Trigger:** PR #68's first CI pass was green, but review exposed data-contract holes that the original pipeline did not yet test.
+- **Changed:** extracted a pure Atlas parser/validator/compiler; added support for the documented block-sequence frontmatter shape; validate records before sorting; reject malformed relationship IDs and promotion metadata; add adversarial contract fixtures; make graph freshness and thin-world manifests blocking parts of `project:check`; remove duplicated lifecycle state from world manifests; tighten entity-template promotion defaults and source provenance; and define evidence-bearing `relationships.jsonl` candidates so inferred edges stay distinguishable from explicit source facts through Review.
+- **Machine contract:** `npm run uinverse:check` now runs parser/validation fixtures, deterministic registry freshness, and thin-world composition checks. It is invoked by `npm run project:check`.
+- **Evidence:** exact PR head `ce8cbdee2cced3f80d3c919a2bba43cd43278366`, CI run `33676084329`, completed green through critical audits, doctrine, reachability, lint, Jest, build, Firestore rules, Main Game, Needle Drop, Head-to-Head, accessibility execution, and artifact upload.
+- **Review disposition:** all eight original CodeRabbit findings were fixed or made obsolete; review threads were resolved after the exact-head doctrine gate passed.
+- **Decision:** Atlas owns canonical identity/lifecycle/provenance/promotion. World manifests may select only relationships already declared by their canonical world entity. Excavation inference is evidence, not canon.
+- **Next gate:** merge #68, then run one bounded real historical source packet through Intake → Extract → Deduplicate → Review. Stop at Review until Alex explicitly approves any promotion into `atlas/entities/`.

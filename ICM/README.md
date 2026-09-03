@@ -1,6 +1,8 @@
-# ICM — Immortal Context Map
+# ICM — legacy Immortal Context Map
 
 > Durable, agent-readable project memory. Read `DEV_JOURNAL.md` and `docs/IMMORTAL_DEV_GLOSSARY.md` first. ICM preserves ideas early without pretending every idea is an active implementation commitment.
+
+**Naming clarification:** this historical folder uses ICM to mean *Immortal Context Map*. Jake Van Clief and David McDermott's ICM means *Interpretable Context Methodology* and is used for staged workflows in [`../uINVERSE/workspaces/`](../uINVERSE/workspaces/). The proposed long-term knowledge owner is the [`uINVERSE Atlas`](../uINVERSE/atlas/); no existing record has been migrated yet.
 
 ## Contract
 

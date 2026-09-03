@@ -1,0 +1,4 @@
+{
+  "id": "jeoparody",
+  "uses": ["trivia-engine", "stage-runtime", "semantic-events", "sprite-foundry"]
+}
