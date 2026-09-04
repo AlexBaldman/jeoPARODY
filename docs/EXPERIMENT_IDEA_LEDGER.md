@@ -85,6 +85,38 @@ This ledger preserves useful ideas from messy, unfinished, or oversized branches
 - Why it waits: the branch is too large, noisy, and mixed with unrelated churn.
 - Future shape: incremental extraction from current working app, one tested module at a time.
 
+### Tip jar / monetization
+
+- Source: User request (2026-08-08).
+- Why it matters: allows community support without subscription pressure.
+- Rebuild condition: keep it simple - no backend, no account requirements, no data collection.
+- MVP shape: modal with QR codes and direct links (Venmo, Cash App, crypto addresses, Stripe Payment Link), no payment processing complexity.
+- Status: ✅ COMPLETED - Implemented TipJar service with direct payment links
+
+### Professional polish features
+
+- Source: Creative brainstorm session (2026-08-08).
+- Why it matters: elevates credibility, shows attention to detail, modern feel.
+- Rebuild condition: simple implementations, zero asset bloat, Web Audio API, CSS only.
+- MVP shape: Card flip animations (CSS), Avatar system (emoji/SVG), Sound design (Web Audio API).
+- Status: ✅ COMPLETED - All three quick wins implemented
+
+### Printable card deck
+
+- Source: User request (2026-08-08).
+- Why it matters: enables offline play, classroom use, physical cards for parties/events.
+- Rebuild condition: no PDF libraries, use CSS print media queries, simple HTML generation.
+- MVP shape: Generate printable HTML with Jeopardy cards, print-friendly layout, toggle answers on/off.
+- Status: ✅ COMPLETED - Implemented PrintableDeck service with print media queries
+
+### Asset library & tagging system
+
+- Source: User request (2026-08-08).
+- Why it matters: enables asset discovery, optimization tracking, organized resource management.
+- Rebuild condition: simple cataloging, no complex databases, localStorage persistence.
+- MVP shape: Asset metadata cataloging, tag-based organization, usage tracking, optimization suggestions, search/filter capabilities.
+- Status: ✅ COMPLETED - Implemented AssetLibrary service with 330+ assets cataloged
+
 ## Branch disposition notes
 
 - Merge directly: only small, reviewed branches with clean scope.

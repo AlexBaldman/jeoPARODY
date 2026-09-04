@@ -159,6 +159,21 @@ export const GAME_EVENTS = {
   AI_RESPONSE_RECEIVED: 'ai:response:received',
   AI_RESPONSE_ERROR: 'ai:response:error',
   
+  // Achievement events
+  ACHIEVEMENT_UNLOCKED: 'achievement:unlocked',
+  
+  // Avatar events
+  AVATAR_UNLOCKED: 'avatar:unlocked',
+  AVATAR_CHANGED: 'avatar:changed',
+  
+  // Printable events
+  PRINTABLE_DECK_OPENED: 'printable:deck:opened',
+  
+  // Asset events
+  ASSET_USED: 'asset:used',
+  ASSET_LOADED: 'asset:loaded',
+  ASSET_ERROR: 'asset:error',
+  
   // Error events
   ERROR_OCCURRED: 'error:occurred',
   API_ERROR: 'error:api',

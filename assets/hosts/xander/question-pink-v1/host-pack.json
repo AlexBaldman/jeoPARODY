@@ -1,0 +1,225 @@
+{
+  "schema": "jeoparody.host-asset-pack",
+  "version": 1,
+  "id": "xander-question-pink-proof-v1",
+  "hostId": "xander-trefleck",
+  "label": "Xander question-pink performance pack",
+  "defaultPose": "idle",
+  "capabilities": {
+    "compositeReady": true,
+    "poseOverrideReady": true,
+    "partRigReady": false,
+    "supportedViews": [
+      "three-quarter-left"
+    ],
+    "pendingViews": [
+      "front",
+      "profile-left",
+      "back"
+    ],
+    "supportedLayers": [
+      "wardrobe-composite",
+      "pose-override",
+      "effects"
+    ],
+    "pendingLayers": [
+      "body-base",
+      "identity",
+      "shirt",
+      "bottom",
+      "upper-arms",
+      "forearms",
+      "hands",
+      "eyewear"
+    ]
+  },
+  "anchors": {
+    "stage": {
+      "x": 0.5,
+      "y": 1
+    },
+    "speech-origin": {
+      "x": 0.5,
+      "y": 0.21
+    },
+    "thought-origin": {
+      "x": 0.58,
+      "y": 0.1
+    },
+    "look-target": {
+      "x": 0.5,
+      "y": 0.14
+    },
+    "lenses": {
+      "x": 0.5,
+      "y": 0.145,
+      "width": 0.255
+    },
+    "mouth": {
+      "x": 0.5,
+      "y": 0.225
+    },
+    "grip-left": {
+      "x": 0.31,
+      "y": 0.53
+    },
+    "grip-right": {
+      "x": 0.69,
+      "y": 0.53
+    },
+    "ground-contact": {
+      "x": 0.5,
+      "y": 1
+    }
+  },
+  "sourceReceipt": {
+    "file": "source-sheets/hosts/xander/proof-v1/xander-question-pink-poses-source-v1.png",
+    "sha256": "3b1263da0b6df04aedfccbe3cf6eff4f699a4b93e449b07d5b867a8f2855ff04"
+  },
+  "poses": {
+    "idle": {
+      "file": "poses/idle.png",
+      "label": "Idle deadpan",
+      "performanceCue": "idle",
+      "sha256": "e865847cd7e8768b955db77b85b8b7451ac9b769b19a60825b790d24abc1ed44",
+      "canvas": [
+        720,
+        900
+      ],
+      "visibleBounds": [
+        100,
+        0,
+        620,
+        900
+      ]
+    },
+    "clue": {
+      "file": "poses/clue.png",
+      "label": "Open-hand clue presentation",
+      "performanceCue": "talk-big",
+      "sha256": "9fd952a5fbd64779bb9c8442112e430e0c76e1882eb44397bf9284b2e307e4bb",
+      "canvas": [
+        720,
+        900
+      ],
+      "visibleBounds": [
+        73,
+        0,
+        647,
+        900
+      ]
+    },
+    "listening": {
+      "file": "poses/listening.png",
+      "label": "Listening for an answer",
+      "performanceCue": "listen",
+      "sha256": "3f64af2f89f55adccaa6ca5f0e0d79b2b50663f739ae71e1e41fbc941bc4237c",
+      "canvas": [
+        720,
+        900
+      ],
+      "visibleBounds": [
+        62,
+        0,
+        657,
+        900
+      ]
+    },
+    "correct": {
+      "file": "poses/correct.png",
+      "label": "Correct-answer point",
+      "performanceCue": "correct-celebration",
+      "sha256": "53ab41ff04a6a888b01472eef6bdbf87507e74af699639ee358aab33c06425ab",
+      "canvas": [
+        720,
+        900
+      ],
+      "visibleBounds": [
+        98,
+        0,
+        622,
+        900
+      ]
+    },
+    "incorrect": {
+      "file": "poses/incorrect.png",
+      "label": "Folded-arm incorrect deadpan",
+      "performanceCue": "incorrect-reaction",
+      "sha256": "244b0e6529cd38fdf163745a5ed6da7607db880d26c3e8adea19e3ea1e305d00",
+      "canvas": [
+        720,
+        900
+      ],
+      "visibleBounds": [
+        94,
+        0,
+        626,
+        900
+      ]
+    },
+    "reveal": {
+      "file": "poses/reveal.png",
+      "label": "Open-palm answer reveal",
+      "performanceCue": "talk-calm",
+      "sha256": "33dc94a6411b61c36be36ff2abef1108b9480d303b46502efeabe934257961c0",
+      "canvas": [
+        720,
+        900
+      ],
+      "visibleBounds": [
+        72,
+        0,
+        647,
+        900
+      ]
+    },
+    "study-coach": {
+      "file": "poses/study-coach.png",
+      "label": "Patient study coach",
+      "performanceCue": "think",
+      "sha256": "d0032e9ba1918e8aa1c7f7f3af5d7b4950543ca336489aeedd9b3fae85765751",
+      "canvas": [
+        720,
+        900
+      ],
+      "visibleBounds": [
+        72,
+        0,
+        648,
+        900
+      ]
+    },
+    "streak": {
+      "file": "poses/streak.png",
+      "label": "Question-mark streak celebration",
+      "performanceCue": "correct-celebration",
+      "sha256": "0ec4fba4ddd5fd19cbd9d669a66f5a685ea441ae9cf2fcfac3a881a09a7494eb",
+      "canvas": [
+        720,
+        900
+      ],
+      "visibleBounds": [
+        39,
+        0,
+        680,
+        900
+      ]
+    }
+  },
+  "cueMap": {
+    "idle": "idle",
+    "clue": "clue",
+    "listen": "listening",
+    "correct": "correct",
+    "incorrect": "incorrect",
+    "reveal": "reveal",
+    "study": "study-coach",
+    "streak": "streak"
+  },
+  "qualityGates": [
+    "Review all keyed edges at one-times runtime scale.",
+    "Keep pose overrides exclusive to the question-pink wardrobe until equivalent skins exist.",
+    "Do not label the character part-rig-ready before all pending views and layers are authored.",
+    "Complete likeness and commercial-rights review before public release."
+  ]
+}

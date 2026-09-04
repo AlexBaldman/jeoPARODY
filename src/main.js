@@ -17,6 +17,9 @@ import { ModeManager } from './core/ModeManager.js';
 import { QuickMode } from './modes/QuickMode.js';
 import { ReviewMode } from './modes/ReviewMode.js';
 import { getStage } from './core/Stage.js';
+import { getAvatarSystem } from './services/AvatarSystem.js';
+import { getSoundDesign } from './services/SoundDesign.js';
+import { getAssetLibrary } from './services/AssetLibrary.js';
 
 const JeopardyApp = {
   gameEngine: null,
@@ -24,6 +27,9 @@ const JeopardyApp = {
   soundManager: null,
   modeManager: null,
   stage: null,
+  avatarSystem: null,
+  soundDesign: null,
+  assetLibrary: null,
   initialized: false,
   startTime: 0,
   performance: {
@@ -53,6 +59,16 @@ async function initializeApp() {
       reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches
     });
     
+    // Initialize Avatar System for unlockable avatars
+    JeopardyApp.avatarSystem = getAvatarSystem();
+    
+    // Initialize Sound Design for procedural audio
+    JeopardyApp.soundDesign = getSoundDesign();
+    
+    // Initialize Asset Library for asset cataloging and tagging
+    JeopardyApp.assetLibrary = getAssetLibrary();
+    await JeopardyApp.assetLibrary.initialize();
+    
     // Initialize mode manager with registered modes
     JeopardyApp.modeManager = new ModeManager({
       gameEngine: JeopardyApp.gameEngine,
@@ -72,6 +88,38 @@ async function initializeApp() {
     JeopardyApp.gameEngine.start();
     loadUserPreferences();
     saveUserPreferences();
+    
+    // Hook up sound design to game events
+    eventBus.on('game:answer:checked', (data) => {
+      if (data.isCorrect) {
+        JeopardyApp.soundDesign.playCorrect();
+      } else {
+        JeopardyApp.soundDesign.playWrong();
+      }
+    });
+    
+    eventBus.on('game:streak:updated', (data) => {
+      if (data.current > 0 && data.current % 5 === 0) {
+        JeopardyApp.soundDesign.playStreak(data.current);
+      }
+    });
+    
+    eventBus.on('achievement:unlocked', () => {
+      JeopardyApp.soundDesign.playAchievement();
+    });
+    
+    // Initialize sound design on first user interaction (Web Audio API requirement)
+    const initSoundOnInteraction = () => {
+      if (!JeopardyApp.soundDesign.initialized) {
+        JeopardyApp.soundDesign.initialize();
+        console.log('[🔊 Sound] Audio context initialized by user interaction');
+      }
+      document.removeEventListener('click', initSoundOnInteraction);
+      document.removeEventListener('keydown', initSoundOnInteraction);
+    };
+    
+    document.addEventListener('click', initSoundOnInteraction);
+    document.addEventListener('keydown', initSoundOnInteraction);
 
     JeopardyApp.initialized = true;
     JeopardyApp.performance.initTime = performance.now() - startTime;

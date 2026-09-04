@@ -3,6 +3,11 @@ import { logger as console } from '../utils/logger.js';
 import questionService from '../services/api/questionService.js';
 import translationService from '../services/TranslationService.js';
 import { applySavedThemeVariant, applyTheme, toggleLanguage, toggleTheme } from './preferences.js';
+import { getTipJar } from '../services/TipJar.js';
+import { getAvatarSystem } from '../services/AvatarSystem.js';
+import { getSoundDesign } from '../services/SoundDesign.js';
+import { getPrintableDeck } from '../services/PrintableDeck.js';
+import { getAssetLibrary } from '../services/AssetLibrary.js';
 
 const PAO_SECRET_SEQUENCE = [
   'ArrowUp',
@@ -217,6 +222,94 @@ function setupMenuInteractions(app) {
   });
   closeMenu?.addEventListener('click', () => setMenuOpen(false));
   backdrop?.addEventListener('click', () => setMenuOpen(false));
+
+  // Tip jar button
+  const tipJarBtn = document.getElementById('tip-jar-btn');
+  if (tipJarBtn) {
+    const tipJar = getTipJar();
+    tipJarBtn.addEventListener('click', () => {
+      tipJar.toggle();
+      setMenuOpen(false);
+      eventBus.emit('ui:button-click');
+    });
+  }
+  
+  // Avatar selection button
+  const avatarBtn = document.getElementById('avatar-btn');
+  if (avatarBtn) {
+    const avatarSystem = getAvatarSystem();
+    avatarBtn.addEventListener('click', () => {
+      // Simple avatar rotation for now
+      const unlockedAvatars = avatarSystem.getUnlockedAvatars();
+      const avatarIds = Object.keys(unlockedAvatars);
+      if (avatarIds.length > 0) {
+        const currentId = avatarSystem.getCurrentAvatar().id;
+        const currentIndex = avatarIds.indexOf(currentId);
+        const nextIndex = (currentIndex + 1) % avatarIds.length;
+        avatarSystem.setCurrentAvatar(avatarIds[nextIndex]);
+        console.log(`[🎭 Avatar] Switched to: ${unlockedAvatars[avatarIds[nextIndex]].name}`);
+      }
+      setMenuOpen(false);
+      eventBus.emit('ui:button-click');
+    });
+  }
+  
+  // Sound toggle button
+  const soundBtn = document.getElementById('sound-btn');
+  if (soundBtn) {
+    const soundDesign = getSoundDesign();
+    soundBtn.addEventListener('click', () => {
+      soundDesign.toggle();
+      setMenuOpen(false);
+      eventBus.emit('ui:button-click');
+    });
+  }
+  
+  // Printable deck button
+  const printBtn = document.getElementById('print-deck-btn');
+  if (printBtn) {
+    const printableDeck = getPrintableDeck();
+    printBtn.addEventListener('click', () => {
+      // Generate a sample deck for now - in production, would use current game state
+      const sampleQuestions = [
+        { category: 'SCIENCE', value: 200, clue: 'This element has atomic number 1', answer: 'Hydrogen' },
+        { category: 'SCIENCE', value: 400, clue: 'This planet is known as the Red Planet', answer: 'Mars' },
+        { category: 'HISTORY', value: 200, clue: 'This U.S. president delivered the Gettysburg Address', answer: 'Abraham Lincoln' },
+        { category: 'HISTORY', value: 400, clue: 'This war lasted from 1939 to 1945', answer: 'World War II' },
+        { category: 'GEOGRAPHY', value: 200, clue: 'This is the largest ocean on Earth', answer: 'Pacific Ocean' },
+        { category: 'GEOGRAPHY', value: 400, clue: 'This is the capital of France', answer: 'Paris' }
+      ];
+      
+      printableDeck.openPrintableDeck(sampleQuestions, {
+        title: 'JeoPARODY Sample Deck',
+        includeAnswers: true,
+        pageSize: 'letter',
+        cardsPerPage: 6
+      });
+      
+      setMenuOpen(false);
+      eventBus.emit('ui:button-click');
+    });
+  }
+  
+  // Asset library button
+  const assetLibBtn = document.getElementById('asset-library-btn');
+  if (assetLibBtn) {
+    const assetLibrary = getAssetLibrary();
+    assetLibBtn.addEventListener('click', () => {
+      const stats = assetLibrary.getStatistics();
+      const exportData = assetLibrary.exportLibrary();
+      
+      console.log('[📚 Asset Library Statistics]:', stats);
+      console.log('[📚 Asset Library Export]:', exportData);
+      
+      // Show a simple alert with stats for now
+      alert(`📚 Asset Library\n\nTotal Assets: ${stats.totalAssets}\nTotal Size: ${(stats.totalSize / 1024 / 1024).toFixed(2)} MB\nLarge Assets: ${stats.largeAssets}\nUnused Assets: ${stats.unusedAssets}\n\nCheck console for full export data.`);
+      
+      setMenuOpen(false);
+      eventBus.emit('ui:button-click');
+    });
+  }
 
   const hostAnimBtn = document.getElementById('host-anim-trigger');
   if (hostAnimBtn) {
