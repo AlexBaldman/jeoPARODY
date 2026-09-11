@@ -125,15 +125,16 @@ The only source-controlled static-site publisher is:
 On `main`, it:
 
 ```text
-builds dist
-→ stamps build-meta.json with the exact Git SHA
-→ deploys through GitHub Pages Actions
-→ fetches the live site
-→ proves root + Needle Drop + Head-to-Head
-→ proves live SHA === triggering SHA
+calls reusable CI to build and stamp dist once
+→ runs the full security, test and browser proof wall on that artifact
+→ requires Pages Source = GitHub Actions
+→ deploys the verified artifact without rebuilding
+→ checks the live SHA, transport and bundled entrypoint assets
+→ exercises published Main + Needle Drop gameplay
+→ conditionally certifies live Firebase Head-to-Head
 ```
 
-Repository **Settings → Pages → Source** must be **GitHub Actions**. Issue **#46** tracks that owner-side setting.
+Repository **Settings → Pages → Source** must be **GitHub Actions**. The September review found a competing branch/Jekyll publication despite the earlier closure of #46. This workflow fails if the setting is wrong. Require **CI / build-test** for PRs on `main`; source changes alone cannot establish branch protection or certify a release. See [the current acceptance sequence](docs/MASTER_PLAN.md).
 
 Do not restore a branch-writing `gh-pages` deploy script or create a second publisher because software already has enough ways to publish yesterday over today.
 

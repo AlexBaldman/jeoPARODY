@@ -1,7 +1,7 @@
 # JeoPARODY Master Plan
 
 **Status:** CANONICAL ROUTING DOCUMENT  
-**Updated:** 2026-08-25  
+**Updated:** 2026-09-11
 **Rule:** this file owns current priorities and routing. Specialized documents own their domains.
 
 JeoPARODY is the canonical proving ground for playful learning, game-show presentation, Stage systems, and multiplayer. Earn abstractions through working vertical slices. Do not design the universal engine in advance because software already has enough monuments to optimism.
@@ -22,9 +22,13 @@ The important upstream sequence is now:
 | Shadow state + obsolete host stack retired | PR #64 / `e3617a0` |
 | Node 24 CI/Pages modernization | PR #65 / `adc8834` |
 
-The blocking proof wall covers project doctrine/security, source reachability, JS/CSS lint, unit/integration tests, production build, Firestore Security Rules, browser boot, Main Game runtime, Needle Drop runtime, Head-to-Head host/guest reconnect, accessibility audits, and captured runtime evidence.
+The source-controlled proof wall covers project doctrine/security, source reachability, JS/CSS lint, unit/integration tests, production build, Firestore Security Rules, browser boot, Main Game runtime, Needle Drop runtime, Head-to-Head host/guest reconnect, accessibility reports, and captured runtime evidence. Accessibility was reporting-only in the reviewed baseline; the solo repair must make it blocking.
 
-The canonical Pages publisher is GitHub Actions and has already been proven through exact-live-SHA verification. The deployment workflow stamps `build-meta.json`, verifies the public commit/transport, and conditionally runs independent-user Firebase cloud certification when Firebase configuration exists.
+The September second-opinion review disproved the earlier operational cutover claim: a GitHub-managed branch/Jekyll publication could finish after the custom publisher, leaving raw `src/` entrypoints and no `build-meta.json`. A successful short live check did not establish one publisher. Historical milestone rows above record earlier evidence, not present certification.
+
+The release repair makes `deploy-pages.yml` call the full reusable CI workflow, which builds, stamps, exercises and uploads one artifact. Deployment requires that gate and `build_type=workflow`; live checks verify bundled JavaScript plus Main/Needle Drop gameplay. These source changes do not change repository settings or certify an unmerged release.
+
+Before declaring cutover complete, the repository owner must set **Settings → Pages → Source → GitHub Actions**, require the PR **CI / build-test** check on `main`, then obtain a successful main release and live browser proof. A non-Actions Pages setting now fails deployment with an actionable error.
 
 **Current cloud boundary:** the production `VITE_FIREBASE_*` repository variables were last proven absent, so the deployed Head-to-Head path remains intentionally in local proving mode until issue #44 activates Firebase.
 
@@ -32,7 +36,7 @@ The canonical Pages publisher is GitHub Actions and has already been proven thro
 
 ### Bounded user-directed product correction — Needle Drop doorway
 
-The 2026-08-26 first-time-player audit found that Needle Drop's technically proven loop asked players to identify invented titles, buried the primary action below setup, and described the premise indirectly. A focused product correction replaces the default crate with recognizable public-domain compositions in original performances, four authored choices, a plain-language promise, compact setup disclosure, and an above-the-fold listen action. This is a bounded repair to an already-public proving mode; after production browser proof, priority returns to Firebase #44.
+The 2026-08-26 first-time-player audit found that Needle Drop's technically proven loop asked players to identify invented titles, buried the primary action below setup, and described the premise indirectly. A focused product correction replaces the default crate with recognizable public-domain compositions in original performances, four authored choices, a plain-language promise, compact setup disclosure, and an above-the-fold listen action. This is a bounded repair to an already-public proving mode; after production browser proof, priority follows the release sequence below.
 
 ## 2. Convergence 2.0 is complete
 
@@ -82,9 +86,19 @@ Do not start another cleanup campaign merely because source reachability still r
 
 Links beat copies. When reality changes, update the smallest owner and leave a journal handoff.
 
-## 4. Current lead domino: Firebase #44
+## 4. Current lead domino: one verified release and a correct solo loop
 
-**Activate and automatically certify real Firebase Head-to-Head multiplayer.** No more multiplayer features before this proof.
+1. Merge the gated publication repair and verify the owner-side Pages/check settings; deploy only the artifact that passed full CI.
+2. Repair solo reveal/reset/request races, make accessibility blocking, and remove unproven variants from the public doorway.
+3. Make Head-to-Head commands round-bound, replay-safe and atomic across public state, private answers and acknowledgment. Prove all five rounds and failure recovery before cloud activation.
+4. Activate and certify Firebase #44, then complete physical phone ↔ laptop proof.
+5. Port one reviewed Episode as data, then a compact Study/learning return loop. Do not import donor session, stage, or persistence authorities.
+
+Repository archaeology (#58), context compiler (#70), Atlas expansion and broader host/voice/localization work remain deferred until these product dependencies pass. Stop donor reading when one bounded behavior and its acceptance fixtures are understood; no parity campaign.
+
+### Firebase activation after command integrity
+
+**Activate and automatically certify real Firebase Head-to-Head multiplayer.** No new multiplayer features before this proof.
 
 Required production web configuration:
 

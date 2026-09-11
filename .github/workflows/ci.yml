@@ -1,14 +1,35 @@
 name: CI
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
+    # Also prove stacked delivery branches before they are retargeted to main.
+    branches: [ main, "codex/**" ]
+
+  workflow_call:
+    inputs:
+      release:
+        type: boolean
+        default: false
+    outputs:
+      firebase_configured:
+        value: ${{ jobs.build-test.outputs.firebase_configured }}
+
+permissions:
+  contents: read
 
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
+    outputs:
+      firebase_configured: ${{ steps.multiplayer_mode.outputs.firebase_configured }}
+    env:
+      VITE_FIREBASE_API_KEY: ${{ inputs.release && vars.VITE_FIREBASE_API_KEY || '' }}
+      VITE_FIREBASE_AUTH_DOMAIN: ${{ inputs.release && vars.VITE_FIREBASE_AUTH_DOMAIN || '' }}
+      VITE_FIREBASE_PROJECT_ID: ${{ inputs.release && vars.VITE_FIREBASE_PROJECT_ID || '' }}
+      VITE_FIREBASE_APP_ID: ${{ inputs.release && vars.VITE_FIREBASE_APP_ID || '' }}
+      VITE_FIREBASE_STORAGE_BUCKET: ${{ inputs.release && vars.VITE_FIREBASE_STORAGE_BUCKET || '' }}
+      VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ inputs.release && vars.VITE_FIREBASE_MESSAGING_SENDER_ID || '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -31,6 +52,9 @@ jobs:
       - name: Project doctrine contract
         run: npm run project:check
 
+      - name: Release verifier regression tests
+        run: node --test scripts/verify-pages.test.mjs
+
       - name: Source reachability inventory
         run: npm run source:reachability
 
@@ -43,8 +67,22 @@ jobs:
       - name: Test
         run: npm test -- --ci
 
+      - name: Validate authored music content
+        run: npm run needle-drop:validate
+
+      - name: Record multiplayer mode
+        id: multiplayer_mode
+        run: node scripts/stamp-build.mjs --mode-only
+
       - name: Build
         run: npm run build
+
+      - name: Stamp the build that will be tested and published
+        env:
+          BUILD_SHA: ${{ github.sha }}
+          BUILD_REF: ${{ github.ref }}
+          BUILD_RUN_ID: ${{ github.run_id }}
+        run: node scripts/stamp-build.mjs
 
       - name: Setup Java for Firestore emulator
         uses: actions/setup-java@v6
@@ -74,6 +112,13 @@ jobs:
           cat /tmp/jeoparody-preview.log
           exit 1
 
+      - name: Verify built entrypoints and JavaScript assets
+        env:
+          PAGE_URL: http://127.0.0.1:4173/
+          EXPECTED_SHA: ${{ github.sha }}
+          EXPECTED_MULTIPLAYER_TRANSPORT: ${{ steps.multiplayer_mode.outputs.firebase_configured == 'true' && 'firebase' || 'local' }}
+        run: node scripts/verify-pages.mjs
+
       - name: Browser boot diagnostics
         env:
           BASE_URL: http://127.0.0.1:4173
@@ -91,6 +136,7 @@ jobs:
 
       - name: Head-to-head browser runtime check
         env:
+          H2H_TRANSPORT: local
           BASE_URL: http://127.0.0.1:4173
         run: node scripts/head-to-head-runtime-check.mjs
 
@@ -120,4 +166,11 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: dist
+          path: dist
+
+      # This is the same dist directory exercised above. Never rebuild in deploy.
+      - name: Upload verified Pages artifact
+        if: inputs.release
+        uses: actions/upload-pages-artifact@v4
+        with:
           path: dist
