@@ -13,7 +13,6 @@
 @import url('./enhanced-ui.css') layer(base);       /* variables, z-index scale, modals */
 @import url('./media-rendering.css') layer(components);   /* media thumbnails/modal UI */
 @import url('./ux-pack.css') layer(components);           /* buttons, splash, board/overlays */
-@import url('./pao.css') layer(components);               /* PAO trainer screens */
 @import url('./components/scoreboard.css') layer(components);
 @import url('./components/speech-bubble.css') layer(components);
 @import url('./utilities.css') layer(utilities);

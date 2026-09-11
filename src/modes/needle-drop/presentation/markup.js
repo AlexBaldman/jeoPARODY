@@ -264,7 +264,7 @@ export function renderApp(state, episode, options = {}) {
 
   return `<main id="game" class="stage" data-phase="${state.phase}" data-scene="${escapeHtml(options.performance?.scene || 'CLUE')}" data-reveal-index="${state.revealIndex}" style="--accent:${clue?.palette?.[0] || '#ff3f81'};--accent-2:${clue?.palette?.[1] || '#00d7d7'}">
     <header class="show-header">
-      <a href="./" class="show-header__universe">JEO<span>PARODY</span> / MUSIC DISTRICT</a>
+      <a href="./" class="show-header__universe">NEEDLE<span>DROP</span> / MUSIC GAME</a>
       <button type="button" class="show-header__sound" data-action="toggle-sound" aria-pressed="${options.showSoundEnabled !== false}" aria-label="Show sound ${options.showSoundEnabled !== false ? 'on' : 'off'}"><span>SHOW SOUND</span><strong>${options.showSoundEnabled !== false ? 'ON' : 'OFF'}</strong></button>
       <div class="show-header__score"><span>${isParty ? 'ROOM TOTAL' : 'SCORE'}</span><strong>${formatPoints(state.score)}</strong></div>
       <div class="show-header__streak"><span>${secondaryMetric.label}</span><strong>${secondaryMetric.value}</strong></div>

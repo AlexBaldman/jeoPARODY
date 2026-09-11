@@ -1,10 +1,10 @@
 # Needle Drop — proving architecture
 
 **Lifecycle:** Proving  
-**Concept ID:** `game-mode.needle-drop`  
+**Legacy concept ID:** `game-mode.needle-drop` (preserved for existing references)
 **Working codename:** Project Crate Expectations
 
-Needle Drop is a composable JeoPARODY music-game mode. The proving build asks whether progressively revealing a tiny piece of recognizable musical DNA is fun enough that people immediately demand another song.
+Needle Drop is an independent music game, temporarily hosted in the JeoPARODY repository. The proving build asks whether progressively revealing a tiny piece of recognizable musical DNA is fun enough that people immediately demand another song.
 
 ## Product doorway
 
@@ -105,3 +105,11 @@ npm run build
 ```
 
 The demo performances are synthesized and original arrangements of public-domain compositions. Real catalog recordings require explicit interactive-game rights.
+
+## Standalone extraction
+
+Run `python scripts/export-needle-drop.py /absolute/new/destination --ref <reviewed-commit>`. The destination must not exist and must be outside this repository. The exporter reads committed Git objects, preserves source bytes and tests, includes provenance hashes, and supplies an independent Vite/Jest package with no Firebase or trivia runtime dependency. It neither publishes nor deletes source.
+
+In the exported project, run `npm install --package-lock-only`, review and commit the lockfile, then `npm ci`, `npm test`, `npm run validate`, `npm run build`, and `npm run runtime:check` against its preview server. Both `/` and `/needle-drop.html` are retained during migration.
+
+Do not delete the old route or its CI coverage until a destination repository and deployment pass these checks and the old URL has a deliberate redirect. Browser storage is origin-scoped: preserve existing `ProfileStore` keys; provide explicit export/import or document the personal-best reset before moving origins. Do not silently copy unrelated trivia or PAO storage. Content rights/provenance travel with the content manifest. The exported game still uses procedural performances; it is not a licensed commercial-recording catalog.
