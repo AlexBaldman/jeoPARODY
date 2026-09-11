@@ -12,9 +12,11 @@ function getCoreFacts(question) {
 	};
 }
 
-export function installQuestionRewrite() {
+export function installQuestionRewrite({ isCurrent = () => true } = {}) {
+	let generation = 0;
 	// When a question is loaded, compute persona rewrite for display only
-	eventBus.on('game:question:loaded', async ({ question }) => {
+	return eventBus.on('question:loaded', async ({ question }) => {
+		const request = ++generation;
 		try {
 			if (!question || !question.question) return;
 			const providerChain = [];
@@ -28,12 +30,13 @@ export function installQuestionRewrite() {
 				canonical: question.question,
 				coreFacts: getCoreFacts(question)
 			});
+			if (request !== generation || !isCurrent(question)) return;
 			const qb = document.getElementById('questionBox');
 			if (qb) {
 				qb.dataset.canonical = question.question;
 				qb.textContent = text || question.question;
 			}
-		} catch (e) {
+		} catch (_) {
 			// Silent failure keeps UI responsive
 		}
 	});

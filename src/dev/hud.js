@@ -38,7 +38,7 @@ export function attachDevHUD({ eventBus, app }) {
   // Event counters
   const evtsEl = wrap.querySelector('#hud-evts');
   let evts = 0; const bump = () => { evts++; evtsEl.textContent = String(evts); };
-  ['game:started','game:question:loaded','game:answer:revealed','answer:evaluated']
+  ['game:started','question:loaded','game:answer:revealed','answer:evaluated']
     .forEach(e => eventBus.on(e, bump));
 
   // Score snapshot

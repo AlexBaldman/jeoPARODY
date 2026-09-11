@@ -90,9 +90,9 @@ export class GameEngine {
   }
 
   stop() {
+    this.clearQuestionTimeout();
     if (!this.isRunning) return;
     this.isRunning = false;
-    this.clearQuestionTimeout();
     this.eventBus.emit('game:engine-stopped');
   }
 
@@ -110,6 +110,9 @@ export class GameEngine {
 
   startGame(options = {}) {
     this.clearQuestionTimeout();
+    const fresh = createGameState();
+    this.state.question = fresh.question;
+    this.state.stats = fresh.stats;
     this.state.session = {
       id: `game_${Date.now()}`,
       startTime: this.now(),
@@ -134,8 +137,19 @@ export class GameEngine {
     });
   }
 
-  loadQuestion(questionData) {
+  beginQuestionLoad() {
     this.clearQuestionTimeout();
+    this.state.question = createGameState().question;
+    this.state.session.isPaused = false;
+    this.transitionPhase(GAME_PHASES.LOADING);
+  }
+
+  loadQuestion(questionData) {
+    if (!questionData?.answer || !questionData?.question) {
+      throw new Error('A playable clue needs a question and answer.');
+    }
+    this.clearQuestionTimeout();
+    this.state.session.isPaused = false;
     this.state.question = {
       data: questionData,
       startTime: this.now(),
@@ -166,7 +180,7 @@ export class GameEngine {
     this.state.question.userAnswer = userAnswer;
     this.state.question.timeElapsed = Math.max(0, this.now() - this.state.question.startTime);
     this.transitionPhase(GAME_PHASES.ANSWERING);
-    return this.evaluateAnswer(userAnswer);
+    return this.#evaluateAnswer(userAnswer);
   }
 
   handleTimeUp() {
@@ -174,16 +188,27 @@ export class GameEngine {
 
     this.clearQuestionTimeout();
     this.state.question.timeElapsed = GAME_CONFIG.TIME_LIMIT;
-    const result = this.evaluateAnswer('', true);
+    const result = this.#evaluateAnswer('', { timedOut: true });
     this.eventBus.emit('game:time-up');
     return result;
   }
 
-  evaluateAnswer(userAnswer, timedOut = false) {
+  revealAnswer() {
+    if (![GAME_PHASES.QUESTION, GAME_PHASES.PAUSED].includes(this.state.session.phase)) return null;
+    this.clearQuestionTimeout();
+    if (!this.state.session.isPaused) {
+      this.state.question.timeElapsed = Math.max(0, this.now() - this.state.question.startTime);
+    }
+    this.state.session.isPaused = false;
+    return this.#evaluateAnswer('', { revealed: true });
+  }
+
+  #evaluateAnswer(userAnswer, { timedOut = false, revealed = false } = {}) {
     const question = this.state.question.data;
     if (!question) return null;
 
-    const judgedCorrect = this.checkAnswer(userAnswer, question.answer);
+    const candidates = [question.answer, ...(Array.isArray(question.acceptedAnswers) ? question.acceptedAnswers : [])];
+    const judgedCorrect = !revealed && candidates.some(answer => this.checkAnswer(userAnswer, answer));
     const scoreData = calculateScoreTransition({
       isCorrect: judgedCorrect,
       timedOut,
@@ -196,6 +221,7 @@ export class GameEngine {
     this.updateStatistics(isCorrect, timeElapsed);
     this.updateScore(scoreData, isCorrect);
     this.checkAchievements();
+    this.state.question.showingAnswer = true;
     this.transitionPhase(GAME_PHASES.RESULT);
 
     const result = {
@@ -203,6 +229,7 @@ export class GameEngine {
       correctAnswer: question.answer,
       isCorrect,
       timedOut,
+      revealed,
       score: scoreData,
       timeElapsed,
     };
@@ -323,6 +350,7 @@ export class GameEngine {
     this.eventBus.on('game:reset', () => this.resetGame());
     this.eventBus.on('question:load', (data) => this.loadQuestion(data.question));
     this.eventBus.on('answer:submit', (data) => this.submitAnswer(data.answer));
+    this.eventBus.on('question:show-answer', () => this.revealAnswer());
   }
 
   pauseGame() {
@@ -349,7 +377,7 @@ export class GameEngine {
   resetGame() {
     this.clearQuestionTimeout();
     this.state = createGameState();
-    this.eventBus.emit('game:reset');
+    this.eventBus.emit('game:reset-completed');
   }
 }
 

@@ -65,6 +65,62 @@ const clue = {
 };
 
 describe('Main GameEngine domain contract', () => {
+  test('reveal settles once, cancels timeout and cannot be followed by a scored answer', () => {
+    const h = createHarness();
+    h.engine.startGame();
+    h.engine.loadQuestion(clue);
+    h.engine.submitAnswer('Chicago');
+    h.engine.loadQuestion(clue);
+    const expiredCallback = [...h.timers.values()][0].handler;
+    h.bus.emit('question:show-answer');
+    expect(h.engine.state.session.phase).toBe(GAME_PHASES.RESULT);
+    expect(h.engine.state.question.showingAnswer).toBe(true);
+    expect(h.timers.size).toBe(0);
+    h.engine.submitAnswer('Chicago');
+    h.engine.revealAnswer();
+    expiredCallback();
+    expect(h.engine.state.stats.questionsAnswered).toBe(2);
+    expect(h.engine.state.score.current).toBe(0);
+  });
+
+  test('reset command emits a distinct completion and restart clears prior attempt statistics', () => {
+    const h = createHarness();
+    h.engine.startGame();
+    h.engine.loadQuestion(clue);
+    h.engine.submitAnswer('Chicago');
+    h.engine.startGame();
+    expect(h.engine.state.stats.questionsAnswered).toBe(0);
+    expect(h.engine.state.question.data).toBeNull();
+    expect(h.engine.state.score.high).toBe(400);
+    h.bus.emit('game:reset');
+    expect(h.engine.state).toEqual(createGameState());
+    expect(h.bus.events.filter(event => event.type === 'game:reset-completed')).toHaveLength(1);
+  });
+
+  test('loading invalidates a paused clue and accepts authored alternate answers', () => {
+    const h = createHarness();
+    h.engine.loadQuestion(clue);
+    h.engine.pauseGame();
+    h.engine.beginQuestionLoad();
+    h.engine.resumeGame();
+    expect(h.engine.state.session.phase).toBe(GAME_PHASES.LOADING);
+    expect(h.engine.submitAnswer('Chicago')).toBeNull();
+    h.engine.loadQuestion({ ...clue, acceptedAnswers: ['Windy City'] });
+    expect(h.engine.submitAnswer('Windy City').isCorrect).toBe(true);
+  });
+
+  test('a paused reveal cannot restart the timer or settle twice', () => {
+    const h = createHarness();
+    h.engine.loadQuestion(clue);
+    h.advance(5000);
+    h.engine.pauseGame();
+    h.advance(20000);
+    expect(h.engine.revealAnswer().timeElapsed).toBe(5000);
+    h.engine.resumeGame();
+    expect(h.timers.size).toBe(0);
+    expect(h.engine.state.session.phase).toBe(GAME_PHASES.RESULT);
+  });
+
   test('correct answers add authored clue value and use the canonical judge', () => {
     const h = createHarness();
     h.engine.startGame();

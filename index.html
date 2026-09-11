@@ -2,7 +2,7 @@
 <html lang="en" data-ui-arch="component-first">
 <head>
     <!-- viewport settings for better mobile responsiveness -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="UTF-8">
     
@@ -77,7 +77,7 @@
     <header class="game-header" aria-label="Game status and controls">
       <div class="header-content">
         <div class="header-brand">
-          <div id="jeoparody-logo" class="jeoparody-logo" role="img" aria-label="JeoparOdy">
+          <div id="jeoparody-logo" class="jeoparody-logo" role="heading" aria-level="1" aria-label="JeoparOdy">
             <span class="jeoparody-logo__chunk">JEOPAR</span>
             <button id="logo-orb" class="jeoparody-logo__orb" type="button" aria-label="Cycle the JeoparOdy silly O">
               <span class="jeoparody-logo__orb-face" aria-hidden="true">☺</span>
@@ -126,7 +126,7 @@
     </header>
 
     <!-- Host Image Container -->
-    <div class="host-container">
+    <div class="host-container" role="region" aria-label="Host">
       <img id="trebekImage" class="host-image" src="assets/images/trebek/trebek-dope-01.png" alt="Host">
       <div class="host-click-zone host-click-left" aria-label="Previous host image" role="button" tabindex="0"></div>
       <div class="host-click-zone host-click-right" aria-label="Next host image" role="button" tabindex="0"></div>
@@ -134,7 +134,7 @@
 
 
     <!-- Splash / Start Screen Overlay -->
-    <div id="splash-screen" class="active" aria-labelledby="splash-title">
+    <div id="splash-screen" role="region" class="active" aria-labelledby="splash-title">
       <div class="splash-card">
         <div class="splash-hud" aria-hidden="true">
           <span>1UP 000000</span>
@@ -152,22 +152,22 @@
           <div id="secret-mode-toast" class="secret-mode-toast" role="status" aria-live="polite" hidden></div>
         </div>
         <div class="splash-menu" aria-label="Mode select">
-          <button class="mode-select mode-select-beta" data-start-mode="fullboard" aria-label="Start game with a full Jeopardy board">
+          <button class="mode-select mode-select-beta" hidden data-start-mode="fullboard" aria-label="Start game with a full Jeopardy board">
             <span class="mode-kicker">Beta cart</span>
             <span class="mode-title">Full Board</span>
             <span class="mode-status">Grid power test</span>
           </button>
-          <button class="mode-select mode-select-beta" data-start-mode="run-category" aria-label="Start game in run the category mode">
+          <button class="mode-select mode-select-beta" hidden data-start-mode="run-category" aria-label="Start game in run the category mode">
             <span class="mode-kicker">Challenge</span>
             <span class="mode-title">Run Category</span>
             <span class="mode-status">Combo streak mode</span>
           </button>
-          <button class="mode-select" data-start-mode="practice" aria-label="Start a practice session">
+          <button class="mode-select" hidden data-start-mode="practice" aria-label="Start a practice session">
             <span class="mode-kicker">Training</span>
             <span class="mode-title">Practice</span>
             <span class="mode-status">No pressure run</span>
           </button>
-          <button class="mode-select" data-start-mode="daily-double" aria-label="Play a daily double round">
+          <button class="mode-select" hidden data-start-mode="daily-double" aria-label="Play a daily double round">
             <span class="mode-kicker">Risk</span>
             <span class="mode-title">Daily Double</span>
             <span class="mode-status">Wager chamber</span>
@@ -278,14 +278,14 @@
 
     <!-- Core Gameplay Surface (runtime state, not test injection) -->
     <main class="main-content-wrapper" id="main-content-wrapper" aria-live="polite">
-      <div class="scene-gags scene-gags--day" aria-hidden="true">
+      <div class="scene-gags scene-gags--day" hidden aria-hidden="true">
         <span class="scene-gag scene-gag--sun">SUN 9000</span>
         <span class="scene-gag scene-gag--surf">SURF QUIZ</span>
         <span class="scene-gag scene-gag--volley">VOLLEYBRAIN</span>
         <span class="scene-gag scene-gag--boat">S.S. PEDANTIC</span>
         <span class="scene-gag scene-gag--donut">DONUT OF TRUTH</span>
       </div>
-      <div class="scene-gags scene-gags--night" aria-hidden="true">
+      <div class="scene-gags scene-gags--night" hidden aria-hidden="true">
         <span class="scene-gag scene-gag--moon">MOON MODE</span>
         <span class="scene-gag scene-gag--ufo">UFO DAILY DOUBLE</span>
         <span class="scene-gag scene-gag--disco">DISCO ORACLE</span>
@@ -298,31 +298,31 @@
           <div id="valueBox" class="value-box"></div>
           <div id="questionBox" class="question-box">Click "New Question" to load a clue.</div>
           <div id="clueMediaRack" class="clue-media-rack" aria-label="Clue media" hidden></div>
-          <div id="answerBox" class="answer-box" style="display:none;"></div>
+          <div id="answerBox" class="answer-box" role="status" style="display:none;"></div>
         </div>
       </section>
 
       <section class="controls-container" aria-label="Question controls">
         <div class="button-div control-buttons">
           <button id="questionButton" type="button" aria-label="Get a new question">New Question</button>
-          <button id="answerButton" type="button" aria-label="Reveal the answer">Show Answer</button>
+          <button id="answerButton" type="button" disabled aria-label="Reveal the answer">Show Answer</button>
         </div>
       </section>
     </main>
 
-    <div class="sticky-footer" role="group" aria-label="Answer submission">
+    <div class="sticky-footer" role="region" aria-label="Answer submission">
       <div class="input-section">
         <div class="input-div">
           <div class="input-wrapper">
             <input id="inputBox" type="text" autocomplete="off" placeholder="Type your answer..." aria-label="Your answer">
           </div>
         </div>
-        <button id="checkButton" type="button" aria-label="Submit answer">✓</button>
+        <button id="checkButton" type="button" disabled aria-label="Submit answer">✓</button>
       </div>
     </div>
 
     <!-- event ticker -->
-    <div class="event-ticker">
+    <div class="event-ticker" role="region" aria-label="Show ticker">
         <div class="ticker-unit">
             <div class="ticker-plane">
                 <div class="wing"></div>
@@ -343,7 +343,7 @@
     <!-- Runtime menu surfaces -->
     <nav id="side-menu" class="side-menu" aria-label="Game menu">
       <div class="menu-header">
-        <h3>Menu</h3>
+        <h2>Menu</h2>
         <div style="display:flex; gap:8px; align-items:center;">
           <button id="lang-btn-menu" type="button" aria-label="Switch language"><i class="fas fa-language"></i></button>
           <button class="close-menu" type="button" aria-label="Close menu">×</button>

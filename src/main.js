@@ -13,6 +13,7 @@
  * @module main
  */
 
+import { createQuestionLoader } from './services/createQuestionLoader.js';
 import { getGameEngine } from './core/GameEngine.js';
 import { soundManager } from './services/soundManager.js';
 import { getHostSystem } from './services/HostSystem.js';
@@ -60,7 +61,7 @@ async function initializeApp() {
     installAIConsole();
 
     // Install persona rewrite pipeline for display string
-    installQuestionRewrite();
+    installQuestionRewrite({ isCurrent: question => JeopardyApp.gameEngine.state.question.data === question });
     
     // 2. Set up UI bindings
     setupUIBindings();
@@ -177,7 +178,7 @@ async function initializeCoreServices() {
  */
 function setupServiceIntegration() {
   // Host system responds to game events
-  eventBus.on('answer:evaluated', (data) => {
+  eventBus.on('answer:evaluated', () => {
     JeopardyApp.hostSystem.updateMood(JeopardyApp.gameEngine.state.stats);
     // Update scoreboard
     const { current, streak, high, maxStreak } = JeopardyApp.gameEngine.state.score;
@@ -191,16 +192,6 @@ function setupServiceIntegration() {
   // Sound system handles game audio
   eventBus.on('ui:button-click', () => {
     JeopardyApp.soundManager.play('click');
-  });
-
-  // UI update for showing the answer
-  eventBus.on('question:show-answer', () => {
-    const answerBox = document.getElementById('answerBox');
-    const { question } = JeopardyApp.gameEngine.state;
-    if (answerBox && question.data) {
-      answerBox.innerHTML = question.data.answer;
-      answerBox.classList.add('visible');
-    }
   });
 
   // Hide splash screen when game starts
@@ -439,18 +430,7 @@ function setupGameControls() {
     checkButton.addEventListener('click', submitAnswer);
   }
 
-  // Handle showing the answer
-  eventBus.on('question:show-answer', () => {
-    const answerBox = document.getElementById('answerBox');
-    const { question } = JeopardyApp.gameEngine.state;
-    if (answerBox && question.data) {
-      answerBox.innerHTML = question.data.answer;
-      answerBox.classList.add('visible');
-      console.log(`[AnswerBox] Showing answer: ${question.data.answer}`);
-    } else {
-      console.warn('[AnswerBox] Could not show answer - missing element or data');
-    }
-  });
+
 }
 
 /**
@@ -776,35 +756,57 @@ try {
 } catch (_) { /* no-op */ }
 
 function setupQuestionEventOrchestrator() {
-  // UI requests a new question
-  eventBus.on('question:request-new', async () => {
-    try {
-      // Clear input and hide answer
-      const inputBox = document.getElementById('inputBox');
-      if (inputBox) inputBox.value = '';
-      setLegacyAnswerVisible(false);
-      
-      const q = await questionService.getQuestion();
-      if (!q) return;
-      // Notify engine and UI
-      eventBus.emit('question:load', { question: q });
-      eventBus.emit('game:question:loaded', { question: q });
-      // Render legacy bubble
-      renderLegacySpeechBubble(q);
-    } catch (e) {
-      console.error('Failed to load new question', e);
+  const engine = JeopardyApp.gameEngine;
+  const loader = createQuestionLoader({
+    engine,
+    getQuestion: () => questionService.getQuestion(),
+    onError: error => {
+      console.error('Failed to load new question', error);
+      const box = document.getElementById('questionBox');
+      if (box) box.textContent = 'Could not load a clue. Choose New Question to try again.';
+    },
+  });
+  const updateControls = () => {
+    const phase = engine.state.session.phase;
+    for (const id of ['answerButton', 'checkButton']) {
+      const button = document.getElementById(id);
+      if (button) button.disabled = phase !== 'question';
     }
+  };
+  const load = () => {
+    const input = document.getElementById('inputBox');
+    if (input) input.value = '';
+    setLegacyAnswerVisible(false);
+    const box = document.getElementById('questionBox');
+    if (box) box.textContent = 'Loading clue…';
+    loader.load();
+    updateControls();
+  };
+  eventBus.on('question:request-new', load);
+  eventBus.on('game:started', ({ options }) => {
+    if (options.mode === 'classic' || !options.mode) load();
   });
-  
-  // UI requests to show the answer
-  eventBus.on('question:show-answer', () => {
-    setLegacyAnswerVisible(true);
-    eventBus.emit('game:answer:revealed');
+  eventBus.on('game:reset-completed', () => {
+    loader.cancel();
+    renderLegacySpeechBubble({ question: 'Press Start to play.' });
+    document.getElementById('splash-screen')?.classList.add('active');
+    updateControls();
   });
-  
-  // When a question is loaded from anywhere, keep legacy DOM in sync
-  eventBus.on('game:question:loaded', ({ question }) => {
+  eventBus.on('game:phase-changed', updateControls);
+  eventBus.on('question:loaded', ({ question }) => {
     renderLegacySpeechBubble(question);
+    updateControls();
+    document.getElementById('inputBox')?.focus();
+  });
+  eventBus.on('answer:evaluated', result => {
+    const box = document.getElementById('answerBox');
+    const verdict = result.revealed ? 'Revealed — no credit.'
+      : result.timedOut ? 'Time is up.' : result.isCorrect ? 'Correct!' : 'Not this time.';
+    if (box) box.textContent = `${verdict} Answer: ${result.correctAnswer}`;
+    setLegacyAnswerVisible(true);
+    // Presentation observes a settled domain result; it cannot reveal or score.
+    eventBus.emit('game:answer:revealed');
+    updateControls();
   });
 }
 
@@ -836,14 +838,6 @@ function setLegacyAnswerVisible(visible) {
 }
 
 // ===== Helpers: Scoreboard UX =====
-function flashScoreboard() {
-  const sb = document.getElementById('scoreboard');
-  if (!sb) return;
-  sb.classList.add('open');
-  clearTimeout(sb._hideTimer);
-  sb._hideTimer = setTimeout(() => sb.classList.remove('open'), 2500);
-}
-
 function highlightValue(id) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -854,7 +848,6 @@ function highlightValue(id) {
 }
 
 eventBus.on('answer:evaluated', () => {
-  flashScoreboard();
   highlightValue('score');
   highlightValue('streak');
 });

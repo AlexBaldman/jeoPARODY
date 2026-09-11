@@ -10,7 +10,7 @@ JeoPARODY is the canonical proving ground for a growing family of trivia, music,
 
 `/`
 
-The original JeoPARODY / Jeopardish spine: question flow, scoring, validation, host/presentation behavior, media, achievements, keyboard interaction, and the evolving Stage boundary.
+Classic starts directly on a clue. Submit an answer or reveal it to end the attempt, then advance with New Question (or Enter on an empty input after the result). Correct answers add the authored value; a wrong answer, timeout or reveal resets the current score. Full Board, Run Category, Practice and Daily Double are hidden until their gameplay is proven.
 
 ### Needle Drop
 

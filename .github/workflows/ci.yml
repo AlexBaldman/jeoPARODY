@@ -143,6 +143,7 @@ jobs:
       - name: A11y Audit (axe-core through Playwright)
         run: |
           node scripts/axe-audit.mjs http://127.0.0.1:4173/ axe-report.json
+          node scripts/axe-audit.mjs http://127.0.0.1:4173/ axe-main-result-report.json main-result
           node scripts/axe-audit.mjs 'http://127.0.0.1:4173/needle-drop.html?players=4' axe-needle-drop-report.json
           node scripts/axe-audit.mjs 'http://127.0.0.1:4173/head-to-head.html?transport=local' axe-head-to-head-report.json
 
@@ -156,6 +157,7 @@ jobs:
             screenshots/needle-drop-runtime
             screenshots/head-to-head-runtime
             axe-report.json
+            axe-main-result-report.json
             axe-needle-drop-report.json
             axe-head-to-head-report.json
             /tmp/jeoparody-preview.log
