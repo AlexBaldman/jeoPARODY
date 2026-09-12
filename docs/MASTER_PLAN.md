@@ -4,7 +4,7 @@
 **Updated:** 2026-09-11
 **Rule:** this file owns current priorities and routing. Specialized documents own their domains.
 
-JeoPARODY is the canonical proving ground for playful learning, game-show presentation, Stage systems, and multiplayer. Earn abstractions through working vertical slices. Do not design the universal engine in advance because software already has enough monuments to optimism.
+JeoPARODY is the canonical trivia product. The wider learning/game universe is a portfolio of independent products. Earn abstractions through working vertical slices. Do not design the universal engine in advance because software already has enough monuments to optimism.
 
 ## 1. Current proven baseline
 
@@ -88,13 +88,23 @@ Links beat copies. When reality changes, update the smallest owner and leave a j
 
 ## 4. Current lead domino: one verified release and a correct solo loop
 
-1. Merge the gated publication repair and verify the owner-side Pages/check settings; deploy only the artifact that passed full CI.
-2. Repair solo reveal/reset/request races, make accessibility blocking, and remove unproven variants from the public doorway.
-3. Make Head-to-Head commands round-bound, replay-safe and atomic across public state, private answers and acknowledgment. Prove all five rounds and failure recovery before cloud activation.
-4. Activate and certify Firebase #44, then complete physical phone ↔ laptop proof.
-5. Port one reviewed Episode as data, then a compact Study/learning return loop. Do not import donor session, stage, or persistence authorities.
+1. Land the gated release repair (#71) and solo integrity/accessibility repair (#72), in that order; verify owner-side Pages/check settings and the exact deployed artifact.
+2. Establish the product boundary: disconnect dormant PAO from trivia, prepare Needle Drop's standalone export with its tests, and preserve existing public URLs until a replacement passes proof. PAO belongs to Memorization Station; LoadBearing remains an independent Godot project outside this runtime.
+3. Finish one finite, authored trivia session: reviewed clues and aliases, explicit progress and ending, restart, deterministic offline fallback, coherent desktop/phone art direction, and a complete-playthrough browser test. Port Episode data and acceptance fixtures only as needed; do not transplant its controller.
+4. Make Head-to-Head commands round-bound, replay-safe and atomic across public state, private answers and acknowledgment. Prove all five rounds and failure recovery before Firebase #44 activation and physical phone ↔ laptop proof. This is a separate multiplayer shipping gate, not a dependency of a clearly labeled solo release.
+5. Add a compact missed-clue replay only after the solo product ships. Keep durable learning/PAO ownership in Memorization Station; define an explicit result export only when that product can consume it.
 
-Repository archaeology (#58), context compiler (#70), Atlas expansion and broader host/voice/localization work remain deferred until these product dependencies pass. Stop donor reading when one bounded behavior and its acceptance fixtures are understood; no parity campaign.
+Repository archaeology (#58), context compiler (#70), Atlas expansion, new generalized kernels and broader host/voice/localization work remain deferred. Read donors only for a named acceptance behavior. Stop after its source, reachable caller, fixture and dependencies are understood; no parity campaign.
+
+### Product boundaries and retirement gates
+
+- **JeoPARODY:** canonical trivia source. Jeopardish is a frozen donor/reference recommendation; no archive setting or branch deletion has been performed.
+- **Needle Drop:** independent music game; [its architecture owner](NEEDLE_DROP_ARCHITECTURE.md#standalone-extraction) owns the export procedure. Keep the current route as a temporary compatibility surface. Remove its source/build/test entries only after the destination owns equivalent proof and an intentional old-URL transition.
+- **PAO:** preserved in `src/components/pao/` and `src/styles/pao.css` as dormant Memorization Station donor material. The Main import, overlay and CSS inclusion are removed. Do not erase `pao_decks` storage. A future trivia learning feature must earn its own acceptance case.
+- **LoadBearing:** preserved at `AlexBaldman/Jeopardish@931790c942a37ba01e7e4ef97942289b2fa2094c`, subtree `apps/loadbearing`. Extract that project and adapt its Godot workflow; never merge the surrounding branch into trivia for this purpose.
+- **uINVERSE/Stations:** preserve the creative vocabulary and provenance. A Station is a domain/navigation concept, not automatically a repository or service. A Factory is a bounded asset/content workflow with a reviewed output, not a universal runtime prerequisite. Existing Atlas/ICM material remains reference/context; it does not set a second product roadmap. Do not expand these systems on the trivia shipping path.
+
+No cleanup deletes the only verified copy. Preserve the source SHA, content/asset provenance, tests, storage behavior and inbound URLs; prove the destination; switch ownership; retire the old production surface last.
 
 ### Firebase activation after command integrity
 
@@ -134,7 +144,7 @@ Add discoverable Main Menu entry/invite flow and explicit network recovery copy.
 
 ### Domino 3 — earn the multiplayer kernel
 
-Use a second real consumer, likely Needle Drop remote/multiplayer, before extracting shared multiplayer infrastructure. Extract only concepts proven across both consumers: identity, room/session, invite, command, public state/event, authority, reconnect, transport, lifecycle.
+This is optional future work, not a shipping milestone. Consider a small shared package only when two independently shipped products need the same behavior and can upgrade independently. Do not make Needle Drop wait for trivia multiplayer.
 
 ### Domino 4 — trusted authority before stakes
 

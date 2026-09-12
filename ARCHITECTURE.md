@@ -3,7 +3,9 @@
 **Status:** CANONICAL  
 **Repository:** `AlexBaldman/jeoPARODY`
 
-JeoPARODY is no longer one monolithic trivia state machine with decorations attached. It is a small family of playable modes that share presentation, services, assets, and increasingly reusable infrastructure while keeping **domain truth local, deterministic, and explicit**.
+JeoPARODY owns the trivia product. Main and Head-to-Head are trivia experiences; Needle Drop is an independent music game temporarily hosted here during extraction. PAO belongs to Memorization Station and is disconnected from the production entrypoint and stylesheet; its source remains preserved as donor material. LoadBearing is a separate Godot product on a Jeopardish branch, not a trivia subsystem.
+
+Shared universe identity does not require shared game state, deployment, engine, or release cadence. Runtime dependencies must follow actual product needs. Current extraction order and release priorities belong to [the master plan](docs/MASTER_PLAN.md).
 
 ## North star
 
@@ -159,7 +161,7 @@ Transport
 Lifecycle
 ```
 
-Only after another mode, likely Needle Drop, uses these seams should they be extracted into a generalized multiplayer kernel.
+Only after two independently shipping products need the same stable behavior should a narrowly scoped shared package be considered. Needle Drop extraction does not require a generalized multiplayer kernel.
 
 Canonical multiplayer detail: [`docs/HEAD_TO_HEAD_MULTIPLAYER_2026-08-24.md`](docs/HEAD_TO_HEAD_MULTIPLAYER_2026-08-24.md).
 

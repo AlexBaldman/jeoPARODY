@@ -12,9 +12,11 @@ JeoPARODY is the canonical proving ground for a growing family of trivia, music,
 
 Classic starts directly on a clue. Submit an answer or reveal it to end the attempt, then advance with New Question (or Enter on an empty input after the result). Correct answers add the authored value; a wrong answer, timeout or reveal resets the current score. Full Board, Run Category, Practice and Daily Double are hidden until their gameplay is proven.
 
-### Needle Drop
+### Needle Drop — independently scoped music game
 
 `/needle-drop.html`
+
+Temporarily hosted here during standalone extraction; [migration procedure](docs/NEEDLE_DROP_ARCHITECTURE.md#standalone-extraction).
 
 A standalone progressive-audio identification mode with deterministic session/scoring logic, content validation, local profile/session behavior, semantic show events, original procedural stings, responsive presentation, and blocking browser coverage.
 
