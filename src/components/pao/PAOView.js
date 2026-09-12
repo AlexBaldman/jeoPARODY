@@ -1,6 +1,7 @@
 // PAOView.js - PAO deck manager and quiz mode (self-contained state)
 
 import QwenImageService from '../../services/ai/QwenImageService.js';
+import { getImageBlobFromElement } from '../../utils/image-element-to-blob.js';
 
 class PAOView {
   constructor() {
@@ -135,6 +136,24 @@ class PAOView {
     }
   }
 
+  async editImageFor(card) {
+    if (!card.imageUrl) return;
+    const editPrompt = prompt('How should AI edit this image?', '');
+    if (!editPrompt?.trim()) return;
+
+    try {
+      const sourceBlob = await getImageBlobFromElement(card.imageUrl);
+      const url = await this.qwen.editImage(editPrompt, sourceBlob);
+      card.imageUrl = url;
+      delete card.localImageChoiceIndex;
+      this.render();
+      this.save();
+    } catch (error) {
+      console.error('[PAO] Image edit failed:', error);
+      alert(error.message || 'Image editing failed.');
+    }
+  }
+
   startQuiz() {
     const pool = this.filteredCards();
     if (pool.length === 0) return;
@@ -217,6 +236,7 @@ class PAOView {
                   </div>
                   <div class="actions">
                     <button class="mini" data-generate-id="${c.id}">AI Image</button>
+                    ${c.imageUrl ? `<button class="mini" data-edit-id="${c.id}">Edit image (AI)</button>` : ''}
                   </div>
                 </div>
                 <div class="card-face card-back">
@@ -278,6 +298,15 @@ class PAOView {
         const id = btn.getAttribute('data-generate-id');
         const card = this.currentDeck.cards.find(c => c.id === id);
         if (card) await this.generateImageFor(card);
+      };
+    });
+
+    this.root.querySelectorAll('button[data-edit-id]').forEach(btn => {
+      btn.onclick = async (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-edit-id');
+        const card = this.currentDeck.cards.find(c => c.id === id);
+        if (card) await this.editImageFor(card);
       };
     });
 
