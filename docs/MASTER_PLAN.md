@@ -22,7 +22,7 @@ The important upstream sequence is now:
 | Shadow state + obsolete host stack retired | PR #64 / `e3617a0` |
 | Node 24 CI/Pages modernization | PR #65 / `adc8834` |
 
-The source-controlled proof wall covers project doctrine/security, source reachability, JS/CSS lint, unit/integration tests, production build, Firestore Security Rules, browser boot, Main Game runtime, Needle Drop runtime, Head-to-Head host/guest reconnect, accessibility reports, and captured runtime evidence. Accessibility was reporting-only in the reviewed baseline; the solo repair must make it blocking.
+The source-controlled proof wall covers project doctrine/security, source reachability, JS/CSS lint, unit/integration tests, production build, Firestore Security Rules, browser boot, Main Game runtime, Needle Drop runtime, Head-to-Head host/guest reconnect, blocking accessibility audits (including Main reveal state), and captured runtime evidence. The September solo repair changes axe from reporting-only to a failing check on violations.
 
 The September second-opinion review disproved the earlier operational cutover claim: a GitHub-managed branch/Jekyll publication could finish after the custom publisher, leaving raw `src/` entrypoints and no `build-meta.json`. A successful short live check did not establish one publisher. Historical milestone rows above record earlier evidence, not present certification.
 

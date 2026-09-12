@@ -121,25 +121,29 @@
     z-index: var(--z-tooltip);
 }
 
-/* Scoreboard: improved contrast + slide from header */
+/* The header scoreboard is always visible; it is not the retired slide-out panel. */
 #scoreboard {
-    position: absolute;
-    right: 0;
-    top: -200px; /* sit behind sticky header */
-    background: linear-gradient(180deg, #0b2aa0, #051b6f);
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-column: 1 / -1;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 6px 10px;
+    border: 1px solid #ffd700;
+    border-radius: 8px;
+    background: #0b2aa0;
     color: #ffef9a;
-    border: 2px solid #ffd700;
-    border-radius: 10px 0 10px 10px;
-    padding: 12px 16px;
-    width: 240px;
-    box-shadow: 0 10px 30px rgb(0 0 0 / 50%);
-    transform: translateY(0);
-    transition: transform 300ms ease, filter 300ms ease;
-    z-index: var(--z-scoreboard); /* above ticker, below header */
+    box-shadow: none;
+    transform: none;
+    font: 14px var(--font-ui);
 }
 
-#scoreboard.open {
-    transform: translateY(215px); /* slide into view */
+.scoreboard-stat {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
 }
 
 #scoreboard .score-value.highlight {
@@ -150,25 +154,6 @@
     0% { filter: drop-shadow(0 0 0 rgb(255 20 147 / 0%)); color: #ffef9a; }
     25% { filter: drop-shadow(0 0 10px rgb(255 20 147 / 90%)); color: #ff4fd0; }
     100% { filter: drop-shadow(0 0 0 rgb(255 20 147 / 0%)); color: #ffef9a; }
-}
-
-/* Peek tab always visible */
-#scoreboard::before {
-    content: '\25B6'; /* triangle play icon */
-    position: absolute;
-    right: 0;
-    top: 100%;
-    transform: translateY(-8px);
-    background: #ff1fc3;
-    color: #111;
-    border: 2px solid #ffd700;
-    border-top: none;
-    border-bottom-left-radius: 8px;
-    width: 26px;
-    height: 26px;
-    display: grid;
-    place-items: center;
-    box-shadow: 0 6px 14px rgb(0 0 0 / 40%);
 }
 
 /* Light/Dark variants */
@@ -971,7 +956,7 @@ input:focus {
     text-align: center !important;
     line-height: 1.6;
     font-size: 18px;
-    margin: 100px auto 20px; /* Account for sticky header */
+    margin: 20px auto; /* Body padding already accounts for the fixed header. */
     background: rgb(255 255 255 / 98%);
     border: 3px solid #ffd700;
     border-radius: 25px;
@@ -1035,7 +1020,7 @@ input:focus {
 
 #answerBox {
     font-size: 18px;
-    color: #27ae60;
+    color: #146c38;
     padding-top: 15px;
     border-top: 2px solid #ffd700;
     opacity: 0;
@@ -1062,3 +1047,48 @@ body {
 
 
 
+
+/* A hidden launch option must stay absent even when component styles set display. */
+[hidden] {
+  display: none !important;
+}
+
+/* Current header markup: keep score and controls readable on the phone doorway. */
+.game-header {
+    box-sizing: border-box;
+    padding: 8px 12px;
+    color: #fff;
+}
+
+.header-content {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    padding: 0;
+}
+
+.jeoparody-logo {
+    display: flex;
+    align-items: center;
+    color: #ffe04a;
+    font: 900 20px var(--font-ui);
+    white-space: nowrap;
+}
+
+.jeoparody-logo__orb {
+    border: 0;
+    padding: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+}
+
+.header-tagline {
+    display: none;
+}
+
+.header-controls-right {
+    grid-column: 2;
+    grid-row: 1;
+    gap: 8px;
+}

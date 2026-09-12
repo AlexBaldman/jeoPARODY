@@ -46,6 +46,10 @@ Each mode owns the smallest deterministic model required to answer questions suc
 
 For the original trivia spine, `src/core/GameEngine.js` remains important. It is **not** a mandate that every future game mode must store its truth there.
 
+Main Game settles each clue once through `GameEngine`: submitted answer, timeout, or reveal. Reveal forfeits credit and ends the attempt under Main scoring. The engine cancels timers and owns answer visibility facts; UI renders `answer:evaluated`. `question:loaded` is the single loaded-clue event. `createQuestionLoader` holds only a cancellation generation so stale fetches cannot load after a newer request or reset; AI rewrites must still match the active clue before changing display text. Starting a session clears its question/statistics while retaining session high-score records; reset completion uses a different event from the reset command.
+
+The public Main doorway offers Classic and Needle Drop. Full Board, Run Category, Practice and Daily Double remain hidden until their real answer/score/progression paths earn browser proof.
+
 Head-to-Head is the clearest newer example: public match state lives in `src/modes/head-to-head/core/match.js`; transport and UI consume that state rather than inventing parallel score/round truth.
 
 ### 2. Commands and semantic events

@@ -126,7 +126,7 @@ async function runViewport(browser, viewport) {
   };
 
   await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
-  await page.waitForTimeout(700);
+  await page.waitForFunction(() => window.JeopardyApp?.initialized);
 
   for (const selector of REQUIRED_SELECTORS) {
     check(`selector exists ${selector}`, await exists(page, selector));
@@ -138,33 +138,8 @@ async function runViewport(browser, viewport) {
   check('navigation count remains stable', state.navCount === 1, `navCount=${state.navCount}`);
   await page.screenshot({ path: path.join(OUT_DIR, `${tag}-splash.png`), fullPage: true });
 
-  if (await clickIfExists(page, '#splash-screen [data-start-mode="fullboard"]')) {
-    await page.waitForTimeout(450);
-    state = await readSurfaceState(page);
-    check('fullboard screen active', state.boardActive);
-    check('fullboard screen visible', !state.boardHidden);
-    await page.screenshot({ path: path.join(OUT_DIR, `${tag}-fullboard.png`), fullPage: true });
-    await clickIfExists(page, '#jeopardy-board-screen [data-close-board]');
-    await page.waitForTimeout(250);
-    state = await readSurfaceState(page);
-    check('fullboard closes without navigation', !state.boardActive && state.boardHidden);
-    check('splash restored after fullboard close', state.splashActive);
-  } else {
-    check('fullboard start control exists', false);
-  }
-
-  if (await clickIfExists(page, '#splash-screen [data-start-mode="run-category"]')) {
-    await page.waitForTimeout(350);
-    state = await readSurfaceState(page);
-    check('run-category screen active', state.runActive);
-    check('run-category screen visible', !state.runHidden);
-    await clickIfExists(page, '#run-category-screen [data-close-run]');
-    await page.waitForTimeout(250);
-    state = await readSurfaceState(page);
-    check('run-category closes without navigation', !state.runActive && state.runHidden);
-    check('splash restored after run close', state.splashActive);
-  } else {
-    check('run-category start control exists', false);
+  for (const mode of ['fullboard', 'run-category', 'practice', 'daily-double']) {
+    check(`unfinished ${mode} is absent from public menu`, !(await page.locator(`[data-start-mode="${mode}"]`).isVisible()));
   }
 
   if (await clickIfExists(page, '#splash-screen [data-start-mode="classic"]')) {
@@ -172,8 +147,8 @@ async function runViewport(browser, viewport) {
     state = await readSurfaceState(page);
     check('splash hidden after classic start', !state.splashActive);
 
-    if (await clickIfExists(page, '#questionButton')) {
-      await page.waitForTimeout(700);
+    {
+      await page.waitForFunction(() => window.JeopardyApp?.gameEngine?.state.session.phase === 'question');
       state = await readSurfaceState(page);
       const question = state.question || {};
       const canonicalClue = String(question.question || '').trim();
@@ -214,8 +189,34 @@ async function runViewport(browser, viewport) {
       }
 
       await page.screenshot({ path: path.join(OUT_DIR, `${tag}-playable.png`), fullPage: true });
-    } else {
-      check('new-question control exists', false);
+      const snapshot = () => page.evaluate(() => window.JeopardyApp.gameEngine.getState());
+      const initial = await snapshot();
+      await page.locator('#inputBox').fill(initial.question.data.answer);
+      await page.locator('#checkButton').click();
+      await page.waitForFunction(() => window.JeopardyApp.gameEngine.state.session.phase === 'result');
+      const correct = await snapshot();
+      check('correct answer earns authored points', correct.score.current > 0 && correct.stats.correctAnswers === 1);
+      check('result is visible', await page.locator('#answerBox').isVisible());
+      await page.evaluate(() => window.eventBus.emit('answer:submit', { answer: window.JeopardyApp.gameEngine.state.question.data.answer }));
+      check('duplicate answer earns no extra score', (await snapshot()).score.current === correct.score.current);
+
+      await page.locator('#questionButton').click();
+      await page.waitForFunction(() => window.JeopardyApp.gameEngine.state.session.phase === 'question');
+      await page.locator('#inputBox').fill('deliberately incorrect runtime answer xyz');
+      await page.locator('#checkButton').click();
+      const wrong = await snapshot();
+      check('wrong answer settles and resets score', wrong.session.phase === 'result' && wrong.score.current === 0 && wrong.stats.questionsAnswered === 2);
+
+      await page.locator('#questionButton').click();
+      await page.waitForFunction(() => window.JeopardyApp.gameEngine.state.session.phase === 'question');
+      await page.locator('#answerButton').click();
+      const revealed = await snapshot();
+      await page.evaluate(() => window.eventBus.emit('answer:submit', { answer: window.JeopardyApp.gameEngine.state.question.data.answer }));
+      const afterReveal = await snapshot();
+      check('reveal ends attempt without credit', revealed.session.phase === 'result' && revealed.question.showingAnswer && afterReveal.score.current === 0 && afterReveal.stats.questionsAnswered === 3);
+      check('reveal clears the clue timer', await page.evaluate(() => window.JeopardyApp.gameEngine.questionTimeoutId === null));
+      await page.screenshot({ path: path.join(OUT_DIR, `${tag}-result.png`), fullPage: true });
+
     }
   } else {
     check('classic start control exists', false);

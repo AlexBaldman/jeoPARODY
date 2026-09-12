@@ -122,7 +122,7 @@ export const GAME_EVENTS = {
   STATE_CHANGED: 'game:state:changed',
   
   // Question events
-  QUESTION_LOADED: 'game:question:loaded',
+  QUESTION_LOADED: 'question:loaded',
   QUESTION_DISPLAYED: 'game:question:displayed',
   ANSWER_SUBMITTED: 'game:answer:submitted',
   ANSWER_CHECKED: 'game:answer:checked',
