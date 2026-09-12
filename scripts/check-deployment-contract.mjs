@@ -31,6 +31,9 @@ const workflowFiles = fs
 
 for (const fileName of workflowFiles) {
   const contents = fs.readFileSync(path.join(workflowsDir, fileName), 'utf8');
+  if (fileName !== 'deploy-pages.yml' && /actions\/deploy-pages@/.test(contents)) {
+    fail(`${fileName} contains a second Pages publisher.`);
+  }
   if (/peaceiris\/actions-gh-pages|github-pages-deploy-action|\bgh-pages\s+-d\b/i.test(contents)) {
     fail(`${fileName} contains a legacy branch-based Pages publisher.`);
   }
@@ -42,15 +45,27 @@ if (!fs.existsSync(pagesWorkflowPath)) {
 } else {
   const pagesWorkflow = fs.readFileSync(pagesWorkflowPath, 'utf8');
   const requiredMarkers = [
-    'actions/upload-pages-artifact@v4',
     'actions/deploy-pages@v5',
     'actions/setup-node@v7',
     'node-version: 24',
     'verify-live-pages',
-    'build-meta.json',
+    'scripts/verify-pages.mjs',
     'github.sha',
-    'VITE_FIREBASE_PROJECT_ID',
+    'uses: ./.github/workflows/ci.yml',
+    'needs: verify',
+    'build_type',
   ];
+
+  if (/npm run build|upload-pages-artifact/.test(pagesWorkflow)) {
+    fail('Pages must deploy the verified CI artifact without rebuilding or reuploading.');
+  }
+  const ci = fs.readFileSync(path.join(workflowsDir, 'ci.yml'), 'utf8');
+  for (const marker of ['workflow_call:', 'VITE_FIREBASE_PROJECT_ID', 'scripts/stamp-build.mjs', 'scripts/verify-pages.mjs', 'actions/upload-pages-artifact@v4', 'if: inputs.release']) {
+    if (!ci.includes(marker)) fail(`CI release gate missing: ${marker}`);
+  }
+  if (ci.indexOf('actions/upload-pages-artifact@v4') < ci.indexOf('A11y Audit')) {
+    fail('Pages artifact upload must follow the complete proof wall.');
+  }
 
   for (const marker of requiredMarkers) {
     if (!pagesWorkflow.includes(marker)) {

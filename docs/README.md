@@ -89,10 +89,10 @@ A small number of trustworthy entrypoints is more valuable than a perfectly alph
 
 Convergence 2.0 is complete. Its milestone records the answer/scoring convergence, GameEngine simplification, retired duplicate architecture and disposition of remaining dormant/reference files.
 
-The product lead domino is again **Firebase activation and real cloud proof, issue #44**. Future repository hygiene belongs to issue #58 and must not preempt product work merely because an import graph contains unused candidates.
+The product lead domino is **one verified release and a correct solo loop**, followed by multiplayer command integrity and Firebase #44. See [`MASTER_PLAN.md`](MASTER_PLAN.md) for the ordered acceptance conditions. Future repository hygiene belongs to issue #58 and must not preempt product work merely because an import graph contains unused candidates.
 
 ## Deployment truth
 
 The canonical static-site publisher is `.github/workflows/deploy-pages.yml` using GitHub Pages Actions on the Node 24 workflow baseline. Do not add a second branch publisher or restore a `package.json` deploy script that writes to `gh-pages`.
 
-GitHub Pages Actions has been proven as the active publisher through exact-live-SHA verification. Firebase activation is separate: the workflow records whether a release uses local or Firebase multiplayer transport and only runs cloud multiplayer certification when Firebase configuration is present.
+A prior exact-SHA check was insufficient: a competing branch/Jekyll publication was observed afterward. The release workflow now requires the full CI artifact and checks the actual Pages source setting, served JavaScript and live gameplay. Operational cutover still requires the owner-side settings and a successful main deployment described in [`MASTER_PLAN.md`](MASTER_PLAN.md). Firebase activation is separate: the workflow records whether a release uses local or Firebase multiplayer transport and only runs cloud multiplayer certification when Firebase configuration is present.
