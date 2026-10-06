@@ -1,7 +1,7 @@
 # JeoPARODY Master Plan
 
 **Status:** CANONICAL ROUTING DOCUMENT  
-**Updated:** 2026-09-11
+**Updated:** 2026-10-06
 **Rule:** this file owns current priorities and routing. Specialized documents own their domains.
 
 JeoPARODY is the canonical trivia product. The wider learning/game universe is a portfolio of independent products. Earn abstractions through working vertical slices. Do not design the universal engine in advance because software already has enough monuments to optimism.
@@ -21,6 +21,9 @@ The important upstream sequence is now:
 | Alternate game stack retired | PR #63 / `ac7b3ab` |
 | Shadow state + obsolete host stack retired | PR #64 / `e3617a0` |
 | Node 24 CI/Pages modernization | PR #65 / `adc8834` |
+| Gated tested-artifact Pages release | PR #71 / `d70f58a` |
+| Solo attempt integrity + blocking accessibility | PR #72 / `5fc9316` |
+| Trivia / music / memory product boundaries | PR #73 / `f931ce6` |
 
 The source-controlled proof wall covers project doctrine/security, source reachability, JS/CSS lint, unit/integration tests, production build, Firestore Security Rules, browser boot, Main Game runtime, Needle Drop runtime, Head-to-Head host/guest reconnect, blocking accessibility audits (including Main reveal state), and captured runtime evidence. The September solo repair changes axe from reporting-only to a failing check on violations.
 
@@ -86,15 +89,17 @@ Do not start another cleanup campaign merely because source reachability still r
 
 Links beat copies. When reality changes, update the smallest owner and leave a journal handoff.
 
-## 4. Current lead domino: one verified release and a correct solo loop
+## 4. Current lead domino: finish and ship the finite authored solo product
 
-1. Land the gated release repair (#71) and solo integrity/accessibility repair (#72), in that order; verify owner-side Pages/check settings and the exact deployed artifact.
-2. Establish the product boundary: disconnect dormant PAO from trivia, prepare Needle Drop's standalone export with its tests, and preserve existing public URLs until a replacement passes proof. PAO belongs to Memorization Station; LoadBearing remains an independent Godot project outside this runtime.
-3. Finish one finite, authored trivia session: reviewed clues and aliases, explicit progress and ending, restart, deterministic offline fallback, coherent desktop/phone art direction, and a complete-playthrough browser test. Port Episode data and acceptance fixtures only as needed; do not transplant its controller.
-4. Make Head-to-Head commands round-bound, replay-safe and atomic across public state, private answers and acknowledgment. Prove all five rounds and failure recovery before Firebase #44 activation and physical phone ↔ laptop proof. This is a separate multiplayer shipping gate, not a dependency of a clearly labeled solo release.
-5. Add a compact missed-clue replay only after the solo product ships. Keep durable learning/PAO ownership in Memorization Station; define an explicit result export only when that product can consume it.
+The September release, solo-integrity, and product-boundary repairs are merged. The next product proof is no longer another convergence pass and is not blocked by Firebase.
 
-Repository archaeology (#58), context compiler (#70), Atlas expansion, new generalized kernels and broader host/voice/localization work remain deferred. Read donors only for a named acceptance behavior. Stop after its source, reachable caller, fixture and dependencies are understood; no parity campaign.
+1. **Finish one finite authored trivia session.** Classic owns a reviewed ten-clue Season Zero run with accepted aliases, explicit progress, an ending, restart, deterministic local content, coherent desktop/phone presentation, and a complete-playthrough browser test. Keep the existing Main GameEngine as clue/scoring truth; add only the smallest progression owner needed above it. Do not transplant the old Jeopardish EpisodeController.
+2. **Prove the exact public artifact after merge.** Confirm Pages Source is GitHub Actions, the required CI build-test check protects `main`, the deployed SHA matches the merge, and the complete solo run works from the published build. The source-controlled workflow can enforce the contract but cannot change owner-side repository settings by wishing very hard.
+3. **Repair Head-to-Head command integrity.** Make commands round-bound, replay-safe, and atomic across public state, private answers, and acknowledgment. Prove all five rounds and failure recovery before real cloud activation.
+4. **Activate Firebase #44 and run the physical two-device proof.** This is the next multiplayer constraint, not the current solo shipping constraint.
+5. **Add compact missed-clue replay only after the solo product ships.** Keep durable learning/PAO ownership in Memorization Station; define an explicit result export only when that product can consume it.
+
+Repository archaeology (#58), context compiler (#70), Atlas expansion, companion runtime expansion (#74), new generalized kernels, and broader host/voice/localization work remain deferred from the trivia shipping path. Read donors only for a named acceptance behavior. Stop after its source, reachable caller, fixture, and dependencies are understood; no parity campaign.
 
 ### Product boundaries and retirement gates
 
@@ -216,4 +221,4 @@ These axes meet through explicit semantic boundaries, not a giant manager object
 
 Build the smallest upstream capability that makes several downstream ideas easier, prove it in a real vertical slice, capture the lesson, then move to the next actual constraint.
 
-**The actual constraint is Firebase #44. Convergence 2.0 is closed. Resume product proof.**
+**The current product constraint is the finite authored solo session. Firebase #44 remains the next multiplayer constraint after command integrity. Convergence 2.0 stays closed.**
