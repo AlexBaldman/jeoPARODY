@@ -14,7 +14,8 @@ describe('Needle Drop presentation contract', () => {
     expect(markup).toContain('href="?players=3&amp;crate=quick&amp;seed=original" aria-current="page"');
     expect(markup).toContain('Crate length');
     expect(markup).toContain('Full Crate');
-    expect(markup).toContain('aria-label="Show sound on"');
+    expect(markup).toContain('aria-pressed="true"');
+    expect(markup).toContain('<span>SHOW SOUND</span><strong>ON</strong>');
     expect(markup).toContain('▶ Play 1-second clip');
     expect(markup).toContain('Choices unlock after the clip');
     expect(markup).toContain('data-answer="Ode to Joy"');
@@ -35,7 +36,8 @@ describe('Needle Drop presentation contract', () => {
       performance: { scene: 'WRONG', call: '<the booth objects>', cue: 'wrong' },
     });
     expect(markup).toContain('data-scene="WRONG"');
-    expect(markup).toContain('aria-label="Show sound off"');
+    expect(markup).toContain('aria-pressed="false"');
+    expect(markup).toContain('<span>SHOW SOUND</span><strong>OFF</strong>');
     expect(markup).toContain('&lt;the booth objects&gt;');
     expect(markup).toContain('ORIGINAL COMPOSITION');
     expect(markup).toContain('HOUSE-BAND FLIP');

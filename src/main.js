@@ -13,8 +13,9 @@
  * @module main
  */
 
-import { createQuestionLoader } from './services/createQuestionLoader.js';
 import { getGameEngine } from './core/GameEngine.js';
+import { createSoloSession } from './core/SoloSession.js';
+import { SEASON_ZERO_EPISODE } from './content/seasonZeroEpisode.js';
 import { soundManager } from './services/soundManager.js';
 import { getHostSystem } from './services/HostSystem.js';
 import { eventBus, GAME_EVENTS } from './utils/events.js';
@@ -28,6 +29,7 @@ import installQuestionRewrite from './services/ai/rewriteIntegration.js';
 const JeopardyApp = {
   // Core systems
   gameEngine: null,
+  soloSession: null,
   hostSystem: null,
   soundManager: null,
   
@@ -146,15 +148,9 @@ async function initializeCoreServices() {
   
   // Initialize game engine (must be first)
   JeopardyApp.gameEngine = getGameEngine();
-  console.info('[🎮] Game engine ready');
-  
-  // Initialize question service (primary source of questions)
-  try {
-    await questionService.initialize();
-    console.info('[❓] Question service ready');
-  } catch (e) {
-    console.error('[❌] Question service failed to initialize', e);
-  }
+  JeopardyApp.soloSession = createSoloSession(SEASON_ZERO_EPISODE);
+  console.info('[🎮] Game engine + authored solo session ready');
+  console.info('[📚] Historical question archive will load only if an experimental archive mode requests it.');
   
   // Initialize sound system
   JeopardyApp.soundManager = soundManager;
@@ -177,16 +173,22 @@ async function initializeCoreServices() {
  * Set up integration between services
  */
 function setupServiceIntegration() {
-  // Host system responds to game events
-  eventBus.on('answer:evaluated', () => {
-    JeopardyApp.hostSystem.updateMood(JeopardyApp.gameEngine.state.stats);
-    // Update scoreboard
+  const renderScoreboard = () => {
     const { current, streak, high, maxStreak } = JeopardyApp.gameEngine.state.score;
-    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = String(val); };
+    const set = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = String(val);
+    };
     set('score', current);
     set('streak', streak);
     set('top-score', high);
     set('max-streak', maxStreak);
+  };
+
+  // Host system responds to game events
+  eventBus.on('answer:evaluated', () => {
+    JeopardyApp.hostSystem.updateMood(JeopardyApp.gameEngine.state.stats);
+    renderScoreboard();
   });
   
   // Sound system handles game audio
@@ -194,13 +196,16 @@ function setupServiceIntegration() {
     JeopardyApp.soundManager.play('click');
   });
 
-  // Hide splash screen when game starts
+  // Hide splash screen and reset the visible per-run score when a session starts.
   eventBus.on('game:started', () => {
+    renderScoreboard();
     const splash = document.getElementById('splash-screen');
     if (splash) {
       splash.classList.remove('active');
     }
   });
+
+  eventBus.on('game:reset-completed', renderScoreboard);
 }
 
 function applyDevPreferencesFromURL() {
@@ -591,7 +596,7 @@ function setupNewUIModes() {
 
     // Start mode buttons
     splash.querySelectorAll('[data-start-mode]').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         const mode = btn.getAttribute('data-start-mode');
         console.log(`[Splash] Start button clicked - Mode: ${mode}`);
         // Hide splash (use class only; avoid inline display overrides)
@@ -600,11 +605,13 @@ function setupNewUIModes() {
         // Emit game start
         eventBus.emit('game:start', { mode, difficulty: 'normal' });
 
-        // Show special screens if selected
+        // Experimental archive-backed modes stay lazy so the finite public
+        // episode does not load the historical corpus on every boot.
         if (mode === 'fullboard') {
           board?.classList.remove('hidden');
           board?.classList.add('active');
           try {
+            await questionService.initialize();
             const game = questionService.getRandomBoard();
             renderJeopardyBoard(game);
             attachBoardControls();
@@ -733,44 +740,73 @@ try {
 
 function setupQuestionEventOrchestrator() {
   const engine = JeopardyApp.gameEngine;
-  const loader = createQuestionLoader({
-    engine,
-    getQuestion: () => questionService.getQuestion(),
-    onError: error => {
-      console.error('Failed to load new question', error);
-      const box = document.getElementById('questionBox');
-      if (box) box.textContent = 'Could not load a clue. Choose New Question to try again.';
-    },
-  });
+  const session = JeopardyApp.soloSession;
+
   const updateControls = () => {
     const phase = engine.state.session.phase;
     for (const id of ['answerButton', 'checkButton']) {
       const button = document.getElementById(id);
       if (button) button.disabled = phase !== 'question';
     }
+
+    const nextButton = document.getElementById('questionButton');
+    if (nextButton) {
+      nextButton.disabled = phase !== 'result';
+      const progress = session.getProgress();
+      nextButton.textContent = progress.isLastClue ? 'See Results' : 'Next Clue';
+      nextButton.setAttribute(
+        'aria-label',
+        progress.isLastClue ? 'See Results' : 'Next Clue',
+      );
+    }
   };
-  const load = () => {
+
+  const loadQuestion = (question) => {
+    if (!question) return;
     const input = document.getElementById('inputBox');
     if (input) input.value = '';
     setLegacyAnswerVisible(false);
-    const box = document.getElementById('questionBox');
-    if (box) box.textContent = 'Loading clue…';
-    loader.load();
+    hideSoloCompletion();
+    engine.beginQuestionLoad();
+    engine.loadQuestion(question);
+    renderSoloProgress(session.getProgress());
     updateControls();
   };
-  eventBus.on('question:request-new', load);
+
+  const startSoloSession = () => {
+    const first = session.restart();
+    renderSoloProgress(session.getProgress());
+    loadQuestion(first);
+  };
+
+  const advanceSoloSession = () => {
+    if (engine.state.session.phase !== 'result') return;
+    const next = session.advance();
+    renderSoloProgress(session.getProgress());
+
+    if (!next) {
+      engine.completeGame();
+      return;
+    }
+
+    loadQuestion(next);
+  };
+
+  eventBus.on('question:request-new', advanceSoloSession);
   eventBus.on('game:started', ({ options }) => {
-    if (options.mode === 'classic' || !options.mode) load();
+    if (options.mode === 'classic' || !options.mode) startSoloSession();
   });
   eventBus.on('game:reset-completed', () => {
-    loader.cancel();
     renderLegacySpeechBubble({ question: 'Press Start to play.' });
+    renderSoloProgress(session.getProgress());
+    hideSoloCompletion();
     document.getElementById('splash-screen')?.classList.add('active');
     updateControls();
   });
   eventBus.on('game:phase-changed', updateControls);
   eventBus.on('question:loaded', ({ question }) => {
     renderLegacySpeechBubble(question);
+    renderSoloProgress(session.getProgress());
     updateControls();
     document.getElementById('inputBox')?.focus();
   });
@@ -782,8 +818,68 @@ function setupQuestionEventOrchestrator() {
     setLegacyAnswerVisible(true);
     // Presentation observes a settled domain result; it cannot reveal or score.
     eventBus.emit('game:answer:revealed');
+    renderSoloProgress(session.getProgress());
     updateControls();
   });
+  eventBus.on('game:completed', summary => {
+    renderSoloProgress(session.getProgress());
+    renderSoloCompletion(summary, session.episode);
+    updateControls();
+  });
+
+  document.getElementById('sessionRestart')?.addEventListener('click', () => {
+    eventBus.emit('game:start', { mode: 'classic', difficulty: 'normal' });
+    eventBus.emit('ui:button-click');
+  });
+
+  renderSoloProgress(session.getProgress());
+  updateControls();
+}
+
+function renderSoloProgress(progress) {
+  const el = document.getElementById('sessionProgress');
+  if (!el) return;
+
+  if (!progress.current) {
+    el.textContent = '10-clue pilot broadcast';
+    return;
+  }
+
+  el.textContent = `Clue ${progress.current} / ${progress.total}`;
+}
+
+function renderSoloCompletion(summary, episode) {
+  const panel = document.getElementById('sessionComplete');
+  if (!panel) return;
+
+  const accuracy = summary.questionsAnswered
+    ? Math.round((summary.correctAnswers / summary.questionsAnswered) * 100)
+    : 0;
+
+  const set = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = String(value);
+  };
+
+  set('sessionCompleteTitle', episode.finale?.title || 'Broadcast Complete');
+  set('sessionCompleteArtifact', episode.finale?.artifactTitle || episode.title);
+  set('sessionCompleteBody', episode.finale?.artifactBody || 'Transmission complete.');
+  set('sessionCompleteScore', summary.score);
+  set('sessionCompleteCorrect', `${summary.correctAnswers}/${summary.questionsAnswered}`);
+  set('sessionCompleteAccuracy', `${accuracy}%`);
+  set('sessionCompleteStreak', summary.maxStreak);
+  set('sessionCompleteTeaser', episode.finale?.teaser || '');
+
+  panel.hidden = false;
+  panel.setAttribute('aria-hidden', 'false');
+  document.getElementById('sessionRestart')?.focus();
+}
+
+function hideSoloCompletion() {
+  const panel = document.getElementById('sessionComplete');
+  if (!panel) return;
+  panel.hidden = true;
+  panel.setAttribute('aria-hidden', 'true');
 }
 
 function renderLegacySpeechBubble(question) {

@@ -1,0 +1,10 @@
+# 2026-10-06 14:41 ET — ChatGPT — finite authored solo broadcast
+
+- **Read/inspected:** current `main`, AGENTS/router/architecture/master plan, September handoffs, open PRs in both JeoPARODY and Jeopardish, Firebase #44, and the green authored-GLTF Stadium proof in Jeopardish PR #66.
+- **Changed:** started `codex/finite-authored-solo-session` from `main@f931ce6`; ported the reviewed Season Zero clue pack into the canonical trivia repo; added a deliberately small `SoloSession` progression owner; added `GameEngine.completeGame()`; made Classic a deterministic ten-clue run with progress, explicit finale, summary, and restart; stopped eager archive initialization for Classic; kept archive-backed experimental modes lazy; extended browser proof to play all ten clues and restart.
+- **Nearby cleanup:** visible scoreboard now resets from engine truth on restart/reset instead of showing stale per-run score.
+- **Evidence/tests:** unit tests added for episode contract/progression and engine completion; existing blocking `runtime:check` now proves the full desktop + iPhone-class playthrough, finale, restart, and absence of archive fetch. CI/browser proof is still pending until the PR runs.
+- **Decisions:** the finite authored solo product is the current trivia lead domino. Firebase #44 remains the next multiplayer constraint after Head-to-Head command integrity. Jeopardish Character/Stadium research is valuable reference only; its authored GLTF proof succeeded without forcing those systems onto the trivia shipping path.
+- **Unresolved:** CI may expose visual, lint, accessibility, or release-contract regressions; owner-side Pages Source / required-check settings still require repository-owner verification after merge. Main art direction still deserves a later deliberate pass once this product loop is boringly green.
+- **Next lead domino:** make this branch fully green, merge, prove the exact deployed artifact, then address Head-to-Head round-bound/atomic command integrity before Firebase activation.
+- **Refs:** `codex/finite-authored-solo-session`; Jeopardish PR #66; jeoPARODY issue #44.
