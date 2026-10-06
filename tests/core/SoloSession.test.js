@@ -7,6 +7,7 @@ describe('finite authored solo session', () => {
     expect(SEASON_ZERO_EPISODE.episodeLength).toBe(10);
     expect(SEASON_ZERO_EPISODE.clues.every(clue => clue.question && clue.answer)).toBe(true);
     expect(SEASON_ZERO_EPISODE.clues.some(clue => clue.acceptedAnswers.length > 0)).toBe(true);
+    expect(SEASON_ZERO_EPISODE.clues.every(clue => clue.sources.length > 0)).toBe(true);
 
     const initials = SEASON_ZERO_EPISODE.clues
       .map(clue => clue.answer.trim().charAt(0).toUpperCase())
