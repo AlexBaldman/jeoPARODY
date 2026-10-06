@@ -31,6 +31,8 @@ The September second-opinion review disproved the earlier operational cutover cl
 
 The release repair makes `deploy-pages.yml` call the full reusable CI workflow, which builds, stamps, exercises and uploads one artifact. Deployment requires that gate and `build_type=workflow`; live checks verify bundled JavaScript plus Main/Needle Drop gameplay. These source changes do not change repository settings or certify an unmerged release.
 
+**October release audit:** GitHub Actions history shows no `main` Pages deployment after September 3 even though September 12 product commits are on `main`. Treat the public build as stale/unverified until the next merge produces a successful `Deploy GitHub Pages` run and exact-SHA live proof. If the integration path used to merge does not trigger the push workflow, run the existing workflow manually from GitHub Actions rather than inventing another publisher.
+
 Before declaring cutover complete, the repository owner must set **Settings → Pages → Source → GitHub Actions**, require the PR **CI / build-test** check on `main`, then obtain a successful main release and live browser proof. A non-Actions Pages setting now fails deployment with an actionable error.
 
 **Current cloud boundary:** the production `VITE_FIREBASE_*` repository variables were last proven absent, so the deployed Head-to-Head path remains intentionally in local proving mode until issue #44 activates Firebase.
