@@ -33,6 +33,12 @@ export const SEASON_ZERO_EPISODE = Object.freeze({
       ],
       "value": 200,
       "explanation": "A standard braille cell has six dot positions arranged in two columns of three. Those positions can form 63 nonblank combinations used for letters, numbers, punctuation, and other symbols.",
+      "sources": [
+        {
+          "title": "Library of Congress: About Braille",
+          "url": "https://www.loc.gov/nls/services-and-resources/informational-publications/about-braille/"
+        }
+      ],
       "difficulty": 0.2,
       "tags": [
         "accessibility",
@@ -58,6 +64,12 @@ export const SEASON_ZERO_EPISODE = Object.freeze({
       ],
       "value": 200,
       "explanation": "A rip current is a concentrated flow moving away from shore. It does not pull a swimmer underwater; the safest response is to avoid fighting it, float or tread water, and move parallel to shore when possible.",
+      "sources": [
+        {
+          "title": "NOAA Ocean Service: What Is a Rip Current?",
+          "url": "https://oceanservice.noaa.gov/facts/ripcurrent.html"
+        }
+      ],
       "difficulty": 0.25,
       "tags": [
         "ocean",
@@ -83,6 +95,12 @@ export const SEASON_ZERO_EPISODE = Object.freeze({
       ],
       "value": 400,
       "explanation": "Ozone is O3, a molecule made of three oxygen atoms. High in the stratosphere, the ozone layer absorbs most of the Sun's damaging ultraviolet radiation.",
+      "sources": [
+        {
+          "title": "NASA Earth Observatory: Ozone",
+          "url": "https://science.nasa.gov/earth/earth-observatory/ozone/"
+        }
+      ],
       "difficulty": 0.3,
       "tags": [
         "chemistry",
@@ -108,6 +126,12 @@ export const SEASON_ZERO_EPISODE = Object.freeze({
       ],
       "value": 400,
       "explanation": "Apollo 11 carried Neil Armstrong, Buzz Aldrin, and Michael Collins to the Moon in July 1969. Armstrong and Aldrin landed in the lunar module Eagle while Collins remained in lunar orbit.",
+      "sources": [
+        {
+          "title": "NASA: Apollo 11 Mission Overview",
+          "url": "https://www.nasa.gov/mission/apollo-11/"
+        }
+      ],
       "difficulty": 0.18,
       "tags": [
         "space",
@@ -132,6 +156,12 @@ export const SEASON_ZERO_EPISODE = Object.freeze({
       ],
       "value": 600,
       "explanation": "After Hamlet follows the ghost, Marcellus says that something is rotten in the state of Denmark. The line signals that the kingdom's political and moral order has decayed.",
+      "sources": [
+        {
+          "title": "Folger Shakespeare Library: Hamlet",
+          "url": "https://www.folger.edu/explore/shakespeares-works/hamlet/"
+        }
+      ],
       "difficulty": 0.35,
       "tags": [
         "literature",
@@ -156,6 +186,12 @@ export const SEASON_ZERO_EPISODE = Object.freeze({
       ],
       "value": 600,
       "explanation": "Canada has the longest coastline of any country because its territory includes an enormous mainland shore and thousands of islands bordering the Atlantic, Pacific, and Arctic oceans.",
+      "sources": [
+        {
+          "title": "Statistics Canada: Canada's Coastline",
+          "url": "https://www150.statcan.gc.ca/n1/pub/16-002-x/2021001/article/00001-eng.htm"
+        }
+      ],
       "difficulty": 0.28,
       "tags": [
         "geography",
@@ -182,6 +218,12 @@ export const SEASON_ZERO_EPISODE = Object.freeze({
       ],
       "value": 800,
       "explanation": "Ada Lovelace's 1843 notes on the proposed Analytical Engine included a detailed method for calculating Bernoulli numbers. It is widely described as the first published computer algorithm.",
+      "sources": [
+        {
+          "title": "Science Museum: The Human Machine",
+          "url": "https://www.sciencemuseum.org.uk/objects-and-stories/human-machine"
+        }
+      ],
       "difficulty": 0.42,
       "tags": [
         "computing",
@@ -207,6 +249,12 @@ export const SEASON_ZERO_EPISODE = Object.freeze({
       ],
       "value": 800,
       "explanation": "Sodium is element 11, represented by the symbol Na. The pure metal reacts vigorously with water, so sodium occurs naturally in compounds rather than as an uncombined metal.",
+      "sources": [
+        {
+          "title": "Royal Society of Chemistry: Sodium",
+          "url": "https://periodic-table.rsc.org/element/11/sodium"
+        }
+      ],
       "difficulty": 0.32,
       "tags": [
         "chemistry",
@@ -232,6 +280,12 @@ export const SEASON_ZERO_EPISODE = Object.freeze({
       ],
       "value": 1000,
       "explanation": "On May 10, 1869, the Union Pacific and Central Pacific railroads met at Promontory Summit in Utah. The Golden Spike ceremony marked completion of the first transcontinental railroad.",
+      "sources": [
+        {
+          "title": "National Park Service: Golden Spike National Historical Park",
+          "url": "https://www.nps.gov/articles/getaway-gosp.htm"
+        }
+      ],
       "difficulty": 0.48,
       "tags": [
         "history",
@@ -259,6 +313,12 @@ export const SEASON_ZERO_EPISODE = Object.freeze({
       ],
       "value": 1000,
       "explanation": "The ocean covers about 71 percent of Earth's surface and holds roughly 97 percent of Earth's water. Although people name separate oceans, they form one connected global body of salt water.",
+      "sources": [
+        {
+          "title": "USGS Science Explorer: Ocean",
+          "url": "https://www.usgs.gov/science/science-explorer/ocean"
+        }
+      ],
       "difficulty": 0.2,
       "tags": [
         "earth-science",
