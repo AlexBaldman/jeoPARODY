@@ -324,6 +324,28 @@ export class GameEngine {
     });
   }
 
+  completeGame() {
+    if (this.state.session.phase !== GAME_PHASES.RESULT) return null;
+
+    this.clearQuestionTimeout();
+    this.state.session.isPaused = false;
+    this.transitionPhase(GAME_PHASES.COMPLETE);
+
+    const summary = {
+      sessionId: this.state.session.id,
+      score: this.state.score.current,
+      highScore: this.state.score.high,
+      streak: this.state.score.streak,
+      maxStreak: this.state.score.maxStreak,
+      questionsAnswered: this.state.stats.questionsAnswered,
+      correctAnswers: this.state.stats.correctAnswers,
+      accuracy: this.state.stats.accuracy,
+    };
+
+    this.eventBus.emit('game:completed', summary);
+    return summary;
+  }
+
   clearQuestionTimeout() {
     if (this.questionTimeoutId == null) return;
     this.cancelTimeout(this.questionTimeoutId);
