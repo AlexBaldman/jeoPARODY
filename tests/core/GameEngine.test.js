@@ -201,4 +201,26 @@ describe('Main GameEngine domain contract', () => {
     expect(h.engine.updateAnsweringPhase).toBeUndefined();
     expect(h.engine.updateResultPhase).toBeUndefined();
   });
+
+  test('a settled clue can complete the finite session exactly once', () => {
+    const h = createHarness();
+    h.engine.startGame();
+    h.engine.loadQuestion(clue);
+
+    expect(h.engine.completeGame()).toBeNull();
+
+    h.engine.submitAnswer('Chicago');
+    const summary = h.engine.completeGame();
+
+    expect(h.engine.state.session.phase).toBe(GAME_PHASES.COMPLETE);
+    expect(summary).toMatchObject({
+      score: 400,
+      questionsAnswered: 1,
+      correctAnswers: 1,
+      accuracy: 1,
+    });
+    expect(h.timers.size).toBe(0);
+    expect(h.bus.events.filter(event => event.type === 'game:completed')).toHaveLength(1);
+    expect(h.engine.completeGame()).toBeNull();
+  });
 });
