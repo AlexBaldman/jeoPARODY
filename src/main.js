@@ -754,6 +754,10 @@ function setupQuestionEventOrchestrator() {
       nextButton.disabled = phase !== 'result';
       const progress = session.getProgress();
       nextButton.textContent = progress.isLastClue ? 'See Results' : 'Next Clue';
+      nextButton.setAttribute(
+        'aria-label',
+        progress.isLastClue ? 'See Results' : 'Next Clue',
+      );
     }
   };
 
