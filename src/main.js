@@ -173,16 +173,22 @@ async function initializeCoreServices() {
  * Set up integration between services
  */
 function setupServiceIntegration() {
-  // Host system responds to game events
-  eventBus.on('answer:evaluated', () => {
-    JeopardyApp.hostSystem.updateMood(JeopardyApp.gameEngine.state.stats);
-    // Update scoreboard
+  const renderScoreboard = () => {
     const { current, streak, high, maxStreak } = JeopardyApp.gameEngine.state.score;
-    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = String(val); };
+    const set = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = String(val);
+    };
     set('score', current);
     set('streak', streak);
     set('top-score', high);
     set('max-streak', maxStreak);
+  };
+
+  // Host system responds to game events
+  eventBus.on('answer:evaluated', () => {
+    JeopardyApp.hostSystem.updateMood(JeopardyApp.gameEngine.state.stats);
+    renderScoreboard();
   });
   
   // Sound system handles game audio
@@ -190,13 +196,16 @@ function setupServiceIntegration() {
     JeopardyApp.soundManager.play('click');
   });
 
-  // Hide splash screen when game starts
+  // Hide splash screen and reset the visible per-run score when a session starts.
   eventBus.on('game:started', () => {
+    renderScoreboard();
     const splash = document.getElementById('splash-screen');
     if (splash) {
       splash.classList.remove('active');
     }
   });
+
+  eventBus.on('game:reset-completed', renderScoreboard);
 }
 
 function applyDevPreferencesFromURL() {
