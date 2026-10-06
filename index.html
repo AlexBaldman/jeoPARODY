@@ -144,10 +144,10 @@
         <div class="splash-screen-frame">
           <div class="splash-kicker">celestial cartridge detected</div>
           <div class="splash-title" id="splash-title">jeoPARODY!</div>
-          <div class="splash-subtitle">A retro trivia signal with jokes in the wiring.</div>
-          <button class="btn btn-gradient splash-start" data-start-mode="classic" aria-label="Press start for classic mode">
+          <div class="splash-subtitle">Ten reviewed clues. One suspicious broadcast.</div>
+          <button class="btn btn-gradient splash-start" data-start-mode="classic" aria-label="Start the ten-clue pilot broadcast">
             <span class="start-prompt">Press Start</span>
-            <span class="start-caption">Classic clue run</span>
+            <span class="start-caption">The Extra O Is Not an Accident</span>
           </button>
           <div id="secret-mode-toast" class="secret-mode-toast" role="status" aria-live="polite" hidden></div>
         </div>
@@ -292,7 +292,8 @@
       </div>
       <section id="speechBubble" class="speechBubble speech-bubble jeopardy" aria-label="Current clue">
         <div class="question-content">
-          <div id="categoryBox" class="category-box">Press Start Classic to begin</div>
+          <div id="sessionProgress" class="session-progress" aria-live="polite">10-clue pilot broadcast</div>
+          <div id="categoryBox" class="category-box">Press Start to begin</div>
           <div id="valueBox" class="value-box"></div>
           <div id="questionBox" class="question-box">Click "New Question" to load a clue.</div>
           <div id="clueMediaRack" class="clue-media-rack" aria-label="Clue media" hidden></div>
@@ -302,11 +303,28 @@
 
       <section class="controls-container" aria-label="Question controls">
         <div class="button-div control-buttons">
-          <button id="questionButton" type="button" aria-label="Get a new question">New Question</button>
+          <button id="questionButton" type="button" disabled aria-label="Advance to the next clue">Next Clue</button>
           <button id="answerButton" type="button" disabled aria-label="Reveal the answer">Show Answer</button>
         </div>
       </section>
     </main>
+
+    <section id="sessionComplete" class="session-complete" role="dialog" aria-modal="true" aria-labelledby="sessionCompleteTitle" aria-hidden="true" hidden>
+      <div class="session-complete-card">
+        <p class="session-complete-kicker">Broadcast complete</p>
+        <h2 id="sessionCompleteTitle">Transmission Decoded</h2>
+        <strong id="sessionCompleteArtifact" class="session-complete-artifact">BROADCAST O</strong>
+        <p id="sessionCompleteBody" class="session-complete-body"></p>
+        <dl class="session-complete-stats" aria-label="Final session results">
+          <div><dt>Score</dt><dd id="sessionCompleteScore">0</dd></div>
+          <div><dt>Correct</dt><dd id="sessionCompleteCorrect">0/10</dd></div>
+          <div><dt>Accuracy</dt><dd id="sessionCompleteAccuracy">0%</dd></div>
+          <div><dt>Best streak</dt><dd id="sessionCompleteStreak">0</dd></div>
+        </dl>
+        <p id="sessionCompleteTeaser" class="session-complete-teaser"></p>
+        <button id="sessionRestart" class="btn btn-gradient" type="button">Run the broadcast again</button>
+      </div>
+    </section>
 
     <div class="sticky-footer" role="region" aria-label="Answer submission">
       <div class="input-section">
