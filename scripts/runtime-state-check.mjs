@@ -80,6 +80,9 @@ async function readSurfaceState(page) {
       categoryText: el('#categoryBox')?.textContent?.trim() || '',
       questionText: el('#questionBox')?.textContent?.trim() || '',
       answerText: el('#answerBox')?.textContent?.trim() || '',
+      progressText: el('#sessionProgress')?.textContent?.trim() || '',
+      sessionCompleteVisible: Boolean(el('#sessionComplete') && !el('#sessionComplete').hidden),
+      sessionArtifact: el('#sessionCompleteArtifact')?.textContent?.trim() || '',
       host: {
         src: host?.currentSrc || host?.src || '',
         complete: Boolean(host?.complete),
@@ -164,6 +167,7 @@ async function runViewport(browser, viewport) {
         `rendered=${renderedClue.slice(0, 100)}... canonical=${canonicalClue.slice(0, 80)}...`
       );
       check('dom clue is not placeholder text', !/click "new question"|press start/i.test(state.questionText));
+      check('finite session starts at clue 1 / 10', /clue\s+1\s*\/\s*10/i.test(state.progressText), state.progressText);
       check('host image decoded', state.host.complete && state.host.naturalWidth > 0, state.host.src);
 
       const { layout } = state;
@@ -217,16 +221,47 @@ async function runViewport(browser, viewport) {
       check('reveal clears the clue timer', await page.evaluate(() => window.JeopardyApp.gameEngine.questionTimeoutId === null));
       await page.screenshot({ path: path.join(OUT_DIR, `${tag}-result.png`), fullPage: true });
 
+      for (let answered = 3; answered < 10; answered += 1) {
+        await page.locator('#questionButton').click();
+        await page.waitForFunction(() => window.JeopardyApp.gameEngine.state.session.phase === 'question');
+        const next = await snapshot();
+        await page.locator('#inputBox').fill(next.question.data.answer);
+        await page.locator('#checkButton').click();
+        await page.waitForFunction(() => window.JeopardyApp.gameEngine.state.session.phase === 'result');
+      }
+
+      const finalResult = await snapshot();
+      check('finite solo run settles exactly ten clues', finalResult.stats.questionsAnswered === 10, `answered=${finalResult.stats.questionsAnswered}`);
+      check('final clue remains a result until the player asks for results', finalResult.session.phase === 'result');
+
+      state = await readSurfaceState(page);
+      check('progress reaches clue 10 / 10 before completion', /clue\s+10\s*\/\s*10/i.test(state.progressText), state.progressText);
+
+      await page.locator('#questionButton').click();
+      await page.waitForFunction(() => window.JeopardyApp.gameEngine.state.session.phase === 'complete');
+      state = await readSurfaceState(page);
+      check('finite session exposes an explicit completion surface', state.sessionCompleteVisible);
+      check('Season Zero finale decodes BROADCAST O', state.sessionArtifact === 'BROADCAST O', state.sessionArtifact);
+      await page.screenshot({ path: path.join(OUT_DIR, `${tag}-complete.png`), fullPage: true });
+
+      await page.locator('#sessionRestart').click();
+      await page.waitForFunction(() => window.JeopardyApp.gameEngine.state.session.phase === 'question');
+      const restarted = await snapshot();
+      state = await readSurfaceState(page);
+      check('restart begins a fresh run', restarted.stats.questionsAnswered === 0 && restarted.score.current === 0);
+      check('restart returns progress to clue 1 / 10', /clue\s+1\s*\/\s*10/i.test(state.progressText), state.progressText);
+      check('restart hides the completion surface', !state.sessionCompleteVisible);
     }
   } else {
     check('classic start control exists', false);
   }
 
-  const questionAssetOk = result.assets.questions.some(asset => asset.status === 200 && isDataContentType(asset.contentType));
-  const questionAssetHtml = result.assets.questions.some(asset => String(asset.contentType).toLowerCase().includes('text/html'));
   const hostAssetOk = result.assets.hosts.some(asset => asset.status === 200 && isImageContentType(asset.contentType));
-  check('question data asset loaded with data content-type', questionAssetOk, JSON.stringify(result.assets.questions.slice(-4)));
-  check('question data asset did not resolve as HTML', !questionAssetHtml, JSON.stringify(result.assets.questions.slice(-4)));
+  check(
+    'finite Classic does not fetch the historical question archive',
+    result.assets.questions.length === 0,
+    JSON.stringify(result.assets.questions.slice(-4)),
+  );
   check('trebek host asset loaded as image', hostAssetOk, JSON.stringify(result.assets.hosts.slice(-4)));
 
   await page.close();
