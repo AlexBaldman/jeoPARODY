@@ -10,7 +10,9 @@ JeoPARODY is the canonical proving ground for a growing family of trivia, music,
 
 `/`
 
-Classic starts directly on a clue. Submit an answer or reveal it to end the attempt, then advance with New Question (or Enter on an empty input after the result). Correct answers add the authored value; a wrong answer, timeout or reveal resets the current score. Full Board, Run Category, Practice and Daily Double are hidden until their gameplay is proven.
+Classic is now a finite ten-clue pilot broadcast, **The Extra O Is Not an Accident**, using reviewed authored clues and accepted aliases ported from the proven Jeopardish donor. Submit an answer or reveal it to settle each clue, then advance with Next Clue (or Enter on an empty input after the result). The tenth clue leads to an explicit finale and session summary, and Restart begins a clean run. Correct answers add the authored value; a wrong answer, timeout or reveal resets the current score.
+
+The historical 216K-clue archive is no longer part of Classic startup. Archive-backed experimental modes load it lazily only if explicitly invoked. Full Board, Run Category, Practice and Daily Double remain hidden until their gameplay is proven.
 
 ### Needle Drop — independently scoped music game
 
