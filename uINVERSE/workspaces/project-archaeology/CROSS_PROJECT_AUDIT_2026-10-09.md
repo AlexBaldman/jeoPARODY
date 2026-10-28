@@ -6,7 +6,7 @@ Status: working audit; no extraction or canon promotion authorized.
 An idea's birthplace does not determine its project or repository ownership. Conversations are evidence, not code ownership. One conversation can reference multiple projects; one canonical decision should have one owner and multiple provenance links.
 
 ## Mixed conversation record: bellyBUTTon / jeoPARODY / project organization (2026-10-09)
-Source: ChatGPT conversation discussing context compilation, bellyBUTTon website, Panda 001, Family/After Dark velvet curtain, product economics, and cross-project routing. Original conversation URL: not captured yet; add stable link when available. This record is a summary, not a verbatim transcript.
+Source: ChatGPT conversation discussing context compilation, bellyBUTTon website, Panda 001, Family/After Dark velvet curtain, product economics, and cross-project routing. Original conversation URL: not captured yet; record status: **INCOMPLETE** (interim; source-reference requirement remains unmet). Add a stable link when available. This record is a summary, not a verbatim transcript.
 
 - **bellyBUTTon** (owner: AlexBaldman/bellyBUTTon): Panda 001; bellybutton-integrated temporary tattoo design; Family and optional After Dark product collections; vintage video-store velvet-curtain UI; party-pack hypothesis; demand-validation and manufacturing/safety gates. Brand and product ideas remain exploratory unless implemented or explicitly approved.
 - **jeoPARODY** (owner: AlexBaldman/jeoPARODY): shared game/show runtime and host/stage choreography; repository archaeology; Needle Drop ownership review. Do not migrate bellyBUTTon product implementation into this repository.
