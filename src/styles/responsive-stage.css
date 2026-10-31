@@ -110,6 +110,39 @@
     }
   }
 
+  #settings-modal {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgb(0 0 0 / 70%);
+    color: #ffef9a;
+  }
+
+  #settings-modal .modal-content {
+    box-sizing: border-box;
+    width: min(100%, 480px);
+    max-height: calc(100dvh - 32px);
+    padding: 24px;
+    overflow-y: auto;
+    border: 2px solid var(--c-accent);
+  }
+
+  #settings-modal button {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  #settings-modal [data-close-settings] {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 44px;
+  }
+
   @media (orientation: landscape) and (height <= 500px) {
     :root {
       --footer-stage-height: clamp(54px, 14dvh, 68px);
