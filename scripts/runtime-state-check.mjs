@@ -103,7 +103,10 @@ async function readSurfaceState(page) {
 }
 
 async function runViewport(browser, viewport) {
-  const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
+  const page = await browser.newPage({
+    viewport: { width: viewport.width, height: viewport.height },
+    hasTouch: Boolean(viewport.touch),
+  });
   const tag = viewport.name;
   const result = { viewport: tag, checks: [], failures: [], assets: { questions: [], hosts: [] } };
 
@@ -165,6 +168,13 @@ async function runViewport(browser, viewport) {
       );
       check('dom clue is not placeholder text', !/click "new question"|press start/i.test(state.questionText));
       check('host image decoded', state.host.complete && state.host.naturalWidth > 0, state.host.src);
+
+      if (viewport.touch) {
+        check('new clue leaves the touch keyboard closed',
+          await page.locator('#inputBox').evaluate(input => document.activeElement !== input));
+        check('answer text stays at least 16px on phones',
+          await page.locator('#inputBox').evaluate(input => parseFloat(getComputedStyle(input).fontSize) >= 16));
+      }
 
       const { layout } = state;
       check('viewport does not require horizontal scrolling', layout.scrollWidth <= layout.viewportWidth + 2, `scrollWidth=${layout.scrollWidth}, viewport=${layout.viewportWidth}`);
@@ -240,8 +250,10 @@ async function main() {
   try {
     const results = [];
     results.push(await runViewport(browser, { name: 'desktop', width: 1440, height: 900 }));
-    results.push(await runViewport(browser, { name: 'iphone-390x844', width: 390, height: 844 }));
-    results.push(await runViewport(browser, { name: 'iphone-393x852', width: 393, height: 852 }));
+    results.push(await runViewport(browser, { name: 'iphone-390x844', width: 390, height: 844, touch: true }));
+    results.push(await runViewport(browser, { name: 'iphone-393x852', width: 393, height: 852, touch: true }));
+
+    results.push(await runViewport(browser, { name: 'iphone-375x667', width: 375, height: 667, touch: true }));
 
     const payload = { baseUrl: BASE_URL, outDir: OUT_DIR, results };
     fs.writeFileSync(path.join(OUT_DIR, 'runtime-results.json'), `${JSON.stringify(payload, null, 2)}\n`);

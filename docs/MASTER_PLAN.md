@@ -1,7 +1,7 @@
 # JeoPARODY Master Plan
 
 **Status:** CANONICAL ROUTING DOCUMENT  
-**Updated:** 2026-09-11
+**Updated:** 2026-10-31
 **Rule:** this file owns current priorities and routing. Specialized documents own their domains.
 
 JeoPARODY is the canonical trivia product. The wider learning/game universe is a portfolio of independent products. Earn abstractions through working vertical slices. Do not design the universal engine in advance because software already has enough monuments to optimism.
@@ -37,6 +37,41 @@ Before declaring cutover complete, the repository owner must set **Settings → 
 ### Bounded user-directed product correction — Needle Drop doorway
 
 The 2026-08-26 first-time-player audit found that Needle Drop's technically proven loop asked players to identify invented titles, buried the primary action below setup, and described the premise indirectly. A focused product correction replaces the default crate with recognizable public-domain compositions in original performances, four authored choices, a plain-language promise, compact setup disclosure, and an above-the-fold listen action. This is a bounded repair to an already-public proving mode; after production browser proof, priority follows the release sequence below.
+
+### October 31 release and mobile review
+
+The current main source is `f931ce6` (PR #73). Release/solo repairs #71 and
+#72 and the product-boundary work #73 have landed. The remaining release
+failure is measurable: [CI run 37890450546](https://github.com/AlexBaldman/jeoPARODY/actions/runs/37890450546)
+passes build, security/rules, Main, Needle Drop and local Head-to-Head, then
+fails axe's `label-content-name-mismatch` rule on the Classic start, Options
+and Show Answer controls. Remove redundant names that contradict visible text;
+keep the blocking audit enabled.
+
+The existing public cabinet at
+https://alexbaldman.github.io/Jeopardish/ is a separate preserved deployment.
+Its October 11 `920943c` release passed validation and deployment; the later
+WebKit canary timed out clicking Ask Host. A red overall run therefore does not
+mean the mobile repair was never published. Fresh October 31 phone-size
+observations show the larger host. A rerun is evidence gathering, not a fix
+for an unexplained timeout.
+
+Ship bounded mobile/readability and accessibility repairs now. Preserve the
+existing cabinet URL during canonical release certification; its live role
+is not permission to revive a second canonical game architecture. Port its
+host-size, mouth-anchor and fullscreen acceptance fixtures against current
+owners before choosing an old-URL transition.
+
+The canonical phone input also has a 14px override and unconditional
+new-clue focus. Keep phone answer text at least 16px and let touch players
+open the software keyboard themselves. Production runtime proof must exercise
+touch capabilities and a short 375×667 phone as well as tall phones.
+
+PR #75 remains a draft finite-session candidate; do not wholesale-merge its
+controller or treat its presence as released behavior. Context/compiler #70,
+companion #74, provenance #76 and image-edit #34 remain independent work.
+Older audit PRs #26/#27 preserve historical evidence rather than blocking a
+mobile release. No branch, asset or stored player data is retired by this pass.
 
 ## 2. Convergence 2.0 is complete
 
@@ -88,7 +123,7 @@ Links beat copies. When reality changes, update the smallest owner and leave a j
 
 ## 4. Current lead domino: one verified release and a correct solo loop
 
-1. Land the gated release repair (#71) and solo integrity/accessibility repair (#72), in that order; verify owner-side Pages/check settings and the exact deployed artifact.
+1. Complete the remaining accessibility/mobile repair on top of merged #71/#72/#73; verify Pages/check settings and the exact tested public artifact. A successful merge or build alone does not certify publication.
 2. Establish the product boundary: disconnect dormant PAO from trivia, prepare Needle Drop's standalone export with its tests, and preserve existing public URLs until a replacement passes proof. PAO belongs to Memorization Station; LoadBearing remains an independent Godot project outside this runtime.
 3. Finish one finite, authored trivia session: reviewed clues and aliases, explicit progress and ending, restart, deterministic offline fallback, coherent desktop/phone art direction, and a complete-playthrough browser test. Port Episode data and acceptance fixtures only as needed; do not transplant its controller.
 4. Make Head-to-Head commands round-bound, replay-safe and atomic across public state, private answers and acknowledgment. Prove all five rounds and failure recovery before Firebase #44 activation and physical phone ↔ laptop proof. This is a separate multiplayer shipping gate, not a dependency of a clearly labeled solo release.
@@ -216,4 +251,4 @@ These axes meet through explicit semantic boundaries, not a giant manager object
 
 Build the smallest upstream capability that makes several downstream ideas easier, prove it in a real vertical slice, capture the lesson, then move to the next actual constraint.
 
-**The actual constraint is Firebase #44. Convergence 2.0 is closed. Resume product proof.**
+**The immediate constraint is one verified release and the solo product proof. Convergence 2.0 is closed; Firebase #44 follows multiplayer command integrity.**

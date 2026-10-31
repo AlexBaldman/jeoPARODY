@@ -772,7 +772,10 @@ function setupQuestionEventOrchestrator() {
   eventBus.on('question:loaded', ({ question }) => {
     renderLegacySpeechBubble(question);
     updateControls();
-    document.getElementById('inputBox')?.focus();
+    // Touch players choose when to open the software keyboard.
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      document.getElementById('inputBox')?.focus({ preventScroll: true });
+    }
   });
   eventBus.on('answer:evaluated', result => {
     const box = document.getElementById('answerBox');
