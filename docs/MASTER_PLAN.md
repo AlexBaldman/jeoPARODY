@@ -67,6 +67,8 @@ new-clue focus. Keep phone answer text at least 16px and let touch players
 open the software keyboard themselves. The menu also registered two anonymous
 hamburger handlers, so a single tap opened and immediately closed it. Keep one
 menu owner with explicit close/Escape/focus behavior and test real clicks.
+Define the missing panel/backdrop tokens in the existing token owner so the
+backdrop cannot intercept the drawer's close button.
 Wire the existing Settings modal to those controls and keep unimplemented menu
 candidates hidden. The newly covered 375×667 viewport exposed host/control
 intersection; reserve a separate horizontal lane for controls on short phones. Production runtime proof must exercise
