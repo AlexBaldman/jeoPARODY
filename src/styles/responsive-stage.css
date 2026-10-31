@@ -153,7 +153,17 @@
   /* Short phones share the lower scene between the host and clue controls. */
   @media (width <= 480px) and (height <= 740px) {
     .controls-container {
-      margin-left: calc(var(--host-stage-width) + 24px);
+      margin-left: calc(var(--host-stage-width) + 36px);
+    }
+
+    .controls-container .button-div {
+      gap: 8px;
+      margin-block: 12px;
+    }
+
+    .controls-container button {
+      min-height: 44px;
+      padding-inline: 12px;
     }
   }
 
