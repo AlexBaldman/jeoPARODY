@@ -32,7 +32,7 @@ Before declaring cutover complete, the repository owner must set **Settings → 
 
 **Current cloud boundary:** the production `VITE_FIREBASE_*` repository variables were last proven absent, so the deployed Head-to-Head path remains intentionally in local proving mode until issue #44 activates Firebase.
 
-**Current security baseline:** production dependencies have zero known vulnerabilities under the blocking production audit; the full development graph has no critical advisories. Provider service credentials stay server-side. Firebase web configuration is intentionally client-visible configuration, not a secret.
+**Current security baseline:** the blocking audits reject critical advisories. October 31 CI reported five high-severity production dependency advisories and no critical advisories; dependency remediation remains follow-up work. Earlier zero-advisory evidence is historical. Provider service credentials stay server-side. Firebase web configuration is intentionally client-visible configuration, not a secret.
 
 ### Bounded user-directed product correction — Needle Drop doorway
 
