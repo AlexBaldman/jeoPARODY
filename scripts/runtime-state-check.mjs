@@ -42,9 +42,11 @@ async function exists(page, selector) {
   return (await page.$(selector)) !== null;
 }
 
-async function clickIfExists(page, selector) {
+async function activateIfExists(page, selector, touch = false) {
   if (!(await exists(page, selector))) return false;
-  await page.$eval(selector, el => el.click());
+  const target = page.locator(selector);
+  if (touch) await target.tap();
+  else await target.click();
   return true;
 }
 
@@ -107,6 +109,7 @@ async function runViewport(browser, viewport) {
     viewport: { width: viewport.width, height: viewport.height },
     hasTouch: Boolean(viewport.touch),
   });
+  const activate = selector => activateIfExists(page, selector, Boolean(viewport.touch));
   const tag = viewport.name;
   const result = { viewport: tag, checks: [], failures: [], assets: { questions: [], hosts: [] } };
 
@@ -145,7 +148,7 @@ async function runViewport(browser, viewport) {
     check(`unfinished ${mode} is absent from public menu`, !(await page.locator(`[data-start-mode="${mode}"]`).isVisible()));
   }
 
-  if (await clickIfExists(page, '#splash-screen [data-start-mode="classic"]')) {
+  if (await activate('#splash-screen [data-start-mode="classic"]')) {
     await page.waitForTimeout(350);
     state = await readSurfaceState(page);
     check('splash hidden after classic start', !state.splashActive);
@@ -176,28 +179,28 @@ async function runViewport(browser, viewport) {
           await page.locator('#inputBox').evaluate(input => parseFloat(getComputedStyle(input).fontSize) >= 16));
       }
 
-      await page.locator('#hamburger-menu').click();
+      await activate('#hamburger-menu');
       await page.waitForFunction(() => document.getElementById('side-menu').getAttribute('aria-hidden') === 'false');
       check('one menu tap opens the drawer', await page.locator('#hamburger-menu').getAttribute('aria-expanded') === 'true');
-      await page.locator('.close-menu').click();
+      await activate('.close-menu');
       await page.waitForFunction(() => document.getElementById('side-menu').inert);
-      await page.locator('#hamburger-menu').click();
+      await activate('#hamburger-menu');
       await page.keyboard.press('Escape');
       await page.waitForFunction(() => document.getElementById('side-menu').inert);
       check('Escape restores focus to the menu button',
         await page.locator('#hamburger-menu').evaluate(button => document.activeElement === button));
 
-      await page.locator('#hamburger-menu').click();
-      await page.locator('#settings-button').click();
+      await activate('#hamburger-menu');
+      await activate('#settings-button');
       await page.waitForFunction(() => document.getElementById('settings-modal').style.display === 'flex');
-      await page.locator('[data-settings-theme="dark"]').click();
+      await activate('[data-settings-theme="dark"]');
       check('settings changes the theme', await page.locator('html').getAttribute('data-theme-mode') === 'dark');
       await page.keyboard.press('Escape');
       check('settings closes and restores menu focus',
         await page.locator('#hamburger-menu').evaluate(button => document.activeElement === button));
-      await page.locator('#hamburger-menu').click();
-      await page.locator('#settings-button').click();
-      await page.locator('[data-settings-action="close"]').click();
+      await activate('#hamburger-menu');
+      await activate('#settings-button');
+      await activate('[data-settings-action="close"]');
 
       const { layout } = state;
       check('viewport does not require horizontal scrolling', layout.scrollWidth <= layout.viewportWidth + 2, `scrollWidth=${layout.scrollWidth}, viewport=${layout.viewportWidth}`);
@@ -225,7 +228,7 @@ async function runViewport(browser, viewport) {
       const snapshot = () => page.evaluate(() => window.JeopardyApp.gameEngine.getState());
       const initial = await snapshot();
       await page.locator('#inputBox').fill(initial.question.data.answer);
-      await page.locator('#checkButton').click();
+      await activate('#checkButton');
       await page.waitForFunction(() => window.JeopardyApp.gameEngine.state.session.phase === 'result');
       const correct = await snapshot();
       check('correct answer earns authored points', correct.score.current > 0 && correct.stats.correctAnswers === 1);
@@ -233,16 +236,16 @@ async function runViewport(browser, viewport) {
       await page.evaluate(() => window.eventBus.emit('answer:submit', { answer: window.JeopardyApp.gameEngine.state.question.data.answer }));
       check('duplicate answer earns no extra score', (await snapshot()).score.current === correct.score.current);
 
-      await page.locator('#questionButton').click();
+      await activate('#questionButton');
       await page.waitForFunction(() => window.JeopardyApp.gameEngine.state.session.phase === 'question');
       await page.locator('#inputBox').fill('deliberately incorrect runtime answer xyz');
-      await page.locator('#checkButton').click();
+      await activate('#checkButton');
       const wrong = await snapshot();
       check('wrong answer settles and resets score', wrong.session.phase === 'result' && wrong.score.current === 0 && wrong.stats.questionsAnswered === 2);
 
-      await page.locator('#questionButton').click();
+      await activate('#questionButton');
       await page.waitForFunction(() => window.JeopardyApp.gameEngine.state.session.phase === 'question');
-      await page.locator('#answerButton').click();
+      await activate('#answerButton');
       const revealed = await snapshot();
       await page.evaluate(() => window.eventBus.emit('answer:submit', { answer: window.JeopardyApp.gameEngine.state.question.data.answer }));
       const afterReveal = await snapshot();
