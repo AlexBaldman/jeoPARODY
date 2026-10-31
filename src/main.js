@@ -218,56 +218,58 @@ function applyDevPreferencesFromURL() {
 }
 
 /**
- * Set up event-driven modal handling
+ * Settings uses the existing modal surface; menu candidates stay preserved.
  */
 function setupEventDrivenModals() {
-  // Settings button
-  const settingsButton = document.getElementById('settings-button');
-  if (settingsButton) {
-    settingsButton.addEventListener('click', () => {
-      eventBus.emit('modal:open', { type: 'settings' });
+  const modal = document.getElementById('settings-modal');
+  if (!modal) return;
+  let returnFocus = null;
+  const close = () => {
+    modal.style.display = 'none';
+    if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
+  };
+  eventBus.on('modal:open', ({ type }) => {
+    if (type !== 'settings') return;
+    returnFocus = document.activeElement?.closest('#side-menu')
+      ? document.getElementById('hamburger-menu') : document.activeElement;
+    eventBus.emit('menu:close');
+    modal.style.display = 'flex';
+    modal.querySelector('[data-close-settings]')?.focus({ preventScroll: true });
+  });
+  document.getElementById('settings-button')?.addEventListener('click', () => {
+    eventBus.emit('modal:open', { type: 'settings' });
+  });
+  modal.querySelectorAll('[data-close-settings], [data-settings-action="close"]').forEach(button => {
+    button.addEventListener('click', close);
+  });
+  modal.querySelectorAll('[data-settings-theme]').forEach(button => {
+    button.addEventListener('click', () => {
+      const theme = button.dataset.settingsTheme;
+      applyTheme(theme === 'dark');
+      eventBus.emit('theme:changed', { theme });
     });
-  }
-  
-  // Stats button
-  const statsButton = document.getElementById('stats-button');
-  if (statsButton) {
-    statsButton.addEventListener('click', () => {
-      eventBus.emit('modal:open', { type: 'stats' });
-    });
-  }
-  
-  // Achievements button
-  const achievementsButton = document.getElementById('achievements-button');
-  if (achievementsButton) {
-    achievementsButton.addEventListener('click', () => {
-      eventBus.emit('modal:open', { type: 'achievements' });
-    });
-  }
-  
-  // Help button
-  const helpButton = document.getElementById('help-button');
-  if (helpButton) {
-    helpButton.addEventListener('click', () => {
-      eventBus.emit('modal:open', { type: 'help' });
-    });
-  }
-  
-  // Leaderboard button
-  const leaderboardButton = document.getElementById('leaderboard-button');
-  if (leaderboardButton) {
-    leaderboardButton.addEventListener('click', () => {
-      eventBus.emit('modal:open', { type: 'leaderboard' });
-    });
-  }
-  
-  // Profile button
-  const profileButton = document.getElementById('profile-button');
-  if (profileButton) {
-    profileButton.addEventListener('click', () => {
-      eventBus.emit('modal:open', { type: 'profile' });
-    });
-  }
+  });
+  modal.addEventListener('click', event => {
+    if (event.target === modal) close();
+  });
+  modal.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      close();
+    } else if (event.key === 'Tab') {
+      const buttons = [...modal.querySelectorAll('button:not([disabled])')];
+      const first = buttons[0];
+      const last = buttons[buttons.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    }
+  });
 }
 
 /**
@@ -468,6 +470,7 @@ function setupMenuInteractions() {
     });
     sideMenu.querySelector('.close-menu')?.addEventListener('click', () => setMenuOpen(false));
     backdrop?.addEventListener('click', () => setMenuOpen(false));
+    eventBus.on('menu:close', () => setMenuOpen(false));
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && sideMenu.classList.contains('active')) {
         event.preventDefault();

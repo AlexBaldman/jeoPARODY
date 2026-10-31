@@ -40,7 +40,7 @@ The 2026-08-26 first-time-player audit found that Needle Drop's technically prov
 
 ### October 31 release and mobile review
 
-The current main source is `f931ce6` (PR #73). Release/solo repairs #71 and
+The October 31 review began at `f931ce6` (PR #73). Release/solo repairs #71 and
 #72 and the product-boundary work #73 have landed. The remaining release
 failure is measurable: [CI run 37890450546](https://github.com/AlexBaldman/jeoPARODY/actions/runs/37890450546)
 passes build, security/rules, Main, Needle Drop and local Head-to-Head, then
@@ -53,8 +53,8 @@ https://alexbaldman.github.io/Jeopardish/ is a separate preserved deployment.
 Its October 11 `920943c` release passed validation and deployment; the later
 WebKit canary timed out clicking Ask Host. A red overall run therefore does not
 mean the mobile repair was never published. Fresh October 31 phone-size
-observations show the larger host. A rerun is evidence gathering, not a fix
-for an unexplained timeout.
+observations show the larger host. The October 31 failed-job rerun reproduced the Ask Host timeout. Its root cause
+remains unresolved; repeated retries are not a repair.
 
 Ship bounded mobile/readability and accessibility repairs now. Preserve the
 existing cabinet URL during canonical release certification; its live role
@@ -66,7 +66,10 @@ The canonical phone input also has a 14px override and unconditional
 new-clue focus. Keep phone answer text at least 16px and let touch players
 open the software keyboard themselves. The menu also registered two anonymous
 hamburger handlers, so a single tap opened and immediately closed it. Keep one
-menu owner with explicit close/Escape/focus behavior and test real clicks. Production runtime proof must exercise
+menu owner with explicit close/Escape/focus behavior and test real clicks.
+Wire the existing Settings modal to those controls and keep unimplemented menu
+candidates hidden. The newly covered 375×667 viewport exposed host/control
+intersection; reserve a separate horizontal lane for controls on short phones. Production runtime proof must exercise
 touch capabilities and a short 375×667 phone as well as tall phones.
 
 Only #75's small sound-button accessible-name repair is reused for this release;

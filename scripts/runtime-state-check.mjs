@@ -187,6 +187,18 @@ async function runViewport(browser, viewport) {
       check('Escape restores focus to the menu button',
         await page.locator('#hamburger-menu').evaluate(button => document.activeElement === button));
 
+      await page.locator('#hamburger-menu').click();
+      await page.locator('#settings-button').click();
+      await page.waitForFunction(() => document.getElementById('settings-modal').style.display === 'flex');
+      await page.locator('[data-settings-theme="dark"]').click();
+      check('settings changes the theme', await page.locator('html').getAttribute('data-theme-mode') === 'dark');
+      await page.keyboard.press('Escape');
+      check('settings closes and restores menu focus',
+        await page.locator('#hamburger-menu').evaluate(button => document.activeElement === button));
+      await page.locator('#hamburger-menu').click();
+      await page.locator('#settings-button').click();
+      await page.locator('[data-settings-action="close"]').click();
+
       const { layout } = state;
       check('viewport does not require horizontal scrolling', layout.scrollWidth <= layout.viewportWidth + 2, `scrollWidth=${layout.scrollWidth}, viewport=${layout.viewportWidth}`);
       check('viewport does not require vertical scrolling', layout.scrollHeight <= layout.viewportHeight + 2, `scrollHeight=${layout.scrollHeight}, viewport=${layout.viewportHeight}`);
@@ -206,7 +218,7 @@ async function runViewport(browser, viewport) {
           || layout.host.bottom < layout.controls.top
           || layout.host.top > layout.controls.bottom
         );
-        check('host does not overlap control deck', !overlapsControls, tag);
+        check('host does not overlap control deck', !overlapsControls, JSON.stringify({ viewport: tag, host: layout.host, controls: layout.controls }));
       }
 
       await page.screenshot({ path: path.join(OUT_DIR, `${tag}-playable.png`), fullPage: true });

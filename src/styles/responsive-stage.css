@@ -117,6 +117,13 @@
     }
   }
 
+  /* Short phones share the lower scene between the host and clue controls. */
+  @media (width <= 480px) and (height <= 740px) {
+    .controls-container {
+      margin-left: calc(var(--host-stage-width) + 24px);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .host-container {
       transition-duration: 1ms !important;

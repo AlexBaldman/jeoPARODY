@@ -349,11 +349,11 @@
       </div>
       <ul class="menu-items">
         <li><button id="settings-button" type="button" data-action="settings">⚙️ Settings</button></li>
-        <li><button id="stats-button" type="button" data-action="stats">📊 Stats</button></li>
-        <li><button id="achievements-button" type="button" data-action="achievements">🏆 Achievements</button></li>
-        <li><button id="leaderboard-button" type="button" data-action="leaderboard">📈 Leaderboard</button></li>
-        <li><button id="profile-button" type="button" data-action="profile">👤 Profile</button></li>
-        <li><button id="help-button" type="button" data-action="help">❓ Help</button></li>
+        <li><button id="stats-button" type="button" hidden data-action="stats">📊 Stats</button></li>
+        <li><button id="achievements-button" type="button" hidden data-action="achievements">🏆 Achievements</button></li>
+        <li><button id="leaderboard-button" type="button" hidden data-action="leaderboard">📈 Leaderboard</button></li>
+        <li><button id="profile-button" type="button" hidden data-action="profile">👤 Profile</button></li>
+        <li><button id="help-button" type="button" hidden data-action="help">❓ Help</button></li>
       </ul>
     </nav>
     <div id="menu-backdrop" class="menu-backdrop" aria-hidden="true"></div>
@@ -369,7 +369,7 @@
           <div style="display:grid; gap:12px;">
             <button type="button" data-settings-theme="light">Use Light Mode</button>
             <button type="button" data-settings-theme="dark">Use Dark Mode</button>
-            <label class="settings-check">
+            <label class="settings-check" hidden>
               <input id="ai-translation-toggle" type="checkbox">
               <span>Upgrade Portuguese study translations with AI when available</span>
             </label>
