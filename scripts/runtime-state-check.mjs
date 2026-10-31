@@ -176,6 +176,17 @@ async function runViewport(browser, viewport) {
           await page.locator('#inputBox').evaluate(input => parseFloat(getComputedStyle(input).fontSize) >= 16));
       }
 
+      await page.locator('#hamburger-menu').click();
+      await page.waitForFunction(() => document.getElementById('side-menu').getAttribute('aria-hidden') === 'false');
+      check('one menu tap opens the drawer', await page.locator('#hamburger-menu').getAttribute('aria-expanded') === 'true');
+      await page.locator('.close-menu').click();
+      await page.waitForFunction(() => document.getElementById('side-menu').inert);
+      await page.locator('#hamburger-menu').click();
+      await page.keyboard.press('Escape');
+      await page.waitForFunction(() => document.getElementById('side-menu').inert);
+      check('Escape restores focus to the menu button',
+        await page.locator('#hamburger-menu').evaluate(button => document.activeElement === button));
+
       const { layout } = state;
       check('viewport does not require horizontal scrolling', layout.scrollWidth <= layout.viewportWidth + 2, `scrollWidth=${layout.scrollWidth}, viewport=${layout.viewportWidth}`);
       check('viewport does not require vertical scrolling', layout.scrollHeight <= layout.viewportHeight + 2, `scrollHeight=${layout.scrollHeight}, viewport=${layout.viewportHeight}`);

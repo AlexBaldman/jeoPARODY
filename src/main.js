@@ -112,33 +112,6 @@ function handleFatalError(error) {
 }
 
 /**
- * Set up global event listeners
- */
-function setupGlobalEventListeners() {
-  // Theme toggle
-  const themeSwitch = document.getElementById('theme-switch');
-  if (themeSwitch) {
-    themeSwitch.addEventListener('change', toggleTheme);
-  }
-  
-  // Language toggles (header and side menu)
-  const langBtn = document.getElementById('lang-btn');
-  const langBtnMenu = document.getElementById('lang-btn-menu');
-  if (langBtn) langBtn.addEventListener('click', toggleLanguage);
-  if (langBtnMenu) langBtnMenu.addEventListener('click', toggleLanguage);
-  
-  // Hamburger menu
-  const hamburgerMenu = document.getElementById('hamburger-menu');
-  const sideMenu = document.getElementById('side-menu');
-  if (hamburgerMenu && sideMenu) {
-    hamburgerMenu.addEventListener('click', () => {
-      sideMenu.classList.toggle('active');
-      hamburgerMenu.classList.toggle('active');
-    });
-  }
-}
-
-/**
  * Initialize core services
  */
 async function initializeCoreServices() {
@@ -375,8 +348,7 @@ function setupUIBindings() {
   // Keyboard shortcuts
   setupKeyboardShortcuts();
 
-  // Global UI listeners and modals
-  setupGlobalEventListeners();
+  // Event-driven modals
   setupEventDrivenModals();
   setupNewUIModes();
 }
@@ -479,10 +451,28 @@ function setupMenuInteractions() {
   const hamburgerMenu = document.getElementById('hamburger-menu');
   const sideMenu = document.getElementById('side-menu');
   if (hamburgerMenu && sideMenu) {
+    const backdrop = document.getElementById('menu-backdrop');
+    const setMenuOpen = (open) => {
+      sideMenu.classList.toggle('active', open);
+      hamburgerMenu.classList.toggle('active', open);
+      hamburgerMenu.setAttribute('aria-expanded', String(open));
+      sideMenu.setAttribute('aria-hidden', String(!open));
+      sideMenu.inert = !open;
+      backdrop?.classList.toggle('active', open);
+      if (open) sideMenu.querySelector('.close-menu')?.focus({ preventScroll: true });
+      else hamburgerMenu.focus({ preventScroll: true });
+    };
     hamburgerMenu.addEventListener('click', () => {
-      sideMenu.classList.toggle('active');
-      hamburgerMenu.classList.toggle('active');
+      setMenuOpen(!sideMenu.classList.contains('active'));
       eventBus.emit('ui:button-click');
+    });
+    sideMenu.querySelector('.close-menu')?.addEventListener('click', () => setMenuOpen(false));
+    backdrop?.addEventListener('click', () => setMenuOpen(false));
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && sideMenu.classList.contains('active')) {
+        event.preventDefault();
+        setMenuOpen(false);
+      }
     });
   }
 

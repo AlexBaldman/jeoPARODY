@@ -64,10 +64,13 @@ owners before choosing an old-URL transition.
 
 The canonical phone input also has a 14px override and unconditional
 new-clue focus. Keep phone answer text at least 16px and let touch players
-open the software keyboard themselves. Production runtime proof must exercise
+open the software keyboard themselves. The menu also registered two anonymous
+hamburger handlers, so a single tap opened and immediately closed it. Keep one
+menu owner with explicit close/Escape/focus behavior and test real clicks. Production runtime proof must exercise
 touch capabilities and a short 375×667 phone as well as tall phones.
 
-PR #75 remains a draft finite-session candidate; do not wholesale-merge its
+Only #75's small sound-button accessible-name repair is reused for this release;
+its broader behavior remains separate. PR #75 remains a draft finite-session candidate; do not wholesale-merge its
 controller or treat its presence as released behavior. Context/compiler #70,
 companion #74, provenance #76 and image-edit #34 remain independent work.
 Older audit PRs #26/#27 preserve historical evidence rather than blocking a
