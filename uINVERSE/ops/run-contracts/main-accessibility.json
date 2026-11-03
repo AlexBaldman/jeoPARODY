@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "jeoparody.main-accessibility",
+  "goal": "Prove axe accessibility acceptance on both the opening Game surface and the Main Game answer-reveal presentation",
+  "authority": { "mode": "verify-only" },
+  "scope": {
+    "owner": "AlexBaldman/jeoPARODY",
+    "source": "scripts/axe-audit.mjs",
+    "execution": "CI postflight, after browser accessibility audits"
+  },
+  "recovery": {
+    "automaticRetries": 0,
+    "onFailure": "Repair the specific failing state and rerun the original browser check; never relabel a failed audit as green"
+  },
+  "checks": [
+    { "id": "splash", "evidence": "axe-report.json", "scenario": "default", "maxViolations": 0 },
+    { "id": "answer-reveal", "evidence": "axe-main-result-report.json", "scenario": "main-result", "maxViolations": 0 }
+  ]
+}

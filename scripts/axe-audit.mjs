@@ -27,6 +27,10 @@ try {
   await page.addScriptTag({ content: axe.source });
 
   const results = await page.evaluate(async () => window.axe.run(document));
+  results.auditContext = {
+    scenario: scenario || 'default',
+    answerVisible: await page.locator('#answerBox').isVisible(),
+  };
   fs.writeFileSync(outputPath, `${JSON.stringify(results, null, 2)}\n`);
 
   console.log(

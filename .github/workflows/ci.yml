@@ -55,6 +55,9 @@ jobs:
       - name: Release verifier regression tests
         run: node --test scripts/verify-pages.test.mjs
 
+      - name: Verify Run Contract regression tests
+        run: node --test scripts/verify-run-contract.test.mjs
+
       - name: Source reachability inventory
         run: npm run source:reachability
 
@@ -147,6 +150,10 @@ jobs:
           node scripts/axe-audit.mjs 'http://127.0.0.1:4173/needle-drop.html?players=4' axe-needle-drop-report.json
           node scripts/axe-audit.mjs 'http://127.0.0.1:4173/head-to-head.html?transport=local' axe-head-to-head-report.json
 
+      - name: Verify Main accessible-state Run Contract
+        if: success() || failure()
+        run: node scripts/verify-run-contract.mjs uINVERSE/ops/run-contracts/main-accessibility.json run-contract-evidence.json
+
       - name: Upload runtime evidence
         if: always()
         uses: actions/upload-artifact@v7
@@ -160,6 +167,7 @@ jobs:
             axe-main-result-report.json
             axe-needle-drop-report.json
             axe-head-to-head-report.json
+            run-contract-evidence.json
             /tmp/jeoparody-preview.log
             firestore-debug.log
           if-no-files-found: ignore
