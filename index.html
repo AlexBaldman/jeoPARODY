@@ -12,13 +12,13 @@
     <link rel="preload" href="assets/fonts/KorinnaItalic.woff2" as="font" type="font/woff2" crossorigin>
 
     <!-- SEO related -->
-    <meta name="description" content="Jeopardish! A unique comedic trivia adventure.">
-    <meta property="og:title" content="Jeopardish!">
+    <meta name="description" content="JeoPARODY! A comedic trivia adventure.">
+    <meta property="og:title" content="JeoPARODY!">
     <meta property="og:description" content="A unique comedic trivia adventure.">
     <meta property="og:image" content="screenshots/jeopardish-screenshot-noQuestion.png">
     
     <!-- title -->
-    <title>Jeopardish!</title>
+    <title>JeoPARODY!</title>
     
     <!-- favicons -->
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -116,7 +116,7 @@
           </div>
           <button id="lang-btn" type="button" class="header-icon-btn" aria-label="Switch language"><i class="fas fa-language"></i></button>
           <button id="host-anim-trigger" type="button" class="header-icon-btn" title="Host animation" aria-label="Trigger host animation">Host</button>
-          <button id="hamburger-menu" type="button" class="hamburger-button" aria-label="Open menu">
+          <button id="hamburger-menu" type="button" class="hamburger-button" aria-label="Open menu" aria-controls="side-menu" aria-expanded="false">
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
@@ -145,7 +145,7 @@
           <div class="splash-kicker">celestial cartridge detected</div>
           <div class="splash-title" id="splash-title">jeoPARODY!</div>
           <div class="splash-subtitle">A retro trivia signal with jokes in the wiring.</div>
-          <button class="btn btn-gradient splash-start" data-start-mode="classic" aria-label="Press start for classic mode">
+          <button class="btn btn-gradient splash-start" data-start-mode="classic">
             <span class="start-prompt">Press Start</span>
             <span class="start-caption">Classic clue run</span>
           </button>
@@ -172,7 +172,7 @@
             <span class="mode-title">Daily Double</span>
             <span class="mode-status">Wager chamber</span>
           </button>
-          <button class="mode-select mode-select-options" data-action="open-settings" aria-label="Open game settings">
+          <button class="mode-select mode-select-options" data-action="open-settings">
             <span class="mode-kicker">Cabinet</span>
             <span class="mode-title">Options</span>
             <span class="mode-status">Video and controls</span>
@@ -302,8 +302,8 @@
 
       <section class="controls-container" aria-label="Question controls">
         <div class="button-div control-buttons">
-          <button id="questionButton" type="button" aria-label="Get a new question">New Question</button>
-          <button id="answerButton" type="button" disabled aria-label="Reveal the answer">Show Answer</button>
+          <button id="questionButton" type="button">New Question</button>
+          <button id="answerButton" type="button" disabled>Show Answer</button>
         </div>
       </section>
     </main>
@@ -339,7 +339,7 @@
     </div>
 
     <!-- Runtime menu surfaces -->
-    <nav id="side-menu" class="side-menu" aria-label="Game menu">
+    <nav id="side-menu" class="side-menu" aria-label="Game menu" aria-hidden="true" inert>
       <div class="menu-header">
         <h2>Menu</h2>
         <div style="display:flex; gap:8px; align-items:center;">
@@ -349,11 +349,11 @@
       </div>
       <ul class="menu-items">
         <li><button id="settings-button" type="button" data-action="settings">⚙️ Settings</button></li>
-        <li><button id="stats-button" type="button" data-action="stats">📊 Stats</button></li>
-        <li><button id="achievements-button" type="button" data-action="achievements">🏆 Achievements</button></li>
-        <li><button id="leaderboard-button" type="button" data-action="leaderboard">📈 Leaderboard</button></li>
-        <li><button id="profile-button" type="button" data-action="profile">👤 Profile</button></li>
-        <li><button id="help-button" type="button" data-action="help">❓ Help</button></li>
+        <li hidden><button id="stats-button" type="button" data-action="stats">📊 Stats</button></li>
+        <li hidden><button id="achievements-button" type="button" data-action="achievements">🏆 Achievements</button></li>
+        <li hidden><button id="leaderboard-button" type="button" data-action="leaderboard">📈 Leaderboard</button></li>
+        <li hidden><button id="profile-button" type="button" data-action="profile">👤 Profile</button></li>
+        <li hidden><button id="help-button" type="button" data-action="help">❓ Help</button></li>
       </ul>
     </nav>
     <div id="menu-backdrop" class="menu-backdrop" aria-hidden="true"></div>
@@ -369,7 +369,7 @@
           <div style="display:grid; gap:12px;">
             <button type="button" data-settings-theme="light">Use Light Mode</button>
             <button type="button" data-settings-theme="dark">Use Dark Mode</button>
-            <label class="settings-check">
+            <label class="settings-check" hidden>
               <input id="ai-translation-toggle" type="checkbox">
               <span>Upgrade Portuguese study translations with AI when available</span>
             </label>

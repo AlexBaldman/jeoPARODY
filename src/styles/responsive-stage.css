@@ -1,126 +1,175 @@
-@layer utilities {
+/* app.css supplies the utilities layer; do not nest it a second time. */
+:root {
+  --footer-stage-height: clamp(68px, 9dvh, 92px);
+  --host-stage-width: clamp(82px, 13vw, 156px);
+  --host-stage-bottom: calc(var(--footer-stage-height) - 12px);
+  --host-move-duration: 900ms;
+}
+
+html,
+body {
+  min-height: 100%;
+  min-height: 100dvh;
+}
+
+body {
+  box-sizing: border-box;
+  margin: 0;
+  overflow-x: hidden;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/*
+ * Runtime stage ownership.
+ * The fixed host is a StageActor and must not reserve horizontal layout
+ * space inside the clue surface.
+ */
+.main-content-wrapper {
+  box-sizing: border-box;
+  width: 100%;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/*
+ * Footer Stage Rail
+ * The rail is foreground scenery. The host sits one layer behind it so
+ * descending animations can disappear naturally instead of being clipped
+ * with arbitrary opacity tricks.
+ */
+.sticky-footer[data-stage-rail='footer'],
+.sticky-footer {
+  box-sizing: border-box;
+  min-height: var(--footer-stage-height);
+  height: calc(var(--footer-stage-height) + env(safe-area-inset-bottom, 0)) !important;
+  padding-bottom: env(safe-area-inset-bottom, 0) !important;
+}
+
+.host-container[data-stage-actor='host'],
+.host-container {
+  width: var(--host-stage-width) !important;
+  height: auto !important;
+  aspect-ratio: 3 / 4;
+  left: 12px;
+  bottom: var(--host-stage-bottom) !important;
+  z-index: calc(var(--z-footer) - 1) !important;
+  transform-origin: 50% 100%;
+  transition:
+    left var(--host-move-duration) cubic-bezier(0.22, 1, 0.36, 1),
+    bottom 720ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 320ms ease;
+  will-change: left, bottom, transform;
+}
+
+.host-container[data-facing='left'] .host-image {
+  transform: scaleX(-1);
+}
+
+.host-container[data-facing='right'] .host-image {
+  transform: scaleX(1);
+}
+
+.host-container.host-stage--descending {
+  bottom: calc(-1 * var(--host-stage-width) * 0.58) !important;
+}
+
+.host-container.host-stage--hidden {
+  bottom: calc(-1 * var(--host-stage-width) * 0.9) !important;
+}
+
+.host-container.host-stage--surprise {
+  animation: host-stage-surprise 680ms cubic-bezier(0.16, 1.3, 0.3, 1);
+}
+
+.speechBubble,
+.speech-bubble {
+  transition: --sbub-tail-left 120ms linear;
+}
+
+@keyframes host-stage-surprise {
+  0% { transform: translateY(18%) scale(0.92); }
+  52% { transform: translateY(-7%) scale(1.08); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@media (width <= 768px) {
   :root {
-    --footer-stage-height: clamp(68px, 9dvh, 92px);
-    --host-stage-width: clamp(82px, 13vw, 156px);
-    --host-stage-bottom: calc(var(--footer-stage-height) - 12px);
-    --host-move-duration: 900ms;
+    --footer-stage-height: clamp(64px, 9dvh, 82px);
+    --host-stage-width: clamp(76px, 23vw, 104px);
+    --host-stage-bottom: calc(var(--footer-stage-height) - 10px);
   }
 
-  html,
-  body {
-    min-height: 100%;
-    min-height: 100dvh;
-  }
-
-  body {
-    box-sizing: border-box;
-    margin: 0;
-    overflow-x: hidden;
-    padding-bottom: env(safe-area-inset-bottom, 0);
-  }
-
-  /*
-   * Runtime stage ownership.
-   * The fixed host is a StageActor and must not reserve horizontal layout
-   * space inside the clue surface.
-   */
   .main-content-wrapper {
-    box-sizing: border-box;
-    width: 100%;
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
 
-  /*
-   * Footer Stage Rail
-   * The rail is foreground scenery. The host sits one layer behind it so
-   * descending animations can disappear naturally instead of being clipped
-   * with arbitrary opacity tricks.
-   */
-  .sticky-footer[data-stage-rail='footer'],
   .sticky-footer {
-    box-sizing: border-box;
-    min-height: var(--footer-stage-height);
-    height: calc(var(--footer-stage-height) + env(safe-area-inset-bottom, 0)) !important;
-    padding-bottom: env(safe-area-inset-bottom, 0) !important;
+    padding-left: max(10px, env(safe-area-inset-left, 0)) !important;
+    padding-right: max(10px, env(safe-area-inset-right, 0)) !important;
+  }
+}
+
+#settings-modal {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgb(0 0 0 / 70%);
+  color: #ffef9a;
+}
+
+#settings-modal .modal-content {
+  box-sizing: border-box;
+  width: min(100%, 480px);
+  max-height: calc(100dvh - 32px);
+  padding: 24px;
+  overflow-y: auto;
+  border: 2px solid var(--c-accent);
+}
+
+#settings-modal button {
+  min-height: 44px;
+  font-size: 16px;
+}
+
+#settings-modal [data-close-settings] {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 44px;
+}
+
+@media (orientation: landscape) and (height <= 500px) {
+  :root {
+    --footer-stage-height: clamp(54px, 14dvh, 68px);
+    --host-stage-width: clamp(64px, 12vw, 88px);
+  }
+}
+
+/* Short phones share the lower scene between the host and clue controls. */
+@media (width <= 480px) and (height <= 740px) {
+  .controls-container {
+    margin-left: calc(var(--host-stage-width) + 36px);
   }
 
-  .host-container[data-stage-actor='host'],
+  .controls-container .button-div {
+    gap: 8px;
+    margin-block: 12px;
+  }
+
+  .controls-container button {
+    min-height: 44px;
+    padding-inline: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
   .host-container {
-    width: var(--host-stage-width) !important;
-    height: auto !important;
-    aspect-ratio: 3 / 4;
-    left: 12px;
-    bottom: var(--host-stage-bottom) !important;
-    z-index: calc(var(--z-footer) - 1) !important;
-    transform-origin: 50% 100%;
-    transition:
-      left var(--host-move-duration) cubic-bezier(0.22, 1, 0.36, 1),
-      bottom 720ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 320ms ease;
-    will-change: left, bottom, transform;
-  }
-
-  .host-container[data-facing='left'] .host-image {
-    transform: scaleX(-1);
-  }
-
-  .host-container[data-facing='right'] .host-image {
-    transform: scaleX(1);
-  }
-
-  .host-container.host-stage--descending {
-    bottom: calc(-1 * var(--host-stage-width) * 0.58) !important;
-  }
-
-  .host-container.host-stage--hidden {
-    bottom: calc(-1 * var(--host-stage-width) * 0.9) !important;
-  }
-
-  .host-container.host-stage--surprise {
-    animation: host-stage-surprise 680ms cubic-bezier(0.16, 1.3, 0.3, 1);
-  }
-
-  .speechBubble,
-  .speech-bubble {
-    transition: --sbub-tail-left 120ms linear;
-  }
-
-  @keyframes host-stage-surprise {
-    0% { transform: translateY(18%) scale(0.92); }
-    52% { transform: translateY(-7%) scale(1.08); }
-    100% { transform: translateY(0) scale(1); }
-  }
-
-  @media (width <= 768px) {
-    :root {
-      --footer-stage-height: clamp(64px, 9dvh, 82px);
-      --host-stage-width: clamp(76px, 23vw, 104px);
-      --host-stage-bottom: calc(var(--footer-stage-height) - 10px);
-    }
-
-    .main-content-wrapper {
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-    }
-
-    .sticky-footer {
-      padding-left: max(10px, env(safe-area-inset-left, 0)) !important;
-      padding-right: max(10px, env(safe-area-inset-right, 0)) !important;
-    }
-  }
-
-  @media (orientation: landscape) and (height <= 500px) {
-    :root {
-      --footer-stage-height: clamp(54px, 14dvh, 68px);
-      --host-stage-width: clamp(64px, 12vw, 88px);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .host-container {
-      transition-duration: 1ms !important;
-      animation-duration: 1ms !important;
-    }
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
   }
 }
