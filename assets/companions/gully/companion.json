@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "good-golly-hes-gully",
+  "name": "Good Golly He’s Gully",
+  "species": "seagull",
+  "role": "companion",
+  "personality": {
+    "temperament": ["curious", "mischievous", "loyal"],
+    "voice": "dry-observational",
+    "defaultEnergy": 0.55
+  },
+  "codex": {
+    "packageId": "good-golly-hes-gully",
+    "states": {
+      "idle": "idle",
+      "working": "working",
+      "needs_input": "needs_input",
+      "blocked": "blocked",
+      "success": "success"
+    }
+  },
+  "animations": {
+    "idle": { "clip": "idle", "loop": true, "variants": { "watch": { "clip": "idle-watch", "loop": true } } },
+    "working": { "clip": "working", "loop": true },
+    "thinking": { "clip": "thinking", "loop": true },
+    "waiting": { "clip": "needs-input", "loop": true },
+    "blocked": { "clip": "blocked", "loop": true },
+    "celebrating": { "clip": "success", "loop": false },
+    "success": { "clip": "success", "loop": false },
+    "speaking": { "clip": "speaking", "loop": true },
+    "listening": { "clip": "listening", "loop": true },
+    "sleeping": { "clip": "sleeping", "loop": true },
+    "confused": { "clip": "confused", "loop": true },
+    "excited": { "clip": "excited", "loop": true },
+    "dancing": { "clip": "dancing", "loop": true }
+  },
+  "surfaces": {
+    "watch": { "preferredScale": "tiny", "haptics": true },
+    "phone": { "preferredScale": "compact" },
+    "tablet": { "preferredScale": "medium" },
+    "desktop": { "preferredScale": "medium" },
+    "tv": { "preferredScale": "large", "ambient": true }
+  }
+}
